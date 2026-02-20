@@ -1,0 +1,2672 @@
+{
+  "sheep": {
+    "base": "sheep",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "fish": {
+    "base": "fish",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "deer": {
+    "base": "deer",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "moose": {
+    "base": "moose",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "swine": {
+    "base": "swine",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bison": {
+    "base": "bison",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "salmon": {
+    "base": "salmon",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "trout": {
+    "base": "trout",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "aircraft": {
+    "base": "aircraft",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "spacecraft": {
+    "base": "spacecraft",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "series": {
+    "base": "series",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "species": {
+    "base": "species",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "means": {
+    "base": "means",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "men": {
+    "base": "man",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "women": {
+    "base": "woman",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "feet": {
+    "base": "foot",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "teeth": {
+    "base": "tooth",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "geese": {
+    "base": "goose",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "mice": {
+    "base": "mouse",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "lice": {
+    "base": "louse",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "dice": {
+    "base": "die",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "children": {
+    "base": "child",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "oxen": {
+    "base": "ox",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "brethren": {
+    "base": "brother",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "criteria": {
+    "base": "criterion",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "phenomena": {
+    "base": "phenomenon",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "data": {
+    "base": "datum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "media": {
+    "base": "medium",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bacteria": {
+    "base": "bacterium",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "curricula": {
+    "base": "curriculum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "memoranda": {
+    "base": "memorandum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "strata": {
+    "base": "stratum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "alumni": {
+    "base": "alumnus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "alumnae": {
+    "base": "alumna",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cacti": {
+    "base": "cactus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "foci": {
+    "base": "focus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "nuclei": {
+    "base": "nucleus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "radii": {
+    "base": "radius",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "stimuli": {
+    "base": "stimulus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "syllabi": {
+    "base": "syllabus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "theses": {
+    "base": "thesis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "hypotheses": {
+    "base": "hypothesis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "analyses": {
+    "base": "analysis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "crises": {
+    "base": "crisis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bases": {
+    "base": "basis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "axes": {
+    "base": "axis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "indices": {
+    "base": "index",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "appendices": {
+    "base": "appendix",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "matrices": {
+    "base": "matrix",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "vertices": {
+    "base": "vertex",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "formulae": {
+    "base": "formula",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "nebulae": {
+    "base": "nebula",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "larvae": {
+    "base": "larva",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "antennae": {
+    "base": "antenna",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "corpora": {
+    "base": "corpus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "genera": {
+    "base": "genus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "viscera": {
+    "base": "viscus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bureaux": {
+    "base": "bureau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tableaux": {
+    "base": "tableau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "châteaux": {
+    "base": "château",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "plateaux": {
+    "base": "plateau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "people": {
+    "base": "person",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "persons": {
+    "base": "person",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pennies": {
+    "base": "penny",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pence": {
+    "base": "penny",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "corps": {
+    "base": "corps",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "grouse": {
+    "base": "grouse",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pike": {
+    "base": "pike",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "plaice": {
+    "base": "plaice",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bream": {
+    "base": "bream",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "carp": {
+    "base": "carp",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "perch": {
+    "base": "perch",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "quail": {
+    "base": "quail",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "snipe": {
+    "base": "snipe",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "woodcock": {
+    "base": "woodcock",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tench": {
+    "base": "tench",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "roach": {
+    "base": "roach",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "dace": {
+    "base": "dace",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "chub": {
+    "base": "chub",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "rudd": {
+    "base": "rudd",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "sprat": {
+    "base": "sprat",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "herring": {
+    "base": "herring",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "mackerel": {
+    "base": "mackerel",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cod": {
+    "base": "cod",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "haddock": {
+    "base": "haddock",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "halibut": {
+    "base": "halibut",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "turbot": {
+    "base": "turbot",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "flounder": {
+    "base": "flounder",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "sole": {
+    "base": "sole",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tuna": {
+    "base": "tuna",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bass": {
+    "base": "bass",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "mullet": {
+    "base": "mullet",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "shrimp": {
+    "base": "shrimp",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "squid": {
+    "base": "squid",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "elk": {
+    "base": "elk",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "reindeer": {
+    "base": "reindeer",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "caribou": {
+    "base": "caribou",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "buffalo": {
+    "base": "buffalo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "antelope": {
+    "base": "antelope",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "wildebeest": {
+    "base": "wildebeest",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pheasant": {
+    "base": "pheasant",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "partridge": {
+    "base": "partridge",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "ptarmigan": {
+    "base": "ptarmigan",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "scissors": {
+    "base": "scissors",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "trousers": {
+    "base": "trousers",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pants": {
+    "base": "pants",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "jeans": {
+    "base": "jeans",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "shorts": {
+    "base": "shorts",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "glasses": {
+    "base": "glasses",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "binoculars": {
+    "base": "binoculars",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "pliers": {
+    "base": "pliers",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tongs": {
+    "base": "tongs",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tweezers": {
+    "base": "tweezers",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "forceps": {
+    "base": "forceps",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bellows": {
+    "base": "bellows",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "gallows": {
+    "base": "gallows",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "shambles": {
+    "base": "shambles",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "outskirts": {
+    "base": "outskirts",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "premises": {
+    "base": "premises",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "surroundings": {
+    "base": "surroundings",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "belongings": {
+    "base": "belongings",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "earnings": {
+    "base": "earnings",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "savings": {
+    "base": "savings",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "proceeds": {
+    "base": "proceeds",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "remains": {
+    "base": "remains",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "contents": {
+    "base": "contents",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "goods": {
+    "base": "goods",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "odds": {
+    "base": "odds",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "thanks": {
+    "base": "thanks",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "regards": {
+    "base": "regards",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "congratulations": {
+    "base": "congratulations",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "condolences": {
+    "base": "condolences",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "archives": {
+    "base": "archives",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "annals": {
+    "base": "annals",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tropics": {
+    "base": "tropics",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "subtropics": {
+    "base": "subtropics",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "errata": {
+    "base": "erratum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "desiderata": {
+    "base": "desideratum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "addenda": {
+    "base": "addendum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "agenda": {
+    "base": "agendum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "spectra": {
+    "base": "spectrum",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tempora": {
+    "base": "tempus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "opera": {
+    "base": "opus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "schemata": {
+    "base": "schema",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "stigmata": {
+    "base": "stigma",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "dogmata": {
+    "base": "dogma",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "automata": {
+    "base": "automaton",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "polyhedra": {
+    "base": "polyhedron",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tetrahedra": {
+    "base": "tetrahedron",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "octahedra": {
+    "base": "octahedron",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "ephemera": {
+    "base": "ephemeron",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "prolegomena": {
+    "base": "prolegomenon",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "synopses": {
+    "base": "synopsis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "parentheses": {
+    "base": "parenthesis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "ellipses": {
+    "base": "ellipsis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "nemeses": {
+    "base": "nemesis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "prognoses": {
+    "base": "prognosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "diagnoses": {
+    "base": "diagnosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "metamorphoses": {
+    "base": "metamorphosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "psychoses": {
+    "base": "psychosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "neuroses": {
+    "base": "neurosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cirrhoses": {
+    "base": "cirrhosis",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "apices": {
+    "base": "apex",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cortices": {
+    "base": "cortex",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "vortices": {
+    "base": "vortex",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cervices": {
+    "base": "cervix",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "calices": {
+    "base": "calix",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "codices": {
+    "base": "codex",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "radices": {
+    "base": "radix",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "loci": {
+    "base": "locus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tori": {
+    "base": "torus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "fungi": {
+    "base": "fungus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "uteri": {
+    "base": "uterus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "hippocampi": {
+    "base": "hippocampus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "octopi": {
+    "base": "octopus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "platypuses": {
+    "base": "platypus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "genii": {
+    "base": "genius",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "termini": {
+    "base": "terminus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "calculi": {
+    "base": "calculus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "moduli": {
+    "base": "modulus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "gladioli": {
+    "base": "gladiolus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bronchi": {
+    "base": "bronchus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "thrombi": {
+    "base": "thrombus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "emboli": {
+    "base": "embolus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "bacilli": {
+    "base": "bacillus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cocci": {
+    "base": "coccus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "styli": {
+    "base": "stylus",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "torii": {
+    "base": "torii",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "beaux": {
+    "base": "beau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "gateau": {
+    "base": "gâteau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "gateaux": {
+    "base": "gâteau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "chateaux": {
+    "base": "château",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "portmanteaux": {
+    "base": "portmanteau",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "milieux": {
+    "base": "milieu",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "adieux": {
+    "base": "adieu",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "libretti": {
+    "base": "libretto",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "concerti": {
+    "base": "concerto",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "tempi": {
+    "base": "tempo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "virtuosi": {
+    "base": "virtuoso",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "graffiti": {
+    "base": "graffito",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "paparazzi": {
+    "base": "paparazzo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cognoscenti": {
+    "base": "cognoscente",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "literati": {
+    "base": "literato",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "illuminati": {
+    "base": "illuminato",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "dilettanti": {
+    "base": "dilettante",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "confetti": {
+    "base": "confetto",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "spaghetti": {
+    "base": "spaghetto",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "ravioli": {
+    "base": "raviolo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "broccoli": {
+    "base": "broccolo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "zucchini": {
+    "base": "zucchino",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "panini": {
+    "base": "panino",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "biscotti": {
+    "base": "biscotto",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "cannoli": {
+    "base": "cannolo",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "gelati": {
+    "base": "gelato",
+    "pos": "NOUN",
+    "tag": "num=PL"
+  },
+  "am": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=1SG"
+  },
+  "is": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=3SG"
+  },
+  "are": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=NON3SG_PL"
+  },
+  "was": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PAST|person=1SG_3SG"
+  },
+  "were": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PAST|person=NON1SG_3SG"
+  },
+  "been": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "being": {
+    "base": "be",
+    "pos": "VERB",
+    "tag": "aspect=PROG"
+  },
+  "has": {
+    "base": "have",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=3SG"
+  },
+  "had": {
+    "base": "have",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "does": {
+    "base": "do",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=3SG"
+  },
+  "did": {
+    "base": "do",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "done": {
+    "base": "do",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "went": {
+    "base": "go",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "gone": {
+    "base": "go",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "goes": {
+    "base": "go",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=3SG"
+  },
+  "said": {
+    "base": "say",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "says": {
+    "base": "say",
+    "pos": "VERB",
+    "tag": "tense=PRES|person=3SG"
+  },
+  "saw": {
+    "base": "see",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "seen": {
+    "base": "see",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "came": {
+    "base": "come",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "come": {
+    "base": "come",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "got": {
+    "base": "get",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "gotten": {
+    "base": "get",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "made": {
+    "base": "make",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "knew": {
+    "base": "know",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "known": {
+    "base": "know",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "thought": {
+    "base": "think",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "took": {
+    "base": "take",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "taken": {
+    "base": "take",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "gave": {
+    "base": "give",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "given": {
+    "base": "give",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "found": {
+    "base": "find",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "told": {
+    "base": "tell",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "became": {
+    "base": "become",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "become": {
+    "base": "become",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "showed": {
+    "base": "show",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "shown": {
+    "base": "show",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "left": {
+    "base": "leave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "felt": {
+    "base": "feel",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "put": {
+    "base": "put",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "brought": {
+    "base": "bring",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "began": {
+    "base": "begin",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "begun": {
+    "base": "begin",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "kept": {
+    "base": "keep",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "held": {
+    "base": "hold",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "wrote": {
+    "base": "write",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "written": {
+    "base": "write",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "stood": {
+    "base": "stand",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "heard": {
+    "base": "hear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "let": {
+    "base": "let",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "meant": {
+    "base": "mean",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "set": {
+    "base": "set",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "met": {
+    "base": "meet",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "ran": {
+    "base": "run",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "run": {
+    "base": "run",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "paid": {
+    "base": "pay",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sat": {
+    "base": "sit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spoke": {
+    "base": "speak",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spoken": {
+    "base": "speak",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "lay": {
+    "base": "lie",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "lain": {
+    "base": "lie",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "led": {
+    "base": "lead",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "read": {
+    "base": "read",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "grew": {
+    "base": "grow",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "grown": {
+    "base": "grow",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "lost": {
+    "base": "lose",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fell": {
+    "base": "fall",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fallen": {
+    "base": "fall",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sent": {
+    "base": "send",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "built": {
+    "base": "build",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "understood": {
+    "base": "understand",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "drew": {
+    "base": "draw",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "drawn": {
+    "base": "draw",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "broke": {
+    "base": "break",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "broken": {
+    "base": "break",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "spent": {
+    "base": "spend",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "cut": {
+    "base": "cut",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "rose": {
+    "base": "rise",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "risen": {
+    "base": "rise",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "drove": {
+    "base": "drive",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "driven": {
+    "base": "drive",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "bought": {
+    "base": "buy",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "wore": {
+    "base": "wear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "worn": {
+    "base": "wear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "chose": {
+    "base": "choose",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "chosen": {
+    "base": "choose",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "won": {
+    "base": "win",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "caught": {
+    "base": "catch",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "taught": {
+    "base": "teach",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fought": {
+    "base": "fight",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "threw": {
+    "base": "throw",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "thrown": {
+    "base": "throw",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sang": {
+    "base": "sing",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sung": {
+    "base": "sing",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "swam": {
+    "base": "swim",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "swum": {
+    "base": "swim",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "rang": {
+    "base": "ring",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "rung": {
+    "base": "ring",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "drank": {
+    "base": "drink",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "drunk": {
+    "base": "drink",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "ate": {
+    "base": "eat",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "eaten": {
+    "base": "eat",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "forgot": {
+    "base": "forget",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "forgotten": {
+    "base": "forget",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "forgave": {
+    "base": "forgive",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "forgiven": {
+    "base": "forgive",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "froze": {
+    "base": "freeze",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "frozen": {
+    "base": "freeze",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "hid": {
+    "base": "hide",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "hidden": {
+    "base": "hide",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "hit": {
+    "base": "hit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "hurt": {
+    "base": "hurt",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "cost": {
+    "base": "cost",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "shut": {
+    "base": "shut",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spread": {
+    "base": "spread",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "stole": {
+    "base": "steal",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "stolen": {
+    "base": "steal",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "shook": {
+    "base": "shake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "shaken": {
+    "base": "shake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "woke": {
+    "base": "wake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "woken": {
+    "base": "wake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "rode": {
+    "base": "ride",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "ridden": {
+    "base": "ride",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "bit": {
+    "base": "bite",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bitten": {
+    "base": "bite",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "blew": {
+    "base": "blow",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "blown": {
+    "base": "blow",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "flew": {
+    "base": "fly",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "flown": {
+    "base": "fly",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "forbade": {
+    "base": "forbid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "forbidden": {
+    "base": "forbid",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "bore": {
+    "base": "bear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "borne": {
+    "base": "bear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "born": {
+    "base": "bear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF|voice=PASS"
+  },
+  "swore": {
+    "base": "swear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sworn": {
+    "base": "swear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "tore": {
+    "base": "tear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "torn": {
+    "base": "tear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "wove": {
+    "base": "weave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "woven": {
+    "base": "weave",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "wound": {
+    "base": "wind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bound": {
+    "base": "bind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "ground": {
+    "base": "grind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "struck": {
+    "base": "strike",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "stricken": {
+    "base": "strike",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "stuck": {
+    "base": "stick",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "stung": {
+    "base": "sting",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "strung": {
+    "base": "string",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "swung": {
+    "base": "swing",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "clung": {
+    "base": "cling",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "flung": {
+    "base": "fling",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "slung": {
+    "base": "sling",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "slunk": {
+    "base": "slink",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spun": {
+    "base": "spin",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "dug": {
+    "base": "dig",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "hung": {
+    "base": "hang",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spat": {
+    "base": "spit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spit": {
+    "base": "spit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "knelt": {
+    "base": "kneel",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "leapt": {
+    "base": "leap",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "leant": {
+    "base": "lean",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "learnt": {
+    "base": "learn",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "dreamt": {
+    "base": "dream",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "smelt": {
+    "base": "smell",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spelt": {
+    "base": "spell",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spilt": {
+    "base": "spill",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "spoilt": {
+    "base": "spoil",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "burnt": {
+    "base": "burn",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "dwelt": {
+    "base": "dwell",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "knit": {
+    "base": "knit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "quit": {
+    "base": "quit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "shed": {
+    "base": "shed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "split": {
+    "base": "split",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "thrust": {
+    "base": "thrust",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "cast": {
+    "base": "cast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "broadcast": {
+    "base": "broadcast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "forecast": {
+    "base": "forecast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "burst": {
+    "base": "burst",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bid": {
+    "base": "bid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bade": {
+    "base": "bid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bidden": {
+    "base": "bid",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "could": {
+    "base": "can",
+    "pos": "VERB",
+    "tag": "tense=PAST|pos=MODAL"
+  },
+  "would": {
+    "base": "will",
+    "pos": "VERB",
+    "tag": "tense=PAST|pos=MODAL"
+  },
+  "should": {
+    "base": "shall",
+    "pos": "VERB",
+    "tag": "tense=PAST|pos=MODAL"
+  },
+  "might": {
+    "base": "may",
+    "pos": "VERB",
+    "tag": "tense=PAST|pos=MODAL"
+  },
+  "clove": {
+    "base": "cleave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "cleft": {
+    "base": "cleave",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "cleaved": {
+    "base": "cleave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "cloven": {
+    "base": "cleave",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "strode": {
+    "base": "stride",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "stridden": {
+    "base": "stride",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "smote": {
+    "base": "smite",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "smitten": {
+    "base": "smite",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "slew": {
+    "base": "slay",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "slain": {
+    "base": "slay",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "weaved": {
+    "base": "weave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "strove": {
+    "base": "strive",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "striven": {
+    "base": "strive",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "throve": {
+    "base": "thrive",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "thriven": {
+    "base": "thrive",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "proved": {
+    "base": "prove",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "proven": {
+    "base": "prove",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sawed": {
+    "base": "saw",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sawn": {
+    "base": "saw",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sowed": {
+    "base": "sow",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sown": {
+    "base": "sow",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "mowed": {
+    "base": "mow",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "mown": {
+    "base": "mow",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "hewed": {
+    "base": "hew",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "hewn": {
+    "base": "hew",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sheared": {
+    "base": "shear",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "shorn": {
+    "base": "shear",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "trod": {
+    "base": "tread",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "trodden": {
+    "base": "tread",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "abode": {
+    "base": "abide",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "abided": {
+    "base": "abide",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "besought": {
+    "base": "beseech",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "beseeched": {
+    "base": "beseech",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bereft": {
+    "base": "bereave",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "gilt": {
+    "base": "gild",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "sped": {
+    "base": "speed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "lit": {
+    "base": "light",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "lighted": {
+    "base": "light",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "pled": {
+    "base": "plead",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "pleaded": {
+    "base": "plead",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "snuck": {
+    "base": "sneak",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "dove": {
+    "base": "dive",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "waked": {
+    "base": "wake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "hanged": {
+    "base": "hang",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fit": {
+    "base": "fit",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "wet": {
+    "base": "wet",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "wetted": {
+    "base": "wet",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "rid": {
+    "base": "rid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "offset": {
+    "base": "offset",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "upset": {
+    "base": "upset",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "reset": {
+    "base": "reset",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "input": {
+    "base": "input",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "output": {
+    "base": "output",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "typecast": {
+    "base": "typecast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "miscast": {
+    "base": "miscast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "recast": {
+    "base": "recast",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "outbid": {
+    "base": "outbid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "overbid": {
+    "base": "overbid",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "withstood": {
+    "base": "withstand",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "withheld": {
+    "base": "withhold",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "withdrew": {
+    "base": "withdraw",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "withdrawn": {
+    "base": "withdraw",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "underwent": {
+    "base": "undergo",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "undergone": {
+    "base": "undergo",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "undertook": {
+    "base": "undertake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "undertaken": {
+    "base": "undertake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "overcame": {
+    "base": "overcome",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "overran": {
+    "base": "overrun",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "overtook": {
+    "base": "overtake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "overtaken": {
+    "base": "overtake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "overwrote": {
+    "base": "overwrite",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "overwritten": {
+    "base": "overwrite",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "foresaw": {
+    "base": "foresee",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "foreseen": {
+    "base": "foresee",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "forewent": {
+    "base": "forego",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "foregone": {
+    "base": "forego",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "misunderstood": {
+    "base": "misunderstand",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "mistook": {
+    "base": "mistake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "mistaken": {
+    "base": "mistake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "partook": {
+    "base": "partake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "partaken": {
+    "base": "partake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "forsook": {
+    "base": "forsake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "forsaken": {
+    "base": "forsake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "awoke": {
+    "base": "awake",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "awoken": {
+    "base": "awake",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "arose": {
+    "base": "arise",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "arisen": {
+    "base": "arise",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "befell": {
+    "base": "befall",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "befallen": {
+    "base": "befall",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "beheld": {
+    "base": "behold",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "begot": {
+    "base": "beget",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "begotten": {
+    "base": "beget",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "bestrode": {
+    "base": "bestride",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "rebound": {
+    "base": "rebind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "rewound": {
+    "base": "rewind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "unwound": {
+    "base": "unwind",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "interwove": {
+    "base": "interweave",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "interwoven": {
+    "base": "interweave",
+    "pos": "VERB",
+    "tag": "tense=PAST|aspect=PERF"
+  },
+  "interbred": {
+    "base": "interbreed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bred": {
+    "base": "breed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fed": {
+    "base": "feed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "bled": {
+    "base": "bleed",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "fled": {
+    "base": "flee",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "crept": {
+    "base": "creep",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "slept": {
+    "base": "sleep",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "swept": {
+    "base": "sweep",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "wept": {
+    "base": "weep",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "dealt": {
+    "base": "deal",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "healed": {
+    "base": "heal",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "sought": {
+    "base": "seek",
+    "pos": "VERB",
+    "tag": "tense=PAST"
+  },
+  "better": {
+    "base": "well",
+    "pos": "ADV",
+    "tag": "degree=COMP"
+  },
+  "best": {
+    "base": "well",
+    "pos": "ADV",
+    "tag": "degree=SUPER"
+  },
+  "worse": {
+    "base": "badly",
+    "pos": "ADV",
+    "tag": "degree=COMP"
+  },
+  "worst": {
+    "base": "badly",
+    "pos": "ADV",
+    "tag": "degree=SUPER"
+  },
+  "further": {
+    "base": "far",
+    "pos": "ADV",
+    "tag": "degree=COMP"
+  },
+  "farther": {
+    "base": "far",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "furthest": {
+    "base": "far",
+    "pos": "ADV",
+    "tag": "degree=SUPER"
+  },
+  "farthest": {
+    "base": "far",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "more": {
+    "base": "much",
+    "pos": "ADV",
+    "tag": "degree=COMP"
+  },
+  "most": {
+    "base": "much",
+    "pos": "ADV",
+    "tag": "degree=SUPER"
+  },
+  "less": {
+    "base": "little",
+    "pos": "ADV",
+    "tag": "degree=COMP"
+  },
+  "least": {
+    "base": "little",
+    "pos": "ADV",
+    "tag": "degree=SUPER"
+  },
+  "elder": {
+    "base": "old",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "eldest": {
+    "base": "old",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "latter": {
+    "base": "late",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "last": {
+    "base": "late",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "inner": {
+    "base": "in",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "inmost": {
+    "base": "in",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "innermost": {
+    "base": "in",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "outer": {
+    "base": "out",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "outermost": {
+    "base": "out",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "upper": {
+    "base": "up",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "uppermost": {
+    "base": "up",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  },
+  "nether": {
+    "base": "neath",
+    "pos": "ADJ",
+    "tag": "degree=COMP"
+  },
+  "nethermost": {
+    "base": "neath",
+    "pos": "ADJ",
+    "tag": "degree=SUPER"
+  }
+}

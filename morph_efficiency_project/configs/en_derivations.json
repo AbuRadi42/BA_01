@@ -1,0 +1,915 @@
+[
+  {
+    "affix": "-tion/-sion/-ation/-ition",
+    "surface_variants": [
+      "-tion",
+      "-sion",
+      "-ation",
+      "-ition",
+      "-cion"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→N",
+    "derives": "ACTION_NOUN",
+    "notes": "Stem-final /t/ or /d/ often deleted; -ate verbs → -ation; -ise/-ize → -isation/-ization",
+    "examples": "educate→education, decide→decision, create→creation, compete→competition"
+  },
+  {
+    "affix": "-ment",
+    "surface_variants": [
+      "-ment"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→N",
+    "derives": "RESULT_PROCESS_NOUN",
+    "notes": "Attaches to verb stem directly; no allomorphy",
+    "examples": "develop→development, achieve→achievement, govern→government"
+  },
+  {
+    "affix": "-ness",
+    "surface_variants": [
+      "-ness"
+    ],
+    "type": "SUFFIX",
+    "direction": "ADJ→N",
+    "derives": "STATE_QUALITY_NOUN",
+    "notes": "Fully productive; attaches to any adjective",
+    "examples": "dark→darkness, happy→happiness, aware→awareness"
+  },
+  {
+    "affix": "-ity/-ty/-ety",
+    "surface_variants": [
+      "-ity",
+      "-ty",
+      "-ety"
+    ],
+    "type": "SUFFIX",
+    "direction": "ADJ→N",
+    "derives": "STATE_QUALITY_NOUN",
+    "notes": "-ity after Latinate stems; -ty after native; -ety after stems ending in vowel",
+    "examples": "real→reality, safe→safety, anxi→anxiety, electric→electricity"
+  },
+  {
+    "affix": "-ance/-ence/-ancy/-ency",
+    "surface_variants": [
+      "-ance",
+      "-ence",
+      "-ancy",
+      "-ency"
+    ],
+    "type": "SUFFIX",
+    "direction": "V/ADJ→N",
+    "derives": "STATE_PROCESS_NOUN",
+    "notes": "Distribution conditioned by stem origin; -ance/-ancy with -ant stems; -ence/-ency with -ent stems",
+    "examples": "perform→performance, exist→existence, expect→expectancy, depend→dependency"
+  },
+  {
+    "affix": "-er/-or/-ar",
+    "surface_variants": [
+      "-er",
+      "-or",
+      "-ar"
+    ],
+    "type": "SUFFIX",
+    "direction": "V/N→N",
+    "derives": "AGENT_INSTRUMENT_NOUN",
+    "notes": "-er most productive (native); -or with Latinate stems; -ar lexicalized (beggar, liar)",
+    "examples": "teach→teacher, act→actor, beg→beggar, instruct→instructor"
+  },
+  {
+    "affix": "-ist",
+    "surface_variants": [
+      "-ist"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "ADHERENT_PRACTITIONER_NOUN",
+    "notes": "Attaches to nouns denoting fields, ideologies, instruments",
+    "examples": "art→artist, capital→capitalist, piano→pianist, terror→terrorist"
+  },
+  {
+    "affix": "-ism",
+    "surface_variants": [
+      "-ism"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "DOCTRINE_SYSTEM_NOUN",
+    "notes": "Attaches to nouns and adjectives; often paired with -ist",
+    "examples": "capital→capitalism, real→realism, terror→terrorism, national→nationalism"
+  },
+  {
+    "affix": "-ure/-ture/-sure",
+    "surface_variants": [
+      "-ure",
+      "-ture",
+      "-sure"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→N",
+    "derives": "RESULT_STATE_NOUN",
+    "notes": "Latinate; -ture after /t/; -sure after voiced consonants",
+    "examples": "fail→failure, depart→departure, expose→exposure, please→pleasure"
+  },
+  {
+    "affix": "-al",
+    "surface_variants": [
+      "-al"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→N",
+    "derives": "ACTION_RESULT_NOUN",
+    "notes": "Nominalizing -al distinct from adjectival -al; attaches to verbs",
+    "examples": "arrive→arrival, propose→proposal, refuse→refusal, deny→denial"
+  },
+  {
+    "affix": "-age",
+    "surface_variants": [
+      "-age"
+    ],
+    "type": "SUFFIX",
+    "direction": "V/N→N",
+    "derives": "COLLECTIVE_PROCESS_NOUN",
+    "notes": "Often denotes collective, process, or result",
+    "examples": "break→breakage, drain→drainage, pack→package, store→storage"
+  },
+  {
+    "affix": "-hood",
+    "surface_variants": [
+      "-hood"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "STATE_PERIOD_NOUN",
+    "notes": "Attaches to nouns denoting persons or life stages",
+    "examples": "child→childhood, neighbor→neighborhood, brother→brotherhood"
+  },
+  {
+    "affix": "-ship",
+    "surface_variants": [
+      "-ship"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "STATE_ROLE_NOUN",
+    "notes": "Denotes status, condition, or skill",
+    "examples": "friend→friendship, leader→leadership, scholar→scholarship"
+  },
+  {
+    "affix": "-dom",
+    "surface_variants": [
+      "-dom"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/ADJ→N",
+    "derives": "DOMAIN_STATE_NOUN",
+    "notes": "Denotes domain, realm, or collective state",
+    "examples": "king→kingdom, free→freedom, bore→boredom, star→stardom"
+  },
+  {
+    "affix": "-ry/-ery/-ary",
+    "surface_variants": [
+      "-ry",
+      "-ery",
+      "-ary"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/V→N",
+    "derives": "PLACE_COLLECTIVE_NOUN",
+    "notes": "-ery after consonants; -ry after vowels; -ary Latinate",
+    "examples": "bake→bakery, slave→slavery, jewel→jewellery, mission→missionary"
+  },
+  {
+    "affix": "-ling",
+    "surface_variants": [
+      "-ling"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "DIMINUTIVE_YOUNG_NOUN",
+    "notes": "Denotes small or young version; also pejorative",
+    "examples": "duck→duckling, prince→princeling, under→underling"
+  },
+  {
+    "affix": "-ee",
+    "surface_variants": [
+      "-ee"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→N",
+    "derives": "PATIENT_RECIPIENT_NOUN",
+    "notes": "Denotes the recipient or patient of an action (contrasts with -er agent)",
+    "examples": "employ→employee, train→trainee, pay→payee, refer→referee"
+  },
+  {
+    "affix": "-eer/-ier",
+    "surface_variants": [
+      "-eer",
+      "-ier"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "AGENT_OCCUPATION_NOUN",
+    "notes": "Denotes one who works with N",
+    "examples": "engine→engineer, mountain→mountaineer, cash→cashier"
+  },
+  {
+    "affix": "-th",
+    "surface_variants": [
+      "-th"
+    ],
+    "type": "SUFFIX",
+    "direction": "ADJ/V→N",
+    "derives": "STATE_RESULT_NOUN",
+    "notes": "Archaic/lexicalized; attaches to adjectives and verbs",
+    "examples": "warm→warmth, grow→growth, strong→strength, wide→width"
+  },
+  {
+    "affix": "-ize/-ise",
+    "surface_variants": [
+      "-ize",
+      "-ise"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/ADJ→V",
+    "derives": "VERBALIZE",
+    "notes": "-ize preferred in AmE; -ise in BrE; both accepted; highly productive",
+    "examples": "modern→modernize, real→realize, organ→organize, critic→criticize"
+  },
+  {
+    "affix": "-ify/-fy",
+    "surface_variants": [
+      "-ify",
+      "-fy"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/ADJ→V",
+    "derives": "VERBALIZE",
+    "notes": "-ify after consonants; -fy after vowels; Latinate",
+    "examples": "simple→simplify, class→classify, solid→solidify, beauty→beautify"
+  },
+  {
+    "affix": "-en",
+    "surface_variants": [
+      "-en"
+    ],
+    "type": "SUFFIX",
+    "direction": "ADJ/N→V",
+    "derives": "VERBALIZE_CAUSATIVE",
+    "notes": "Attaches to monosyllabic adjectives; causative meaning (make ADJ)",
+    "examples": "dark→darken, wide→widen, short→shorten, strength→strengthen"
+  },
+  {
+    "affix": "-ate",
+    "surface_variants": [
+      "-ate"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/ADJ→V",
+    "derives": "VERBALIZE_LATINATE",
+    "notes": "Latinate; often paired with -ation nominalization",
+    "examples": "active→activate, origin→originate, valid→validate, motive→motivate"
+  },
+  {
+    "affix": "-al/-ial/-ual",
+    "surface_variants": [
+      "-al",
+      "-ial",
+      "-ual"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "RELATIONAL_ADJ",
+    "notes": "-al most common; -ial after stems ending in /i/ or /j/; -ual after /u/",
+    "examples": "nation→national, office→official, habit→habitual, music→musical"
+  },
+  {
+    "affix": "-ous/-ious/-eous/-uous",
+    "surface_variants": [
+      "-ous",
+      "-ious",
+      "-eous",
+      "-uous"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "HAVING_QUALITY_ADJ",
+    "notes": "Allomorph conditioned by stem-final segment; Latinate",
+    "examples": "danger→dangerous, glory→glorious, courage→courageous, ambig→ambiguous"
+  },
+  {
+    "affix": "-ful",
+    "surface_variants": [
+      "-ful"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "FULL_OF_ADJ",
+    "notes": "Fully productive; attaches to nouns",
+    "examples": "hope→hopeful, care→careful, power→powerful, beauty→beautiful"
+  },
+  {
+    "affix": "-less",
+    "surface_variants": [
+      "-less"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "WITHOUT_ADJ",
+    "notes": "Fully productive; privative; antonym of -ful in many pairs",
+    "examples": "hope→hopeless, care→careless, power→powerless, end→endless"
+  },
+  {
+    "affix": "-able/-ible",
+    "surface_variants": [
+      "-able",
+      "-ible"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→ADJ",
+    "derives": "CAPABLE_OF_ADJ",
+    "notes": "-able with native/productive verbs; -ible with Latinate stems; highly productive",
+    "examples": "read→readable, wash→washable, flex→flexible, compat→compatible"
+  },
+  {
+    "affix": "-ic/-ical",
+    "surface_variants": [
+      "-ic",
+      "-ical"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "PERTAINING_TO_ADJ",
+    "notes": "-ic and -ical often coexist with meaning differences; Latinate/Greek",
+    "examples": "history→historic/historical, economy→economic/economical, magic→magic/magical"
+  },
+  {
+    "affix": "-ive/-ative/-itive",
+    "surface_variants": [
+      "-ive",
+      "-ative",
+      "-itive"
+    ],
+    "type": "SUFFIX",
+    "direction": "V/N→ADJ",
+    "derives": "TENDING_TO_ADJ",
+    "notes": "Latinate; -ative after -ate verbs; -itive after -it- stems",
+    "examples": "act→active, create→creative, talk→talkative, compet→competitive"
+  },
+  {
+    "affix": "-ary/-ory/-ery",
+    "surface_variants": [
+      "-ary",
+      "-ory",
+      "-ery"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/V→ADJ",
+    "derives": "RELATING_TO_ADJ",
+    "notes": "Latinate; -ary most common; -ory with verbs of Latinate origin",
+    "examples": "element→elementary, vision→visionary, contradict→contradictory"
+  },
+  {
+    "affix": "-ant/-ent",
+    "surface_variants": [
+      "-ant",
+      "-ent"
+    ],
+    "type": "SUFFIX",
+    "direction": "V→ADJ",
+    "derives": "ACTIVE_PARTICIPANT_ADJ",
+    "notes": "Distribution mirrors -ance/-ence; often also used as nouns",
+    "examples": "import→important, differ→different, depend→dependent, resist→resistant"
+  },
+  {
+    "affix": "-ish",
+    "surface_variants": [
+      "-ish"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/ADJ→ADJ",
+    "derives": "APPROXIMATIVE_ADJ",
+    "notes": "Productive; approximative/somewhat; also nationality adjectives",
+    "examples": "red→reddish, child→childish, fool→foolish, Swed→Swedish"
+  },
+  {
+    "affix": "-like",
+    "surface_variants": [
+      "-like"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "RESEMBLING_ADJ",
+    "notes": "Productive; resembling or characteristic of N",
+    "examples": "child→childlike, life→lifelike, dream→dreamlike, god→godlike"
+  },
+  {
+    "affix": "-ly (adj)",
+    "surface_variants": [
+      "-ly"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "HAVING_QUALITY_ADJ",
+    "notes": "Adjectival -ly distinct from adverbial -ly; attaches to nouns",
+    "examples": "friend→friendly, love→lovely, cost→costly, time→timely"
+  },
+  {
+    "affix": "-ward/-wards",
+    "surface_variants": [
+      "-ward",
+      "-wards"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "DIRECTIONAL_ADJ",
+    "notes": "Directional; also used as adverbs",
+    "examples": "home→homeward, north→northward, in→inward, out→outward"
+  },
+  {
+    "affix": "-some",
+    "surface_variants": [
+      "-some"
+    ],
+    "type": "SUFFIX",
+    "direction": "N/V/ADJ→ADJ",
+    "derives": "CHARACTERIZED_BY_ADJ",
+    "notes": "Productive; characterized by or tending to",
+    "examples": "trouble→troublesome, awe→awesome, hand→handsome, tire→tiresome"
+  },
+  {
+    "affix": "-en (adj)",
+    "surface_variants": [
+      "-en"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "MADE_OF_ADJ",
+    "notes": "Denotes material composition; largely lexicalized",
+    "examples": "gold→golden, wood→wooden, silk→silken, oak→oaken"
+  },
+  {
+    "affix": "-ly (adv)",
+    "surface_variants": [
+      "-ly"
+    ],
+    "type": "SUFFIX",
+    "direction": "ADJ→ADV",
+    "derives": "MANNER_ADV",
+    "notes": "Most productive English suffix; attaches to adjectives; -y → -ily, -le → -ly",
+    "examples": "quick→quickly, happy→happily, simple→simply, beautiful→beautifully"
+  },
+  {
+    "affix": "-wise",
+    "surface_variants": [
+      "-wise"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADV",
+    "derives": "MANNER_RESPECT_ADV",
+    "notes": "Productive; in the manner of / with respect to N",
+    "examples": "other→otherwise, clock→clockwise, length→lengthwise"
+  },
+  {
+    "affix": "-ward/-wards (adv)",
+    "surface_variants": [
+      "-ward",
+      "-wards"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADV",
+    "derives": "DIRECTIONAL_ADV",
+    "notes": "Directional adverb; -wards more common in BrE",
+    "examples": "home→homeward, north→northward, forward, backward, inward"
+  },
+  {
+    "affix": "-fold",
+    "surface_variants": [
+      "-fold"
+    ],
+    "type": "SUFFIX",
+    "direction": "NUM→ADV",
+    "derives": "MULTIPLICATIVE_ADV",
+    "notes": "Multiplicative; attaches to numerals",
+    "examples": "two→twofold, three→threefold, many→manifold"
+  },
+  {
+    "affix": "-ster",
+    "surface_variants": [
+      "-ster"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "AGENT_PEJORATIVE_NOUN",
+    "notes": "Denotes agent, often with pejorative or playful tone; attaches to nouns",
+    "examples": "gang→gangster, trick→trickster, prank→prankster, spin→spinster, road→roadster"
+  },
+  {
+    "affix": "-ette",
+    "surface_variants": [
+      "-ette"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "DIMINUTIVE_FEMALE_NOUN",
+    "notes": "Diminutive or female counterpart; French origin; also used for imitation",
+    "examples": "kitchen→kitchenette, usher→usherette, cigar→cigarette, launder→laundrette"
+  },
+  {
+    "affix": "-let",
+    "surface_variants": [
+      "-let"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "DIMINUTIVE_NOUN",
+    "notes": "Small version of N; diminutive; attaches to nouns",
+    "examples": "book→booklet, drop→droplet, pig→piglet, ham→hamlet, stream→streamlet"
+  },
+  {
+    "affix": "-scape",
+    "surface_variants": [
+      "-scape"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→N",
+    "derives": "SCENE_VIEW_NOUN",
+    "notes": "Denotes a scene or view of N; productive in modern English",
+    "examples": "land→landscape, sea→seascape, city→cityscape, sound→soundscape, moon→moonscape"
+  },
+  {
+    "affix": "-wide",
+    "surface_variants": [
+      "-wide"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "EXTENDING_THROUGH_ADJ",
+    "notes": "Extending throughout N; productive; often hyphenated",
+    "examples": "nation→nationwide, world→worldwide, city→citywide, industry→industrywide"
+  },
+  {
+    "affix": "-proof",
+    "surface_variants": [
+      "-proof"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "RESISTANT_TO_ADJ",
+    "notes": "Resistant to or protected against N; productive",
+    "examples": "water→waterproof, bullet→bulletproof, fool→foolproof, fire→fireproof, sound→soundproof"
+  },
+  {
+    "affix": "-free",
+    "surface_variants": [
+      "-free"
+    ],
+    "type": "SUFFIX",
+    "direction": "N→ADJ",
+    "derives": "WITHOUT_EXEMPT_ADJ",
+    "notes": "Without N; exempt from N; productive; often hyphenated",
+    "examples": "sugar→sugar-free, tax→tax-free, care→carefree, gluten→gluten-free, fat→fat-free"
+  },
+  {
+    "affix": "un-",
+    "surface_variants": [
+      "un-"
+    ],
+    "type": "PREFIX",
+    "direction": "ADJ/V→ADJ/V",
+    "derives": "NEG_REVERSAL",
+    "notes": "Most productive English prefix; negation on ADJ, reversal on V",
+    "examples": "happy→unhappy, do→undo, lock→unlock, fair→unfair"
+  },
+  {
+    "affix": "re-",
+    "surface_variants": [
+      "re-"
+    ],
+    "type": "PREFIX",
+    "direction": "V→V",
+    "derives": "REPETITION",
+    "notes": "Fully productive; again/back",
+    "examples": "write→rewrite, build→rebuild, consider→reconsider"
+  },
+  {
+    "affix": "pre-",
+    "surface_variants": [
+      "pre-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/N→V/N",
+    "derives": "BEFORE",
+    "notes": "Before in time or position",
+    "examples": "view→preview, school→preschool, heat→preheat"
+  },
+  {
+    "affix": "post-",
+    "surface_variants": [
+      "post-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "AFTER",
+    "notes": "After in time or position",
+    "examples": "war→postwar, modern→postmodern, graduate→postgraduate"
+  },
+  {
+    "affix": "mis-",
+    "surface_variants": [
+      "mis-"
+    ],
+    "type": "PREFIX",
+    "direction": "V→V",
+    "derives": "WRONGLY",
+    "notes": "Wrongly or badly",
+    "examples": "understand→misunderstand, lead→mislead, judge→misjudge"
+  },
+  {
+    "affix": "over-",
+    "surface_variants": [
+      "over-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/ADJ→V/ADJ",
+    "derives": "EXCESS",
+    "notes": "Too much; above",
+    "examples": "estimate→overestimate, load→overload, confident→overconfident"
+  },
+  {
+    "affix": "under-",
+    "surface_variants": [
+      "under-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/ADJ→V/ADJ",
+    "derives": "INSUFFICIENCY",
+    "notes": "Too little; below",
+    "examples": "estimate→underestimate, mine→undermine, rate→underrate"
+  },
+  {
+    "affix": "dis-",
+    "surface_variants": [
+      "dis-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/ADJ/N→V/ADJ/N",
+    "derives": "NEG_REVERSAL",
+    "notes": "Negation or reversal; Latinate counterpart to un-",
+    "examples": "agree→disagree, honest→dishonest, connect→disconnect"
+  },
+  {
+    "affix": "non-",
+    "surface_variants": [
+      "non-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "NEGATION",
+    "notes": "Simple negation; more neutral than un-/dis-",
+    "examples": "standard→non-standard, fiction→non-fiction, profit→non-profit"
+  },
+  {
+    "affix": "anti-",
+    "surface_variants": [
+      "anti-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "OPPOSITION",
+    "notes": "Against; opposing",
+    "examples": "war→anti-war, social→antisocial, body→antibody"
+  },
+  {
+    "affix": "inter-",
+    "surface_variants": [
+      "inter-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "BETWEEN",
+    "notes": "Between or among",
+    "examples": "national→international, act→interact, connect→interconnect"
+  },
+  {
+    "affix": "trans-",
+    "surface_variants": [
+      "trans-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/N→V/N",
+    "derives": "ACROSS",
+    "notes": "Across; beyond; change",
+    "examples": "form→transform, port→transport, atlantic→transatlantic"
+  },
+  {
+    "affix": "sub-",
+    "surface_variants": [
+      "sub-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "UNDER_BELOW",
+    "notes": "Under; subordinate; less than",
+    "examples": "way→subway, marine→submarine, standard→substandard"
+  },
+  {
+    "affix": "super-",
+    "surface_variants": [
+      "super-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "ABOVE_BEYOND",
+    "notes": "Above; beyond; more than",
+    "examples": "man→superman, natural→supernatural, market→supermarket"
+  },
+  {
+    "affix": "co-",
+    "surface_variants": [
+      "co-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/V→N/V",
+    "derives": "TOGETHER_JOINT",
+    "notes": "Together; jointly",
+    "examples": "operate→cooperate, author→co-author, exist→coexist"
+  },
+  {
+    "affix": "counter-",
+    "surface_variants": [
+      "counter-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/N→V/N",
+    "derives": "AGAINST_OPPOSING",
+    "notes": "Against; in opposition to",
+    "examples": "act→counteract, attack→counterattack, productive→counterproductive"
+  },
+  {
+    "affix": "de-",
+    "surface_variants": [
+      "de-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/N→V/N",
+    "derives": "REVERSAL_REMOVAL",
+    "notes": "Reversal or removal; Latinate",
+    "examples": "activate→deactivate, forest→deforest, code→decode"
+  },
+  {
+    "affix": "en-/em-",
+    "surface_variants": [
+      "en-",
+      "em-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→V",
+    "derives": "CAUSATIVE_VERBALIZE",
+    "notes": "Make into; put into; em- before /b/ and /p/",
+    "examples": "able→enable, power→empower, danger→endanger, body→embody"
+  },
+  {
+    "affix": "fore-",
+    "surface_variants": [
+      "fore-"
+    ],
+    "type": "PREFIX",
+    "direction": "V/N→V/N",
+    "derives": "BEFORE_FRONT",
+    "notes": "Before in time; front part of",
+    "examples": "see→foresee, cast→forecast, ground→foreground"
+  },
+  {
+    "affix": "out-",
+    "surface_variants": [
+      "out-"
+    ],
+    "type": "PREFIX",
+    "direction": "V→V",
+    "derives": "SURPASS_EXTERNAL",
+    "notes": "Surpass; external; beyond",
+    "examples": "run→outrun, perform→outperform, side→outside"
+  },
+  {
+    "affix": "semi-",
+    "surface_variants": [
+      "semi-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "HALF_PARTIAL",
+    "notes": "Half; partially",
+    "examples": "circle→semicircle, final→semifinal, automatic→semiautomatic"
+  },
+  {
+    "affix": "multi-",
+    "surface_variants": [
+      "multi-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "MANY",
+    "notes": "Many; multiple",
+    "examples": "media→multimedia, task→multitask, cultural→multicultural"
+  },
+  {
+    "affix": "mono-",
+    "surface_variants": [
+      "mono-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "SINGLE",
+    "notes": "Single; one",
+    "examples": "logue→monologue, rail→monorail, tone→monotone"
+  },
+  {
+    "affix": "micro-",
+    "surface_variants": [
+      "micro-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "SMALL",
+    "notes": "Very small; microscopic",
+    "examples": "chip→microchip, scope→microscope, wave→microwave"
+  },
+  {
+    "affix": "macro-",
+    "surface_variants": [
+      "macro-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "LARGE",
+    "notes": "Large; at large scale",
+    "examples": "economics→macroeconomics, scope→macroscope"
+  },
+  {
+    "affix": "neo-",
+    "surface_variants": [
+      "neo-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "NEW_REVIVED",
+    "notes": "New; revived form of",
+    "examples": "classical→neoclassical, liberal→neoliberal, natal→neonatal"
+  },
+  {
+    "affix": "pseudo-",
+    "surface_variants": [
+      "pseudo-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "FALSE_FAKE",
+    "notes": "False; fake; resembling but not genuinely",
+    "examples": "science→pseudoscience, intellectual→pseudo-intellectual"
+  },
+  {
+    "affix": "auto-",
+    "surface_variants": [
+      "auto-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "SELF",
+    "notes": "Self; automatic",
+    "examples": "biography→autobiography, mobile→automobile, pilot→autopilot"
+  },
+  {
+    "affix": "bio-",
+    "surface_variants": [
+      "bio-"
+    ],
+    "type": "PREFIX",
+    "direction": "N→N",
+    "derives": "LIFE_BIOLOGICAL",
+    "notes": "Life; biological",
+    "examples": "logy→biology, technology→biotechnology, diversity→biodiversity"
+  },
+  {
+    "affix": "cyber-",
+    "surface_variants": [
+      "cyber-"
+    ],
+    "type": "PREFIX",
+    "direction": "N→N",
+    "derives": "DIGITAL_VIRTUAL",
+    "notes": "Digital; relating to computers/internet",
+    "examples": "space→cyberspace, security→cybersecurity, attack→cyberattack"
+  },
+  {
+    "affix": "hyper-",
+    "surface_variants": [
+      "hyper-"
+    ],
+    "type": "PREFIX",
+    "direction": "N/ADJ→N/ADJ",
+    "derives": "EXCESSIVE_ABOVE",
+    "notes": "Excessive; above normal",
+    "examples": "active→hyperactive, text→hypertext, link→hyperlink"
+  }
+]

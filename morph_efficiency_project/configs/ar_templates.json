@@ -1,0 +1,6492 @@
+[
+  {
+    "وزن": "فَعَلَ / يَفْعُلُ",
+    "transliteration": "fa-a-la / yaf-u-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/u",
+    "semantic_role": "ACTION_TRANSITIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "فِعَال",
+      "فُعَال",
+      "فُعُول",
+      "فَعَلَان"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": "مَفْعُول",
+    "example_root": "نصر",
+    "example_word": "نَصَرَ / يَنْصُرُ",
+    "notes": "Paradigm I (فَعَلَ/يَفْعُلُ). Most common transitive action verbs. First or second radical often a throat letter."
+  },
+  {
+    "وزن": "فَعَلَ / يَفْعِلُ",
+    "transliteration": "fa-a-la / yaf-i-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i",
+    "semantic_role": "ACTION_TRANSITIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "فِعَال",
+      "فُعُول",
+      "فَعِيل"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": "مَفْعُول",
+    "example_root": "ضرب",
+    "example_word": "ضَرَبَ / يَضْرِبُ",
+    "notes": "Paradigm II (فَعَلَ/يَفْعِلُ). Common transitive verbs."
+  },
+  {
+    "وزن": "فَعَلَ / يَفْعَلُ",
+    "transliteration": "fa-a-la / yaf-a-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/a",
+    "semantic_role": "ACTION_THROAT",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "فَعَل",
+      "فِعَال"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": "مَفْعُول",
+    "example_root": "فتح",
+    "example_word": "فَتَحَ / يَفْتَحُ",
+    "notes": "Paradigm III (فَعَلَ/يَفْعَلُ). Verbs whose first or second radical is a throat letter (ء ه ع ح غ خ)."
+  },
+  {
+    "وزن": "فَعِلَ / يَفْعَلُ",
+    "transliteration": "fa-i-la / yaf-a-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a",
+    "semantic_role": "STATE_INTRANSITIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعَل",
+      "فَعْلَان",
+      "أَفْعَل (adj)"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": null,
+    "example_root": "فرح",
+    "example_word": "فَرِحَ / يَفْرَحُ",
+    "notes": "Paradigm IV (فَعِلَ/يَفْعَلُ). Stative intransitive verbs. Often yields فَعْلَان adjective."
+  },
+  {
+    "وزن": "فَعُلَ / يَفْعُلُ",
+    "transliteration": "fa-u-la / yaf-u-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-u/u",
+    "semantic_role": "QUALITY_INTRANSITIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فُعُولَة",
+      "فَعَالَة"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": null,
+    "example_root": "كرم",
+    "example_word": "كَرُمَ / يَكْرُمُ",
+    "notes": "Paradigm V (فَعُلَ/يَفْعُلُ). Inherent quality verbs. Always intransitive. Masdar on فُعُولَة or فَعَالَة."
+  },
+  {
+    "وزن": "فَعِلَ / يَفْعِلُ",
+    "transliteration": "fa-i-la / yaf-i-lu",
+    "category": "VERB_TRILATERAL_BARE",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/i",
+    "semantic_role": "STATE_RARE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعَل",
+      "فِعَل"
+    ],
+    "active_participle": "فَاعِل",
+    "passive_participle": null,
+    "example_root": "حسب",
+    "example_word": "حَسِبَ / يَحْسِبُ",
+    "notes": "Paradigm VI (فَعِلَ/يَفْعِلُ). Very rare paradigm; only a few dozen verbs."
+  },
+  {
+    "وزن": "فَعَّلَ / يُفَعِّلُ",
+    "transliteration": "fa-a-la / yu-fa-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "II",
+    "semantic_role": "CAUSATIVE_INTENSIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "II",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "تَفْعِيل",
+      "فِعَّال",
+      "تَفْعِلَة"
+    ],
+    "active_participle": "مُفَعِّل",
+    "passive_participle": "مُفَعَّل",
+    "example_root": "علم",
+    "example_word": "عَلَّمَ / يُعَلِّمُ",
+    "notes": "Form II. Causative or intensive of Form I. Gemination of middle radical. Masdar تَفْعِيل (standard), تَفْعِلَة (for مهموز/ناقص), فِعَّال (rare)."
+  },
+  {
+    "وزن": "فَاعَلَ / يُفَاعِلُ",
+    "transliteration": "faa-a-la / yu-faa-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "III",
+    "semantic_role": "RECIPROCAL_CONATIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "III",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "مُفَاعَلَة",
+      "فِعَال"
+    ],
+    "active_participle": "مُفَاعِل",
+    "passive_participle": "مُفَاعَل",
+    "example_root": "كتب",
+    "example_word": "كَاتَبَ / يُكَاتِبُ",
+    "notes": "Form III. Reciprocal or conative action between two parties. Both مُفَاعَلَة and فِعَال are used simultaneously."
+  },
+  {
+    "وزن": "أَفْعَلَ / يُفْعِلُ",
+    "transliteration": "af-a-la / yuf-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "IV",
+    "semantic_role": "CAUSATIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "IV",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "إِفْعَال",
+      "إِفَالَة (for أجوف)"
+    ],
+    "active_participle": "مُفْعِل",
+    "passive_participle": "مُفْعَل",
+    "example_root": "خرج",
+    "example_word": "أَخْرَجَ / يُخْرِجُ",
+    "notes": "Form IV. Causative. Prefixed hamza. For أجوف verbs masdar becomes إِفَالَة (e.g. إِقَامَة)."
+  },
+  {
+    "وزن": "تَفَعَّلَ / يَتَفَعَّلُ",
+    "transliteration": "ta-fa-a-la / ya-ta-fa-a-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "V",
+    "semantic_role": "REFLEXIVE_RESULTATIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "V",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "تَفَعُّل",
+      "تِفِعَّال (rare)"
+    ],
+    "active_participle": "مُتَفَعِّل",
+    "passive_participle": "مُتَفَعَّل",
+    "example_root": "علم",
+    "example_word": "تَعَلَّمَ / يَتَعَلَّمُ",
+    "notes": "Form V. Reflexive of Form II. Imperfect تاء may assimilate to first radical in certain letters."
+  },
+  {
+    "وزن": "تَفَاعَلَ / يَتَفَاعَلُ",
+    "transliteration": "ta-faa-a-la / ya-ta-faa-a-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "VI",
+    "semantic_role": "MUTUAL_RECIPROCAL",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "VI",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "تَفَاعُل"
+    ],
+    "active_participle": "مُتَفَاعِل",
+    "passive_participle": "مُتَفَاعَل",
+    "example_root": "فهم",
+    "example_word": "تَفَاهَمَ / يَتَفَاهَمُ",
+    "notes": "Form VI. Mutual reciprocal. Reflexive of Form III. Passive imperfect الف becomes واو."
+  },
+  {
+    "وزن": "اِنْفَعَلَ / يَنْفَعِلُ",
+    "transliteration": "in-fa-a-la / yan-fa-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "VII",
+    "semantic_role": "PASSIVE_INCHOATIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "VII",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِنْفِعَال"
+    ],
+    "active_participle": "مُنْفَعِل",
+    "passive_participle": null,
+    "example_root": "كسر",
+    "example_word": "اِنْكَسَرَ / يَنْكَسِرُ",
+    "notes": "Form VII. Passive/inchoative of Form I. Cannot be formed from verbs whose first radical is يرملون."
+  },
+  {
+    "وزن": "اِفْتَعَلَ / يَفْتَعِلُ",
+    "transliteration": "if-ta-a-la / yaf-ta-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "VIII",
+    "semantic_role": "REFLEXIVE_MIDDLE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "VIII",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْتِعَال"
+    ],
+    "active_participle": "مُفْتَعِل",
+    "passive_participle": "مُفْتَعَل",
+    "example_root": "كسب",
+    "example_word": "اِكْتَسَبَ / يَكْتَسِبُ",
+    "notes": "Form VIII. Infixed ت after first radical. Assimilation rules: مثال→ تاء doubles; first radical د/ذ/ز→ تاء becomes دال; first radical إطباق→ تاء becomes طاء."
+  },
+  {
+    "وزن": "اِفْعَلَّ / يَفْعَلُّ",
+    "transliteration": "if-a-la / yaf-a-lu (geminate)",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "IX",
+    "semantic_role": "COLOR_DEFECT",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "IX",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِلَال"
+    ],
+    "active_participle": "مُفْعَلّ",
+    "passive_participle": null,
+    "example_root": "حمر",
+    "example_word": "اِحْمَرَّ / يَحْمَرُّ",
+    "notes": "Form IX. Restricted to colors and physical defects. Gemination of final radical."
+  },
+  {
+    "وزن": "اِسْتَفْعَلَ / يَسْتَفْعِلُ",
+    "transliteration": "is-taf-a-la / yas-taf-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "X",
+    "semantic_role": "REQUESTIVE_ESTIMATIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "X",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِسْتِفْعَال",
+      "اِسْتِفَالَة (for أجوف)"
+    ],
+    "active_participle": "مُسْتَفْعِل",
+    "passive_participle": "مُسْتَفْعَل",
+    "example_root": "خدم",
+    "example_word": "اِسْتَخْدَمَ / يَسْتَخْدِمُ",
+    "notes": "Form X. To seek/request or consider something as having a quality. For أجوف: masdar becomes اِسْتِفَالَة (e.g. اِسْتِقَامَة)."
+  },
+  {
+    "وزن": "اِفْعَالَّ / يَفْعَالُّ",
+    "transliteration": "if-aa-la / yaf-aa-lu (geminate)",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "XI",
+    "semantic_role": "INTENSIVE_COLOR",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "XI",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِيلَال"
+    ],
+    "active_participle": "مُفْعَالّ",
+    "passive_participle": null,
+    "example_root": "حمر",
+    "example_word": "اِحْمَارَّ / يَحْمَارُّ",
+    "notes": "Form XI. Rare. Intensive color/quality. Long vowel before geminate final radical."
+  },
+  {
+    "وزن": "اِفْعَوْعَلَ / يَفْعَوْعِلُ",
+    "transliteration": "if-aw-a-la / yaf-aw-i-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "XII",
+    "semantic_role": "INTENSIVE_QUALITY",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "XII",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِيعَال"
+    ],
+    "active_participle": "مُفْعَوْعِل",
+    "passive_participle": null,
+    "example_root": "خشن",
+    "example_word": "اِخْشَوْشَنَ / يَخْشَوْشِنُ",
+    "notes": "Form XII. Rare. Intensive quality. Infixed واو after first radical."
+  },
+  {
+    "وزن": "اِفْعَوَّلَ / يَفْعَوِّلُ",
+    "transliteration": "if-aw-wa-la / yaf-aw-wi-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "XIII",
+    "semantic_role": "INTENSIVE_RARE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "XIII",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِوَّال"
+    ],
+    "active_participle": "مُفْعَوِّل",
+    "passive_participle": null,
+    "example_root": "جلوذ",
+    "example_word": "اِجْلَوَّذَ / يَجْلَوِّذُ",
+    "notes": "Form XIII. Very rare. Intensive with doubled واو."
+  },
+  {
+    "وزن": "اِفَّعَّلَ / يَفَّعَّلُ",
+    "transliteration": "if-fa-a-la / yaf-fa-a-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "XIV",
+    "semantic_role": "INTENSIVE_ASSIMILATION",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "XIV",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفَّعُّل"
+    ],
+    "active_participle": "مُفَّعِّل",
+    "passive_participle": null,
+    "example_root": "سحنف",
+    "example_word": "اِسَّحَّنَ",
+    "notes": "Form XIV. Extremely rare. Assimilation of تاء of Form VIII into first radical."
+  },
+  {
+    "وزن": "اِفَّاعَلَ / يَفَّاعَلُ",
+    "transliteration": "if-faa-a-la / yaf-faa-a-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "XV",
+    "semantic_role": "INTENSIVE_ASSIMILATION_RARE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "XV",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفَّاعُل"
+    ],
+    "active_participle": "مُفَّاعِل",
+    "passive_participle": null,
+    "example_root": "حبنط",
+    "example_word": "اِحْبَنْطَى",
+    "notes": "Form XV. Extremely rare. Assimilation variant of Form VI."
+  },
+  {
+    "وزن": "فَعْلَلَ / يُفَعْلِلُ",
+    "transliteration": "fa-la-la / yu-fa-li-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "Q-I",
+    "semantic_role": "ACTION_QUADRILITERAL",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "Q-I",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْلَلَة",
+      "فِعْلَال"
+    ],
+    "active_participle": "مُفَعْلِل",
+    "passive_participle": "مُفَعْلَل",
+    "example_root": "دحرج",
+    "example_word": "دَحْرَجَ / يُدَحْرِجُ",
+    "notes": "Quadriliteral Form I (also trilateral resembling). Basic action verb with four-consonant root."
+  },
+  {
+    "وزن": "تَفَعْلَلَ / يَتَفَعْلَلُ",
+    "transliteration": "ta-fa-la-la / ya-ta-fa-la-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "Q-II",
+    "semantic_role": "REFLEXIVE_QUADRILITERAL",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "Q-II",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "تَفَعْلُل"
+    ],
+    "active_participle": "مُتَفَعْلِل",
+    "passive_participle": null,
+    "example_root": "دحرج",
+    "example_word": "تَدَحْرَجَ / يَتَدَحْرَجُ",
+    "notes": "Quadriliteral Form II. Reflexive/passive of Q-I."
+  },
+  {
+    "وزن": "اِفْعَلَلَّ / يَفْعَلِلُّ",
+    "transliteration": "if-a-la-la / yaf-a-li-lu (geminate)",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "Q-III",
+    "semantic_role": "INTENSIVE_QUADRILITERAL",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "Q-III",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِلْلَال"
+    ],
+    "active_participle": "مُفْعَلِلّ",
+    "passive_participle": null,
+    "example_root": "طمأن",
+    "example_word": "اِطْمَأَنَّ / يَطْمَئِنُّ",
+    "notes": "Quadriliteral Form III. Intensive/inchoative. Gemination of final radical."
+  },
+  {
+    "وزن": "اِفْعَنْلَلَ / يَفْعَنْلِلُ",
+    "transliteration": "if-an-la-la / yaf-an-li-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "Q-IV",
+    "semantic_role": "INTENSIVE_QUADRILITERAL_RARE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "Q-IV",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِنْلَال"
+    ],
+    "active_participle": "مُفْعَنْلِل",
+    "passive_participle": null,
+    "example_root": "حرجم",
+    "example_word": "اِحْرَنْجَمَ / يَحْرَنْجِمُ",
+    "notes": "Quadriliteral Form IV. Very rare. Intensive or reflexive."
+  },
+  {
+    "وزن": "فَعْوَلَ / يُفَعْوِلُ",
+    "transliteration": "fa-wa-la / yu-fa-wi-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فعول",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْوَلَة"
+    ],
+    "active_participle": "مُفَعْوِل",
+    "passive_participle": "مُفَعْوَل",
+    "example_root": "جهور",
+    "example_word": "جَهْوَرَ / يُجَهْوِرُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed واو after second radical."
+  },
+  {
+    "وزن": "فَوْعَلَ / يُفَوْعِلُ",
+    "transliteration": "faw-a-la / yu-faw-i-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فوعل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَوْعَلَة",
+      "فِيعَال"
+    ],
+    "active_participle": "مُفَوْعِل",
+    "passive_participle": "مُفَوْعَل",
+    "example_root": "حوقل",
+    "example_word": "حَوْقَلَ / يُحَوْقِلُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed واو after first radical."
+  },
+  {
+    "وزن": "فَعْيَلَ / يُفَعْيِلُ",
+    "transliteration": "fa-ya-la / yu-fa-yi-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فعيل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْيَلَة"
+    ],
+    "active_participle": "مُفَعْيِل",
+    "passive_participle": "مُفَعْيَل",
+    "example_root": "شيطن",
+    "example_word": "شَيْطَنَ / يُشَيْطِنُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed ياء after second radical."
+  },
+  {
+    "وزن": "فَيْعَلَ / يُفَيْعِلُ",
+    "transliteration": "fay-a-la / yu-fay-i-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فيعل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَيْعَلَة"
+    ],
+    "active_participle": "مُفَيْعِل",
+    "passive_participle": "مُفَيْعَل",
+    "example_root": "بيطر",
+    "example_word": "بَيْطَرَ / يُبَيْطِرُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed ياء after first radical."
+  },
+  {
+    "وزن": "فَعْنَلَ / يُفَعْنِلُ",
+    "transliteration": "fa-na-la / yu-fa-ni-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فعنل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْنَلَة"
+    ],
+    "active_participle": "مُفَعْنِل",
+    "passive_participle": "مُفَعْنَل",
+    "example_root": "قلنس",
+    "example_word": "قَلْنَسَ / يُقَلْنِسُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed نون after second radical."
+  },
+  {
+    "وزن": "فَعْلَى / يُفَعْلِي",
+    "transliteration": "fa-la / yu-fa-li (defective)",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فعلى",
+    "semantic_role": "ACTION_RESEMBLING_DEFECTIVE",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَعْلَاة"
+    ],
+    "active_participle": "مُفَعْلٍ",
+    "passive_participle": "مُفَعْلًى",
+    "example_root": "سلقى",
+    "example_word": "سَلْقَى / يُسَلْقِي",
+    "notes": "Trilateral resembling quadriliteral, defective (ناقص). Final radical is ياء/ألف."
+  },
+  {
+    "وزن": "مَفْعَلَ / يُمَفْعِلُ",
+    "transliteration": "maf-a-la / yu-maf-i-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-مفعل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "مَفْعَلَة"
+    ],
+    "active_participle": "مُمَفْعِل",
+    "passive_participle": "مُمَفْعَل",
+    "example_root": "مسكن",
+    "example_word": "مَسْكَنَ / يُمَسْكِنُ",
+    "notes": "Trilateral resembling quadriliteral. Prefixed ميم."
+  },
+  {
+    "وزن": "فَنْعَلَ / يُفَنْعِلُ",
+    "transliteration": "fan-a-la / yu-fan-i-lu",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-فنعل",
+    "semantic_role": "ACTION_RESEMBLING",
+    "transitivity": "TRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "فَنْعَلَة"
+    ],
+    "active_participle": "مُفَنْعِل",
+    "passive_participle": "مُفَنْعَل",
+    "example_root": "رنقع",
+    "example_word": "رَنْقَعَ / يُرَنْقِعُ",
+    "notes": "Trilateral resembling quadriliteral. Infixed نون after first radical."
+  },
+  {
+    "وزن": "اِفْعَنْلَى / يَفْعَنْلِي",
+    "transliteration": "if-an-laa / yaf-an-lii (defective)",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-افعنلى",
+    "semantic_role": "INTENSIVE_RESEMBLING_DEFECTIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْعِنْلَاء"
+    ],
+    "active_participle": "مُفْعَنْلٍ",
+    "passive_participle": null,
+    "example_root": "احبنطى",
+    "example_word": "اِحْبَنْطَى / يَحْبَنْطِي",
+    "notes": "Trilateral resembling quadriliteral, defective. Very rare."
+  },
+  {
+    "وزن": "اِفْتَعْلَى / يَفْتَعْلِي",
+    "transliteration": "if-ta-laa / yaf-ta-lii (defective)",
+    "category": "VERB_RESEMBLING_QUAD",
+    "pos": "VERB",
+    "verb_form": "MULHAQ-افتعلى",
+    "semantic_role": "REFLEXIVE_RESEMBLING_DEFECTIVE",
+    "transitivity": "INTRANSITIVE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "MULHAQ",
+      "tense": "PAST",
+      "voice": "ACT"
+    },
+    "masdar_patterns": [
+      "اِفْتِعْلَاء"
+    ],
+    "active_participle": "مُفْتَعْلٍ",
+    "passive_participle": null,
+    "example_root": "اشمأزى",
+    "example_word": "اِشْمَأَزَّ",
+    "notes": "Trilateral resembling quadriliteral, defective. Very rare."
+  },
+  {
+    "وزن": "فَعْل",
+    "transliteration": "fa-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u and I-a/i",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "ضرب",
+    "example_word": "ضَرْب",
+    "notes": "Most common Form I masdar. Transitive action verbs (فَعَلَ/يَفْعُلُ and فَعَلَ/يَفْعِلُ)."
+  },
+  {
+    "وزن": "فِعْل",
+    "transliteration": "fi-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/i",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "علم",
+    "example_word": "عِلْم",
+    "notes": "Form I masdar, فِعْل pattern."
+  },
+  {
+    "وزن": "فُعْل",
+    "transliteration": "fu-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "حكم",
+    "example_word": "حُكْم",
+    "notes": "Form I masdar, فُعْل pattern."
+  },
+  {
+    "وزن": "فَعَل",
+    "transliteration": "fa-a-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-i/a",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "أمل",
+    "example_word": "أَمَل",
+    "notes": "Form I masdar, فَعَل pattern. Common for stative verbs."
+  },
+  {
+    "وزن": "فُعُل",
+    "transliteration": "fu-u-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "شكر",
+    "example_word": "شُكُر",
+    "notes": "Form I masdar, فُعُل pattern. Less common."
+  },
+  {
+    "وزن": "فِعَل",
+    "transliteration": "fi-a-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "عنب",
+    "example_word": "عِنَب",
+    "notes": "Form I masdar/noun, فِعَل pattern."
+  },
+  {
+    "وزن": "فَعِل",
+    "transliteration": "fa-i-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-i/a",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "نهر",
+    "example_word": "نَهِر",
+    "notes": "Form I masdar, فَعِل pattern. Rare."
+  },
+  {
+    "وزن": "فَعُل",
+    "transliteration": "fa-u-l",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-u/u",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "عضل",
+    "example_word": "عَضُل",
+    "notes": "Form I masdar, فَعُل pattern. Rare."
+  },
+  {
+    "وزن": "فِعَال",
+    "transliteration": "fi-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u and I-a/i",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "ذهب",
+    "example_word": "ذِهَاب",
+    "notes": "Form I masdar, فِعَال pattern. Common for motion and going verbs."
+  },
+  {
+    "وزن": "فُعَال",
+    "transliteration": "fu-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "سعل",
+    "example_word": "سُعَال",
+    "notes": "Form I masdar, فُعَال pattern. Common for sounds and ailments."
+  },
+  {
+    "وزن": "فُعُول",
+    "transliteration": "fu-uul",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/u",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "دخل",
+    "example_word": "دُخُول",
+    "notes": "Form I masdar, فُعُول pattern. Common for motion/entry verbs."
+  },
+  {
+    "وزن": "فَعِيل",
+    "transliteration": "fa-iil",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-a/i",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "رحل",
+    "example_word": "رَحِيل",
+    "notes": "Form I masdar, فَعِيل pattern. Also used as adjective."
+  },
+  {
+    "وزن": "فَعَالَة",
+    "transliteration": "fa-aa-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-u/u",
+    "semantic_role": "VERBAL_NOUN_CRAFT",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "كتب",
+    "example_word": "كِتَابَة",
+    "notes": "Form I masdar, فَعَالَة pattern. Often denotes a craft, profession, or activity."
+  },
+  {
+    "وزن": "فُعُولَة",
+    "transliteration": "fu-uu-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-u/u",
+    "semantic_role": "VERBAL_NOUN_QUALITY",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "سهل",
+    "example_word": "سُهُولَة",
+    "notes": "Form I masdar, فُعُولَة pattern. Quality verbs (فَعُلَ/يَفْعُلُ)."
+  },
+  {
+    "وزن": "فَعَلَان",
+    "transliteration": "fa-a-laan",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-i/a",
+    "semantic_role": "VERBAL_NOUN_MOTION",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "طوف",
+    "example_word": "طَوَفَان",
+    "notes": "Form I masdar, فَعَلَان pattern. Motion, agitation, or repeated action."
+  },
+  {
+    "وزن": "فُعْلَان",
+    "transliteration": "fu-laan",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "غفر",
+    "example_word": "غُفْرَان",
+    "notes": "Form I masdar, فُعْلَان pattern."
+  },
+  {
+    "وزن": "فِعْلَان",
+    "transliteration": "fi-laan",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "نسي",
+    "example_word": "نِسْيَان",
+    "notes": "Form I masdar, فِعْلَان pattern."
+  },
+  {
+    "وزن": "فَعْلَة",
+    "transliteration": "fa-la",
+    "category": "MASDAR_MARRA",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "SINGLE_OCCURRENCE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "SINGLE_OCCURRENCE",
+      "form": "I"
+    },
+    "example_root": "ضرب",
+    "example_word": "ضَرْبَة",
+    "notes": "Noun of single occurrence (اسم المرة). One instance of the action."
+  },
+  {
+    "وزن": "فِعْلَة",
+    "transliteration": "fi-la",
+    "category": "MASDAR_HAYAA",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "MANNER",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "MANNER",
+      "form": "I"
+    },
+    "example_root": "جلس",
+    "example_word": "جِلْسَة",
+    "notes": "Noun of manner (اسم الهيئة). Mode or manner of performing the action."
+  },
+  {
+    "وزن": "مَفْعَل",
+    "transliteration": "maf-al",
+    "category": "MASDAR_MIMI",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN_MIMI",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN_MIMI",
+      "form": "I"
+    },
+    "example_root": "ذهب",
+    "example_word": "مَذْهَب",
+    "notes": "Masdar mimi (المصدر الميمي), مَفْعَل pattern. Overlaps with place noun."
+  },
+  {
+    "وزن": "مَفْعِل",
+    "transliteration": "maf-il",
+    "category": "MASDAR_MIMI",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN_MIMI",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN_MIMI",
+      "form": "I"
+    },
+    "example_root": "رجع",
+    "example_word": "مَرْجِع",
+    "notes": "Masdar mimi, مَفْعِل pattern. Alternate voweling."
+  },
+  {
+    "وزن": "مَفْعَلَة",
+    "transliteration": "maf-a-la",
+    "category": "MASDAR_MIMI",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN_MIMI",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN_MIMI",
+      "form": "I"
+    },
+    "example_root": "كتب",
+    "example_word": "مَكْتَبَة",
+    "notes": "Masdar mimi / place noun, مَفْعَلَة pattern. Institutional or collective sense."
+  },
+  {
+    "وزن": "تَفْعِيل",
+    "transliteration": "taf-iil",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "II",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "II"
+    },
+    "example_root": "علم",
+    "example_word": "تَعْلِيم",
+    "notes": "Canonical masdar of Form II. Standard pattern."
+  },
+  {
+    "وزن": "تَفْعِلَة",
+    "transliteration": "taf-i-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "II",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "II"
+    },
+    "example_root": "زكو",
+    "example_word": "تَزْكِيَة",
+    "notes": "Masdar of Form II for مهموز and ناقص verbs."
+  },
+  {
+    "وزن": "فِعَّال",
+    "transliteration": "fi-aal (geminate)",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "II",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "II"
+    },
+    "example_root": "كذب",
+    "example_word": "كِذَّاب",
+    "notes": "Rare alternate masdar of Form II."
+  },
+  {
+    "وزن": "مُفَاعَلَة",
+    "transliteration": "mu-faa-a-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "III",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III"
+    },
+    "example_root": "كتب",
+    "example_word": "مُكَاتَبَة",
+    "notes": "Canonical masdar of Form III (مُفَاعَلَة variant). Used for abstract sense."
+  },
+  {
+    "وزن": "فِعَال (III)",
+    "transliteration": "fi-aal (form III)",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "III",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III"
+    },
+    "example_root": "قتل",
+    "example_word": "قِتَال",
+    "notes": "Alternate masdar of Form III (فِعَال variant). Used for specific occurrence sense."
+  },
+  {
+    "وزن": "إِفْعَال",
+    "transliteration": "if-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "IV"
+    },
+    "example_root": "خرج",
+    "example_word": "إِخْرَاج",
+    "notes": "Canonical masdar of Form IV."
+  },
+  {
+    "وزن": "إِفَالَة",
+    "transliteration": "i-faa-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "IV"
+    },
+    "example_root": "قوم",
+    "example_word": "إِقَامَة",
+    "notes": "Masdar of Form IV for أجوف verbs. Weak letter drops, تاء added."
+  },
+  {
+    "وزن": "تَفَعُّل",
+    "transliteration": "ta-fa-ul",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "V",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "V"
+    },
+    "example_root": "علم",
+    "example_word": "تَعَلُّم",
+    "notes": "Canonical masdar of Form V."
+  },
+  {
+    "وزن": "تَفَاعُل",
+    "transliteration": "ta-faa-ul",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VI"
+    },
+    "example_root": "فهم",
+    "example_word": "تَفَاهُم",
+    "notes": "Canonical masdar of Form VI."
+  },
+  {
+    "وزن": "اِنْفِعَال",
+    "transliteration": "in-fi-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VII"
+    },
+    "example_root": "كسر",
+    "example_word": "اِنْكِسَار",
+    "notes": "Canonical masdar of Form VII."
+  },
+  {
+    "وزن": "اِفْتِعَال",
+    "transliteration": "if-ti-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VIII"
+    },
+    "example_root": "كسب",
+    "example_word": "اِكْتِسَاب",
+    "notes": "Canonical masdar of Form VIII."
+  },
+  {
+    "وزن": "اِفْعِلَال",
+    "transliteration": "if-i-laal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "IX",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "IX"
+    },
+    "example_root": "حمر",
+    "example_word": "اِحْمِرَار",
+    "notes": "Canonical masdar of Form IX."
+  },
+  {
+    "وزن": "اِسْتِفْعَال",
+    "transliteration": "is-tif-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "X",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "X"
+    },
+    "example_root": "خدم",
+    "example_word": "اِسْتِخْدَام",
+    "notes": "Canonical masdar of Form X."
+  },
+  {
+    "وزن": "اِسْتِفَالَة",
+    "transliteration": "is-ti-faa-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "X",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "X"
+    },
+    "example_root": "قوم",
+    "example_word": "اِسْتِقَامَة",
+    "notes": "Masdar of Form X for أجوف verbs."
+  },
+  {
+    "وزن": "اِفْعِيلَال",
+    "transliteration": "if-ii-laal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "XI",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "XI"
+    },
+    "example_root": "حمر",
+    "example_word": "اِحْمِيرَار",
+    "notes": "Masdar of Form XI."
+  },
+  {
+    "وزن": "اِفْعِيعَال",
+    "transliteration": "if-ii-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "XII",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "XII"
+    },
+    "example_root": "خشن",
+    "example_word": "اِخْشِيشَان",
+    "notes": "Masdar of Form XII."
+  },
+  {
+    "وزن": "فَعْلَلَة",
+    "transliteration": "fa-la-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "Q-I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "Q-I"
+    },
+    "example_root": "دحرج",
+    "example_word": "دَحْرَجَة",
+    "notes": "Canonical masdar of quadriliteral Form I."
+  },
+  {
+    "وزن": "فِعْلَال",
+    "transliteration": "fi-laal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "Q-I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "Q-I"
+    },
+    "example_root": "زلزل",
+    "example_word": "زِلْزَال",
+    "notes": "Alternate masdar of quadriliteral Form I."
+  },
+  {
+    "وزن": "تَفَعْلُل",
+    "transliteration": "ta-fa-lul",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "Q-II",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "Q-II"
+    },
+    "example_root": "دحرج",
+    "example_word": "تَدَحْرُج",
+    "notes": "Masdar of quadriliteral Form II."
+  },
+  {
+    "وزن": "اِفْعِلْلَال",
+    "transliteration": "if-il-laal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "Q-III",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "Q-III"
+    },
+    "example_root": "طمأن",
+    "example_word": "اِطْمِئْنَان",
+    "notes": "Masdar of quadriliteral Form III."
+  },
+  {
+    "وزن": "فَاعِل",
+    "transliteration": "faa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "I",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "I"
+    },
+    "feminine": "فَاعِلَة",
+    "plural_rational": "فَاعِلُون / فُعَّال / فُعَّل / فَعَلَة",
+    "plural_nonrational": "فَوَاعِل",
+    "example_root": "كتب",
+    "example_word": "كَاتِب",
+    "notes": "Active participle Form I. Agent noun or adjective. Rational plurals: فُعَّال (intensive), فُعَّل, فَعَلَة. Non-rational: فَوَاعِل."
+  },
+  {
+    "وزن": "مُفَعِّل",
+    "transliteration": "mu-fa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "II",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "II"
+    },
+    "feminine": "مُفَعِّلَة",
+    "plural": "مُفَعِّلُون",
+    "example_root": "علم",
+    "example_word": "مُعَلِّم",
+    "notes": "Active participle Form II."
+  },
+  {
+    "وزن": "مُفَاعِل",
+    "transliteration": "mu-faa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "III",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "III"
+    },
+    "feminine": "مُفَاعِلَة",
+    "plural": "مُفَاعِلُون",
+    "example_root": "كتب",
+    "example_word": "مُكَاتِب",
+    "notes": "Active participle Form III."
+  },
+  {
+    "وزن": "مُفْعِل",
+    "transliteration": "muf-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "IV"
+    },
+    "feminine": "مُفْعِلَة",
+    "plural": "مُفْعِلُون",
+    "example_root": "خرج",
+    "example_word": "مُخْرِج",
+    "notes": "Active participle Form IV."
+  },
+  {
+    "وزن": "مُتَفَعِّل",
+    "transliteration": "mu-ta-fa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "V",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "V"
+    },
+    "feminine": "مُتَفَعِّلَة",
+    "plural": "مُتَفَعِّلُون",
+    "example_root": "علم",
+    "example_word": "مُتَعَلِّم",
+    "notes": "Active participle Form V."
+  },
+  {
+    "وزن": "مُتَفَاعِل",
+    "transliteration": "mu-ta-faa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "VI"
+    },
+    "feminine": "مُتَفَاعِلَة",
+    "plural": "مُتَفَاعِلُون",
+    "example_root": "فهم",
+    "example_word": "مُتَفَاهِم",
+    "notes": "Active participle Form VI."
+  },
+  {
+    "وزن": "مُنْفَعِل",
+    "transliteration": "mun-fa-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "VII"
+    },
+    "feminine": "مُنْفَعِلَة",
+    "plural": "مُنْفَعِلُون",
+    "example_root": "كسر",
+    "example_word": "مُنْكَسِر",
+    "notes": "Active participle Form VII."
+  },
+  {
+    "وزن": "مُفْتَعِل",
+    "transliteration": "muf-ta-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "VIII"
+    },
+    "feminine": "مُفْتَعِلَة",
+    "plural": "مُفْتَعِلُون",
+    "example_root": "كسب",
+    "example_word": "مُكْتَسِب",
+    "notes": "Active participle Form VIII."
+  },
+  {
+    "وزن": "مُفْعَلّ",
+    "transliteration": "muf-al (geminate)",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "IX",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "IX"
+    },
+    "feminine": "مُفْعَلَّة",
+    "example_root": "حمر",
+    "example_word": "مُحْمَرّ",
+    "notes": "Active participle Form IX. Color/defect."
+  },
+  {
+    "وزن": "مُسْتَفْعِل",
+    "transliteration": "mus-taf-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "X",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "X"
+    },
+    "feminine": "مُسْتَفْعِلَة",
+    "plural": "مُسْتَفْعِلُون",
+    "example_root": "خدم",
+    "example_word": "مُسْتَخْدِم",
+    "notes": "Active participle Form X."
+  },
+  {
+    "وزن": "مُفَعْلِل",
+    "transliteration": "mu-fa-lil",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-I",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "Q-I"
+    },
+    "feminine": "مُفَعْلِلَة",
+    "plural": "مُفَعْلِلُون",
+    "example_root": "دحرج",
+    "example_word": "مُدَحْرِج",
+    "notes": "Active participle quadriliteral Form I."
+  },
+  {
+    "وزن": "مُتَفَعْلِل",
+    "transliteration": "mu-ta-fa-lil",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-II",
+    "semantic_role": "AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "AGENT",
+      "form": "Q-II"
+    },
+    "feminine": "مُتَفَعْلِلَة",
+    "example_root": "دحرج",
+    "example_word": "مُتَدَحْرِج",
+    "notes": "Active participle quadriliteral Form II."
+  },
+  {
+    "وزن": "مَفْعُول",
+    "transliteration": "maf-uul",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "I",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "I"
+    },
+    "feminine": "مَفْعُولَة",
+    "plural": "مَفَاعِيل",
+    "example_root": "كتب",
+    "example_word": "مَكْتُوب",
+    "notes": "Passive participle Form I. Patient noun or resultant-state adjective."
+  },
+  {
+    "وزن": "مُفَعَّل",
+    "transliteration": "mu-fa-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "II",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "II"
+    },
+    "feminine": "مُفَعَّلَة",
+    "example_root": "علم",
+    "example_word": "مُعَلَّم",
+    "notes": "Passive participle Form II."
+  },
+  {
+    "وزن": "مُفَاعَل",
+    "transliteration": "mu-faa-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "III",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "III"
+    },
+    "feminine": "مُفَاعَلَة",
+    "example_root": "كتب",
+    "example_word": "مُكَاتَب",
+    "notes": "Passive participle Form III."
+  },
+  {
+    "وزن": "مُفْعَل",
+    "transliteration": "muf-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "IV"
+    },
+    "feminine": "مُفْعَلَة",
+    "example_root": "خرج",
+    "example_word": "مُخْرَج",
+    "notes": "Passive participle Form IV."
+  },
+  {
+    "وزن": "مُتَفَعَّل",
+    "transliteration": "mu-ta-fa-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "V",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "V"
+    },
+    "feminine": "مُتَفَعَّلَة",
+    "example_root": "علم",
+    "example_word": "مُتَعَلَّم",
+    "notes": "Passive participle Form V."
+  },
+  {
+    "وزن": "مُتَفَاعَل",
+    "transliteration": "mu-ta-faa-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "VI"
+    },
+    "feminine": "مُتَفَاعَلَة",
+    "example_root": "فهم",
+    "example_word": "مُتَفَاهَم",
+    "notes": "Passive participle Form VI."
+  },
+  {
+    "وزن": "مُفْتَعَل",
+    "transliteration": "muf-ta-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "VIII"
+    },
+    "feminine": "مُفْتَعَلَة",
+    "example_root": "كسب",
+    "example_word": "مُكْتَسَب",
+    "notes": "Passive participle Form VIII."
+  },
+  {
+    "وزن": "مُسْتَفْعَل",
+    "transliteration": "mus-taf-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "X",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "X"
+    },
+    "feminine": "مُسْتَفْعَلَة",
+    "example_root": "خدم",
+    "example_word": "مُسْتَخْدَم",
+    "notes": "Passive participle Form X."
+  },
+  {
+    "وزن": "مُفَعْلَل",
+    "transliteration": "mu-fa-lal",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-I",
+    "semantic_role": "PATIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PATIENT",
+      "form": "Q-I"
+    },
+    "feminine": "مُفَعْلَلَة",
+    "example_root": "دحرج",
+    "example_word": "مُدَحْرَج",
+    "notes": "Passive participle quadriliteral Form I."
+  },
+  {
+    "وزن": "فَعِيل",
+    "transliteration": "fa-iil",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "QUALITY_STABLE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "QUALITY"
+    },
+    "feminine": "فَعِيلَة",
+    "plural_rational": "فُعَلَاء",
+    "plural_nonrational": "فِعَال",
+    "example_root": "كرم",
+    "example_word": "كَرِيم",
+    "notes": "Stable quality adjective. Very productive. Rational plural فُعَلَاء, non-rational فِعَال."
+  },
+  {
+    "وزن": "فَعِل",
+    "transliteration": "fa-il",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "STATE_TRANSIENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "STATE"
+    },
+    "feminine": "فَعِلَة",
+    "plural": "فَعِلُون / فِعَال",
+    "example_root": "فرح",
+    "example_word": "فَرِح",
+    "notes": "Transient state adjective. Often from فَعِلَ/يَفْعَلُ stative verbs."
+  },
+  {
+    "وزن": "فَعْلَان",
+    "transliteration": "fa-laan",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "SATIATION_FULLNESS",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "SATIATION",
+      "diptote": "YES"
+    },
+    "feminine": "فَعْلَى",
+    "plural": "فِعَال / فَعَالَى",
+    "example_root": "عطش",
+    "example_word": "عَطْشَان",
+    "notes": "Adjective of fullness or intense state. Feminine فَعْلَى (diptote). Plural فِعَال or فَعَالَى."
+  },
+  {
+    "وزن": "فَعُول",
+    "transliteration": "fa-uul",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "HABITUAL_INTENSIVE",
+    "gender": "COMMON",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "HABITUAL"
+    },
+    "plural": "فُعُل",
+    "example_root": "صبر",
+    "example_word": "صَبُور",
+    "notes": "Habitual or intensive quality adjective. Common gender (same form M and F). Plural فُعُل."
+  },
+  {
+    "وزن": "فَعَّال",
+    "transliteration": "fa-aal",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_AGENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_AGENT"
+    },
+    "feminine": "فَعَّالَة",
+    "example_root": "علم",
+    "example_word": "عَلَّام",
+    "notes": "Intensive agent adjective / exaggerated form (صيغة مبالغة). Habitual or excessive doer."
+  },
+  {
+    "وزن": "مِفْعَال",
+    "transliteration": "mif-aal",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_HABITUAL",
+    "gender": "COMMON",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_HABITUAL"
+    },
+    "plural": "مَفَاعِيل",
+    "example_root": "قول",
+    "example_word": "مِقْوَال",
+    "notes": "Intensive habitual adjective / exaggerated form. Common gender. Plural مَفَاعِيل."
+  },
+  {
+    "وزن": "فَعِيل (مبالغة)",
+    "transliteration": "fa-iil (exaggeration)",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_QUALITY_DIVINE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_QUALITY"
+    },
+    "feminine": "فَعِيلَة",
+    "example_root": "علم",
+    "example_word": "عَلِيم",
+    "notes": "Exaggerated form, فَعِيل pattern. Intensive quality, often used for divine attributes (الأسماء الحسنى)."
+  },
+  {
+    "وزن": "فَعِل (مبالغة)",
+    "transliteration": "fa-il (exaggeration)",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_STATE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_STATE"
+    },
+    "feminine": "فَعِلَة",
+    "example_root": "حذر",
+    "example_word": "حَذِر",
+    "notes": "Exaggerated form, فَعِل pattern. Intensive state or disposition."
+  },
+  {
+    "وزن": "فُعَلَة",
+    "transliteration": "fu-a-la",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_HABITUAL_RARE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_HABITUAL"
+    },
+    "example_root": "ضحك",
+    "example_word": "ضُحَكَة",
+    "notes": "Exaggerated form, فُعَلَة pattern. Rare. Habitual doer with slight pejorative nuance."
+  },
+  {
+    "وزن": "فِعِّيل",
+    "transliteration": "fi-iyyl",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "INTENSIVE_HABITUAL_RARE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "INTENSIVE_HABITUAL"
+    },
+    "example_root": "خصم",
+    "example_word": "خِصِّيم",
+    "notes": "Exaggerated form, فِعِّيل pattern. Rare. Very habitual or intense quality."
+  },
+  {
+    "وزن": "أَفْعَل / فَعْلَاء",
+    "transliteration": "af-al / fa-laa",
+    "category": "ADJECTIVE_COLOR_DEFECT",
+    "pos": "ADJ",
+    "semantic_role": "COLOR_DEFECT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "COLOR_DEFECT",
+      "diptote": "YES"
+    },
+    "feminine": "فَعْلَاء",
+    "plural": "فُعْل",
+    "example_root": "حمر",
+    "example_word": "أَحْمَر / حَمْرَاء",
+    "notes": "Color and physical defect adjective. Masculine diptote أَفْعَل, feminine diptote فَعْلَاء. Plural فُعْل."
+  },
+  {
+    "وزن": "أَفْعَل (تفضيل)",
+    "transliteration": "af-al (elative)",
+    "category": "ADJECTIVE_ELATIVE",
+    "pos": "ADJ",
+    "semantic_role": "COMPARATIVE_SUPERLATIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "COMPARATIVE",
+      "degree": "COMP",
+      "diptote": "YES"
+    },
+    "feminine": "فُعْلَى",
+    "plural": "أَفَاعِل / فُعَل",
+    "example_root": "كبر",
+    "example_word": "أَكْبَر",
+    "notes": "Elative/comparative adjective (أفعل التفضيل). Masculine diptote. Feminine فُعْلَى, plural أَفَاعِل or فُعَل."
+  },
+  {
+    "وزن": "فَعَلِيّ",
+    "transliteration": "fa-a-liyy",
+    "category": "RELATIVE_ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "RELATIONAL_NISBA",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "NISBA"
+    },
+    "feminine": "فَعَلِيَّة",
+    "plural": "فَعَلِيُّون",
+    "example_root": "عرب",
+    "example_word": "عَرَبِيّ",
+    "notes": "Relative adjective (النسبة). Suffix ـيّ added to noun. Expresses relation, origin, or affiliation."
+  },
+  {
+    "وزن": "فَعِيلَة (نسبي)",
+    "transliteration": "fa-iil-a (relational)",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "RELATIONAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "RELATIONAL"
+    },
+    "notes": "Relational adjective in feminine form. Overlaps with quality adjective pattern."
+  },
+  {
+    "وزن": "مِفْعَل",
+    "transliteration": "mif-al",
+    "category": "INSTRUMENT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "INSTRUMENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "INSTRUMENT"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "برد",
+    "example_word": "مِبْرَد",
+    "notes": "Instrument noun, مِفْعَل pattern. Tool used to perform the action."
+  },
+  {
+    "وزن": "مِفْعَلَة",
+    "transliteration": "mif-a-la",
+    "category": "INSTRUMENT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "INSTRUMENT",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "INSTRUMENT"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "كنس",
+    "example_word": "مِكْنَسَة",
+    "notes": "Instrument noun, مِفْعَلَة pattern. Feminine form."
+  },
+  {
+    "وزن": "مِفْعَال",
+    "transliteration": "mif-aal",
+    "category": "INSTRUMENT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "INSTRUMENT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "INSTRUMENT"
+    },
+    "plural": "مَفَاعِيل",
+    "example_root": "فتح",
+    "example_word": "مِفْتَاح",
+    "notes": "Instrument noun, مِفْعَال pattern. Often for key-like or opening tools."
+  },
+  {
+    "وزن": "فَعَّالَة",
+    "transliteration": "fa-aa-la",
+    "category": "INSTRUMENT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "INSTRUMENT_MACHINE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "INSTRUMENT_MACHINE"
+    },
+    "plural": "فَعَّالَات",
+    "example_root": "غسل",
+    "example_word": "غَسَّالَة",
+    "notes": "Modern instrument/machine noun. Productive in contemporary Arabic for appliances."
+  },
+  {
+    "وزن": "فَاعُول",
+    "transliteration": "faa-uul",
+    "category": "INSTRUMENT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "INSTRUMENT_RARE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "INSTRUMENT"
+    },
+    "example_root": "قطع",
+    "example_word": "قَاطُوع",
+    "notes": "Rare instrument noun pattern فَاعُول."
+  },
+  {
+    "وزن": "مَفْعَل",
+    "transliteration": "maf-al",
+    "category": "PLACE_TIME_NOUN",
+    "pos": "NOM",
+    "semantic_role": "PLACE_TIME",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PLACE_TIME"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "لعب",
+    "example_word": "مَلْعَب",
+    "notes": "Place/time noun, مَفْعَل pattern. Where or when an action occurs."
+  },
+  {
+    "وزن": "مَفْعِل",
+    "transliteration": "maf-il",
+    "category": "PLACE_TIME_NOUN",
+    "pos": "NOM",
+    "semantic_role": "PLACE_TIME",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PLACE_TIME"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "جلس",
+    "example_word": "مَجْلِس",
+    "notes": "Place/time noun, مَفْعِل pattern. Alternate voweling."
+  },
+  {
+    "وزن": "مَفْعَلَة",
+    "transliteration": "maf-a-la",
+    "category": "PLACE_TIME_NOUN",
+    "pos": "NOM",
+    "semantic_role": "PLACE_INSTITUTION",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PLACE_INSTITUTION"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "كتب",
+    "example_word": "مَكْتَبَة",
+    "notes": "Place noun with institutional or collective sense."
+  },
+  {
+    "وزن": "مَفَعْلَل",
+    "transliteration": "ma-fa-lal",
+    "category": "PLACE_TIME_NOUN",
+    "pos": "NOM",
+    "semantic_role": "PLACE_QUADRILITERAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PLACE_QUADRILITERAL"
+    },
+    "plural": "مَفَاعِل",
+    "example_root": "دحرج",
+    "example_word": "مَدَحْرَج",
+    "notes": "Place noun from quadriliteral root."
+  },
+  {
+    "وزن": "فُعَيْل",
+    "transliteration": "fu-ay-il",
+    "category": "DIMINUTIVE",
+    "pos": "NOM",
+    "semantic_role": "DIMINUTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "DIMINUTIVE",
+      "num": "SG"
+    },
+    "feminine": "فُعَيْلَة",
+    "example_root": "كلب",
+    "example_word": "كُلَيْب",
+    "notes": "Diminutive of trilateral noun/adjective (فَعْل, فَعَل, فِعْل, فُعْل). Smallness, affection, or belittlement."
+  },
+  {
+    "وزن": "فُعَيِّل",
+    "transliteration": "fu-ay-yil",
+    "category": "DIMINUTIVE",
+    "pos": "NOM",
+    "semantic_role": "DIMINUTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "DIMINUTIVE",
+      "num": "SG"
+    },
+    "feminine": "فُعَيِّلَة",
+    "example_root": "كتب",
+    "example_word": "كُتَيِّب",
+    "notes": "Diminutive with gemination of middle radical. For فَعِيل, فَعَّال, فَاعِل base forms."
+  },
+  {
+    "وزن": "فُعَيْعِل",
+    "transliteration": "fu-ay-il (quad)",
+    "category": "DIMINUTIVE",
+    "pos": "NOM",
+    "semantic_role": "DIMINUTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "DIMINUTIVE",
+      "num": "SG"
+    },
+    "feminine": "فُعَيْعِلَة",
+    "example_root": "درهم",
+    "example_word": "دُرَيْهِم",
+    "notes": "Diminutive of quadriliteral or extended trilateral noun."
+  },
+  {
+    "وزن": "فُعَيْعِيل",
+    "transliteration": "fu-ay-iil",
+    "category": "DIMINUTIVE",
+    "pos": "NOM",
+    "semantic_role": "DIMINUTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "DIMINUTIVE",
+      "num": "SG"
+    },
+    "example_root": "مفتاح",
+    "example_word": "مُفَيْتِيح",
+    "notes": "Diminutive of five-consonant nouns (مِفْعَال, فَعَالِل type)."
+  },
+  {
+    "وزن": "فَعَل (جمعي)",
+    "transliteration": "fa-al (collective)",
+    "category": "COLLECTIVE_NOUN",
+    "pos": "NOM",
+    "semantic_role": "COLLECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "COLLECTIVE"
+    },
+    "unit_form": "فَعَلَة",
+    "example_root": "شجر",
+    "example_word": "شَجَر",
+    "notes": "Collective noun. Refers to species/kind as a whole. Unit noun: شَجَرَة (one tree)."
+  },
+  {
+    "وزن": "فَعْل (جمعي)",
+    "transliteration": "fa-l (collective)",
+    "category": "COLLECTIVE_NOUN",
+    "pos": "NOM",
+    "semantic_role": "COLLECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "COLLECTIVE"
+    },
+    "unit_form": "فَعْلَة",
+    "example_root": "تمر",
+    "example_word": "تَمْر",
+    "notes": "Collective noun, فَعْل pattern. Unit noun: تَمْرَة."
+  },
+  {
+    "وزن": "فِعَال (جمعي)",
+    "transliteration": "fi-aal (collective)",
+    "category": "COLLECTIVE_NOUN",
+    "pos": "NOM",
+    "semantic_role": "COLLECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "COLLECTIVE"
+    },
+    "unit_form": "فِعَالَة",
+    "example_root": "حجر",
+    "example_word": "حِجَارَة",
+    "notes": "Collective noun, فِعَال pattern. Also functions as broken plural."
+  },
+  {
+    "وزن": "فَعَلَة (وحدة)",
+    "transliteration": "fa-a-la (unit)",
+    "category": "UNIT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "UNIT",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "UNIT",
+      "num": "SG"
+    },
+    "collective_form": "فَعَل",
+    "example_root": "شجر",
+    "example_word": "شَجَرَة",
+    "notes": "Unit noun (اسم الوحدة). Derived from collective by adding ة. One instance."
+  },
+  {
+    "وزن": "فَعْلَة (وحدة)",
+    "transliteration": "fa-la (unit)",
+    "category": "UNIT_NOUN",
+    "pos": "NOM",
+    "semantic_role": "UNIT",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "UNIT",
+      "num": "SG"
+    },
+    "collective_form": "فَعْل",
+    "example_root": "تمر",
+    "example_word": "تَمْرَة",
+    "notes": "Unit noun from فَعْل collective."
+  },
+  {
+    "وزن": "فُعُل",
+    "transliteration": "fu-u-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "عنق",
+    "example_word": "عُنُق",
+    "notes": "Frozen trilateral noun, فُعُل pattern."
+  },
+  {
+    "وزن": "فُعَل",
+    "transliteration": "fu-a-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "صور",
+    "example_word": "صُوَر",
+    "notes": "Frozen trilateral noun, فُعَل pattern. Also broken plural of فُعْلَة."
+  },
+  {
+    "وزن": "فُعِل",
+    "transliteration": "fu-i-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "دئل",
+    "example_word": "دُئِل",
+    "notes": "Frozen trilateral noun, فُعِل pattern. Rare."
+  },
+  {
+    "وزن": "فُعْل",
+    "transliteration": "fu-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "قفل",
+    "example_word": "قُفْل",
+    "notes": "Frozen trilateral noun, فُعْل pattern."
+  },
+  {
+    "وزن": "فَعُل",
+    "transliteration": "fa-u-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "عضل",
+    "example_word": "عَضُل",
+    "notes": "Frozen trilateral noun, فَعُل pattern."
+  },
+  {
+    "وزن": "فَعَل",
+    "transliteration": "fa-a-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "جمل",
+    "example_word": "جَمَل",
+    "notes": "Frozen trilateral noun, فَعَل pattern. Very common."
+  },
+  {
+    "وزن": "فَعِل",
+    "transliteration": "fa-i-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "كتف",
+    "example_word": "كَتِف",
+    "notes": "Frozen trilateral noun, فَعِل pattern."
+  },
+  {
+    "وزن": "فَعْل",
+    "transliteration": "fa-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "بيت",
+    "example_word": "بَيْت",
+    "notes": "Frozen trilateral noun, فَعْل pattern. Very common."
+  },
+  {
+    "وزن": "فِعُل",
+    "transliteration": "fi-u-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "إبل",
+    "example_word": "إِبِل",
+    "notes": "Frozen trilateral noun, فِعُل pattern. Rare (نادر)."
+  },
+  {
+    "وزن": "فِعَل",
+    "transliteration": "fi-a-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "قطع",
+    "example_word": "قِطَع",
+    "notes": "Frozen trilateral noun, فِعَل pattern. Also broken plural of فِعْلَة."
+  },
+  {
+    "وزن": "فِعِل",
+    "transliteration": "fi-i-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "إبل",
+    "example_word": "إِبِل",
+    "notes": "Frozen trilateral noun, فِعِل pattern. Rare."
+  },
+  {
+    "وزن": "فِعْل",
+    "transliteration": "fi-l",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "علم",
+    "example_word": "عِلْم",
+    "notes": "Frozen trilateral noun, فِعْل pattern. Common."
+  },
+  {
+    "وزن": "فُعْلُل",
+    "transliteration": "fu-lul",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "برثن",
+    "example_word": "بُرْثُن",
+    "notes": "Frozen quadriliteral noun, فُعْلُل pattern."
+  },
+  {
+    "وزن": "فُعْلَل",
+    "transliteration": "fu-lal",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "جندب",
+    "example_word": "جُنْدَب",
+    "notes": "Frozen quadriliteral noun, فُعْلَل pattern."
+  },
+  {
+    "وزن": "فَعْلَل",
+    "transliteration": "fa-lal",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "جعفر",
+    "example_word": "جَعْفَر",
+    "notes": "Frozen quadriliteral noun, فَعْلَل pattern. Common for proper names."
+  },
+  {
+    "وزن": "فِعْلَل",
+    "transliteration": "fi-lal",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "زبرج",
+    "example_word": "زِبْرِج",
+    "notes": "Frozen quadriliteral noun, فِعْلَل pattern."
+  },
+  {
+    "وزن": "فِعْلِل",
+    "transliteration": "fi-lil",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "هندس",
+    "example_word": "هِنْدِس",
+    "notes": "Frozen quadriliteral noun, فِعْلِل pattern."
+  },
+  {
+    "وزن": "فِعَلْل",
+    "transliteration": "fi-a-ll",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "هزبر",
+    "example_word": "هِزَبْر",
+    "notes": "Frozen quadriliteral noun, فِعَلْل pattern."
+  },
+  {
+    "وزن": "فُعَلْلِل",
+    "transliteration": "fu-a-lil",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "سفرجل",
+    "example_word": "سَفَرْجَل",
+    "notes": "Frozen quinquiliteral noun, فُعَلْلِل pattern."
+  },
+  {
+    "وزن": "فَعَلْلَل",
+    "transliteration": "fa-a-lal",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "عقرب",
+    "example_word": "عَقَرْبَل",
+    "notes": "Frozen quinquiliteral noun, فَعَلْلَل pattern."
+  },
+  {
+    "وزن": "فَعَلْلِل",
+    "transliteration": "fa-a-lil",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "خدرنق",
+    "example_word": "خَدَرْنَق",
+    "notes": "Frozen quinquiliteral noun, فَعَلْلِل pattern."
+  },
+  {
+    "وزن": "فَعْلَلِل",
+    "transliteration": "fa-la-lil",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM"
+    },
+    "example_root": "قرطبس",
+    "example_word": "قَرْطَبُس",
+    "notes": "Frozen quinquiliteral noun, فَعْلَلِل pattern."
+  },
+  {
+    "وزن": "فُعَّل",
+    "transliteration": "fu-al",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَاعِل (rational)",
+    "example_root": "ركع",
+    "example_word": "رُكَّع",
+    "notes": "Broken plural Group A. Exclusively for rational فَاعِل active participles."
+  },
+  {
+    "وزن": "فُعَّال",
+    "transliteration": "fu-aal",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَاعِل (rational)",
+    "example_root": "كتب",
+    "example_word": "كُتَّاب",
+    "notes": "Broken plural Group A. Rational فَاعِل agent nouns. Very common."
+  },
+  {
+    "وزن": "فَعَلَة",
+    "transliteration": "fa-a-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَاعِل (craft/profession)",
+    "example_root": "كتب",
+    "example_word": "كَتَبَة",
+    "notes": "Broken plural Group A. Professional/craft agent nouns."
+  },
+  {
+    "وزن": "فُعَلَة",
+    "transliteration": "fu-a-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَاعٍ (defective)",
+    "example_root": "قضي",
+    "example_word": "قُضَاة",
+    "notes": "Broken plural of defective فَاعٍ nouns (قَاضٍ → قُضَاة)."
+  },
+  {
+    "وزن": "فُعُل",
+    "transliteration": "fu-u-l",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فِعَال / فَعُول",
+    "example_root": "كتب",
+    "example_word": "كُتُب",
+    "notes": "Broken plural Group B. For فِعَال and فَعُول singulars. Also color/defect adjectives."
+  },
+  {
+    "وزن": "فُعْل",
+    "transliteration": "fu-l",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "أَفْعَل / فَعْلَاء (color)",
+    "example_root": "حمر",
+    "example_word": "حُمْر",
+    "notes": "Broken plural Group B. Exclusively for color/defect أَفْعَل/فَعْلَاء adjectives."
+  },
+  {
+    "وزن": "فُعَل",
+    "transliteration": "fu-a-l",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فُعْلَة",
+    "example_root": "ركب",
+    "example_word": "رُكَب",
+    "notes": "Broken plural of فُعْلَة singulars."
+  },
+  {
+    "وزن": "فِعَل",
+    "transliteration": "fi-a-l",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فِعْلَة",
+    "example_root": "قطع",
+    "example_word": "قِطَع",
+    "notes": "Broken plural of فِعْلَة singulars."
+  },
+  {
+    "وزن": "فِعَلَة",
+    "transliteration": "fi-a-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل (doubled)",
+    "example_root": "دبب",
+    "example_word": "دِبَبَة",
+    "notes": "Broken plural of doubled-root nouns."
+  },
+  {
+    "وزن": "فِعْلَة",
+    "transliteration": "fi-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "أَخ / فَتًى",
+    "example_root": "أخو",
+    "example_word": "إِخْوَة",
+    "notes": "Broken plural (plural of fewness). For أَخ and similar."
+  },
+  {
+    "وزن": "فِعَال",
+    "transliteration": "fi-aal",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل / فَعَل / فَعِيل",
+    "example_root": "جبل",
+    "example_word": "جِبَال",
+    "notes": "Broken plural Group C. Very common. For CvCC and CvCvC singulars."
+  },
+  {
+    "وزن": "فُعُول",
+    "transliteration": "fu-uul",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل / فَعَل",
+    "example_root": "قلب",
+    "example_word": "قُلُوب",
+    "notes": "Broken plural Group C. Very common for CvCC singulars."
+  },
+  {
+    "وزن": "أَفْعُل",
+    "transliteration": "af-ul",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل (fewness)",
+    "example_root": "رجل",
+    "example_word": "أَرْجُل",
+    "notes": "Broken plural (plural of fewness). For CvCC singulars, ten or fewer."
+  },
+  {
+    "وزن": "أَفْعَال",
+    "transliteration": "af-aal",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل (fewness)",
+    "example_root": "قول",
+    "example_word": "أَقْوَال",
+    "notes": "Broken plural (plural of fewness). Very common for monosyllabic singulars."
+  },
+  {
+    "وزن": "أَفْعِلَة",
+    "transliteration": "af-i-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فِعَال / فَعِيل (fewness)",
+    "example_root": "سلاح",
+    "example_word": "أَسْلِحَة",
+    "notes": "Broken plural (plural of fewness). For فِعَال and فَعِيل singulars."
+  },
+  {
+    "وزن": "فِعْلَان",
+    "transliteration": "fi-laan",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعَل / فِعَال",
+    "example_root": "غلم",
+    "example_word": "غِلْمَان",
+    "notes": "Broken plural, فِعْلَان pattern. Fully-flexible despite ان ending."
+  },
+  {
+    "وزن": "فُعْلَان",
+    "transliteration": "fu-laan",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعَل / فِعَال",
+    "example_root": "بلد",
+    "example_word": "بُلْدَان",
+    "notes": "Broken plural, فُعْلَان pattern. Fully-flexible."
+  },
+  {
+    "وزن": "فَعِيل (جمع)",
+    "transliteration": "fa-iil (plural)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل (rare)",
+    "example_root": "عبد",
+    "example_word": "عَبِيد",
+    "notes": "Rare broken plural, فَعِيل pattern."
+  },
+  {
+    "وزن": "فُعُولَة (جمع)",
+    "transliteration": "fu-uu-la (plural)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْل (rare)",
+    "example_root": "بعل",
+    "example_word": "بُعُولَة",
+    "notes": "Rare broken plural, فُعُولَة pattern."
+  },
+  {
+    "وزن": "فِعَالَة (جمع)",
+    "transliteration": "fi-aa-la (plural)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعَل (rare)",
+    "example_root": "حجر",
+    "example_word": "حِجَارَة",
+    "notes": "Rare broken plural, فِعَالَة pattern."
+  },
+  {
+    "وزن": "فَعَل (جمع)",
+    "transliteration": "fa-al (plural)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَعْلَة (rare)",
+    "example_root": "حلق",
+    "example_word": "حَلَق",
+    "notes": "Very rare broken plural, فَعَل pattern."
+  },
+  {
+    "وزن": "فَعْل (جمع)",
+    "transliteration": "fa-l (plural)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَاعِل (very rare)",
+    "example_root": "صحب",
+    "example_word": "صَحْب",
+    "notes": "Very rare broken plural, فَعْل pattern."
+  },
+  {
+    "وزن": "فَوَاعِل",
+    "transliteration": "fa-waa-il",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَاعِل / فَاعِلَة (non-rational)",
+    "example_root": "عمل",
+    "example_word": "عَوَامِل",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible. For non-rational فَاعِل and feminine فَاعِلَة."
+  },
+  {
+    "وزن": "فَعَائِل",
+    "transliteration": "fa-aa-il",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعِيلَة / فَاعِلَة",
+    "example_root": "رسل",
+    "example_word": "رَسَائِل",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible. For فَعِيلَة and فَاعِلَة singulars."
+  },
+  {
+    "وزن": "فَعَالِل",
+    "transliteration": "fa-aa-il (quad)",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعْلَل (quadriliteral)",
+    "example_root": "درهم",
+    "example_word": "دَرَاهِم",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible. For quadriliteral singulars."
+  },
+  {
+    "وزن": "أَفَاعِل",
+    "transliteration": "a-faa-il",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "أَفْعَل / أَفْعَال",
+    "example_root": "حمر",
+    "example_word": "أَحَامِر",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible."
+  },
+  {
+    "وزن": "تَفَاعِل",
+    "transliteration": "ta-faa-il",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "تَفْعِيل / تَفْعِلَة",
+    "example_root": "جرب",
+    "example_word": "تَجَارِب",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible. For تَفْعِيل and تَفْعِلَة singulars."
+  },
+  {
+    "وزن": "مَفَاعِل",
+    "transliteration": "ma-faa-il",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "مَفْعَل / مَفْعِل / مَفْعَلَة",
+    "example_root": "جلس",
+    "example_word": "مَجَالِس",
+    "notes": "Broken plural Group D (فَفَافِف). Semi-flexible. For مَفْعَل, مَفْعِل, مَفْعَلَة singulars."
+  },
+  {
+    "وزن": "فَعَالِيل",
+    "transliteration": "fa-aa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعْلُول / فِعْلِيل",
+    "example_root": "عصفور",
+    "example_word": "عَصَافِير",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible. For extended quadriliteral singulars."
+  },
+  {
+    "وزن": "مَفَاعِيل",
+    "transliteration": "ma-faa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "مَفْعُول / مِفْعَال",
+    "example_root": "كتب",
+    "example_word": "مَكَاتِيب",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible. For مَفْعُول and مِفْعَال singulars."
+  },
+  {
+    "وزن": "أَفَاعِيل",
+    "transliteration": "a-faa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "إِفْعَال / أَفْعِلَة",
+    "example_root": "عصار",
+    "example_word": "أَعَاصِير",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible."
+  },
+  {
+    "وزن": "تَفَاعِيل",
+    "transliteration": "ta-faa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "تَفْعِيل",
+    "example_root": "أريخ",
+    "example_word": "تَوَارِيخ",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible."
+  },
+  {
+    "وزن": "يَفَاعِيل",
+    "transliteration": "ya-faa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "يَفْعُول",
+    "example_root": "نبوع",
+    "example_word": "يَنَابِيع",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible. For يَفْعُول singulars."
+  },
+  {
+    "وزن": "فَوَاعِيل",
+    "transliteration": "fa-waa-iil",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَاعُول",
+    "example_root": "جاموس",
+    "example_word": "جَوَامِيس",
+    "notes": "Broken plural Group D (فَفَافِيف). Semi-flexible."
+  },
+  {
+    "وزن": "فَعَالِلَة",
+    "transliteration": "fa-aa-li-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL"
+    },
+    "singular_pattern": "فَيْلَسُوف / أُسْتَاذ",
+    "example_root": "فلسف",
+    "example_word": "فَلَاسِفَة",
+    "notes": "Broken plural فَعَالِلَة. For loanwords and extended forms. Ends in ة (indicates masculine singular)."
+  },
+  {
+    "وزن": "فُعَلَاء",
+    "transliteration": "fu-a-laa",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعِيل (rational)",
+    "example_root": "كرم",
+    "example_word": "كُرَمَاء",
+    "notes": "Broken plural, فُعَلَاء pattern. Semi-flexible. Restricted to rational nouns/adjectives."
+  },
+  {
+    "وزن": "أَفْعِلَاء",
+    "transliteration": "af-i-laa",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعِيل / فَعِيّ (rational)",
+    "example_root": "نبي",
+    "example_word": "أَنْبِيَاء",
+    "notes": "Broken plural, أَفْعِلَاء pattern. Semi-flexible. For rational فَعِيل and فَعِيّ."
+  },
+  {
+    "وزن": "فَعْلَى",
+    "transliteration": "fa-laa",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعِيل (sick/wounded)",
+    "example_root": "مرض",
+    "example_word": "مَرْضَى",
+    "notes": "Broken plural, فَعْلَى pattern. Semi-flexible. For sick, wounded, or afflicted persons."
+  },
+  {
+    "وزن": "فَعَالَى",
+    "transliteration": "fa-aa-laa",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعْلَان / فَعِيل",
+    "example_root": "يتم",
+    "example_word": "يَتَامَى",
+    "notes": "Broken plural, فَعَالَى pattern. Semi-flexible."
+  },
+  {
+    "وزن": "فَعَالِي",
+    "transliteration": "fa-aa-lii",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "diptote": "YES"
+    },
+    "singular_pattern": "فَعْلَة / أَرْض",
+    "example_root": "ليل",
+    "example_word": "لَيَالٍ",
+    "notes": "Broken plural, فَعَالِي pattern. Semi-flexible. Written with tanwin kasra when indefinite (لَيَالٍ)."
+  },
+  {
+    "وزن": "فَاعِلُون / فَاعِلِين",
+    "transliteration": "faa-i-luun / faa-i-liin",
+    "category": "SOUND_PLURAL_MASC",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "gender": "M"
+    },
+    "example_root": "كتب",
+    "example_word": "كَاتِبُون",
+    "notes": "Sound masculine plural (جمع المذكر السالم). Nominative -ون, oblique -ين. For rational masculine nouns and adjectives."
+  },
+  {
+    "وزن": "فَاعِلَات",
+    "transliteration": "faa-i-laat",
+    "category": "SOUND_PLURAL_FEM",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "gender": "F"
+    },
+    "example_root": "كتب",
+    "example_word": "كَاتِبَات",
+    "notes": "Sound feminine plural (جمع المؤنث السالم). Suffix -ات. For feminine nouns, adjectives, and non-rational nouns."
+  },
+  {
+    "وزن": "مُفَعِّلَات",
+    "transliteration": "mu-fa-i-laat",
+    "category": "SOUND_PLURAL_FEM",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "gender": "F"
+    },
+    "example_root": "علم",
+    "example_word": "مُعَلِّمَات",
+    "notes": "Sound feminine plural of Form II active participle feminine."
+  },
+  {
+    "وزن": "فَعَّالَات",
+    "transliteration": "fa-aa-laat",
+    "category": "SOUND_PLURAL_FEM",
+    "pos": "NOM",
+    "semantic_role": "PLURAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "PL",
+      "gender": "F"
+    },
+    "example_root": "غسل",
+    "example_word": "غَسَّالَات",
+    "notes": "Sound feminine plural of فَعَّالَة instrument/machine nouns."
+  },
+  {
+    "وزن": "فَعْلَان / فَعْلَيْن",
+    "transliteration": "fa-laan / fa-layn",
+    "category": "DUAL",
+    "pos": "NOM",
+    "semantic_role": "DUAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "DU",
+      "gender": "M"
+    },
+    "example_root": "كتب",
+    "example_word": "كِتَابَان / كِتَابَيْن",
+    "notes": "Dual masculine. Nominative -ان, oblique -يْن. Applies to all noun patterns."
+  },
+  {
+    "وزن": "فَعْلَتَان / فَعْلَتَيْن",
+    "transliteration": "fa-la-taan / fa-la-tayn",
+    "category": "DUAL",
+    "pos": "NOM",
+    "semantic_role": "DUAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "num": "DU",
+      "gender": "F"
+    },
+    "example_root": "كتب",
+    "example_word": "كِتَابَتَان / كِتَابَتَيْن",
+    "notes": "Dual feminine. ة becomes ت before dual suffix."
+  },
+  {
+    "وزن": "فَعْلَة (مرة)",
+    "transliteration": "fa-la (occurrence)",
+    "category": "NOUN_OF_OCCURRENCE",
+    "pos": "NOM",
+    "semantic_role": "SINGLE_OCCURRENCE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "SINGLE_OCCURRENCE"
+    },
+    "example_root": "ضرب",
+    "example_word": "ضَرْبَة",
+    "notes": "Noun of single occurrence (اسم المرة). One instance of the action. Formed by adding ة to masdar."
+  },
+  {
+    "وزن": "فِعْلَة (هيئة)",
+    "transliteration": "fi-la (manner)",
+    "category": "NOUN_OF_MANNER",
+    "pos": "NOM",
+    "semantic_role": "MANNER",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "MANNER"
+    },
+    "example_root": "جلس",
+    "example_word": "جِلْسَة",
+    "notes": "Noun of manner (اسم الهيئة). Mode or manner of performing the action."
+  },
+  {
+    "وزن": "فَعَلِيّ (نسبة)",
+    "transliteration": "fa-a-liyy (nisba)",
+    "category": "RELATIVE_ADJECTIVE",
+    "pos": "ADJ",
+    "semantic_role": "RELATIONAL_NISBA",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "NISBA"
+    },
+    "feminine": "فَعَلِيَّة",
+    "plural": "فَعَلِيُّون",
+    "example_root": "عرب",
+    "example_word": "عَرَبِيّ",
+    "notes": "Relative adjective (النسبة). Suffix ـيّ. Expresses relation, origin, affiliation."
+  },
+  {
+    "وزن": "فَعْلَاء",
+    "transliteration": "fa-laa",
+    "category": "ADJECTIVE_DIPTOTE",
+    "pos": "ADJ",
+    "semantic_role": "COLOR_DEFECT_FEM",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "COLOR_DEFECT",
+      "gender": "F",
+      "diptote": "YES"
+    },
+    "masculine": "أَفْعَل",
+    "plural": "فُعْل",
+    "example_root": "حمر",
+    "example_word": "حَمْرَاء",
+    "notes": "Feminine diptote of color/defect adjective أَفْعَل. Semi-flexible."
+  },
+  {
+    "وزن": "فَعْلَى",
+    "transliteration": "fa-laa",
+    "category": "ADJECTIVE_DIPTOTE",
+    "pos": "ADJ",
+    "semantic_role": "SATIATION_FEM",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "SATIATION",
+      "gender": "F",
+      "diptote": "YES"
+    },
+    "masculine": "فَعْلَان",
+    "plural": "فَعَالَى / فِعَال",
+    "example_root": "عطش",
+    "example_word": "عَطْشَى",
+    "notes": "Feminine diptote of فَعْلَان adjective. Semi-flexible."
+  },
+  {
+    "وزن": "فُعْلَى",
+    "transliteration": "fu-laa",
+    "category": "ADJECTIVE_DIPTOTE",
+    "pos": "ADJ",
+    "semantic_role": "COMPARATIVE_FEM",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "COMPARATIVE",
+      "gender": "F",
+      "diptote": "YES"
+    },
+    "masculine": "أَفْعَل (تفضيل)",
+    "plural": "فُعَل",
+    "example_root": "كبر",
+    "example_word": "كُبْرَى",
+    "notes": "Feminine diptote of elative/comparative أَفْعَل. Semi-flexible."
+  },
+  {
+    "وزن": "فَعْلَى (اسم)",
+    "transliteration": "fa-laa (noun)",
+    "category": "NOUN_DIPTOTE",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "diptote": "YES"
+    },
+    "example_root": "فتو",
+    "example_word": "فَتْوَى",
+    "notes": "Noun ending in ىٰ (diptote). Semi-flexible."
+  },
+  {
+    "وزن": "صَحْرَاء (نمط)",
+    "transliteration": "sah-raa",
+    "category": "NOUN_DIPTOTE",
+    "pos": "NOM",
+    "semantic_role": "NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "diptote": "YES"
+    },
+    "plural": "فَعَالَى / فَعَارَى",
+    "example_root": "صحر",
+    "example_word": "صَحْرَاء",
+    "notes": "Noun ending in اء (diptote). Semi-flexible. Plural فَعَالَى or فَعَارَى."
+  },
+  {
+    "وزن": "وَعَلَ / يَعِلُ",
+    "transliteration": "wa-a-la / ya-i-lu",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_MITHAL_WAW",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MITHAL_WAW"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "عِدَة (for وعد type)"
+    ],
+    "example_root": "وعد",
+    "example_word": "وَعَدَ / يَعِدُ",
+    "notes": "مثال واوي. First radical و drops in present tense (يَعِدُ not يَوْعِدُ). Masdar often فَعْل or فِعَة."
+  },
+  {
+    "وزن": "يَعَلَ / يَيْعَلُ",
+    "transliteration": "ya-a-la / yay-a-lu",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_MITHAL_YA",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MITHAL_YA"
+    },
+    "masdar_patterns": [
+      "فَعْل"
+    ],
+    "example_root": "يسر",
+    "example_word": "يَسَرَ / يَيْسَرُ",
+    "notes": "مثال يائي. First radical ي. Less common than واوي مثال."
+  },
+  {
+    "وزن": "فَالَ / يَفِيلُ",
+    "transliteration": "faa-la / ya-fii-lu",
+    "category": "VERB_WEAK_AJWAF_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_AJWAF_YA",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "AJWAF_YA"
+    },
+    "masdar_patterns": [
+      "فَيْل",
+      "فِيَال"
+    ],
+    "example_root": "سير",
+    "example_word": "سَارَ / يَسِيرُ",
+    "notes": "أجوف يائي. Middle ي lengthens to ا in past, returns as ي in present. Masdar فَيْل or فِيَال."
+  },
+  {
+    "وزن": "فَالَ / يَفُولُ",
+    "transliteration": "faa-la / ya-fuu-lu",
+    "category": "VERB_WEAK_AJWAF_WAW",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_AJWAF_WAW",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "AJWAF_WAW"
+    },
+    "masdar_patterns": [
+      "فَوْل",
+      "فُوَال"
+    ],
+    "example_root": "قول",
+    "example_word": "قَالَ / يَقُولُ",
+    "notes": "أجوف واوي. Middle و lengthens to ا in past, returns as و in present. Masdar فَوْل or فُوَال."
+  },
+  {
+    "وزن": "فَعَا / يَفْعُو",
+    "transliteration": "fa-aa / yaf-uu",
+    "category": "VERB_WEAK_NAQIS_WAW",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_NAQIS_WAW",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "NAQIS_WAW"
+    },
+    "masdar_patterns": [
+      "فَعْو",
+      "فُعُوّ"
+    ],
+    "example_root": "دعو",
+    "example_word": "دَعَا / يَدْعُو",
+    "notes": "ناقص واوي. Final و appears as ا in past 3ms, returns as و in present."
+  },
+  {
+    "وزن": "فَعَى / يَفْعِي",
+    "transliteration": "fa-aa / yaf-ii",
+    "category": "VERB_WEAK_NAQIS_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_NAQIS_YA",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "NAQIS_YA"
+    },
+    "masdar_patterns": [
+      "فَعْي",
+      "فِعَاء"
+    ],
+    "example_root": "رمي",
+    "example_word": "رَمَى / يَرْمِي",
+    "notes": "ناقص يائي. Final ي appears as ا in past 3ms, returns as ي in present."
+  },
+  {
+    "وزن": "وَفَى / يَفِي",
+    "transliteration": "wa-faa / ya-fii",
+    "category": "VERB_WEAK_LAFEEF_MAFRUQ",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_LAFEEF_MAFRUQ",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "LAFEEF_MAFRUQ"
+    },
+    "masdar_patterns": [
+      "وَفَاء",
+      "فِيَاء"
+    ],
+    "example_root": "وفي",
+    "example_word": "وَفَى / يَفِي",
+    "notes": "لفيف مفروق. First radical و and last radical ي both weak. Combines مثال and ناقص rules."
+  },
+  {
+    "وزن": "فَوَى / يَفْوِي",
+    "transliteration": "fa-waa / yaf-wii",
+    "category": "VERB_WEAK_LAFEEF_MAQRUN",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_LAFEEF_MAQRUN",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "LAFEEF_MAQRUN"
+    },
+    "masdar_patterns": [
+      "فَوَاء"
+    ],
+    "example_root": "هوي",
+    "example_word": "هَوَى / يَهْوِي",
+    "notes": "لفيف مقرون. Middle و and last ي both weak. Combines أجوف and ناقص rules."
+  },
+  {
+    "وزن": "فَلَّ / يَفُلُّ",
+    "transliteration": "fa-la / ya-fu-lu (geminate)",
+    "category": "VERB_DOUBLED",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_DOUBLED",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MUDAAF"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "فَعَل",
+      "فِعَال"
+    ],
+    "example_root": "مدد",
+    "example_word": "مَدَّ / يَمُدُّ",
+    "notes": "مضاعف. Second and third radicals identical, written as geminate. Masdar فَعْل, فَعَل, or فِعَال."
+  },
+  {
+    "وزن": "أَفَلَ / يَأْفُلُ",
+    "transliteration": "a-fa-la / ya-fu-lu",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_HAMZA_FIRST",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MAHMUZ_FA"
+    },
+    "masdar_patterns": [
+      "فَعْل",
+      "إِفَال"
+    ],
+    "example_root": "أكل",
+    "example_word": "أَكَلَ / يَأْكُلُ",
+    "notes": "مهموز الفاء. First radical is hamza. Hamza orthography follows standard rules."
+  },
+  {
+    "وزن": "فَأَلَ / يَفْأَلُ",
+    "transliteration": "fa-a-la / yaf-a-lu",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_HAMZA_MIDDLE",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MAHMUZ_AYN"
+    },
+    "masdar_patterns": [
+      "فَأْل",
+      "فِئَال"
+    ],
+    "example_root": "سأل",
+    "example_word": "سَأَلَ / يَسْأَلُ",
+    "notes": "مهموز العين. Middle radical is hamza."
+  },
+  {
+    "وزن": "فَعَأَ / يَفْعَأُ",
+    "transliteration": "fa-a-a / yaf-a-u",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "semantic_role": "ACTION_HAMZA_LAST",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "weak_type": "MAHMUZ_LAM"
+    },
+    "masdar_patterns": [
+      "فَعْء",
+      "فُعُوء"
+    ],
+    "example_root": "قرأ",
+    "example_word": "قَرَأَ / يَقْرَأُ",
+    "notes": "مهموز اللام. Last radical is hamza."
+  },
+  {
+    "وزن": "قَالَ / يَقُولُ",
+    "transliteration": "qaa-la / ya-quu-lu",
+    "category": "VERB_WEAK_AJWAF_WAW",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/u-ajwaf-waw",
+    "semantic_role": "ACTION_HOLLOW_WAW",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "أجوف واوي",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف"
+    },
+    "masdar_patterns": [
+      "فَوْل",
+      "فَيْل",
+      "فُول",
+      "فَوَال",
+      "فِوَال",
+      "فُوَال",
+      "مَفَالَة",
+      "مَفِيل"
+    ],
+    "active_participle": "فَائِل",
+    "passive_participle": "مَفُول",
+    "passive_past": "قِيلَ",
+    "example_root": "قول",
+    "example_word": "قَالَ / يَقُولُ",
+    "notes": "أجوف واوي، فَعَلَ/يَفْعُلُ type. Middle radical و surfaces as long vowel. Passive: قِيلَ (قُوِلَ→قِيلَ). Masdar: قَوْل، قِيل."
+  },
+  {
+    "وزن": "سَارَ / يَسِيرُ",
+    "transliteration": "saa-ra / ya-sii-ru",
+    "category": "VERB_WEAK_AJWAF_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i-ajwaf-ya",
+    "semantic_role": "ACTION_HOLLOW_YA",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "أجوف يائي",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف"
+    },
+    "masdar_patterns": [
+      "فَيْل",
+      "فِيَالَة",
+      "فَيَال",
+      "مَفِيل"
+    ],
+    "active_participle": "فَائِل",
+    "passive_participle": "مَفِيل",
+    "passive_past": "سِيرَ",
+    "example_root": "سير",
+    "example_word": "سَارَ / يَسِيرُ",
+    "notes": "أجوف يائي، فَعَلَ/يَفْعِلُ type. Middle radical ي surfaces as long vowel. Passive: سِيرَ."
+  },
+  {
+    "وزن": "خَافَ / يَخَافُ",
+    "transliteration": "khaa-fa / ya-khaa-fu",
+    "category": "VERB_WEAK_AJWAF_WAW",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-ajwaf-waw",
+    "semantic_role": "STATE_HOLLOW_WAW",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "أجوف واوي (فَعِلَ/يَفْعَلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف"
+    },
+    "masdar_patterns": [
+      "خَوْف",
+      "مَخَافَة"
+    ],
+    "active_participle": "خَائِف",
+    "passive_participle": "مَخُوف",
+    "passive_past": "خِيفَ",
+    "example_root": "خوف",
+    "example_word": "خَافَ / يَخَافُ",
+    "notes": "أجوف واوي، فَعِلَ/يَفْعَلُ type. Stative. Underlying فَعِلَ but surface past is فَعَلَ due to و→ا."
+  },
+  {
+    "وزن": "نَامَ / يَنَامُ",
+    "transliteration": "naa-ma / ya-naa-mu",
+    "category": "VERB_WEAK_AJWAF_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-ajwaf-ya",
+    "semantic_role": "STATE_HOLLOW_YA",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "أجوف يائي (فَعِلَ/يَفْعَلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف"
+    },
+    "masdar_patterns": [
+      "نَوْم",
+      "مَنَام"
+    ],
+    "active_participle": "نَائِم",
+    "passive_participle": null,
+    "passive_past": "نِيمَ",
+    "example_root": "نوم",
+    "example_word": "نَامَ / يَنَامُ",
+    "notes": "أجوف يائي، فَعِلَ/يَفْعَلُ type. Stative. Underlying ي→ا in past."
+  },
+  {
+    "وزن": "رَمَى / يَرْمِي",
+    "transliteration": "ra-maa / yar-mii",
+    "category": "VERB_WEAK_NAQIS_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i-naqis-ya",
+    "semantic_role": "ACTION_DEFECTIVE_YA",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "ناقص يائي (فَعَلَ/يَفْعِلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "ناقص"
+    },
+    "masdar_patterns": [
+      "رَمْي",
+      "فَعْي",
+      "فَعًى",
+      "فِعًى",
+      "فَعَاء",
+      "فَاعِية",
+      "فِعَاية",
+      "مَفْعَاة",
+      "مَفْعِية",
+      "فُعْية"
+    ],
+    "active_participle": "رَامٍ",
+    "passive_participle": "مَرْمِيّ",
+    "passive_past": "رُمِيَ",
+    "example_root": "رمي",
+    "example_word": "رَمَى / يَرْمِي",
+    "notes": "ناقص يائي، فَعَلَ/يَفْعِلُ type. Final ي appears as ى in past, ي in present. Active participle declines as مُنقوص (رامٍ/رامِيًا)."
+  },
+  {
+    "وزن": "دَعَا / يَدْعُو",
+    "transliteration": "da-aa / yad-uu",
+    "category": "VERB_WEAK_NAQIS_WAW",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/u-naqis-waw",
+    "semantic_role": "ACTION_DEFECTIVE_WAW",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "ناقص واوي (فَعَلَ/يَفْعُلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "ناقص"
+    },
+    "masdar_patterns": [
+      "دَعْو",
+      "فَعْو",
+      "فُعُوّ",
+      "فُعْوَان",
+      "فُعْوَة",
+      "فَعَاوة",
+      "مَفْعَاة"
+    ],
+    "active_participle": "دَاعٍ",
+    "passive_participle": "مَدْعُوّ",
+    "passive_past": "دُعِيَ",
+    "example_root": "دعو",
+    "example_word": "دَعَا / يَدْعُو",
+    "notes": "ناقص واوي، فَعَلَ/يَفْعُلُ type. Final و appears as ا in past, و in present. Passive: دُعِيَ (و→ي in passive)."
+  },
+  {
+    "وزن": "نَسِيَ / يَنْسَى",
+    "transliteration": "na-si-ya / yan-saa",
+    "category": "VERB_WEAK_NAQIS_YA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-naqis-ya",
+    "semantic_role": "STATE_DEFECTIVE_YA",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "ناقص يائي (فَعِلَ/يَفْعَلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "ناقص"
+    },
+    "masdar_patterns": [
+      "نِسْيَان",
+      "فَعَاء",
+      "فِعًى"
+    ],
+    "active_participle": "نَاسٍ",
+    "passive_participle": "مَنْسِيّ",
+    "passive_past": "نُسِيَ",
+    "example_root": "نسي",
+    "example_word": "نَسِيَ / يَنْسَى",
+    "notes": "ناقص يائي، فَعِلَ/يَفْعَلُ type. Past ends in يَ, present ends in ى. Stative meaning."
+  },
+  {
+    "وزن": "وَجَدَ / يَجِدُ",
+    "transliteration": "wa-ja-da / ya-ji-du",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i-mithal-waw",
+    "semantic_role": "ACTION_ASSIMILATED_WAW",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مثال واوي (فَعَلَ/يَفْعِلُ — و drops in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "وُجُود",
+      "جِدَة",
+      "وَجْد",
+      "عِلَة (pattern for و-drop masdars)"
+    ],
+    "active_participle": "وَاجِد",
+    "passive_participle": "مَوْجُود",
+    "example_root": "وجد",
+    "example_word": "وَجَدَ / يَجِدُ",
+    "notes": "مثال واوي، فَعَلَ/يَفْعِلُ type. Initial و drops in present (يَجِدُ not يَوْجِدُ). Most common مثال pattern."
+  },
+  {
+    "وزن": "وَضَعَ / يَضَعُ",
+    "transliteration": "wa-da-a / ya-da-u",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/a-mithal-waw",
+    "semantic_role": "ACTION_ASSIMILATED_WAW_AA",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مثال واوي (فَعَلَ/يَفْعَلُ — و drops in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "وَضْع",
+      "مَوْضِع"
+    ],
+    "active_participle": "وَاضِع",
+    "passive_participle": "مَوْضُوع",
+    "example_root": "وضع",
+    "example_word": "وَضَعَ / يَضَعُ",
+    "notes": "مثال واوي، فَعَلَ/يَفْعَلُ type. Initial و drops in present. Second radical is throat letter."
+  },
+  {
+    "وزن": "وَجِلَ / يَوْجَلُ",
+    "transliteration": "wa-ji-la / yaw-ja-lu",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-mithal-waw-preserved",
+    "semantic_role": "STATE_ASSIMILATED_WAW_PRESERVED",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "مثال واوي (فَعِلَ/يَفْعَلُ — و preserved in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "وَجَل",
+      "وَجَلَان"
+    ],
+    "active_participle": "وَاجِل",
+    "passive_participle": null,
+    "example_root": "وجل",
+    "example_word": "وَجِلَ / يَوْجَلُ",
+    "notes": "Rare مثال واوي where و is preserved in present (يَوْجَلُ). فَعِلَ/يَفْعَلُ stative type."
+  },
+  {
+    "وزن": "وَرِثَ / يَرِثُ",
+    "transliteration": "wa-ri-tha / ya-ri-thu",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/i-mithal-waw",
+    "semantic_role": "ACTION_ASSIMILATED_WAW_II",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مثال واوي (فَعِلَ/يَفْعِلُ — و drops in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "إِرْث",
+      "وِرَاثَة",
+      "وِرْث"
+    ],
+    "active_participle": "وَارِث",
+    "passive_participle": "مَوْرُوث",
+    "example_root": "ورث",
+    "example_word": "وَرِثَ / يَرِثُ",
+    "notes": "مثال واوي، فَعِلَ/يَفْعِلُ type. Initial و drops in present."
+  },
+  {
+    "وزن": "يَسَرَ / يَيْسِرُ",
+    "transliteration": "ya-sa-ra / yay-si-ru",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i-mithal-ya",
+    "semantic_role": "ACTION_ASSIMILATED_YA",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "مثال يائي (فَعَلَ/يَفْعِلُ — ي preserved in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "يُسْر",
+      "يَسَار",
+      "مَيْسَرَة"
+    ],
+    "active_participle": "يَاسِر",
+    "passive_participle": "مَيْسُور",
+    "example_root": "يسر",
+    "example_word": "يَسَرَ / يَيْسِرُ",
+    "notes": "مثال يائي. Initial ي is preserved in present (يَيْسِرُ). Rare pattern."
+  },
+  {
+    "وزن": "يَبِسَ / يَيْبَسُ",
+    "transliteration": "ya-bi-sa / yay-ba-su",
+    "category": "VERB_WEAK_MITHAL",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-mithal-ya",
+    "semantic_role": "STATE_ASSIMILATED_YA",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "مثال يائي (فَعِلَ/يَفْعَلُ — ي preserved in present)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مثال"
+    },
+    "masdar_patterns": [
+      "يُبْس",
+      "يَبَس"
+    ],
+    "active_participle": "يَابِس",
+    "passive_participle": null,
+    "example_root": "يبس",
+    "example_word": "يَبِسَ / يَيْبَسُ",
+    "notes": "مثال يائي، فَعِلَ/يَفْعَلُ type. Initial ي preserved in present."
+  },
+  {
+    "وزن": "مَدَّ / يَمُدُّ",
+    "transliteration": "mad-da / ya-mud-du",
+    "category": "VERB_DOUBLED",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/u-doubled",
+    "semantic_role": "ACTION_DOUBLED",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مضاعف (فَعَلَ/يَفْعُلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مضاعف"
+    },
+    "masdar_patterns": [
+      "مَدّ",
+      "فَعْل",
+      "فِعَال"
+    ],
+    "active_participle": "مَادّ",
+    "passive_participle": "مَمْدُود",
+    "example_root": "مدد",
+    "example_word": "مَدَّ / يَمُدُّ",
+    "notes": "مضاعف، فَعَلَ/يَفْعُلُ type. Second and third radicals identical, geminated. Separates in certain conjugations (مَدَدْتُ)."
+  },
+  {
+    "وزن": "تَمَّ / يَتِمُّ",
+    "transliteration": "tam-ma / ya-tim-mu",
+    "category": "VERB_DOUBLED",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-a/i-doubled",
+    "semantic_role": "STATE_DOUBLED",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "مضاعف (فَعَلَ/يَفْعِلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مضاعف"
+    },
+    "masdar_patterns": [
+      "تَمَام",
+      "تِمَام",
+      "فِعَال"
+    ],
+    "active_participle": "تَامّ",
+    "passive_participle": null,
+    "example_root": "تمم",
+    "example_word": "تَمَّ / يَتِمُّ",
+    "notes": "مضاعف، فَعَلَ/يَفْعِلُ type. Intransitive completion verb."
+  },
+  {
+    "وزن": "ظَلَّ / يَظَلُّ",
+    "transliteration": "zhal-la / ya-zhal-lu",
+    "category": "VERB_DOUBLED",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-i/a-doubled",
+    "semantic_role": "STATE_DOUBLED_II",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "مضاعف (فَعِلَ/يَفْعَلُ)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مضاعف"
+    },
+    "masdar_patterns": [
+      "ظَلّ",
+      "فَعَل"
+    ],
+    "active_participle": "ظَالّ",
+    "passive_participle": null,
+    "example_root": "ظلل",
+    "example_word": "ظَلَّ / يَظَلُّ",
+    "notes": "مضاعف، فَعِلَ/يَفْعَلُ type. Stative/continuative meaning."
+  },
+  {
+    "وزن": "وَقَى / يَقِي",
+    "transliteration": "wa-qaa / ya-qii",
+    "category": "VERB_DOUBLY_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-doubly-weak-mithal-naqis",
+    "semantic_role": "ACTION_DOUBLY_WEAK",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "لفيف مفروق (و أول + ي آخر)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "لفيف مفروق"
+    },
+    "masdar_patterns": [
+      "وِقَاية",
+      "وَقْي"
+    ],
+    "active_participle": "وَاقٍ",
+    "passive_participle": "مَوْقِيّ",
+    "example_root": "وقي",
+    "example_word": "وَقَى / يَقِي",
+    "notes": "لفيف مفروق: و in first position + ي in third. Both weak radicals affect conjugation independently."
+  },
+  {
+    "وزن": "أَتَى / يَأْتِي",
+    "transliteration": "a-taa / ya'-tii",
+    "category": "VERB_DOUBLY_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-doubly-weak-hamza-naqis",
+    "semantic_role": "ACTION_DOUBLY_WEAK_HAMZA",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "همزة أول + ناقص يائي",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز ناقص"
+    },
+    "masdar_patterns": [
+      "إِتْيَان",
+      "مَجِيء (by analogy)"
+    ],
+    "active_participle": "آتٍ",
+    "passive_participle": "مَأْتِيّ",
+    "example_root": "أتي",
+    "example_word": "أَتَى / يَأْتِي",
+    "notes": "Hamza in first position + defective ي in third. Hamza follows standard hamza rules; final ي follows ناقص rules."
+  },
+  {
+    "وزن": "جَاءَ / يَجِيءُ",
+    "transliteration": "jaa-a / ya-jii-u",
+    "category": "VERB_DOUBLY_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-doubly-weak-ajwaf-hamza",
+    "semantic_role": "ACTION_DOUBLY_WEAK_AJWAF_HAMZA",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "أجوف يائي + همزة آخر",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف مهموز"
+    },
+    "masdar_patterns": [
+      "مَجِيء",
+      "جَيْء"
+    ],
+    "active_participle": "جَائِي",
+    "passive_participle": null,
+    "example_root": "جيأ",
+    "example_word": "جَاءَ / يَجِيءُ",
+    "notes": "Hollow ي in second position + hamza in third. Unique surface form. Past جَاءَ, present يَجِيءُ."
+  },
+  {
+    "وزن": "رَأَى / يَرَى",
+    "transliteration": "ra-a / ya-raa",
+    "category": "VERB_DOUBLY_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-doubly-weak-hamza-drop",
+    "semantic_role": "PERCEPTION_DOUBLY_WEAK",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مهموز عين + ناقص (همزة تسقط في المضارع)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز ناقص"
+    },
+    "masdar_patterns": [
+      "رُؤْيَة",
+      "رَأْي"
+    ],
+    "active_participle": "رَاءٍ",
+    "passive_participle": "مَرْئِيّ",
+    "passive_past": "رُئِيَ",
+    "example_root": "رأي",
+    "example_word": "رَأَى / يَرَى",
+    "notes": "Unique: hamza (second radical) drops entirely in present يَرَى (not يَرْأَى). Passive: رُئِيَ. One of the most irregular verbs in Arabic."
+  },
+  {
+    "وزن": "حَيِيَ / يَحْيَا",
+    "transliteration": "ha-yi-ya / yah-yaa",
+    "category": "VERB_DOUBLY_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-doubly-defective",
+    "semantic_role": "STATE_DOUBLY_DEFECTIVE",
+    "transitivity": "INTRANSITIVE",
+    "weak_type": "لفيف مقرون (ي ثاني + ي ثالث)",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "لفيف مقرون"
+    },
+    "masdar_patterns": [
+      "حَيَاة",
+      "حَيَاء",
+      "حَيّ"
+    ],
+    "active_participle": "حَيّ",
+    "passive_participle": null,
+    "example_root": "حيي",
+    "example_word": "حَيِيَ / يَحْيَا",
+    "notes": "لفيف مقرون: both second and third radicals are ي. Doubly defective. حَيّ is both active participle and adjective."
+  },
+  {
+    "وزن": "فَعْي",
+    "transliteration": "fa-y",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "رمي",
+    "example_word": "رَمْي",
+    "notes": "Masdar pattern for ناقص يائي Form I verbs (فَعَلَ/يَفْعِلُ type). E.g. رَمْي from رَمَى."
+  },
+  {
+    "وزن": "فَعْو",
+    "transliteration": "fa-w",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-waw",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_WAW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص واوي"
+    },
+    "example_root": "دعو",
+    "example_word": "دَعْو",
+    "notes": "Masdar pattern for ناقص واوي Form I verbs. E.g. دَعْو from دَعَا."
+  },
+  {
+    "وزن": "فَعًى",
+    "transliteration": "fa-an (defective tanwin)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_TANWIN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص"
+    },
+    "example_root": "هدي",
+    "example_word": "هَدًى",
+    "notes": "Masdar pattern for ناقص يائي. Declines with tanwin on alif maqsura."
+  },
+  {
+    "وزن": "فِعًى",
+    "transliteration": "fi-an (defective tanwin)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_KASRA",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص"
+    },
+    "example_root": "رضي",
+    "example_word": "رِضًى",
+    "notes": "Masdar pattern for ناقص يائي with kasra on first radical."
+  },
+  {
+    "وزن": "فَعَاء",
+    "transliteration": "fa-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_MADD",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص"
+    },
+    "example_root": "بكي",
+    "example_word": "بُكَاء",
+    "notes": "Masdar pattern for ناقص verbs with madd ending. E.g. بُكَاء from بَكَى."
+  },
+  {
+    "وزن": "فَاعِية",
+    "transliteration": "faa-i-ya",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FAAIYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "رعي",
+    "example_word": "رَاعِية",
+    "notes": "Masdar pattern for ناقص يائي. Feminine form with ية ending."
+  },
+  {
+    "وزن": "فِعَاية",
+    "transliteration": "fi-aa-ya",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FIAAYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "وقي",
+    "example_word": "وِقَاية",
+    "notes": "Masdar pattern for ناقص يائي. E.g. وِقَاية from وَقَى."
+  },
+  {
+    "وزن": "فَعَاوة",
+    "transliteration": "fa-aa-wa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-waw",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FAAWAWA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص واوي"
+    },
+    "example_root": "شكو",
+    "example_word": "شَكَاوة",
+    "notes": "Masdar pattern for ناقص واوي. E.g. شَكَاوة from شَكَا."
+  },
+  {
+    "وزن": "مَفْعَاة",
+    "transliteration": "maf-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_MAFAAA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص"
+    },
+    "example_root": "رعي",
+    "example_word": "مَرْعَاة",
+    "notes": "Masdar/place noun pattern for ناقص verbs. E.g. مَرْعَاة from رَعَى."
+  },
+  {
+    "وزن": "مَفْعِية",
+    "transliteration": "maf-i-ya",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_MAFIYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "رمي",
+    "example_word": "مَرْمِية",
+    "notes": "Masdar/place noun pattern for ناقص يائي verbs."
+  },
+  {
+    "وزن": "فُعْية",
+    "transliteration": "fu-ya",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FUYYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "بغي",
+    "example_word": "بُغْية",
+    "notes": "Masdar pattern for ناقص يائي. E.g. بُغْية from بَغَى."
+  },
+  {
+    "وزن": "فُعْوَة",
+    "transliteration": "fu-wa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-waw",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FUWWA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص واوي"
+    },
+    "example_root": "دعو",
+    "example_word": "دَعْوَة",
+    "notes": "Masdar pattern for ناقص واوي. E.g. دَعْوَة from دَعَا."
+  },
+  {
+    "وزن": "فُعُوّ",
+    "transliteration": "fu-uww",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-waw",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FUUWW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص واوي"
+    },
+    "example_root": "نمو",
+    "example_word": "نُمُوّ",
+    "notes": "Masdar pattern for ناقص واوي with geminated و. E.g. نُمُوّ from نَمَا."
+  },
+  {
+    "وزن": "فُعْوَان",
+    "transliteration": "fu-waan",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-waw",
+    "semantic_role": "VERBAL_NOUN_DEFECTIVE_FUWWAAN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "ناقص واوي"
+    },
+    "example_root": "غلو",
+    "example_word": "غُلُوّ / غُلْوَان",
+    "notes": "Masdar pattern for ناقص واوي. Rare variant with ان suffix."
+  },
+  {
+    "وزن": "فَوْل",
+    "transliteration": "fawl",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-waw",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_WAW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف واوي"
+    },
+    "example_root": "قول",
+    "example_word": "قَوْل",
+    "notes": "Masdar pattern for أجوف واوي Form I. E.g. قَوْل from قَالَ."
+  },
+  {
+    "وزن": "فَيْل",
+    "transliteration": "fayl",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-ya",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_YA",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف يائي"
+    },
+    "example_root": "سير",
+    "example_word": "سَيْر",
+    "notes": "Masdar pattern for أجوف يائي Form I. E.g. سَيْر from سَارَ."
+  },
+  {
+    "وزن": "فُول",
+    "transliteration": "fuul",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-waw",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_WAW_FUUL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف واوي"
+    },
+    "example_root": "حول",
+    "example_word": "حُول",
+    "notes": "Masdar pattern for أجوف واوي. Less common variant."
+  },
+  {
+    "وزن": "فَوَال",
+    "transliteration": "fa-waal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-waw",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_FAWAAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف واوي"
+    },
+    "example_root": "دور",
+    "example_word": "دَوَار",
+    "notes": "Masdar pattern for أجوف واوي. E.g. دَوَار from دَارَ."
+  },
+  {
+    "وزن": "فِيَالَة",
+    "transliteration": "fi-yaa-la",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-ya",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_FIYAALA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف يائي"
+    },
+    "example_root": "سير",
+    "example_word": "سِيَارَة",
+    "notes": "Masdar/noun pattern for أجوف يائي. E.g. سِيَارَة (by extension)."
+  },
+  {
+    "وزن": "فِوَال",
+    "transliteration": "fi-waal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-waw",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_FIWAAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف واوي"
+    },
+    "example_root": "قوم",
+    "example_word": "قِوَام",
+    "notes": "Masdar pattern for أجوف واوي with kasra. E.g. قِوَام from قَامَ."
+  },
+  {
+    "وزن": "فُوَال",
+    "transliteration": "fu-waal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-waw",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_FUWAAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف واوي"
+    },
+    "example_root": "دوخ",
+    "example_word": "دُوَار",
+    "notes": "Masdar pattern for أجوف واوي with damma. Rare."
+  },
+  {
+    "وزن": "مَفَالَة",
+    "transliteration": "ma-faa-la",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_MAFAALA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف"
+    },
+    "example_root": "قول",
+    "example_word": "مَقَالَة",
+    "notes": "Masdar/noun pattern for أجوف verbs. E.g. مَقَالَة from قَالَ."
+  },
+  {
+    "وزن": "مَفِيل",
+    "transliteration": "ma-fiil",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf-ya",
+    "semantic_role": "VERBAL_NOUN_HOLLOW_MAFIIL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I",
+      "weak": "أجوف يائي"
+    },
+    "example_root": "سير",
+    "example_word": "مَسِير",
+    "notes": "Masdar/noun pattern for أجوف يائي. E.g. مَسِير from سَارَ."
+  },
+  {
+    "وزن": "تَفْعِيَة",
+    "transliteration": "taf-i-ya",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "II",
+    "paradigm": "II-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_II_DEFECTIVE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "II",
+      "weak": "ناقص"
+    },
+    "example_root": "زكو",
+    "example_word": "تَزْكِيَة",
+    "notes": "Masdar of Form II ناقص verbs. Replaces تَفْعِيل when root is defective. E.g. تَزْكِيَة from زَكَّى."
+  },
+  {
+    "وزن": "مُفَاعَاة",
+    "transliteration": "mu-faa-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_III_DEFECTIVE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III",
+      "weak": "ناقص"
+    },
+    "example_root": "رعي",
+    "example_word": "مُرَاعَاة",
+    "notes": "Masdar of Form III ناقص verbs. Replaces مُفَاعَلَة. E.g. مُرَاعَاة from رَاعَى."
+  },
+  {
+    "وزن": "فِيعَاء",
+    "transliteration": "fii-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-naqis-alt",
+    "semantic_role": "VERBAL_NOUN_FORM_III_DEFECTIVE_ALT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III",
+      "weak": "ناقص"
+    },
+    "example_root": "رعي",
+    "example_word": "رِعَاء",
+    "notes": "Alternate masdar of Form III ناقص. Alongside مُفَاعَاة."
+  },
+  {
+    "وزن": "فِيعَال",
+    "transliteration": "fii-aal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-ajwaf-alt",
+    "semantic_role": "VERBAL_NOUN_FORM_III_HOLLOW_ALT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III",
+      "weak": "أجوف"
+    },
+    "example_root": "قيل",
+    "example_word": "قِيَال",
+    "notes": "Alternate masdar of Form III أجوف verbs. E.g. قِيَال alongside مُقَاوَلَة."
+  },
+  {
+    "وزن": "إِفْعَاء",
+    "transliteration": "if-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "paradigm": "IV-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_IV_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "IV",
+      "weak": "ناقص"
+    },
+    "example_root": "أعطي",
+    "example_word": "إِعْطَاء",
+    "notes": "Masdar of Form IV ناقص verbs. Replaces إِفْعَال. E.g. إِعْطَاء from أَعْطَى."
+  },
+  {
+    "وزن": "تَفَعٍّ",
+    "transliteration": "ta-fa-in (defective declension)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "V",
+    "paradigm": "V-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_V_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "V",
+      "weak": "ناقص"
+    },
+    "example_root": "تمني",
+    "example_word": "تَمَنٍّ",
+    "notes": "Masdar of Form V ناقص verbs. Declines as مُنقوص (-in). E.g. تَمَنٍّ from تَمَنَّى."
+  },
+  {
+    "وزن": "تَفَاعٍ",
+    "transliteration": "ta-faa-in (defective declension)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "paradigm": "VI-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_VI_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VI",
+      "weak": "ناقص"
+    },
+    "example_root": "تداعي",
+    "example_word": "تَدَاعٍ",
+    "notes": "Masdar of Form VI ناقص verbs. Declines as مُنقوص (-in). E.g. تَدَاعٍ from تَدَاعَى."
+  },
+  {
+    "وزن": "اِنْفِعَاء",
+    "transliteration": "in-fi-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "paradigm": "VII-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_VII_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VII",
+      "weak": "ناقص"
+    },
+    "example_root": "نقضي",
+    "example_word": "اِنْقِضَاء",
+    "notes": "Masdar of Form VII ناقص verbs. Replaces اِنْفِعَال. E.g. اِنْقِضَاء from اِنْقَضَى."
+  },
+  {
+    "وزن": "اِفْتِعَاء",
+    "transliteration": "if-ti-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "paradigm": "VIII-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_VIII_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VIII",
+      "weak": "ناقص"
+    },
+    "example_root": "اقتضي",
+    "example_word": "اِقْتِضَاء",
+    "notes": "Masdar of Form VIII ناقص verbs. Replaces اِفْتِعَال. E.g. اِقْتِضَاء from اِقْتَضَى."
+  },
+  {
+    "وزن": "اِسْتِفْعَاء",
+    "transliteration": "is-tif-aa",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "X",
+    "paradigm": "X-naqis",
+    "semantic_role": "VERBAL_NOUN_FORM_X_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "X",
+      "weak": "ناقص"
+    },
+    "example_root": "استدعي",
+    "example_word": "اِسْتِدْعَاء",
+    "notes": "Masdar of Form X ناقص verbs. Replaces اِسْتِفْعَال. E.g. اِسْتِدْعَاء from اِسْتَدْعَى."
+  },
+  {
+    "وزن": "اِنْفِيَال",
+    "transliteration": "in-fi-yaal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "paradigm": "VII-ajwaf",
+    "semantic_role": "VERBAL_NOUN_FORM_VII_HOLLOW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VII",
+      "weak": "أجوف"
+    },
+    "example_root": "انقاد",
+    "example_word": "اِنْقِيَاد",
+    "notes": "Masdar of Form VII أجوف verbs. E.g. اِنْقِيَاد from اِنْقَادَ."
+  },
+  {
+    "وزن": "اِفْتِيَال",
+    "transliteration": "if-ti-yaal",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "paradigm": "VIII-ajwaf",
+    "semantic_role": "VERBAL_NOUN_FORM_VIII_HOLLOW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VIII",
+      "weak": "أجوف"
+    },
+    "example_root": "اختار",
+    "example_word": "اِخْتِيَار",
+    "notes": "Masdar of Form VIII أجوف verbs. E.g. اِخْتِيَار from اِخْتَارَ."
+  },
+  {
+    "وزن": "تَفْعَال",
+    "transliteration": "taf-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "II",
+    "paradigm": "II-alt",
+    "semantic_role": "VERBAL_NOUN_FORM_II_ALT",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "II"
+    },
+    "example_root": "كذب",
+    "example_word": "تَكْذَاب",
+    "notes": "Alternate masdar of Form II. Listed alongside تَفْعِيل. Rare. E.g. تَكْذَاب from كَذَّبَ."
+  },
+  {
+    "وزن": "قِيلَ",
+    "transliteration": "qii-la",
+    "category": "VERB_PASSIVE_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-passive-ajwaf-waw",
+    "semantic_role": "PASSIVE_HOLLOW_WAW",
+    "transitivity": "PASSIVE",
+    "weak_type": "أجوف واوي — مبني للمجهول",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "PASS",
+      "weak": "أجوف"
+    },
+    "example_root": "قول",
+    "example_word": "قِيلَ",
+    "notes": "Passive past of أجوف واوي. Underlying قُوِلَ → قِيلَ (و→ي after damma→kasra shift). Unique surface pattern."
+  },
+  {
+    "وزن": "رُمِيَ",
+    "transliteration": "ru-mi-ya",
+    "category": "VERB_PASSIVE_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-passive-naqis-ya",
+    "semantic_role": "PASSIVE_DEFECTIVE_YA",
+    "transitivity": "PASSIVE",
+    "weak_type": "ناقص يائي — مبني للمجهول",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "PASS",
+      "weak": "ناقص"
+    },
+    "example_root": "رمي",
+    "example_word": "رُمِيَ",
+    "notes": "Passive past of ناقص يائي. Final ي preserved in passive. Surface: رُمِيَ."
+  },
+  {
+    "وزن": "دُعِيَ",
+    "transliteration": "du-i-ya",
+    "category": "VERB_PASSIVE_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-passive-naqis-waw",
+    "semantic_role": "PASSIVE_DEFECTIVE_WAW",
+    "transitivity": "PASSIVE",
+    "weak_type": "ناقص واوي — مبني للمجهول",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "PASS",
+      "weak": "ناقص"
+    },
+    "example_root": "دعو",
+    "example_word": "دُعِيَ",
+    "notes": "Passive past of ناقص واوي. Final و→ي in passive. Surface: دُعِيَ (not دُعِوَ)."
+  },
+  {
+    "وزن": "يُقَالُ",
+    "transliteration": "yu-qaa-lu",
+    "category": "VERB_PASSIVE_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-passive-present-ajwaf",
+    "semantic_role": "PASSIVE_PRESENT_HOLLOW",
+    "transitivity": "PASSIVE",
+    "weak_type": "أجوف — مضارع مبني للمجهول",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PRES",
+      "voice": "PASS",
+      "weak": "أجوف"
+    },
+    "example_root": "قول",
+    "example_word": "يُقَالُ",
+    "notes": "Passive present of أجوف. Underlying يُقْوَلُ → يُقَالُ. Long vowel preserved."
+  },
+  {
+    "وزن": "يُرْمَى",
+    "transliteration": "yur-maa",
+    "category": "VERB_PASSIVE_WEAK",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-passive-present-naqis",
+    "semantic_role": "PASSIVE_PRESENT_DEFECTIVE",
+    "transitivity": "PASSIVE",
+    "weak_type": "ناقص — مضارع مبني للمجهول",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PRES",
+      "voice": "PASS",
+      "weak": "ناقص"
+    },
+    "example_root": "رمي",
+    "example_word": "يُرْمَى",
+    "notes": "Passive present of ناقص. Final radical appears as ى. Surface: يُرْمَى."
+  },
+  {
+    "وزن": "مُفْتَعٍ",
+    "transliteration": "muf-ta-in (defective declension)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "paradigm": "VIII-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "VIII",
+      "weak": "ناقص"
+    },
+    "example_root": "اقتضي",
+    "example_word": "مُقْتَضٍ",
+    "notes": "Active participle of Form VIII ناقص. Declines as مُنقوص (-in). E.g. مُقْتَضٍ from اِقْتَضَى."
+  },
+  {
+    "وزن": "مُفْتَعًى",
+    "transliteration": "muf-ta-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "paradigm": "VIII-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "VIII",
+      "weak": "ناقص"
+    },
+    "example_root": "اقتضي",
+    "example_word": "مُقْتَضًى",
+    "notes": "Passive participle of Form VIII ناقص. Ends in ى (alif maqsura). E.g. مُقْتَضًى."
+  },
+  {
+    "وزن": "مُتَفَعٍّ",
+    "transliteration": "mu-ta-fa-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "V",
+    "paradigm": "V-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_V_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "V",
+      "weak": "ناقص"
+    },
+    "example_root": "تمني",
+    "example_word": "مُتَمَنٍّ",
+    "notes": "Active participle of Form V ناقص. Declines as مُنقوص. E.g. مُتَمَنٍّ from تَمَنَّى."
+  },
+  {
+    "وزن": "مُتَفَعًّى",
+    "transliteration": "mu-ta-fa-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "V",
+    "paradigm": "V-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_V_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "V",
+      "weak": "ناقص"
+    },
+    "example_root": "تمني",
+    "example_word": "مُتَمَنًّى",
+    "notes": "Passive participle of Form V ناقص. Ends in ى. E.g. مُتَمَنًّى."
+  },
+  {
+    "وزن": "مُسْتَفْعٍ",
+    "transliteration": "mus-taf-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "X",
+    "paradigm": "X-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_X_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "X",
+      "weak": "ناقص"
+    },
+    "example_root": "استدعي",
+    "example_word": "مُسْتَدْعٍ",
+    "notes": "Active participle of Form X ناقص. Declines as مُنقوص. E.g. مُسْتَدْعٍ from اِسْتَدْعَى."
+  },
+  {
+    "وزن": "مُسْتَفْعًى",
+    "transliteration": "mus-taf-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "X",
+    "paradigm": "X-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_X_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "X",
+      "weak": "ناقص"
+    },
+    "example_root": "استدعي",
+    "example_word": "مُسْتَدْعًى",
+    "notes": "Passive participle of Form X ناقص. Ends in ى. E.g. مُسْتَدْعًى."
+  },
+  {
+    "وزن": "مُفَعٍّ",
+    "transliteration": "mu-fa-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "II",
+    "paradigm": "II-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_II_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "II",
+      "weak": "ناقص"
+    },
+    "example_root": "زكو",
+    "example_word": "مُزَكٍّ",
+    "notes": "Active participle of Form II ناقص. Declines as مُنقوص. E.g. مُزَكٍّ from زَكَّى."
+  },
+  {
+    "وزن": "مُفَعًّى",
+    "transliteration": "mu-fa-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "II",
+    "paradigm": "II-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_II_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "II",
+      "weak": "ناقص"
+    },
+    "example_root": "زكو",
+    "example_word": "مُزَكًّى",
+    "notes": "Passive participle of Form II ناقص. Ends in ى. E.g. مُزَكًّى from زَكَّى."
+  },
+  {
+    "وزن": "مُفَاعٍ",
+    "transliteration": "mu-faa-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_III_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "III",
+      "weak": "ناقص"
+    },
+    "example_root": "رعي",
+    "example_word": "مُرَاعٍ",
+    "notes": "Active participle of Form III ناقص. Declines as مُنقوص. E.g. مُرَاعٍ from رَاعَى."
+  },
+  {
+    "وزن": "مُفَاعًى",
+    "transliteration": "mu-faa-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_III_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "III",
+      "weak": "ناقص"
+    },
+    "example_root": "رعي",
+    "example_word": "مُرَاعًى",
+    "notes": "Passive participle of Form III ناقص. Ends in ى. E.g. مُرَاعًى from رَاعَى."
+  },
+  {
+    "وزن": "مُفْعٍ",
+    "transliteration": "muf-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "paradigm": "IV-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_IV_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "IV",
+      "weak": "ناقص"
+    },
+    "example_root": "أعطي",
+    "example_word": "مُعْطٍ",
+    "notes": "Active participle of Form IV ناقص. Declines as مُنقوص. E.g. مُعْطٍ from أَعْطَى."
+  },
+  {
+    "وزن": "مُفْعًى",
+    "transliteration": "muf-an (defective)",
+    "category": "PASSIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "paradigm": "IV-naqis-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_IV_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "IV",
+      "weak": "ناقص"
+    },
+    "example_root": "أعطي",
+    "example_word": "مُعْطًى",
+    "notes": "Passive participle of Form IV ناقص. Ends in ى. E.g. مُعْطًى from أَعْطَى."
+  },
+  {
+    "وزن": "مُنْفَعٍ",
+    "transliteration": "mun-fa-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "paradigm": "VII-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_VII_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "VII",
+      "weak": "ناقص"
+    },
+    "example_root": "انقضي",
+    "example_word": "مُنْقَضٍ",
+    "notes": "Active participle of Form VII ناقص. Declines as مُنقوص. E.g. مُنْقَضٍ from اِنْقَضَى."
+  },
+  {
+    "وزن": "مُتَفَاعٍ",
+    "transliteration": "mu-ta-faa-in (defective)",
+    "category": "ACTIVE_PARTICIPLE_WEAK",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "paradigm": "VI-naqis-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_VI_DEFECTIVE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "VI",
+      "weak": "ناقص"
+    },
+    "example_root": "تداعي",
+    "example_word": "مُتَدَاعٍ",
+    "notes": "Active participle of Form VI ناقص. Declines as مُنقوص. E.g. مُتَدَاعٍ from تَدَاعَى."
+  },
+  {
+    "وزن": "مُفَادَّة",
+    "transliteration": "mu-faa-dad-da",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "III",
+    "paradigm": "III-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_III_DOUBLED",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "III",
+      "weak": "مضاعف"
+    },
+    "example_root": "مدد",
+    "example_word": "مُمَادَّة",
+    "notes": "Masdar of Form III مضاعف. E.g. مُمَادَّة from مَادَّ. Gemination of third radical."
+  },
+  {
+    "وزن": "إِفْعَال (مضاعف)",
+    "transliteration": "if-aal (doubled)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "IV",
+    "paradigm": "IV-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_IV_DOUBLED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "IV",
+      "weak": "مضاعف"
+    },
+    "example_root": "أمد",
+    "example_word": "إِمْدَاد",
+    "notes": "Masdar of Form IV مضاعف. Same pattern as regular IV but with geminated third radical in root. E.g. إِمْدَاد from أَمَدَّ."
+  },
+  {
+    "وزن": "تَفَاعُل (مضاعف)",
+    "transliteration": "ta-faa-ul (doubled)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VI",
+    "paradigm": "VI-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_VI_DOUBLED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VI",
+      "weak": "مضاعف"
+    },
+    "example_root": "مدد",
+    "example_word": "تَمَادّ",
+    "notes": "Masdar of Form VI مضاعف. E.g. تَمَادّ from تَمَادَّ. Gemination visible in surface form."
+  },
+  {
+    "وزن": "اِنْفِعَال (مضاعف)",
+    "transliteration": "in-fi-aal (doubled)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "paradigm": "VII-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_VII_DOUBLED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VII",
+      "weak": "مضاعف"
+    },
+    "example_root": "شد",
+    "example_word": "اِنْشِدَاد",
+    "notes": "Masdar of Form VII مضاعف. E.g. اِنْشِدَاد from اِنْشَدَّ."
+  },
+  {
+    "وزن": "اِفْتِعَال (مضاعف)",
+    "transliteration": "if-ti-aal (doubled)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "VIII",
+    "paradigm": "VIII-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_VIII_DOUBLED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "VIII",
+      "weak": "مضاعف"
+    },
+    "example_root": "شد",
+    "example_word": "اِشْتِدَاد",
+    "notes": "Masdar of Form VIII مضاعف. E.g. اِشْتِدَاد from اِشْتَدَّ."
+  },
+  {
+    "وزن": "اِسْتِفْعَال (مضاعف)",
+    "transliteration": "is-tif-aal (doubled)",
+    "category": "MASDAR_WEAK",
+    "pos": "NOM",
+    "verb_form": "X",
+    "paradigm": "X-doubled",
+    "semantic_role": "VERBAL_NOUN_FORM_X_DOUBLED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "X",
+      "weak": "مضاعف"
+    },
+    "example_root": "مر",
+    "example_word": "اِسْتِمْرَار",
+    "notes": "Masdar of Form X مضاعف. E.g. اِسْتِمْرَار from اِسْتَمَرَّ."
+  },
+  {
+    "وزن": "فِعَلَاء",
+    "transliteration": "fi-a-laa",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "علم",
+    "example_word": "عُلَمَاء",
+    "notes": "فِعَلَاء pattern. E.g. عِلَمَاء from عَالِم."
+  },
+  {
+    "وزن": "فُعَلَى",
+    "transliteration": "fu-a-laa",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "حبل",
+    "example_word": "حُبَلَى",
+    "notes": "فُعَلَى pattern. E.g. حُبَلَى (plural of حُبْلَى)."
+  },
+  {
+    "وزن": "فِعَالَى",
+    "transliteration": "fi-aa-laa",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "يتم",
+    "example_word": "يَتَامَى",
+    "notes": "فِعَالَى pattern. E.g. يَتَامَى from يَتِيم."
+  },
+  {
+    "وزن": "فَعَاوِل",
+    "transliteration": "fa-aa-wil",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "قعد",
+    "example_word": "قَوَاعِد",
+    "notes": "فَعَاوِل pattern for أجوف nouns. E.g. قَوَاعِد from قَاعِدَة."
+  },
+  {
+    "وزن": "فَيَاعِل",
+    "transliteration": "fa-yaa-il",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "سيس",
+    "example_word": "سَيَاسِي",
+    "notes": "فَيَاعِل pattern for أجوف يائي nouns. E.g. سَيَاسَات (by analogy)."
+  },
+  {
+    "وزن": "فُعُولَات",
+    "transliteration": "fu-uu-laat",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "عقل",
+    "example_word": "عُقُولَات",
+    "notes": "فُعُولَات pattern. Plural of فُعُول plurals. E.g. عُقُولَات."
+  },
+  {
+    "وزن": "فِعَالَات",
+    "transliteration": "fi-aa-laat",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "رسل",
+    "example_word": "رِسَالَات",
+    "notes": "فِعَالَات pattern. Plural of فِعَال nouns. E.g. رِسَالَات."
+  },
+  {
+    "وزن": "فُعَّلَاء",
+    "transliteration": "fu-a-laa (geminate)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "حكم",
+    "example_word": "حُكَّمَاء",
+    "notes": "فُعَّلَاء pattern. E.g. حُكَّمَاء (variant)."
+  },
+  {
+    "وزن": "فِعَال (نادر)",
+    "transliteration": "fi-aal (rare plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "جبل",
+    "example_word": "جِبَال",
+    "notes": "فِعَال as plural (not masdar). E.g. جِبَال from جَبَل."
+  },
+  {
+    "وزن": "فُعُل (جمع)",
+    "transliteration": "fu-ul (plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "كتب",
+    "example_word": "كُتُب",
+    "notes": "فُعُل plural pattern. E.g. كُتُب from كِتَاب."
+  },
+  {
+    "وزن": "فُعَل (جمع)",
+    "transliteration": "fu-a (plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "غرف",
+    "example_word": "غُرَف",
+    "notes": "فُعَل plural pattern. E.g. غُرَف from غُرْفَة."
+  },
+  {
+    "وزن": "فِعَل (جمع)",
+    "transliteration": "fi-a (plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "قطع",
+    "example_word": "قِطَع",
+    "notes": "فِعَل plural pattern. E.g. قِطَع from قِطْعَة."
+  },
+  {
+    "وزن": "أَفْعُل (جمع)",
+    "transliteration": "af-ul (plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "نفس",
+    "example_word": "أَنْفُس",
+    "notes": "أَفْعُل plural pattern. E.g. أَنْفُس from نَفْس."
+  },
+  {
+    "وزن": "فَعِيل (جمع تكسير)",
+    "transliteration": "fa-iil (broken plural)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "كرم",
+    "example_word": "كِرَام",
+    "notes": "فَعِيل as broken plural. E.g. كَرِيم → كِرَام (by shift)."
+  },
+  {
+    "وزن": "فُعَلَاء (نادر)",
+    "transliteration": "fu-a-laa (rare)",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "أمن",
+    "example_word": "أُمَنَاء",
+    "notes": "فُعَلَاء rare plural. E.g. أُمَنَاء from أَمِين."
+  },
+  {
+    "وزن": "فَعَالِيَة",
+    "transliteration": "fa-aa-li-ya",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "عبقر",
+    "example_word": "عَبَاقِرَة",
+    "notes": "فَعَالِيَة pattern. E.g. عَبَاقِرَة from عَبْقَرِيّ."
+  },
+  {
+    "وزن": "فَعَاوِيل",
+    "transliteration": "fa-aa-wiil",
+    "category": "BROKEN_PLURAL_RARE",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "عصفر",
+    "example_word": "عَصَافِير",
+    "notes": "فَعَاوِيل pattern. E.g. عَصَافِير from عُصْفُور."
+  },
+  {
+    "وزن": "فَعْلَاء (مؤنث أفعل)",
+    "transliteration": "fa-laa (fem. of af-al)",
+    "category": "ADJECTIVE_COLOR_DEFECT",
+    "pos": "ADJ",
+    "verb_form": null,
+    "semantic_role": "COLOR_DEFECT_FEMININE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "COLOR_DEFECT",
+      "gender": "F"
+    },
+    "example_root": "حمر",
+    "example_word": "حَمْرَاء",
+    "notes": "Feminine of أَفْعَل color/defect adjective. Diptote. E.g. حَمْرَاء from أَحْمَر."
+  },
+  {
+    "وزن": "فَعِيلَة",
+    "transliteration": "fa-ii-la",
+    "category": "ADJECTIVE",
+    "pos": "ADJ",
+    "verb_form": null,
+    "semantic_role": "QUALITY_FEMININE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "QUALITY",
+      "gender": "F"
+    },
+    "example_root": "كرم",
+    "example_word": "كَرِيمَة",
+    "notes": "Feminine form of فَعِيل adjective. E.g. كَرِيمَة from كَرِيم."
+  },
+  {
+    "وزن": "فَعَّالِيَّة",
+    "transliteration": "fa-aa-li-yya",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "ABSTRACT_QUALITY",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ABSTRACT_NOUN"
+    },
+    "example_root": "فعل",
+    "example_word": "فَعَّالِيَّة",
+    "notes": "Abstract noun pattern denoting effectiveness/productivity. Modern Arabic. E.g. فَعَّالِيَّة (effectiveness)."
+  },
+  {
+    "وزن": "مَفْعُولِيَّة",
+    "transliteration": "maf-uu-li-yya",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "ABSTRACT_PASSIVE_QUALITY",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ABSTRACT_NOUN"
+    },
+    "example_root": "فعل",
+    "example_word": "مَفْعُولِيَّة",
+    "notes": "Abstract noun from passive participle + ية. Denotes the state of being acted upon."
+  },
+  {
+    "وزن": "فَاعِلِيَّة",
+    "transliteration": "faa-i-li-yya",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "ABSTRACT_ACTIVE_QUALITY",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ABSTRACT_NOUN"
+    },
+    "example_root": "فعل",
+    "example_word": "فَاعِلِيَّة",
+    "notes": "Abstract noun from active participle + ية. Denotes agency or effectiveness."
+  },
+  {
+    "وزن": "فُعَالِيَّة",
+    "transliteration": "fu-aa-li-yya",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "ABSTRACT_NOUN_FUAALIYYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ABSTRACT_NOUN"
+    },
+    "example_root": "بشر",
+    "example_word": "بُشَارِيَّة",
+    "notes": "Abstract noun pattern. Rare. Derived from فُعَال nouns."
+  },
+  {
+    "وزن": "فِعَالِيَّة",
+    "transliteration": "fi-aa-li-yya",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "ABSTRACT_NOUN_FIAALIIYYA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ABSTRACT_NOUN"
+    },
+    "example_root": "كتب",
+    "example_word": "كِتَابِيَّة",
+    "notes": "Abstract noun from فِعَال nouns + ية. E.g. كِتَابِيَّة (literariness)."
+  },
+  {
+    "وزن": "سَأَلَ / يَسْأَلُ",
+    "transliteration": "sa-a-la / yas-a-lu",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-hamza-second",
+    "semantic_role": "ACTION_HAMZA_SECOND",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مهموز العين",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز"
+    },
+    "masdar_patterns": [
+      "سُؤَال",
+      "مَسْأَلَة"
+    ],
+    "active_participle": "سَائِل",
+    "passive_participle": "مَسْؤُول",
+    "example_root": "سأل",
+    "example_word": "سَأَلَ / يَسْأَلُ",
+    "notes": "مهموز العين (hamza as second radical). Hamza follows standard orthographic rules."
+  },
+  {
+    "وزن": "قَرَأَ / يَقْرَأُ",
+    "transliteration": "qa-ra-a / yaq-ra-u",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-hamza-third",
+    "semantic_role": "ACTION_HAMZA_THIRD",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مهموز اللام",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز"
+    },
+    "masdar_patterns": [
+      "قِرَاءَة",
+      "قُرْآن"
+    ],
+    "active_participle": "قَارِئ",
+    "passive_participle": "مَقْرُوء",
+    "example_root": "قرأ",
+    "example_word": "قَرَأَ / يَقْرَأُ",
+    "notes": "مهموز اللام (hamza as third radical). Hamza seat changes based on surrounding vowels."
+  },
+  {
+    "وزن": "أَكَلَ / يَأْكُلُ",
+    "transliteration": "a-ka-la / ya'-ku-lu",
+    "category": "VERB_HAMZA",
+    "pos": "VERB",
+    "verb_form": "I",
+    "paradigm": "I-hamza-first",
+    "semantic_role": "ACTION_HAMZA_FIRST",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مهموز الفاء",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "I",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز"
+    },
+    "masdar_patterns": [
+      "أَكْل",
+      "إِكَال"
+    ],
+    "active_participle": "آكِل",
+    "passive_participle": "مَأْكُول",
+    "example_root": "أكل",
+    "example_word": "أَكَلَ / يَأْكُلُ",
+    "notes": "مهموز الفاء (hamza as first radical). Imperative: كُلْ (hamza drops). Active participle: آكِل (hamza+alif→madda)."
+  },
+  {
+    "وزن": "فَعَلَّل",
+    "transliteration": "fa-a-lal (geminate)",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "QUINQUELITERAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "NOUN"
+    },
+    "example_root": "سفرجل",
+    "example_word": "سَفَرْجَل",
+    "notes": "Quinqueliteral (خماسي) noun pattern. E.g. سَفَرْجَل (quince)."
+  },
+  {
+    "وزن": "فَعَلْعَل",
+    "transliteration": "fa-a-la-al",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "QUINQUELITERAL_REDUPLICATED",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "NOUN"
+    },
+    "example_root": "صمحمح",
+    "example_word": "صَمَحْمَح",
+    "notes": "Quinqueliteral reduplicated pattern. E.g. صَمَحْمَح (strong man)."
+  },
+  {
+    "وزن": "فَعْلَلِيل",
+    "transliteration": "fa-la-liil",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "SEXILITERAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "NOUN"
+    },
+    "example_root": "عندليب",
+    "example_word": "عَنْدَلِيب",
+    "notes": "Six-consonant noun pattern. E.g. عَنْدَلِيب (nightingale)."
+  },
+  {
+    "وزن": "فِعِلَّى",
+    "transliteration": "fi-i-laa (geminate defective)",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "NOUN_GEMINATE_DEFECTIVE",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "NOUN"
+    },
+    "example_root": "هجرع",
+    "example_word": "هِجِرَّى",
+    "notes": "Rare pattern with geminate third radical and defective ending. E.g. هِجِرَّى."
+  },
+  {
+    "وزن": "فُعَالَى",
+    "transliteration": "fu-aa-laa",
+    "category": "FROZEN_NOUN",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "NOUN_FUAALAA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "NOUN"
+    },
+    "example_root": "سكر",
+    "example_word": "سُكَارَى",
+    "notes": "Pattern فُعَالَى. E.g. سُكَارَى (drunkards — plural/adjective)."
+  },
+  {
+    "وزن": "مَفْعِيل",
+    "transliteration": "maf-iil",
+    "category": "MASDAR_MIMI",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-ajwaf",
+    "semantic_role": "MASDAR_MIMI_HOLLOW",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "MASDAR_MIMI",
+      "form": "I",
+      "weak": "أجوف"
+    },
+    "example_root": "سير",
+    "example_word": "مَسِير",
+    "notes": "Masdar mimi for أجوف verbs. E.g. مَسِير from سَارَ. Also functions as place/time noun."
+  },
+  {
+    "وزن": "مَفْعِيَة",
+    "transliteration": "maf-i-ya",
+    "category": "PLACE_TIME_NOUN",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I-naqis-ya",
+    "semantic_role": "PLACE_TIME_DEFECTIVE_YA",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PLACE_TIME",
+      "form": "I",
+      "weak": "ناقص يائي"
+    },
+    "example_root": "رمي",
+    "example_word": "مَرْمِيَة",
+    "notes": "Place/time noun for ناقص يائي verbs."
+  },
+  {
+    "وزن": "فَعَالِيّ",
+    "transliteration": "fa-aa-lii",
+    "category": "RELATIVE_ADJECTIVE",
+    "pos": "ADJ",
+    "verb_form": null,
+    "semantic_role": "RELATIVE_ADJECTIVE_PLURAL_BASE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "NISBA"
+    },
+    "example_root": "عراق",
+    "example_word": "عَرَاقِيّ",
+    "notes": "Relative adjective from plural-base nouns. E.g. عَرَاقِيّ from عِرَاق."
+  },
+  {
+    "وزن": "فُعَلِيّ",
+    "transliteration": "fu-a-lii",
+    "category": "RELATIVE_ADJECTIVE",
+    "pos": "ADJ",
+    "verb_form": null,
+    "semantic_role": "RELATIVE_ADJECTIVE_BROKEN_PLURAL_BASE",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "ADJ",
+      "role": "NISBA"
+    },
+    "example_root": "دول",
+    "example_word": "دُوَلِيّ",
+    "notes": "Relative adjective from broken plural base. E.g. دُوَلِيّ from دُوَل (plural of دَوْلَة)."
+  },
+  {
+    "وزن": "فَعَّأَ / يُفَعِّئُ",
+    "transliteration": "fa-a-a / yu-fa-i-u (hamza third)",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "II",
+    "paradigm": "II-hamza-third",
+    "semantic_role": "CAUSATIVE_HAMZA",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "مهموز اللام في باب التفعيل",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "II",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "مهموز"
+    },
+    "masdar_patterns": [
+      "تَفْعِئَة",
+      "تَفْعِيء"
+    ],
+    "active_participle": "مُفَعِّئ",
+    "passive_participle": "مُفَعَّأ",
+    "example_root": "هيأ",
+    "example_word": "هَيَّأَ / يُهَيِّئُ",
+    "notes": "Form II with hamza as third radical. Masdar: تَهْيِئَة. Hamza seat follows vowel harmony."
+  },
+  {
+    "وزن": "اِسْتَفَالَ / يَسْتَفِيلُ",
+    "transliteration": "is-ta-faa-la / yas-ta-fii-lu",
+    "category": "VERB_AUGMENTED",
+    "pos": "VERB",
+    "verb_form": "X",
+    "paradigm": "X-ajwaf",
+    "semantic_role": "REQUESTIVE_HOLLOW",
+    "transitivity": "TRANSITIVE",
+    "weak_type": "أجوف في باب الاستفعال",
+    "tags_implied": {
+      "pos": "VERB",
+      "form": "X",
+      "tense": "PAST",
+      "voice": "ACT",
+      "weak": "أجوف"
+    },
+    "masdar_patterns": [
+      "اِسْتِفَالَة"
+    ],
+    "active_participle": "مُسْتَفِيل",
+    "passive_participle": "مُسْتَفَال",
+    "example_root": "قوم",
+    "example_word": "اِسْتَقَامَ / يَسْتَقِيمُ",
+    "notes": "Form X أجوف. Middle radical surfaces as long vowel. Masdar: اِسْتِقَامَة (اِسْتِفَالَة pattern)."
+  },
+  {
+    "وزن": "فِعَالَة",
+    "transliteration": "fi-aa-la",
+    "category": "BROKEN_PLURAL",
+    "pos": "NOM",
+    "verb_form": null,
+    "semantic_role": "BROKEN_PLURAL",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "BROKEN_PLURAL"
+    },
+    "example_root": "حجر",
+    "example_word": "حِجَارَة",
+    "notes": "Rare broken plural pattern فِعَالَة. E.g. حِجَارَة from حَجَر (stone). Ends in ة which here is not a feminine marker but a plural marker."
+  },
+  {
+    "وزن": "فَعَال",
+    "transliteration": "fa-aal",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "كلم",
+    "example_word": "كَلَام",
+    "notes": "Form I masdar pattern فَعَال. Common for speech/sound verbs. E.g. كَلَام (speech), سَلَام (peace), جَمَال (beauty)."
+  },
+  {
+    "وزن": "فُعْلَة",
+    "transliteration": "fu-la",
+    "category": "MASDAR",
+    "pos": "NOM",
+    "verb_form": "I",
+    "paradigm": "I",
+    "semantic_role": "VERBAL_NOUN",
+    "gender": "F",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "VERBAL_NOUN",
+      "form": "I"
+    },
+    "example_root": "غرف",
+    "example_word": "غُرْفَة",
+    "notes": "Form I masdar/noun pattern فُعْلَة. E.g. غُرْفَة (room/handful), لُقْمَة (morsel). Also functions as noun of instance."
+  },
+  {
+    "وزن": "مُنْفَعَل",
+    "transliteration": "mun-fa-al",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "VII",
+    "paradigm": "VII-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_VII",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "VII"
+    },
+    "example_root": "كسر",
+    "example_word": "مُنْكَسَر",
+    "notes": "Passive participle of Form VII. Theoretically مُنْفَعَل but Form VII is inherently intransitive/inchoative so passive use is extremely rare. Attested in some classical texts as adjectival."
+  },
+  {
+    "وزن": "مُفْعَلّ (مفعول)",
+    "transliteration": "muf-al (passive)",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "IX",
+    "paradigm": "IX-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_IX",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "IX"
+    },
+    "example_root": "حمر",
+    "example_word": "مُحْمَرّ",
+    "notes": "Form IX has no true passive participle (always intransitive). مُفْعَلّ functions as both active and stative participle. E.g. مُحْمَرّ (reddened)."
+  },
+  {
+    "وزن": "مُفْعَالّ",
+    "transliteration": "muf-aal (geminate)",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "XI",
+    "paradigm": "XI-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_XI",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "XI"
+    },
+    "example_root": "حمر",
+    "example_word": "مُحْمَارّ",
+    "notes": "Active participle of Form XI (اِفْعَالَّ). Intensive color/quality. E.g. مُحْمَارّ (intensely reddening). Form XI is intransitive so no passive participle."
+  },
+  {
+    "وزن": "مُفْعَوْعِل",
+    "transliteration": "muf-aw-il",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "XII",
+    "paradigm": "XII-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_XII",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "XII"
+    },
+    "example_root": "خشن",
+    "example_word": "مُخْشَوْشِن",
+    "notes": "Active participle of Form XII (اِفْعَوْعَلَ). E.g. مُخْشَوْشِن. Form XII is intransitive so no passive participle."
+  },
+  {
+    "وزن": "مُفْعَوِّل",
+    "transliteration": "muf-aw-wil",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "XIII",
+    "paradigm": "XIII-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_XIII",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "XIII"
+    },
+    "example_root": "جلوذ",
+    "example_word": "مُجْلَوِّذ",
+    "notes": "Active participle of Form XIII (اِفْعَوَّلَ). Very rare. Form XIII is intransitive so no passive participle."
+  },
+  {
+    "وزن": "مُتَفَعْلَل",
+    "transliteration": "mu-ta-fa-lal",
+    "category": "PASSIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-II",
+    "paradigm": "Q-II-passive-participle",
+    "semantic_role": "PASSIVE_PARTICIPLE_FORM_Q_II",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "PASSIVE_PARTICIPLE",
+      "form": "Q-II"
+    },
+    "example_root": "دحرج",
+    "example_word": "مُتَدَحْرَج",
+    "notes": "Passive participle of Form Q-II (تَفَعْلَلَ). Rare since Q-II is typically reflexive/intransitive. E.g. مُتَدَحْرَج."
+  },
+  {
+    "وزن": "مُفْعَلِلّ",
+    "transliteration": "muf-a-lil (geminate)",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-III",
+    "paradigm": "Q-III-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_Q_III",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "Q-III"
+    },
+    "example_root": "طمأن",
+    "example_word": "مُطْمَئِنّ",
+    "notes": "Active participle of Form Q-III (اِفْعَلَلَّ). E.g. مُطْمَئِنّ (tranquil). Form Q-III is intransitive so no passive participle."
+  },
+  {
+    "وزن": "مُفْعَنْلِل",
+    "transliteration": "muf-an-lil",
+    "category": "ACTIVE_PARTICIPLE",
+    "pos": "NOM",
+    "verb_form": "Q-IV",
+    "paradigm": "Q-IV-active-participle",
+    "semantic_role": "ACTIVE_PARTICIPLE_FORM_Q_IV",
+    "gender": "M",
+    "tags_implied": {
+      "pos": "NOM",
+      "role": "ACTIVE_PARTICIPLE",
+      "form": "Q-IV"
+    },
+    "example_root": "حرجم",
+    "example_word": "مُحْرَنْجِم",
+    "notes": "Active participle of Form Q-IV (اِفْعَنْلَلَ). Very rare. E.g. مُحْرَنْجِم. Form Q-IV is intransitive so no passive participle."
+  }
+]

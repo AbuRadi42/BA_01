@@ -1,0 +1,1472 @@
+[
+  {
+    "logical": "PL",
+    "surface_variants": [
+      "-lar",
+      "-ler"
+    ],
+    "harmony_rule": "back→-lar, front→-ler",
+    "slot": "NUM",
+    "slot_order": 2,
+    "word_class": "NOUN",
+    "function": "Plural number",
+    "dilbilgisi_term": "Çoğul eki",
+    "tags": {
+      "num": "PL"
+    },
+    "example": "ev→evler, araba→arabalar"
+  },
+  {
+    "logical": "POSS_1SG",
+    "surface_variants": [
+      "-ım",
+      "-im",
+      "-um",
+      "-üm",
+      "-m"
+    ],
+    "harmony_rule": "back-unrnd→-ım, front-unrnd→-im, back-rnd→-um, front-rnd→-üm; after vowel→-m",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "1SG possessive",
+    "dilbilgisi_term": "1. tekil şahıs iyelik",
+    "tags": {
+      "poss": "1SG"
+    },
+    "example": "ev→evim, araba→arabam"
+  },
+  {
+    "logical": "POSS_2SG",
+    "surface_variants": [
+      "-ın",
+      "-in",
+      "-un",
+      "-ün",
+      "-n"
+    ],
+    "harmony_rule": "back-unrnd→-ın, front-unrnd→-in, back-rnd→-un, front-rnd→-ün; after vowel→-n",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "2SG possessive",
+    "dilbilgisi_term": "2. tekil şahıs iyelik",
+    "tags": {
+      "poss": "2SG"
+    },
+    "example": "ev→evin, araba→araban"
+  },
+  {
+    "logical": "POSS_3SG",
+    "surface_variants": [
+      "-ı",
+      "-i",
+      "-u",
+      "-ü",
+      "-sı",
+      "-si",
+      "-su",
+      "-sü"
+    ],
+    "harmony_rule": "after consonant: back-unrnd→-ı, front-unrnd→-i, back-rnd→-u, front-rnd→-ü; after vowel: +s buffer",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "3SG possessive",
+    "dilbilgisi_term": "3. tekil şahıs iyelik",
+    "tags": {
+      "poss": "3SG"
+    },
+    "example": "ev→evi, araba→arabası"
+  },
+  {
+    "logical": "POSS_1PL",
+    "surface_variants": [
+      "-ımız",
+      "-imiz",
+      "-umuz",
+      "-ümüz",
+      "-mız",
+      "-miz",
+      "-muz",
+      "-müz"
+    ],
+    "harmony_rule": "4-way vowel harmony; after vowel drop initial vowel",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "1PL possessive",
+    "dilbilgisi_term": "1. çoğul şahıs iyelik",
+    "tags": {
+      "poss": "1PL"
+    },
+    "example": "ev→evimiz, araba→arabamız"
+  },
+  {
+    "logical": "POSS_2PL",
+    "surface_variants": [
+      "-ınız",
+      "-iniz",
+      "-unuz",
+      "-ünüz",
+      "-nız",
+      "-niz",
+      "-nuz",
+      "-nüz"
+    ],
+    "harmony_rule": "4-way vowel harmony; after vowel drop initial vowel",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "2PL possessive",
+    "dilbilgisi_term": "2. çoğul şahıs iyelik",
+    "tags": {
+      "poss": "2PL"
+    },
+    "example": "ev→eviniz, araba→arabanız"
+  },
+  {
+    "logical": "POSS_3PL",
+    "surface_variants": [
+      "-ları",
+      "-leri"
+    ],
+    "harmony_rule": "back→-ları, front→-leri",
+    "slot": "POSS",
+    "slot_order": 3,
+    "word_class": "NOUN",
+    "function": "3PL possessive",
+    "dilbilgisi_term": "3. çoğul şahıs iyelik",
+    "tags": {
+      "poss": "3PL"
+    },
+    "example": "ev→evleri, araba→arabaları"
+  },
+  {
+    "logical": "NOM",
+    "surface_variants": [],
+    "harmony_rule": "zero suffix (unmarked)",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Nominative (absolutive) — subject / bare noun",
+    "dilbilgisi_term": "Yalın hal",
+    "tags": {
+      "case": "NOM"
+    },
+    "example": "ev (house)"
+  },
+  {
+    "logical": "ACC",
+    "surface_variants": [
+      "-ı",
+      "-i",
+      "-u",
+      "-ü",
+      "-yı",
+      "-yi",
+      "-yu",
+      "-yü"
+    ],
+    "harmony_rule": "4-way harmony; after vowel +y buffer",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Accusative — definite direct object",
+    "dilbilgisi_term": "Belirtme hali",
+    "tags": {
+      "case": "ACC"
+    },
+    "example": "evi gördüm (I saw the house)"
+  },
+  {
+    "logical": "DAT",
+    "surface_variants": [
+      "-a",
+      "-e",
+      "-ya",
+      "-ye"
+    ],
+    "harmony_rule": "back→-a, front→-e; after vowel +y buffer",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Dative — direction, indirect object",
+    "dilbilgisi_term": "Yönelme hali",
+    "tags": {
+      "case": "DAT"
+    },
+    "example": "eve gittim (I went home)"
+  },
+  {
+    "logical": "LOC",
+    "surface_variants": [
+      "-da",
+      "-de",
+      "-ta",
+      "-te"
+    ],
+    "harmony_rule": "back-voiced→-da, front-voiced→-de; after voiceless→-ta/-te",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Locative — location, at/in/on",
+    "dilbilgisi_term": "Bulunma hali",
+    "tags": {
+      "case": "LOC"
+    },
+    "example": "evde (at home)"
+  },
+  {
+    "logical": "ABL",
+    "surface_variants": [
+      "-dan",
+      "-den",
+      "-tan",
+      "-ten"
+    ],
+    "harmony_rule": "back-voiced→-dan, front-voiced→-den; after voiceless→-tan/-ten",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Ablative — source, from",
+    "dilbilgisi_term": "Uzaklaşma hali",
+    "tags": {
+      "case": "ABL"
+    },
+    "example": "evden (from home)"
+  },
+  {
+    "logical": "GEN",
+    "surface_variants": [
+      "-ın",
+      "-in",
+      "-un",
+      "-ün",
+      "-nın",
+      "-nin",
+      "-nun",
+      "-nün"
+    ],
+    "harmony_rule": "4-way harmony; after vowel +n buffer",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Genitive — possession, of",
+    "dilbilgisi_term": "İlgi hali",
+    "tags": {
+      "case": "GEN"
+    },
+    "example": "evin (of the house)"
+  },
+  {
+    "logical": "INS",
+    "surface_variants": [
+      "-la",
+      "-le",
+      "-yla",
+      "-yle"
+    ],
+    "harmony_rule": "back→-la, front→-le; after vowel +y buffer",
+    "slot": "CASE",
+    "slot_order": 4,
+    "word_class": "NOUN",
+    "function": "Instrumental/comitative — with, by means of",
+    "dilbilgisi_term": "Araç hali",
+    "tags": {
+      "case": "INS"
+    },
+    "example": "arabayla (by car)"
+  },
+  {
+    "logical": "PASS",
+    "surface_variants": [
+      "-ıl",
+      "-il",
+      "-ul",
+      "-ül",
+      "-l"
+    ],
+    "harmony_rule": "4-way harmony; after vowel→-l",
+    "slot": "VOICE",
+    "slot_order": 5,
+    "word_class": "VERB",
+    "function": "Passive voice",
+    "dilbilgisi_term": "Edilgen çatı",
+    "tags": {
+      "voice": "PASS"
+    },
+    "example": "yaz→yazılmak (to be written)"
+  },
+  {
+    "logical": "CAUS",
+    "surface_variants": [
+      "-tır",
+      "-tir",
+      "-tur",
+      "-tür",
+      "-dır",
+      "-dir",
+      "-dur",
+      "-dür",
+      "-t",
+      "-ır",
+      "-ir",
+      "-ur",
+      "-ür",
+      "-ar",
+      "-er"
+    ],
+    "harmony_rule": "after voiceless stop→-t; after short vowel→-t; otherwise 4-way harmony -tır/-tir/-tur/-tür or -dır/-dir/-dur/-dür",
+    "slot": "VOICE",
+    "slot_order": 5,
+    "word_class": "VERB",
+    "function": "Causative voice",
+    "dilbilgisi_term": "Ettirgen çatı",
+    "tags": {
+      "voice": "CAUS"
+    },
+    "example": "yaz→yazdırmak (to make write)"
+  },
+  {
+    "logical": "RECIP",
+    "surface_variants": [
+      "-ış",
+      "-iş",
+      "-uş",
+      "-üş",
+      "-ş"
+    ],
+    "harmony_rule": "4-way harmony; after vowel→-ş",
+    "slot": "VOICE",
+    "slot_order": 5,
+    "word_class": "VERB",
+    "function": "Reciprocal voice",
+    "dilbilgisi_term": "İşteş çatı",
+    "tags": {
+      "voice": "RECIP"
+    },
+    "example": "bak→bakışmak (to look at each other)"
+  },
+  {
+    "logical": "REFL",
+    "surface_variants": [
+      "-ın",
+      "-in",
+      "-un",
+      "-ün",
+      "-n"
+    ],
+    "harmony_rule": "4-way harmony; after vowel→-n",
+    "slot": "VOICE",
+    "slot_order": 5,
+    "word_class": "VERB",
+    "function": "Reflexive voice",
+    "dilbilgisi_term": "Dönüşlü çatı",
+    "tags": {
+      "voice": "REFL"
+    },
+    "example": "yıka→yıkanmak (to wash oneself)"
+  },
+  {
+    "logical": "NEG",
+    "surface_variants": [
+      "-ma",
+      "-me"
+    ],
+    "harmony_rule": "back→-ma, front→-me",
+    "slot": "NEG",
+    "slot_order": 6,
+    "word_class": "VERB",
+    "function": "Verbal negation",
+    "dilbilgisi_term": "Olumsuzluk eki",
+    "tags": {
+      "polarity": "NEG"
+    },
+    "example": "git→gitmemek (not to go)"
+  },
+  {
+    "logical": "PAST_DEF",
+    "surface_variants": [
+      "-dı",
+      "-di",
+      "-du",
+      "-dü",
+      "-tı",
+      "-ti",
+      "-tu",
+      "-tü"
+    ],
+    "harmony_rule": "4-way harmony; after voiceless→-tı/-ti/-tu/-tü",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Definite (witnessed) past tense — direct evidential",
+    "dilbilgisi_term": "Görülen geçmiş zaman",
+    "tags": {
+      "tense": "PAST_DEF"
+    },
+    "example": "gitti (he/she went — I saw it)"
+  },
+  {
+    "logical": "PAST_NARR",
+    "surface_variants": [
+      "-mış",
+      "-miş",
+      "-muş",
+      "-müş"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Narrative (inferential/reported) past tense — indirect evidential",
+    "dilbilgisi_term": "Öğrenilen geçmiş zaman",
+    "tags": {
+      "tense": "PAST_NARR"
+    },
+    "example": "gitmiş (he/she apparently went — I heard/inferred)"
+  },
+  {
+    "logical": "PRES_PROG",
+    "surface_variants": [
+      "-iyor",
+      "-ıyor",
+      "-uyor",
+      "-üyor"
+    ],
+    "harmony_rule": "4-way harmony; stem-final vowel may drop",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Present progressive — ongoing action",
+    "dilbilgisi_term": "Şimdiki zaman",
+    "tags": {
+      "tense": "PRES_PROG",
+      "aspect": "PROG"
+    },
+    "example": "gidiyor (he/she is going)"
+  },
+  {
+    "logical": "PRES_AORIST",
+    "surface_variants": [
+      "-ar",
+      "-er",
+      "-ır",
+      "-ir",
+      "-ur",
+      "-ür",
+      "-r"
+    ],
+    "harmony_rule": "monosyllabic stems: -ar/-er; polysyllabic: -ır/-ir/-ur/-ür; after vowel: -r",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Aorist — habitual, general truth, future in context",
+    "dilbilgisi_term": "Geniş zaman",
+    "tags": {
+      "tense": "PRES_AORIST",
+      "aspect": "HAB"
+    },
+    "example": "gider (he/she goes / will go)"
+  },
+  {
+    "logical": "FUT",
+    "surface_variants": [
+      "-acak",
+      "-ecek"
+    ],
+    "harmony_rule": "back→-acak, front→-ecek; after vowel: -yacak/-yecek",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Future tense",
+    "dilbilgisi_term": "Gelecek zaman",
+    "tags": {
+      "tense": "FUT"
+    },
+    "example": "gidecek (he/she will go)"
+  },
+  {
+    "logical": "PAST_COND",
+    "surface_variants": [
+      "-dıydı",
+      "-diydı",
+      "-duydu",
+      "-düydü",
+      "-tıydı",
+      "-tiydı"
+    ],
+    "harmony_rule": "PAST_DEF + idi compound",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Past of past — pluperfect / remote past",
+    "dilbilgisi_term": "Geçmiş zamanın hikâyesi",
+    "tags": {
+      "tense": "PAST_DEF",
+      "aspect": "PERF"
+    },
+    "example": "gitmişti (he/she had gone)"
+  },
+  {
+    "logical": "NARR_COND",
+    "surface_variants": [
+      "-mıştı",
+      "-mişti",
+      "-muştu",
+      "-müştü"
+    ],
+    "harmony_rule": "PAST_NARR + idi compound",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Narrative past of past — reported pluperfect",
+    "dilbilgisi_term": "Öğrenilen geçmişin hikâyesi",
+    "tags": {
+      "tense": "PAST_NARR",
+      "aspect": "PERF"
+    },
+    "example": "gitmiş imiş (he/she had apparently gone)"
+  },
+  {
+    "logical": "COND",
+    "surface_variants": [
+      "-sa",
+      "-se"
+    ],
+    "harmony_rule": "back→-sa, front→-se",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Conditional mood — if",
+    "dilbilgisi_term": "Şart kipi",
+    "tags": {
+      "mood": "COND"
+    },
+    "example": "giderse (if he/she goes)"
+  },
+  {
+    "logical": "OPT",
+    "surface_variants": [
+      "-a",
+      "-e",
+      "-ya",
+      "-ye"
+    ],
+    "harmony_rule": "back→-a, front→-e; after vowel +y buffer",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Optative mood — let/may (1st person wish)",
+    "dilbilgisi_term": "İstek kipi",
+    "tags": {
+      "mood": "OPT"
+    },
+    "example": "gide (let him/her go)"
+  },
+  {
+    "logical": "IMP_2SG",
+    "surface_variants": [
+      "-∅ (zero)"
+    ],
+    "harmony_rule": "bare stem = 2SG imperative",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Imperative 2SG — direct command",
+    "dilbilgisi_term": "Emir kipi 2. tekil",
+    "tags": {
+      "mood": "IMP",
+      "person": "2",
+      "num": "SG"
+    },
+    "example": "git! (go!)"
+  },
+  {
+    "logical": "IMP_2PL",
+    "surface_variants": [
+      "-ın",
+      "-in",
+      "-un",
+      "-ün"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Imperative 2PL — plural command",
+    "dilbilgisi_term": "Emir kipi 2. çoğul",
+    "tags": {
+      "mood": "IMP",
+      "person": "2",
+      "num": "PL"
+    },
+    "example": "gidin! (go! — plural)"
+  },
+  {
+    "logical": "IMP_3SG",
+    "surface_variants": [
+      "-sın",
+      "-sin",
+      "-sun",
+      "-sün"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Imperative 3SG — let him/her",
+    "dilbilgisi_term": "Emir kipi 3. tekil",
+    "tags": {
+      "mood": "IMP",
+      "person": "3",
+      "num": "SG"
+    },
+    "example": "gitsin (let him/her go)"
+  },
+  {
+    "logical": "IMP_3PL",
+    "surface_variants": [
+      "-sınlar",
+      "-sinler",
+      "-sunlar",
+      "-sünler"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Imperative 3PL — let them",
+    "dilbilgisi_term": "Emir kipi 3. çoğul",
+    "tags": {
+      "mood": "IMP",
+      "person": "3",
+      "num": "PL"
+    },
+    "example": "gitsinler (let them go)"
+  },
+  {
+    "logical": "NECESS",
+    "surface_variants": [
+      "-malı",
+      "-meli"
+    ],
+    "harmony_rule": "back→-malı, front→-meli",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Necessitative mood — must/should",
+    "dilbilgisi_term": "Gereklilik kipi",
+    "tags": {
+      "mood": "NECESS"
+    },
+    "example": "gitmeli (he/she must go)"
+  },
+  {
+    "logical": "INF",
+    "surface_variants": [
+      "-mak",
+      "-mek"
+    ],
+    "harmony_rule": "back→-mak, front→-mek",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Infinitive — verbal noun / dictionary form",
+    "dilbilgisi_term": "Mastar",
+    "tags": {
+      "mood": "INF"
+    },
+    "example": "gitmek (to go)"
+  },
+  {
+    "logical": "P1SG",
+    "surface_variants": [
+      "-ım",
+      "-im",
+      "-um",
+      "-üm",
+      "-m"
+    ],
+    "harmony_rule": "4-way harmony; after vowel→-m",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "1st person singular agreement",
+    "dilbilgisi_term": "1. tekil şahıs",
+    "tags": {
+      "person": "1",
+      "num": "SG"
+    },
+    "example": "gidiyorum (I am going)"
+  },
+  {
+    "logical": "P2SG",
+    "surface_variants": [
+      "-sın",
+      "-sin",
+      "-sun",
+      "-sün"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "2nd person singular agreement",
+    "dilbilgisi_term": "2. tekil şahıs",
+    "tags": {
+      "person": "2",
+      "num": "SG"
+    },
+    "example": "gidiyorsun (you are going)"
+  },
+  {
+    "logical": "P3SG",
+    "surface_variants": [
+      "-∅ (zero)"
+    ],
+    "harmony_rule": "zero suffix",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "3rd person singular agreement",
+    "dilbilgisi_term": "3. tekil şahıs",
+    "tags": {
+      "person": "3",
+      "num": "SG"
+    },
+    "example": "gidiyor (he/she/it is going)"
+  },
+  {
+    "logical": "P1PL",
+    "surface_variants": [
+      "-ız",
+      "-iz",
+      "-uz",
+      "-üz",
+      "-z"
+    ],
+    "harmony_rule": "4-way harmony; after vowel→-z",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "1st person plural agreement",
+    "dilbilgisi_term": "1. çoğul şahıs",
+    "tags": {
+      "person": "1",
+      "num": "PL"
+    },
+    "example": "gidiyoruz (we are going)"
+  },
+  {
+    "logical": "P2PL",
+    "surface_variants": [
+      "-sınız",
+      "-siniz",
+      "-sunuz",
+      "-sünüz"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "2nd person plural agreement",
+    "dilbilgisi_term": "2. çoğul şahıs",
+    "tags": {
+      "person": "2",
+      "num": "PL"
+    },
+    "example": "gidiyorsunuz (you [pl] are going)"
+  },
+  {
+    "logical": "P3PL",
+    "surface_variants": [
+      "-lar",
+      "-ler"
+    ],
+    "harmony_rule": "back→-lar, front→-ler",
+    "slot": "PERSON_NUM",
+    "slot_order": 9,
+    "word_class": "VERB",
+    "function": "3rd person plural agreement",
+    "dilbilgisi_term": "3. çoğul şahıs",
+    "tags": {
+      "person": "3",
+      "num": "PL"
+    },
+    "example": "gidiyorlar (they are going)"
+  },
+  {
+    "logical": "VN_ACT",
+    "surface_variants": [
+      "-an",
+      "-en"
+    ],
+    "harmony_rule": "back→-an, front→-en",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Active participle / relative clause head — the one who Vs",
+    "dilbilgisi_term": "Sıfat-fiil (geniş zaman)",
+    "tags": {
+      "pos": "PART",
+      "aspect": "ACT"
+    },
+    "example": "giden (the one who goes)"
+  },
+  {
+    "logical": "VN_PAST",
+    "surface_variants": [
+      "-dık",
+      "-dik",
+      "-duk",
+      "-dük",
+      "-tık",
+      "-tik",
+      "-tuk",
+      "-tük"
+    ],
+    "harmony_rule": "4-way harmony; voicing assimilation",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Past participle / nominalized clause",
+    "dilbilgisi_term": "Sıfat-fiil (geçmiş)",
+    "tags": {
+      "pos": "PART",
+      "tense": "PAST"
+    },
+    "example": "gittiğim (the fact that I went)"
+  },
+  {
+    "logical": "VN_FUT",
+    "surface_variants": [
+      "-acak",
+      "-ecek"
+    ],
+    "harmony_rule": "back→-acak, front→-ecek",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Future participle / prospective nominalization",
+    "dilbilgisi_term": "Sıfat-fiil (gelecek)",
+    "tags": {
+      "pos": "PART",
+      "tense": "FUT"
+    },
+    "example": "gideceğim (what I will go / I will go)"
+  },
+  {
+    "logical": "CONV_WHEN",
+    "surface_variants": [
+      "-ınca",
+      "-ince",
+      "-unca",
+      "-ünce"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — when/as soon as",
+    "dilbilgisi_term": "Zarf-fiil (-ınca)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "WHEN"
+    },
+    "example": "gelince (when he/she comes)"
+  },
+  {
+    "logical": "CONV_WHILE",
+    "surface_variants": [
+      "-arken",
+      "-erken"
+    ],
+    "harmony_rule": "back→-arken, front→-erken",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — while (simultaneous action)",
+    "dilbilgisi_term": "Zarf-fiil (-arken)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "WHILE"
+    },
+    "example": "giderken (while going)"
+  },
+  {
+    "logical": "CONV_BY",
+    "surface_variants": [
+      "-arak",
+      "-erek"
+    ],
+    "harmony_rule": "back→-arak, front→-erek",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — by doing, manner",
+    "dilbilgisi_term": "Zarf-fiil (-arak)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "MANNER"
+    },
+    "example": "koşarak (by running)"
+  },
+  {
+    "logical": "CONV_UNTIL",
+    "surface_variants": [
+      "-ana kadar",
+      "-ene kadar"
+    ],
+    "harmony_rule": "back→-ana, front→-ene + kadar",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — until",
+    "dilbilgisi_term": "Zarf-fiil (-ana kadar)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "UNTIL"
+    },
+    "example": "gelene kadar (until he/she comes)"
+  },
+  {
+    "logical": "CONV_WITHOUT",
+    "surface_variants": [
+      "-madan",
+      "-meden"
+    ],
+    "harmony_rule": "back→-madan, front→-meden",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — without doing",
+    "dilbilgisi_term": "Zarf-fiil (-madan)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "WITHOUT"
+    },
+    "example": "gitmeden (without going)"
+  },
+  {
+    "logical": "CONV_AFTER",
+    "surface_variants": [
+      "-dıktan sonra",
+      "-dikten sonra",
+      "-duktan sonra",
+      "-dükten sonra"
+    ],
+    "harmony_rule": "4-way harmony + sonra",
+    "slot": "NONFINITE",
+    "slot_order": 10,
+    "word_class": "VERB",
+    "function": "Converb — after doing",
+    "dilbilgisi_term": "Zarf-fiil (-dıktan sonra)",
+    "tags": {
+      "pos": "CONV",
+      "sem": "AFTER"
+    },
+    "example": "gittikten sonra (after going)"
+  },
+  {
+    "logical": "COP_PRES_1SG",
+    "surface_variants": [
+      "-ım",
+      "-im",
+      "-um",
+      "-üm"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 1SG — I am",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 1. tekil",
+    "tags": {
+      "cop": "PRES",
+      "person": "1",
+      "num": "SG"
+    },
+    "example": "öğrenciyim (I am a student)"
+  },
+  {
+    "logical": "COP_PRES_2SG",
+    "surface_variants": [
+      "-sın",
+      "-sin",
+      "-sun",
+      "-sün"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 2SG — you are",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 2. tekil",
+    "tags": {
+      "cop": "PRES",
+      "person": "2",
+      "num": "SG"
+    },
+    "example": "öğrencisin (you are a student)"
+  },
+  {
+    "logical": "COP_PRES_3SG",
+    "surface_variants": [
+      "-∅ (zero)"
+    ],
+    "harmony_rule": "zero suffix",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 3SG — he/she/it is",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 3. tekil",
+    "tags": {
+      "cop": "PRES",
+      "person": "3",
+      "num": "SG"
+    },
+    "example": "öğrenci (he/she is a student)"
+  },
+  {
+    "logical": "COP_PRES_1PL",
+    "surface_variants": [
+      "-ız",
+      "-iz",
+      "-uz",
+      "-üz"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 1PL — we are",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 1. çoğul",
+    "tags": {
+      "cop": "PRES",
+      "person": "1",
+      "num": "PL"
+    },
+    "example": "öğrenciyiz (we are students)"
+  },
+  {
+    "logical": "COP_PRES_2PL",
+    "surface_variants": [
+      "-sınız",
+      "-siniz",
+      "-sunuz",
+      "-sünüz"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 2PL",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 2. çoğul",
+    "tags": {
+      "cop": "PRES",
+      "person": "2",
+      "num": "PL"
+    },
+    "example": "öğrencisiniz (you [pl] are students)"
+  },
+  {
+    "logical": "COP_PRES_3PL",
+    "surface_variants": [
+      "-lar",
+      "-ler"
+    ],
+    "harmony_rule": "back→-lar, front→-ler",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula present 3PL — they are",
+    "dilbilgisi_term": "Ek-fiil geniş zaman 3. çoğul",
+    "tags": {
+      "cop": "PRES",
+      "person": "3",
+      "num": "PL"
+    },
+    "example": "öğrenciler (they are students)"
+  },
+  {
+    "logical": "COP_PAST",
+    "surface_variants": [
+      "-dı",
+      "-di",
+      "-du",
+      "-dü",
+      "-tı",
+      "-ti",
+      "-tu",
+      "-tü"
+    ],
+    "harmony_rule": "4-way harmony + voicing",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula past — was/were",
+    "dilbilgisi_term": "Ek-fiil geçmiş zaman",
+    "tags": {
+      "cop": "PAST"
+    },
+    "example": "öğrenciydi (he/she was a student)"
+  },
+  {
+    "logical": "COP_COND",
+    "surface_variants": [
+      "-sa",
+      "-se"
+    ],
+    "harmony_rule": "back→-sa, front→-se",
+    "slot": "COPULA",
+    "slot_order": 11,
+    "word_class": "NOMINAL_PRED",
+    "function": "Copula conditional — if (one) is",
+    "dilbilgisi_term": "Ek-fiil şart kipi",
+    "tags": {
+      "cop": "COND"
+    },
+    "example": "öğrenciyse (if he/she is a student)"
+  },
+  {
+    "logical": "ABIL",
+    "surface_variants": [
+      "-ebil-",
+      "-abil-",
+      "-ubil-",
+      "-übil-",
+      "-yebil-",
+      "-yabil-"
+    ],
+    "harmony_rule": "back→-abil-, front→-ebil-; after vowel +y buffer; followed by full tense+person paradigm",
+    "slot": "ABIL",
+    "slot_order": 4.5,
+    "word_class": "VERB",
+    "function": "Ability / possibility — to be able to V, can V",
+    "dilbilgisi_term": "Yeterlilik kipi (-ebilmek)",
+    "tags": {
+      "modality": "ABIL"
+    },
+    "example": "gidebilmek (to be able to go), yapabilir (he/she can do)"
+  },
+  {
+    "logical": "ABIL_NEG",
+    "surface_variants": [
+      "-eme-",
+      "-ama-",
+      "-ume-",
+      "-üme-",
+      "-yeme-",
+      "-yama-"
+    ],
+    "harmony_rule": "back→-ama-, front→-eme-; after vowel +y buffer; contraction of -ebil- + NEG",
+    "slot": "ABIL",
+    "slot_order": 4.5,
+    "word_class": "VERB",
+    "function": "Inability / impossibility — cannot V, to be unable to V",
+    "dilbilgisi_term": "Olumsuz yeterlilik kipi (-ememek)",
+    "tags": {
+      "modality": "ABIL",
+      "polarity": "NEG"
+    },
+    "example": "gidemez (he/she cannot go), yapamıyor (he/she is unable to do)"
+  },
+  {
+    "logical": "EPIST",
+    "surface_variants": [
+      "-dır",
+      "-dir",
+      "-dur",
+      "-dür",
+      "-tır",
+      "-tir",
+      "-tur",
+      "-tür"
+    ],
+    "harmony_rule": "4-way harmony; after voiceless→-tır/-tir/-tur/-tür; attaches to 3SG present forms",
+    "slot": "EPIST",
+    "slot_order": 9.5,
+    "word_class": "VERB",
+    "function": "Epistemic / inferential marker — probably, must be (speaker inference about present state)",
+    "dilbilgisi_term": "Tahmin bildiren ek (-dır)",
+    "tags": {
+      "epist": "INFER"
+    },
+    "example": "gidiyordur (he's probably going), biliyordur (he must know)"
+  },
+  {
+    "logical": "IMP_2PL_FORMAL",
+    "surface_variants": [
+      "-ınız",
+      "-iniz",
+      "-unuz",
+      "-ünüz"
+    ],
+    "harmony_rule": "4-way harmony",
+    "slot": "MOOD",
+    "slot_order": 8,
+    "word_class": "VERB",
+    "function": "Imperative 2PL formal — polite/written plural command",
+    "dilbilgisi_term": "Emir kipi 2. çoğul (resmi)",
+    "tags": {
+      "mood": "IMP",
+      "person": "2",
+      "num": "PL",
+      "register": "FORMAL"
+    },
+    "example": "gidiniz! (please go! — formal/written)"
+  },
+  {
+    "logical": "PRES_AORIST_NEG",
+    "surface_variants": [
+      "-maz",
+      "-mez"
+    ],
+    "harmony_rule": "back→-maz, front→-mez",
+    "slot": "TENSE",
+    "slot_order": 7,
+    "word_class": "VERB",
+    "function": "Negative aorist — does not habitually V, will not V (general negation)",
+    "dilbilgisi_term": "Olumsuz geniş zaman",
+    "tags": {
+      "tense": "PRES_AORIST",
+      "polarity": "NEG"
+    },
+    "example": "gitmez (he/she doesn't go / won't go), bilmez (he/she doesn't know)"
+  },
+  {
+    "logical": "Q",
+    "surface_variants": [
+      "-mı",
+      "-mi",
+      "-mu",
+      "-mü"
+    ],
+    "harmony_rule": "4-way harmony; written as separate word but phonologically bound",
+    "slot": "QUESTION",
+    "slot_order": 12,
+    "word_class": "ANY",
+    "function": "Question particle — yes/no interrogative",
+    "dilbilgisi_term": "Soru eki",
+    "tags": {
+      "q": "YES_NO"
+    },
+    "example": "gidiyor musun? (are you going?), ev mi? (is it a house?)"
+  },
+  {
+    "logical": "ADD",
+    "surface_variants": [
+      "-da",
+      "-de",
+      "-ta",
+      "-te"
+    ],
+    "harmony_rule": "back-voiced→-da, front-voiced→-de; after voiceless→-ta/-te; written separately",
+    "slot": "ADDITIVE",
+    "slot_order": 13,
+    "word_class": "ANY",
+    "function": "Additive / topic particle — also, too, even",
+    "dilbilgisi_term": "Pekiştirme / bağlaç eki (da/de)",
+    "tags": {
+      "add": "ALSO"
+    },
+    "example": "ben de (me too), o da (he/she too), evde de (at home too)"
+  },
+  {
+    "logical": "PROG_PAST",
+    "surface_variants": [
+      "-ıyordu",
+      "-iyordu",
+      "-uyordu",
+      "-üyordu"
+    ],
+    "harmony_rule": "PRES_PROG + idi compound; 4-way harmony",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Past progressive — was V-ing (witnessed)",
+    "dilbilgisi_term": "Şimdiki zamanın hikâyesi",
+    "tags": {
+      "tense": "PRES_PROG",
+      "aspect": "PROG",
+      "cop": "PAST"
+    },
+    "example": "gidiyordu (he/she was going)"
+  },
+  {
+    "logical": "FUT_PAST",
+    "surface_variants": [
+      "-acaktı",
+      "-ecekti"
+    ],
+    "harmony_rule": "FUT + idi compound; back→-acaktı, front→-ecekti",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Future in the past — was going to V",
+    "dilbilgisi_term": "Gelecek zamanın hikâyesi",
+    "tags": {
+      "tense": "FUT",
+      "cop": "PAST"
+    },
+    "example": "gidecekti (he/she was going to go)"
+  },
+  {
+    "logical": "NECESS_PAST",
+    "surface_variants": [
+      "-malıydı",
+      "-meliydi"
+    ],
+    "harmony_rule": "NECESS + idi compound; back→-malıydı, front→-meliydi",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Necessitative past — should have V-ed",
+    "dilbilgisi_term": "Gereklilik kipinin hikâyesi",
+    "tags": {
+      "mood": "NECESS",
+      "cop": "PAST"
+    },
+    "example": "gitmeliydi (he/she should have gone)"
+  },
+  {
+    "logical": "AORIST_PAST",
+    "surface_variants": [
+      "-ardı",
+      "-erdi",
+      "-ırdı",
+      "-irdi",
+      "-urdu",
+      "-ürdü"
+    ],
+    "harmony_rule": "PRES_AORIST + idi compound; 4-way harmony",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Aorist past — used to V / would V (habitual past)",
+    "dilbilgisi_term": "Geniş zamanın hikâyesi",
+    "tags": {
+      "tense": "PRES_AORIST",
+      "cop": "PAST"
+    },
+    "example": "giderdi (he/she used to go / would go)"
+  },
+  {
+    "logical": "PROG_NARR",
+    "surface_variants": [
+      "-ıyormuş",
+      "-iyormuş",
+      "-uyormuş",
+      "-üyormuş"
+    ],
+    "harmony_rule": "PRES_PROG + imiş compound; 4-way harmony",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Narrative progressive — was apparently V-ing",
+    "dilbilgisi_term": "Şimdiki zamanın rivayeti",
+    "tags": {
+      "tense": "PRES_PROG",
+      "aspect": "PROG",
+      "cop": "NARR"
+    },
+    "example": "gidiyormuş (he/she was apparently going)"
+  },
+  {
+    "logical": "FUT_NARR",
+    "surface_variants": [
+      "-acakmış",
+      "-ecekmiş"
+    ],
+    "harmony_rule": "FUT + imiş compound; back→-acakmış, front→-ecekmiş",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Narrative future — was apparently going to V",
+    "dilbilgisi_term": "Gelecek zamanın rivayeti",
+    "tags": {
+      "tense": "FUT",
+      "cop": "NARR"
+    },
+    "example": "gidecekmiş (he/she was apparently going to go)"
+  },
+  {
+    "logical": "NECESS_NARR",
+    "surface_variants": [
+      "-malıymış",
+      "-meliymiş"
+    ],
+    "harmony_rule": "NECESS + imiş compound; back→-malıymış, front→-meliymiş",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Narrative necessitative — apparently should V",
+    "dilbilgisi_term": "Gereklilik kipinin rivayeti",
+    "tags": {
+      "mood": "NECESS",
+      "cop": "NARR"
+    },
+    "example": "gitmeliymiş (he/she apparently should go)"
+  },
+  {
+    "logical": "AORIST_NARR",
+    "surface_variants": [
+      "-armış",
+      "-ermiş",
+      "-ırmış",
+      "-irmiş",
+      "-urmuş",
+      "-ürmüş"
+    ],
+    "harmony_rule": "PRES_AORIST + imiş compound; 4-way harmony",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Narrative aorist — apparently used to V",
+    "dilbilgisi_term": "Geniş zamanın rivayeti",
+    "tags": {
+      "tense": "PRES_AORIST",
+      "cop": "NARR"
+    },
+    "example": "gidermiş (he/she apparently used to go)"
+  },
+  {
+    "logical": "COND_PAST",
+    "surface_variants": [
+      "-saydı",
+      "-seydi"
+    ],
+    "harmony_rule": "COND + idi compound; back→-saydı, front→-seydi",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Counterfactual conditional — if (one) had V-ed",
+    "dilbilgisi_term": "Şart kipinin hikâyesi",
+    "tags": {
+      "mood": "COND",
+      "cop": "PAST"
+    },
+    "example": "gitseydi (if he/she had gone)"
+  },
+  {
+    "logical": "COP_NARR",
+    "surface_variants": [
+      "-mış",
+      "-miş",
+      "-muş",
+      "-müş"
+    ],
+    "harmony_rule": "Copula narrative (ek-fiil rivayet); 4-way harmony; written as imiş or cliticized",
+    "slot": "COMPOUND_TENSE",
+    "slot_order": 14,
+    "word_class": "VERB",
+    "function": "Copula narrative — was apparently (nominal predicate)",
+    "dilbilgisi_term": "Ek-fiil rivayeti",
+    "tags": {
+      "cop": "NARR"
+    },
+    "example": "öğrenciymiş (he/she was apparently a student)"
+  }
+]
