@@ -1,0 +1,860 @@
+[
+  {
+    "suffix": "-lık/-lik/-luk/-lük",
+    "surface_variants": [
+      "-lık",
+      "-lik",
+      "-luk",
+      "-lük"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→N",
+    "function": "Abstract noun / quality / place associated with noun",
+    "dilbilgisi_term": "İsimden isim yapım eki",
+    "example": "iyi→iyilik (goodness), göz→gözlük (glasses), odun→odunluk (woodshed)",
+    "derives": "ABSTRACT_NOUN",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-cı/-ci/-cu/-cü",
+    "surface_variants": [
+      "-cı",
+      "-ci",
+      "-cu",
+      "-cü",
+      "-çı",
+      "-çi",
+      "-çu",
+      "-çü"
+    ],
+    "harmony_rule": "4-way harmony; after voiceless→-çı/-çi/-çu/-çü",
+    "direction": "N→N",
+    "function": "Agent noun — one who deals with / sells / does N",
+    "dilbilgisi_term": "İsimden isim yapım eki (meslek)",
+    "example": "araba→arabacı (driver/car dealer), ekmek→ekmekçi (baker)",
+    "derives": "AGENT_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-daş/-deş/-taş/-teş",
+    "surface_variants": [
+      "-daş",
+      "-deş",
+      "-taş",
+      "-teş"
+    ],
+    "harmony_rule": "back-voiced→-daş, front-voiced→-deş; after voiceless→-taş/-teş",
+    "direction": "N→N",
+    "function": "Comrade / fellow — one who shares N",
+    "dilbilgisi_term": "İsimden isim yapım eki (beraberlik)",
+    "example": "millet→milletdaş (compatriot), meslek→meslektaş (colleague)",
+    "derives": "FELLOW_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-lı/-li/-lu/-lü (origin)",
+    "surface_variants": [
+      "-lı",
+      "-li",
+      "-lu",
+      "-lü"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→N",
+    "function": "Demonym / person from a place",
+    "dilbilgisi_term": "İsimden isim yapım eki (mensubiyet)",
+    "example": "Ankara→Ankaralı (person from Ankara)",
+    "derives": "DEMONYM",
+    "input_pos": "NOUN_PLACE",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ane/-hane",
+    "surface_variants": [
+      "-ane",
+      "-hane"
+    ],
+    "harmony_rule": "Persian-origin suffix, no vowel harmony",
+    "direction": "N→N",
+    "function": "Place associated with N (often Persian/Arabic loanword stems)",
+    "dilbilgisi_term": "İsimden isim yapım eki (yer)",
+    "example": "eczane (pharmacy), hastane (hospital)",
+    "derives": "PLACE_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-istan/-stan",
+    "surface_variants": [
+      "-istan",
+      "-stan"
+    ],
+    "harmony_rule": "no vowel harmony (Persian-origin)",
+    "direction": "N→N",
+    "function": "Country / land of N",
+    "dilbilgisi_term": "İsimden isim yapım eki (ülke)",
+    "example": "Türk→Türkistan",
+    "derives": "COUNTRY_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-lı/-li/-lu/-lü (possessive adj)",
+    "surface_variants": [
+      "-lı",
+      "-li",
+      "-lu",
+      "-lü"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→ADJ",
+    "function": "Adjective — having / characterized by N",
+    "dilbilgisi_term": "İsimden sıfat yapım eki",
+    "example": "su→sulu (watery), para→paralı (wealthy)",
+    "derives": "POSSESSIVE_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-sız/-siz/-suz/-süz",
+    "surface_variants": [
+      "-sız",
+      "-siz",
+      "-suz",
+      "-süz"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→ADJ",
+    "function": "Privative adjective — without / lacking N",
+    "dilbilgisi_term": "İsimden sıfat yapım eki (yokluk)",
+    "example": "su→susuz (waterless), para→parasız (penniless)",
+    "derives": "PRIVATIVE_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-sal/-sel",
+    "surface_variants": [
+      "-sal",
+      "-sel"
+    ],
+    "harmony_rule": "back→-sal, front→-sel",
+    "direction": "N→ADJ",
+    "function": "Relational adjective — pertaining to N (often scientific/formal register)",
+    "dilbilgisi_term": "İsimden sıfat yapım eki (ilgi)",
+    "example": "toplum→toplumsal (social), kültür→kültürel (cultural)",
+    "derives": "RELATIONAL_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ik/-ık/-uk/-ük (adj)",
+    "surface_variants": [
+      "-ik",
+      "-ık",
+      "-uk",
+      "-ük"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N/V→ADJ",
+    "function": "Adjectival form — often stative or resultant quality",
+    "dilbilgisi_term": "İsimden/fiilden sıfat yapım eki",
+    "example": "kır→kırık (broken), yor→yoruk (tired)",
+    "derives": "STATIVE_ADJ",
+    "input_pos": "NOUN_VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-msı/-msi/-msu/-msü",
+    "surface_variants": [
+      "-msı",
+      "-msi",
+      "-msu",
+      "-msü"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "ADJ→ADJ",
+    "function": "Approximative adjective — somewhat / -ish",
+    "dilbilgisi_term": "Sıfattan sıfat yapım eki (yaklaşıklık)",
+    "example": "sarı→sarımsı (yellowish), ekşi→ekşimsi (sourish)",
+    "derives": "APPROXIMATIVE_ADJ",
+    "input_pos": "ADJ",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-imtırak/-imtırak",
+    "surface_variants": [
+      "-ımtırak",
+      "-imtırak",
+      "-umtırak",
+      "-ümtürak"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "ADJ→ADJ",
+    "function": "Approximative adjective (stronger than -msı) — rather / quite",
+    "dilbilgisi_term": "Sıfattan sıfat yapım eki (yaklaşıklık güçlü)",
+    "example": "sarı→sarımtırak (rather yellow)",
+    "derives": "APPROXIMATIVE_ADJ_STRONG",
+    "input_pos": "ADJ",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-la/-le",
+    "surface_variants": [
+      "-la",
+      "-le"
+    ],
+    "harmony_rule": "back→-la, front→-le",
+    "direction": "N/ADJ→V",
+    "function": "Denominative verb — to do / use / apply N",
+    "dilbilgisi_term": "İsimden fiil yapım eki",
+    "example": "baş→başlamak (to begin), temiz→temizlemek (to clean)",
+    "derives": "DENOM_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-laş/-leş",
+    "surface_variants": [
+      "-laş",
+      "-leş"
+    ],
+    "harmony_rule": "back→-laş, front→-leş",
+    "direction": "N/ADJ→V",
+    "function": "Inchoative / mutative verb — to become N/ADJ",
+    "dilbilgisi_term": "İsimden fiil yapım eki (dönüşme)",
+    "example": "insan→insanlaşmak (to become human), güzel→güzelleşmek (to become beautiful)",
+    "derives": "INCHOATIVE_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-lan/-len",
+    "surface_variants": [
+      "-lan",
+      "-len"
+    ],
+    "harmony_rule": "back→-lan, front→-len",
+    "direction": "N/ADJ→V",
+    "function": "Reflexive denominative — to acquire / be characterized by N",
+    "dilbilgisi_term": "İsimden fiil yapım eki (edinme)",
+    "example": "güç→güçlenmek (to gain strength), ad→adlanmak (to be named)",
+    "derives": "REFLEXIVE_DENOM_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-landır/-lendir",
+    "surface_variants": [
+      "-landır",
+      "-lendir"
+    ],
+    "harmony_rule": "back→-landır, front→-lendir",
+    "direction": "N/ADJ→V",
+    "function": "Causative denominative — to make/cause to become N",
+    "dilbilgisi_term": "İsimden fiil yapım eki (ettirme)",
+    "example": "güç→güçlendirmek (to strengthen), hız→hızlandırmak (to accelerate)",
+    "derives": "CAUS_DENOM_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ık/-ik/-uk/-ük (verb)",
+    "surface_variants": [
+      "-ık",
+      "-ik",
+      "-uk",
+      "-ük"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→V",
+    "function": "Denominative verb (less productive, lexicalized)",
+    "dilbilgisi_term": "İsimden fiil yapım eki (az üretken)",
+    "example": "renk→renklenmek (to become colorful)",
+    "derives": "DENOM_VERB_LEXICAL",
+    "input_pos": "NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ar/-er (verb)",
+    "surface_variants": [
+      "-ar",
+      "-er"
+    ],
+    "harmony_rule": "back→-ar, front→-er",
+    "direction": "N→V",
+    "function": "Denominative verb — to become / turn into (color/state change)",
+    "dilbilgisi_term": "İsimden fiil yapım eki (renk/durum)",
+    "example": "kara→kararmak (to darken), yeşil→yeşermek (to turn green)",
+    "derives": "STATE_CHANGE_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ma/-me (action noun)",
+    "surface_variants": [
+      "-ma",
+      "-me"
+    ],
+    "harmony_rule": "back→-ma, front→-me",
+    "direction": "V→N",
+    "function": "Action noun / verbal noun — the act of V-ing",
+    "dilbilgisi_term": "Fiilden isim yapım eki (eylem adı)",
+    "example": "yaz→yazma (writing), git→gitme (going)",
+    "derives": "ACTION_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ış/-iş/-uş/-üş (action noun)",
+    "surface_variants": [
+      "-ış",
+      "-iş",
+      "-uş",
+      "-üş"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "V→N",
+    "function": "Action/manner noun — the way of V-ing, result of V",
+    "dilbilgisi_term": "Fiilden isim yapım eki (oluş adı)",
+    "example": "gel→geliş (coming/arrival), bak→bakış (look/glance)",
+    "derives": "MANNER_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-mak/-mek (infinitive noun)",
+    "surface_variants": [
+      "-mak",
+      "-mek"
+    ],
+    "harmony_rule": "back→-mak, front→-mek",
+    "direction": "V→N",
+    "function": "Infinitive — verbal noun used as subject/object",
+    "dilbilgisi_term": "Mastar (isim işlevli)",
+    "example": "git→gitmek (to go / going), yaz→yazmak (to write)",
+    "derives": "INFINITIVE_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ıcı/-ici/-ucu/-ücü",
+    "surface_variants": [
+      "-ıcı",
+      "-ici",
+      "-ucu",
+      "-ücü",
+      "-cı",
+      "-ci",
+      "-cu",
+      "-cü"
+    ],
+    "harmony_rule": "4-way harmony; after vowel drop initial vowel",
+    "direction": "V→N",
+    "function": "Agent noun — one who habitually performs V",
+    "dilbilgisi_term": "Fiilden isim yapım eki (yapan)",
+    "example": "yaz→yazıcı (writer/printer), sat→satıcı (seller)",
+    "derives": "AGENT_NOUN_V",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-maca/-mece",
+    "surface_variants": [
+      "-maca",
+      "-mece"
+    ],
+    "harmony_rule": "back→-maca, front→-mece",
+    "direction": "V→N",
+    "function": "Game / puzzle noun — activity based on V",
+    "dilbilgisi_term": "Fiilden isim yapım eki (oyun)",
+    "example": "bil→bilmece (riddle), bul→bulmaca (puzzle)",
+    "derives": "GAME_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-gı/-gi/-gu/-gü / -kı/-ki/-ku/-kü",
+    "surface_variants": [
+      "-gı",
+      "-gi",
+      "-gu",
+      "-gü",
+      "-kı",
+      "-ki",
+      "-ku",
+      "-kü"
+    ],
+    "harmony_rule": "4-way harmony; after voiceless→-kı/-ki/-ku/-kü",
+    "direction": "V→N",
+    "function": "Result/instrument noun — thing produced or used in V-ing",
+    "dilbilgisi_term": "Fiilden isim yapım eki (sonuç/araç)",
+    "example": "sar→sargı (bandage), as→askı (hanger)",
+    "derives": "RESULT_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ıntı/-inti/-untu/-üntü",
+    "surface_variants": [
+      "-ıntı",
+      "-inti",
+      "-untu",
+      "-üntü"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "V→N",
+    "function": "Residue/byproduct noun — what remains or results from V",
+    "dilbilgisi_term": "Fiilden isim yapım eki (artık)",
+    "example": "kır→kırıntı (crumb/fragment), çöz→çözüntü (anxiety/dissolution)",
+    "derives": "RESIDUE_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-nak/-nek / -ınak/-inek",
+    "surface_variants": [
+      "-nak",
+      "-nek",
+      "-ınak",
+      "-inek"
+    ],
+    "harmony_rule": "back→-nak, front→-nek",
+    "direction": "V→N",
+    "function": "Place noun — location where V habitually occurs",
+    "dilbilgisi_term": "Fiilden isim yapım eki (yer)",
+    "example": "kon→konak (mansion/stopping place), bar→barınak (shelter)",
+    "derives": "PLACE_NOUN_V",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-an/-en (active participle)",
+    "surface_variants": [
+      "-an",
+      "-en"
+    ],
+    "harmony_rule": "back→-an, front→-en",
+    "direction": "V→ADJ",
+    "function": "Active participle — one who is V-ing / that V-s",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (geniş zaman sıfat-fiil)",
+    "example": "gel→gelen (the one who comes), yaz→yazan (the one who writes)",
+    "derives": "ACTIVE_PARTICIPLE",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-dık/-dik/-duk/-dük (past participle)",
+    "surface_variants": [
+      "-dık",
+      "-dik",
+      "-duk",
+      "-dük",
+      "-tık",
+      "-tik",
+      "-tuk",
+      "-tük"
+    ],
+    "harmony_rule": "4-way harmony; voicing assimilation after voiceless",
+    "direction": "V→ADJ",
+    "function": "Past/definite participle — that which was V-ed / the fact of V-ing",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (geçmiş zaman sıfat-fiil)",
+    "example": "git→gittiğim (the one I went to), yaz→yazdığım (what I wrote)",
+    "derives": "PAST_PARTICIPLE",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-acak/-ecek (future participle)",
+    "surface_variants": [
+      "-acak",
+      "-ecek"
+    ],
+    "harmony_rule": "back→-acak, front→-ecek",
+    "direction": "V→ADJ",
+    "function": "Future/prospective participle — that which will be V-ed",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (gelecek zaman sıfat-fiil)",
+    "example": "gel→gelecek (the one who will come), yap→yapacak (what will be done)",
+    "derives": "FUTURE_PARTICIPLE",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-mış/-miş/-muş/-müş (narrative participle)",
+    "surface_variants": [
+      "-mış",
+      "-miş",
+      "-muş",
+      "-müş"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "V→ADJ",
+    "function": "Narrative/resultant participle — that which has apparently V-ed",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (öğrenilen geçmiş sıfat-fiil)",
+    "example": "pişir→pişmiş (cooked), yak→yanmış (burnt)",
+    "derives": "NARRATIVE_PARTICIPLE",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ar/-er / -ır/-ir (aorist participle)",
+    "surface_variants": [
+      "-ar",
+      "-er",
+      "-ır",
+      "-ir",
+      "-ur",
+      "-ür",
+      "-maz",
+      "-mez"
+    ],
+    "harmony_rule": "back→-ar/-ır, front→-er/-ir; negated: -maz/-mez",
+    "direction": "V→ADJ",
+    "function": "Aorist/habitual participle — one who habitually V-s",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (geniş zaman)",
+    "example": "gel→gelir adam (a man who comes), bil→bilmez (one who doesn't know)",
+    "derives": "AORIST_PARTICIPLE",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ası/-esi",
+    "surface_variants": [
+      "-ası",
+      "-esi"
+    ],
+    "harmony_rule": "back→-ası, front→-esi",
+    "direction": "V→ADJ",
+    "function": "Desiderative/prospective adjective — worthy of V-ing, destined to V",
+    "dilbilgisi_term": "Fiilden sıfat yapım eki (istek)",
+    "example": "öl→ölesi (worthy of death / wretched), gör→göresi (worth seeing)",
+    "derives": "DESIDERATIVE_ADJ",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ala/-ele (frequentative)",
+    "surface_variants": [
+      "-ala",
+      "-ele"
+    ],
+    "harmony_rule": "back→-ala, front→-ele",
+    "direction": "V→V",
+    "function": "Frequentative / iterative verb — to V repeatedly or continuously",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (süreklilik)",
+    "example": "it→itele (to keep pushing), sil→silele (to keep wiping)",
+    "derives": "FREQUENTATIVE_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ımsa/-imse (diminutive verb)",
+    "surface_variants": [
+      "-ımsa",
+      "-imse",
+      "-umsa",
+      "-ümse"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "V→V",
+    "function": "Diminutive / attenuative verb — to V a little, to do V slightly",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (küçümseme)",
+    "example": "gör→görmse (to barely notice), sev→sevimse (to feel slight affection)",
+    "derives": "DIMINUTIVE_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ıştır/-iştir (causative-reciprocal)",
+    "surface_variants": [
+      "-ıştır",
+      "-iştir",
+      "-uştır",
+      "-üştür"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "V→V",
+    "function": "Causative-reciprocal compound — to cause mutual V-ing",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (ettirgen-işteş)",
+    "example": "bak→bakıştır (to make look at each other)",
+    "derives": "CAUS_RECIP_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-a/-e (causative short form)",
+    "surface_variants": [
+      "-a",
+      "-e"
+    ],
+    "harmony_rule": "back→-a, front→-e (highly lexicalized)",
+    "direction": "V→V",
+    "function": "Short causative — lexicalized causative form (limited productivity)",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (kısa ettirgen)",
+    "example": "kork→korkut (to frighten), uç→uçur (to make fly)",
+    "derives": "SHORT_CAUS_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ce/-ca (manner adverb)",
+    "surface_variants": [
+      "-ce",
+      "-ca",
+      "-çe",
+      "-ça"
+    ],
+    "harmony_rule": "back→-ca, front→-ce; after voiceless→-ça/-çe",
+    "direction": "N/ADJ→ADV",
+    "function": "Manner / essive adverb — in the manner of, like, according to; also forms language names",
+    "dilbilgisi_term": "İsimden/sıfattan zarf yapım eki",
+    "example": "insan→insanca (humanely), Türk→Türkçe (Turkish language), iyi→iyice (thoroughly)",
+    "derives": "MANNER_ADV",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-arca/-erce",
+    "surface_variants": [
+      "-arca",
+      "-erce"
+    ],
+    "harmony_rule": "back→-arca, front→-erce",
+    "direction": "N/ADJ→ADV",
+    "function": "Manner adverb (emphatic) — in a manner befitting / worthy of N",
+    "dilbilgisi_term": "İsimden zarf yapım eki (güçlü tarz)",
+    "example": "insan→insanca (humanely — emphatic), kahraman→kahramanca (heroically)",
+    "derives": "MANNER_ADV_EMPH",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-leyin (temporal adverb)",
+    "surface_variants": [
+      "-leyin"
+    ],
+    "harmony_rule": "no vowel harmony (lexicalized)",
+    "direction": "N→ADV",
+    "function": "Temporal adverb — at the time of N, in the N",
+    "dilbilgisi_term": "İsimden zarf yapım eki (zaman)",
+    "example": "sabah→sabahleyin (in the morning), akşam→akşamleyin (in the evening)",
+    "derives": "TEMPORAL_ADV",
+    "input_pos": "NOUN_TIME",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-sızın/-sizin (privative adverb)",
+    "surface_variants": [
+      "-sızın",
+      "-sizin",
+      "-suzun",
+      "-süzün"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "N→ADV",
+    "function": "Privative adverb — without N (adverbial form of -sız)",
+    "dilbilgisi_term": "İsimden zarf yapım eki (yokluk zarfı)",
+    "example": "izin→izinsizin (without permission), haber→habersizin (without notice)",
+    "derives": "PRIVATIVE_ADV",
+    "input_pos": "NOUN",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-ki (relational adj)",
+    "surface_variants": [
+      "-ki"
+    ],
+    "harmony_rule": "no vowel harmony (invariant)",
+    "direction": "LOC/GEN→ADJ",
+    "function": "Relational adjective — the one at/in/of (attaches to locative or genitive forms)",
+    "dilbilgisi_term": "Sıfat yapım eki (ilgi sıfatı)",
+    "example": "evdeki (the one at home), dünkü (yesterday's), benimki (mine)",
+    "derives": "RELATIONAL_ADJ_KI",
+    "input_pos": "NOUN_LOC_GEN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-gil (family/group noun)",
+    "surface_variants": [
+      "-gil",
+      "-giller"
+    ],
+    "harmony_rule": "no vowel harmony (invariant)",
+    "direction": "N→N",
+    "function": "Family / household / group noun — the family/group of N",
+    "dilbilgisi_term": "İsimden isim yapım eki (aile/grup)",
+    "example": "anne→annegil (mother's family/household), Ali→Aligil (Ali's family)",
+    "derives": "FAMILY_NOUN",
+    "input_pos": "NOUN_PROPN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-tı/-ti (onomatopoeic/expressive noun)",
+    "surface_variants": [
+      "-tı",
+      "-ti",
+      "-tu",
+      "-tü",
+      "-dı",
+      "-di",
+      "-du",
+      "-dü"
+    ],
+    "harmony_rule": "4-way harmony; voicing conditioned by stem",
+    "direction": "V/ONOMAT→N",
+    "function": "Onomatopoeic / expressive noun — sound or sensation associated with V",
+    "dilbilgisi_term": "Fiilden isim yapım eki (yansıma)",
+    "example": "gürül→gürültü (noise/rumble), hışır→hışırtı (rustling), pat→patlama (bang)",
+    "derives": "ONOMAT_NOUN",
+    "input_pos": "VERB_ONOMAT",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-man/-men (agent/title noun)",
+    "surface_variants": [
+      "-man",
+      "-men"
+    ],
+    "harmony_rule": "back→-man, front→-men",
+    "direction": "V/N→N",
+    "function": "Agent or title noun — one who professionally performs V or embodies N",
+    "dilbilgisi_term": "Fiilden/isimden isim yapım eki (unvan)",
+    "example": "yaz→yazman (secretary/scribe), öğret→öğretmen (teacher)",
+    "derives": "TITLE_NOUN",
+    "input_pos": "VERB_NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ç (instrument/agent noun)",
+    "surface_variants": [
+      "-ç",
+      "-aç",
+      "-eç",
+      "-geç",
+      "-gıç",
+      "-giç"
+    ],
+    "harmony_rule": "highly lexicalized; various surface forms",
+    "direction": "V→N",
+    "function": "Instrument or agent noun (lexicalized, low productivity)",
+    "dilbilgisi_term": "Fiilden isim yapım eki (araç/yapan — az üretken)",
+    "example": "aç→açaç (opener), geç→geçiş (passage — via -iş)",
+    "derives": "INSTRUMENT_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ıkla/-ikle (stative→active verb)",
+    "surface_variants": [
+      "-ıkla",
+      "-ikle",
+      "-ukla",
+      "-ükle"
+    ],
+    "harmony_rule": "4-way harmony",
+    "direction": "ADJ→V",
+    "function": "Converts stative adjective to active verb — to make/become ADJ",
+    "dilbilgisi_term": "Sıfattan fiil yapım eki",
+    "example": "kırık→kırıklamak (to fracture/treat a fracture)",
+    "derives": "STATIVE_TO_VERB",
+    "input_pos": "ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-sa/-se (desiderative verb)",
+    "surface_variants": [
+      "-sa",
+      "-se"
+    ],
+    "harmony_rule": "back→-sa, front→-se",
+    "direction": "N/ADJ→V",
+    "function": "Desiderative verb — to want/wish for N, to find N desirable",
+    "dilbilgisi_term": "İsimden fiil yapım eki (istek)",
+    "example": "su→susamak (to be thirsty / want water), garip→garipse (to find strange)",
+    "derives": "DESIDERATIVE_VERB",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ver- (benefactive/rapid)",
+    "surface_variants": [
+      "-iver-",
+      "-aver-",
+      "-uver-",
+      "-üver-"
+    ],
+    "harmony_rule": "4-way harmony; attaches via -i/-a converb",
+    "direction": "V→V",
+    "function": "Benefactive / rapid aspect — to do V quickly, to go ahead and V, to do V for someone",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (tezlik/yeterlilik)",
+    "example": "yapıvermek (to go ahead and do), alıvermek (to grab quickly), söyleyivermek (to blurt out)",
+    "derives": "BENEFACTIVE_RAPID_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-dur-/-tur- (continuative)",
+    "surface_variants": [
+      "-dur-",
+      "-dür-",
+      "-tur-",
+      "-tür-"
+    ],
+    "harmony_rule": "4-way harmony; after voiceless→-tur-/-tür-",
+    "direction": "V→V",
+    "function": "Continuative aspect — to be in the process of V-ing (formal/written register)",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (sürerlik)",
+    "example": "gitmektedir (is in the process of going), çalışmaktadır (is working — formal)",
+    "derives": "CONTINUATIVE_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-gel- (continuative/habitual)",
+    "surface_variants": [
+      "-egel-",
+      "-agel-"
+    ],
+    "harmony_rule": "back→-agel-, front→-egel-",
+    "direction": "V→V",
+    "function": "Continuative / habitual aspect — to have always done V, to keep doing V (literary/archaic)",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (süregelen)",
+    "example": "olagelmek (to have always been), süregelme (ongoing continuation)",
+    "derives": "HABITUAL_CONT_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-koy- (sudden/decisive)",
+    "surface_variants": [
+      "-ekoy-",
+      "-akoy-"
+    ],
+    "harmony_rule": "back→-akoy-, front→-ekoy-; highly lexicalized",
+    "direction": "V→V",
+    "function": "Sudden / decisive action — to go and do V abruptly (colloquial)",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (ani eylem)",
+    "example": "gidekoydu (he just up and went — colloquial)",
+    "derives": "SUDDEN_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-yaz- (near-miss)",
+    "surface_variants": [
+      "-eyaz-",
+      "-ayaz-"
+    ],
+    "harmony_rule": "back→-ayaz-, front→-eyaz-; very low productivity",
+    "direction": "V→V",
+    "function": "Near-miss / almost aspect — to almost V, to nearly V",
+    "dilbilgisi_term": "Fiilden fiil yapım eki (az kalsın)",
+    "example": "düşeyazdım (I almost fell), ölüyazdı (he almost died)",
+    "derives": "NEAR_MISS_VERB",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  }
+]

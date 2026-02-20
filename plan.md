@@ -1,59 +1,61 @@
-You are Kiro, an AI implementation agent.
-
-Your task is to design, train, and evaluate six toy-scale language models:
-
-- English: en_base (baseline), en_morph (morphology-aware)
-- Arabic: ar_base (baseline), ar_morph (morphology-aware)
-- Turkish: tr_base (baseline), tr_morph (morphology-aware)
-
-For each language, the baseline and morphology-aware models must:
-- Share the same architecture and training budget
-- Use the same raw corpus and data splits
-- Differ only in the tokenization and use of morphological information
-
-Follow the instructions below step by step.
+# Implementation Plan
+## Morphological Efficiency in Multilingual Language Models
+**Author:** Sameh AbuRadi
+**Status:** Active — governed by experimental_contract.md
 
 ---
 
-## 0. Global setup
+## 0. Global Setup
 
-0.1 Programming environment
+### 0.1 Programming Environment
 
-- Use Python
-- Required libraries:
-  - pytorch (with CUDA if available)
-  - transformers
-  - datasets
-  - sentencepiece (or tokenizers)
-  - numpy
-  - pandas
-  - matplotlib
+- Python 3.10+
+- pytorch (with CUDA, bfloat16)
+- transformers
+- datasets
+- sentencepiece
+- numpy, pandas, matplotlib
 
-- Language specific tools:
-  - English: spacy or stanza with POS + morphology
-  - Arabic: camel_tools or another Arabic morphological analyzer
-  - Turkish: a Turkish morphological analyzer or segmenter (for example Zemberek via wrapper or any python-based tool)
+Language-specific tools:
+- English: spacy or stanza (POS + morphology)
+- Arabic: camel_tools or equivalent (Farasa as fallback)
+- Turkish: Zeyrek (pure Python port of Zemberek, `pip install zeyrek`)
 
-0.2 Model architecture (shared across all 6 models)
+### 0.2 Model Architecture (identical for all 6 models)
 
-For every model (baseline and morph, all languages), use:
+Decoder-only GPT-style transformer.
 
-- Decoder-only transformer (GPT style)
-- Number of layers: 6
-- Hidden size: 256
-- Number of attention heads: 4
-- Feed-forward dimension: 1024
-- Context length: 256 tokens
-- Vocabulary size per tokenizer: 8000 to 12000 (fixed within each language, same for base and morph)
-- Precision: bfloat16 or float16 if supported, otherwise float32
+| Parameter | Value |
+|---|---|
+| Layers | 24 |
+| Hidden size | 1024 |
+| Attention heads | 16 |
+| FFN dimension | 4096 |
+| Context length | 1024 tokens |
+| Parameters | ~425M |
+| Precision | bfloat16 |
 
-You will parametrize vocabulary size per tokenizer but keep model architecture identical within each language pair.
+Scale rationale: 425M parameters at 8.4B training tokens sits at the Chinchilla-optimal point (20 tokens/param). This is the minimum scale at which models produce coherent, interactive outputs suitable for demonstration.
+
+**Vocabulary size is NOT a shared fixed parameter across all 6 models.** It is defined differently per regime:
+
+- Baseline models (en_base, ar_base, tr_base): 32k BPE/unigram subword vocabulary, learned statistically from corpus frequency. No linguistic knowledge involved.
+- Morph models (en_morph, ar_morph, tr_morph): vocabulary is derived from the grammar of each language. Each language has a structurally different morphological system, so each morph model follows a different vocabulary construction procedure. See section 4 for language-specific details.
+
+For morphology-aware models only:
+- Add a second embedding table for morphological feature bundles
+- Combine: `combined = token_embedding[token_id] + feature_embedding[feature_id]`
+
+### 0.3 Compute Infrastructure
+
+- Platform: RunPod (A100 80GB, ~$0.79/hr) — primary
+- Fallback: Lambda Labs (~$1.10/hr)
+- Checkpoint every 1,000 steps to guard against session interruption
+- Estimated total compute cost: $1,200–$1,500 for all 6 models
 
 ---
 
-## 1. Project structure
-
-Create the following directory layout:
+## 1. Project Structure
 
 ```text
 morph_efficiency_project/
@@ -93,625 +95,976 @@ morph_efficiency_project/
     train_lm.py
     eval_lm.py
     eval_morphology.py
+    eval_downstream.py
     compute_metrics.py
   logs/
     training/
     evaluation/
+    summary/
   configs/
     model_config.json
     training_config_en.json
     training_config_ar.json
     training_config_tr.json
+    ar_roots.json
+    ar_templates.json
+    ar_vocab_space.json
+    tr_stems.json
+    tr_suffixes.json
+    tr_derivations.json
+    en_irregulars.json
+    en_derivations.json
+    en_compounds.json
+    en_phrasal_verbs.json
+  dashboard/
+    index.html
+    app.js
+    styles.css
   notebooks/
     analysis.ipynb
-````
+```
 
 ---
 
-## 2. Data collection and parity
+## 2. Data Collection and Parity
 
-Goal: For each language (en, ar, tr) build a corpus that is shared between baseline and morphology-aware variants, with strict split parity.
+Goal: build a corpus per language shared between baseline and morph variants, with strict split parity.
 
-2.1 Data sources per language
+### 2.1 Data Sources
 
-* For each of en, ar, tr:
+| Language | Sources |
+|---|---|
+| English | Wikipedia EN, OPUS (TED/News), CC-100 EN |
+| Arabic | Wikipedia AR, OPUS AR, CC-100 AR, OSIAN |
+| Turkish | Wikipedia TR, OPUS TR, CC-100 TR |
 
-  * Collect modern, standard text from open corpora such as:
+### 2.2 Target Corpus Size
 
-    * Wikipedia dumps
-    * OPUS (TED talks, news, etc.)
-    * Tatoeba sentences or similar resources
-  * Target size (rough guideline):
+| Split | Tokens |
+|---|---|
+| Train | ~8B |
+| Validation | ~200M |
+| Test | ~200M |
 
-    * Training: around 10 million tokens
-    * Validation: around 1 million tokens
-    * Test: around 1 million tokens
-
-2.2 Raw corpus files
+### 2.3 Raw Corpus Files
 
 For each language L in {en, ar, tr}:
+- `data/raw/L/train.txt`
+- `data/raw/L/val.txt`
+- `data/raw/L/test.txt`
 
-* Save line-based text files:
+Each line is one sentence or short document segment.
 
-  * `data/raw/L/train.txt`
-  * `data/raw/L/val.txt`
-  * `data/raw/L/test.txt`
-* Each line is one sentence or short document segment.
+### 2.4 Split Parity Rules
 
-2.3 Split parity
+- Fix a random seed per language
+- Perform the split once
+- Reuse identical splits for both baseline and morph regimes
 
-* Use the same raw files for baseline and morphology-aware experiments.
-* When shuffling and splitting:
+### 2.5 Script
 
-  * Fix a random seed per language
-  * Perform the split once
-  * Reuse these same splits for both tokenization regimes
-
-2.4 Script
-
-Implement `scripts/download_data.py` that:
-
-* Downloads or reads the needed corpora
-* Creates `train.txt`, `val.txt`, `test.txt` for each language
-* Logs approximate token count (whitespace based) for sanity
+`scripts/download_data.py`:
+- Downloads corpora from Wikipedia, OPUS, CC-100
+- Creates train/val/test splits per language
+- Logs whitespace-based token counts per split
 
 ---
 
-## 3. Baseline tokenization per language
+## 3. Baseline Tokenization (en_base, ar_base, tr_base only)
 
-Goal: Standard subword tokenization without awareness of morphology.
+Goal: standard statistical subword tokenization with zero morphological awareness. This is the classical approach — the tokenizer learns purely from frequency patterns in the corpus. No grammar, no linguistic rules, no language-specific knowledge injected.
 
-3.1 Train baseline tokenizer
+### 3.1 Train Baseline Tokenizer
 
-For each language L:
+For each language L in {en, ar, tr}:
+- Input: `data/raw/L/train.txt`
+- Train SentencePiece BPE tokenizer, vocab size 32k, character coverage 0.9995
+- The tokenizer has no knowledge of morpheme boundaries, roots, stems, or grammatical categories
+- Save to `tokenizers/L_base/`
 
-* Input: `data/raw/L/train.txt`
-* Train a SentencePiece (unigram or BPE) tokenizer with:
-
-  * Vocabulary size: 8000 to 12000
-  * Character coverage: 0.9995
-* Save tokenizer model and config to:
-
-  * `tokenizers/L_base/`
-
-3.2 Tokenize splits
+### 3.2 Tokenize Splits
 
 For each language L and split S in {train, val, test}:
+- Tokenize `data/raw/L/S.txt` using `tokenizers/L_base/`
+- Save token IDs to `data/processed/L/baseline/S_tokens.npy`
+- Log total tokens and avg tokens per sentence to `logs/evaluation/L_baseline_token_stats.json`
 
-* Load `tokenizers/L_base/` tokenizer
-* Tokenize all sentences in `data/raw/L/S.txt`
-* Save token ids in a format suitable for training, for example:
+### 3.3 Script
 
-  * `data/processed/L/baseline/S_tokens.npy` (numpy array)
-  * or a Hugging Face `datasets` arrow file with tokenized data
-* Record:
-
-  * Total number of tokens in each split
-  * Average tokens per sentence
-
-Store these statistics in a JSON file, for example:
-`logs/evaluation/L_baseline_token_stats.json`.
-
-3.3 Script
-
-Implement `scripts/preprocess_baseline.py` to perform all the above for en, ar, tr.
+`scripts/preprocess_baseline.py` — runs all of the above for en, ar, tr.
 
 ---
 
-## 4. Morphology-aware pipeline per language
+## 4. Morphology-Aware Pipelines (en_morph, ar_morph, tr_morph)
 
-Goal: Incorporate morphological segmentation and features into the tokenization and embeddings.
+Goal: replace statistical vocabulary construction with a grammar-first algorithmic analysis layer. Before any token ever reaches the model, each word is passed through a structured linguistic analysis pipeline grounded in the formal grammatical sciences of each language — النحو والصرف for Arabic, Dilbilgisi for Turkish, and morphological word-formation theory for English.
 
-4.1 Define data structures
+This is not a smarter tokenizer. It is a pre-training grammar engine. The model is taught the structure of the language algorithmically before it learns from statistics.
 
-Define a python data structure for morphological analysis:
+---
+
+### 4.0 The Three-Step Grammar Engine (shared mechanism, language-specific rules)
+
+Every word in every morph corpus passes through three sequential steps before becoming a token. The steps are the same across all three languages. The rules inside each step are language-specific.
+
+```
+Word
+ │
+ ▼
+Step A: Clitic Stripping + Surface Tagging
+         Detach grammatical particles that attach to the word surface.
+         Tag the remaining base form with grammatical properties:
+         POS, case, definiteness, number, gender, tense (if verb).
+ │
+ ▼
+Step B: Template / Pattern Detection
+         Match the base form against the known inventory of
+         morphological templates for that language.
+         If no template matches → tag as FOREIGN or PROPER.
+         The template carries semantic and grammatical implications
+         beyond what the surface form alone reveals.
+ │
+ ▼
+Step C: Root / Stem Identification
+         Extract the root or stem from the base form using the
+         identified template.
+         The root defines the semantic field and determines
+         acceptable syntactic relationships (valency, governed
+         prepositions, agreement requirements).
+ │
+ ▼
+Tagged Token Representation:
+  surface | clitics[] | template | root | tags{}
+```
+
+The output of this engine for each word is a fully tagged token representation. This representation — not a raw subword chunk — is what the morph model receives as input.
+
+---
+
+### 4.1 Shared Data Structure
 
 ```python
 class TokenInfo:
-    def __init__(self, surface, lemma, morphemes, features, pos):
-        self.surface = surface        # original word
-        self.lemma = lemma            # lemma or stem
-        self.morphemes = morphemes    # list of morpheme strings in order
-        self.features = features      # dict, e.g. {"num": "PL", "case": "ACC", ...}
-        self.pos = pos                # coarse POS tag, e.g. "NOUN"
+    def __init__(self, surface, clitics, template, root, tags, pos):
+        self.surface   = surface    # original word as it appears in text
+        self.clitics   = clitics    # dict: {"pre": [...], "enc": [...]}
+        self.template  = template   # morphological template string, or "FOREIGN"/"PROPER"
+        self.root      = root       # root/stem string after template extraction
+        self.tags      = tags       # dict of grammatical tags (language-specific keys)
+        self.pos       = pos        # POS: "NOM" / "VERB" / "ADJ" / "ADV" / "PART" / "FOREIGN"
 ```
 
-4.2 Morphological analyzers per language
-
-For each language L implement:
-
-```python
-def analyze_sentence_L(sentence: str) -> List[TokenInfo]:
-    ...
-```
-
-* Use language specific tools as follows:
-
-English:
-
-* Use spacy or stanza with English models.
-* Extract:
-
-  * lemma
-  * POS
-  * basic features such as number (singular/plural) and tense.
-
-Arabic:
-
-* Use camel_tools or another Arabic analyzer.
-* Extract:
-
-  * lemma
-  * POS
-  * features such as gender, number, case, person, tense, mood.
-
-Turkish:
-
-* Use a Turkish morphological analyzer (for example Zemberek bindings or any equivalent).
-* Extract:
-
-  * lemma
-  * POS
-  * features such as case, number, person, tense, aspect, mood.
-  * morpheme sequence representing stems plus suffix chain.
-
-For each sentence:
-
-* Split into surface tokens (words)
-* Call the analyzer tool for each word
-* Convert analyzer output to a list of TokenInfo instances
-
-4.3 Finite state like checks (light constraints)
-
-Implement a simple rule checker per language:
+### 4.2 Shared Morpheme Sequence Validator
 
 ```python
 def check_morph_sequence_L(token_infos: List[TokenInfo]) -> bool:
-    ...
 ```
 
-Rules:
+- Validates that each token's tag bundle is consistent with its POS
+- Validates template is from the known inventory for that language (or flagged)
+- For Turkish: validates suffix slot ordering
+- Returns True if sequence is grammatically consistent, False otherwise
+- Used for: corpus sanity checking and post-generation agreement evaluation
 
-* Maintain a small set of allowed POS tags: {"NOUN", "VERB", "ADJ", "DET", "PRON"} plus others if needed.
-* For each POS define allowed feature keys.
+Per-language POS-to-allowed-tags rules:
 
-  * Example:
+**Arabic (`check_morph_sequence_ar`):**
 
-    * NOUN: number, case, gender
-    * VERB: person, number, tense, aspect, mood
-* Optionally, for Turkish, enforce approximate suffix order (case after number, etc.)
-* For each TokenInfo:
+| POS | Required tags | Optional tags | Invalid if present |
+|---|---|---|---|
+| VERB | tense, person, num, gender, voice | mood | case, def |
+| NOM | num, gender | case, def | tense, person, mood |
+| ADJ | num, gender | case, def | tense, person, mood |
+| PART | — | — | tense, case, num, gender |
 
-  * If it has POS outside the allowed set, accept but flag.
-  * If it has features inconsistent with POS, mark as invalid.
-* Return True if no invalid tokens detected, False otherwise.
+Additional Arabic rules:
+- If `tense=IMP` (imperative) → `person` must be `2`, `voice` must be `ACT`
+- If `voice=PASS` → `tense` cannot be `IMP`
+- If `mood=JUS` → `tense` must be `PRES`
+- If `def=DEF` → word must have had الـ proclitic or be an إضافة construction
 
-You will use this function later for:
+**Turkish (`check_morph_sequence_tr`):**
 
-* Sanity checking input data
-* Evaluating generated sequences for agreement correctness
+Validates canonical Dilbilgisi slot order. For each word, the suffix chain must follow:
 
-4.4 Morph-aligned tokenization (training tokenizer)
+- Nominal: `[DERIV] → [NUM] → [POSS] → [CASE]` — no slot may appear after a slot that comes later in the order
+- Verbal: `[DERIV] → [VOICE] → [NEG] → [TENSE] → [MOOD] → [PERSON+NUM]` — same constraint
 
-For each language L:
+Additional Turkish rules:
+- If `polarity=NEG` → NEG slot must precede TENSE slot
+- If `voice=CAUS` → verb must be transitive or intransitive (not already PASS)
+- If `mood=IMP` → PERSON must be `2`, TENSE slot is absent
 
-1. Generate morpheme-level training text:
+**English (`check_morph_sequence_en`):**
 
-   * For each sentence in `data/raw/L/train.txt`:
+| POS | Allowed inflectional tags | Invalid combinations |
+|---|---|---|
+| NOUN | num, poss | tense, aspect, degree, person, voice |
+| VERB | tense, aspect, person, voice | num (except via person), degree |
+| ADJ | degree | tense, aspect, person, voice |
+| ADV | degree | tense, aspect, person, voice, num |
 
-     * Run `analyze_sentence_L`
-     * For each TokenInfo:
+Additional English rules:
+- If `aspect=PERF` → `tense` must be `PAST` or `PRES`
+- If `voice=PASS` → `aspect` must be `PERF` or `SIMPLE`
+- If `degree=COMP` or `degree=SUPER` → POS must be `ADJ` or `ADV`
 
-       * Use `morphemes` list
-       * Join morphemes with a special separator that will mark morpheme boundaries.
-         Example: use `"@"` between morphemes and `" "` between words.
-     * Save this new string as one line in a morpheme-level training file, for example:
+### 4.3 Shared Feature Tag Bundle
 
-       * `data/processed/L/morph/train_morphemes.txt`
+For each TokenInfo, serialize the grammatical tags as a bundle string:
 
-2. Train a SentencePiece tokenizer on `train_morphemes.txt` with:
+```
+"pos=VERB|tense=PAST|num=PL|person=3|gender=M|voice=ACTIVE"
+```
 
-   * Same vocabulary size as baseline tokenizer for that language
-   * Treat the morpheme boundary marker such that merges do not cross it. A simple approach:
-
-     * Treat "@" as a normal character but pre-tokenize so that merges primarily happen inside morphemes.
-     * Or mark morpheme boundaries as separate tokens and configure SentencePiece to respect them.
-   * Save tokenizer to `tokenizers/L_morph/`.
-
-4.5 Morph-aligned tokenization (encoding data)
-
-* For each split S in {train, val, test}:
-
-  * Read `data/raw/L/S.txt`
-  * For each sentence:
-
-    * Run `analyze_sentence_L` to get TokenInfo list
-    * Construct morpheme-level text exactly as for training
-    * Encode with `tokenizers/L_morph/` tokenizer
-    * Store:
-
-      * token ids
-      * optionally a mapping to underlying TokenInfo and morphemes for evaluation
-
-* Save to:
-
-  * `data/processed/L/morph/S_tokens.npy`
-  * plus any needed metadata for evaluation.
-
-* Record:
-
-  * total tokens per split for morph regime
-  * average tokens per sentence
-
-Store these stats in `logs/evaluation/L_morph_token_stats.json`.
-
-4.6 Feature serialization for model inputs
-
-For morphology-aware models, you must supply both token ids and morphological features.
-
-Design:
-
-* Build a finite vocabulary of feature bundles.
-
-  * For each TokenInfo, build a string like: `"pos=NOUN|num=PL|case=ACC"`
-  * Collect all distinct bundles across the training corpus for that language.
-* Assign each bundle a unique id.
-
-In the model:
-
-* For each token position, you will:
-
-  * Associate a feature bundle id.
-  * For tokens that are not the first morpheme of a word, you can:
-
-    * Reuse the same feature bundle as the first morpheme of that word
-    * Or use a special "no features" id
-* The model input will consist of:
-
-  * Token embeddings from the tokenizer ids
-  * Feature embeddings from the feature bundle ids
-  * Combine them by summation or concatenation followed by a linear projection
-
-Store feature bundle vocabularies under:
-
-* `tokenizers/L_morph/feature_bundles.json`
-
-4.7 Script
-
-Implement `scripts/preprocess_morph.py` to perform all morphology-aware preprocessing, including:
-
-* Analyzing sentences
-* Constructing morpheme-level text
-* Training morph tokenizers
-* Encoding splits
-* Building feature bundles and ids
+- Collect all distinct bundles across the training corpus
+- Assign each a unique integer ID
+- Store at `tokenizers/L_morph/feature_bundles.json`
+- Non-first morphemes of a word receive a `"no_features"` ID
 
 ---
 
-## 5. Model and training implementation
+### 4.4 ar_morph — Arabic Grammar Engine (النحو والصرف)
 
-5.1 Model definition
+Arabic is a root-and-pattern (templatic) language. The grammatical sciences of النحو (syntax/inflection) and الصرف (morphological derivation) together define a complete formal system for analyzing every Arabic word. This pipeline implements that system algorithmically.
 
-* Implement a GPT-style decoder-only transformer model in PyTorch or use Hugging Face `AutoModelForCausalLM` with a custom config.
-* Configuration:
+**Morphological system:** templatic (root + وزن pattern) + clitics, high morphological density, significant ambiguity without diacritics
 
-  * `n_layer = 6`
-  * `n_embd = 256`
-  * `n_head = 4`
-  * `ffn_dim = 1024`
-  * `max_position_embeddings = 256`
-* For baseline models:
+**Analyzer:** camel_tools (primary), Farasa (fallback)
 
-  * Use standard embedding for tokens
-* For morphology-aware models:
+**Root lexicon source:** Doha Historical Dictionary of Arabic (معجم الدوحة التاريخي للغة العربية)
+- ~300,000 lexical entries organized etymologically by root
+- Covers Arabic from earliest attestations (~400 AD) through modern usage
+- Explicitly designed to support Arabic NLP and language model development
+- Store extracted root list as `configs/ar_roots.json`
 
-  * Define two embedding tables:
+**Pre-computed vocabulary space:**
 
-    * `token_embedding` for token ids
-    * `feature_embedding` for feature bundle ids
-  * Combine them at each position as:
+Before any corpus is processed, cross the root lexicon with the full وزن inventory to pre-compute the theoretical Arabic word space:
 
-    * `combined = token_embedding[token_id] + feature_embedding[feature_id]`
+```python
+# Pseudocode
+for root in ar_roots:
+    for template in ar_templates:
+        candidate = apply_template(root, template)
+        if is_phonologically_valid(candidate):
+            theoretical_vocab.add((root, template, candidate))
+```
 
-5.2 Training configuration
+**`apply_template(root, template)`** — maps root consonants onto the F-A-L skeleton of the template:
 
-Define training hyperparameters common to all six models:
+- Arabic templates use ف-ع-ل as positional placeholders for root consonants
+- First root consonant → replaces ف, second → replaces ع, third → replaces ل
+- For quadriliteral roots: ف-ع-ل-ل (four positions)
+- All vowels, diacritics (harakat), shadda, and sukun from the template are preserved exactly
+- Weak roots (roots containing و، ي، ء) require special handling:
+  - و or ي in root position may assimilate, elide, or change to a long vowel depending on template position
+  - These alternations follow standard Arabic morphophonological rules (إعلال وإبدال)
+  - If a weak root produces an irregular alternation in a given template, the alternated form is stored, not the raw substitution
+- Implementation: iterate over template characters, replace ف/ع/ل with corresponding root consonant, preserve all other characters
 
-* batch size: choose a fixed value (for example 64 sequences) that fits GPU memory
-* sequence length: 256 tokens
-* optimizer: AdamW
-* learning rate: 3e-4
-* learning rate schedule: warmup for first N steps (for example 2000), then cosine decay
-* weight decay: small value such as 0.01
-* gradient clipping: optional, for example 1.0
-* training steps:
+**`is_phonologically_valid(candidate)`** — filters out phonologically impossible forms:
 
-  * either a fixed number of steps (for example 100k)
-  * or a fixed total number of tokens processed (for example 500 million tokens per model)
+A candidate form is considered invalid if any of the following hold:
 
-Apply identical training budget for baseline and morph models of the same language.
+1. Two identical adjacent consonants with no intervening vowel (unless it is a valid geminate with shadda)
+2. Word begins with a sukun (consonant cluster at word start is not permitted in Arabic)
+3. The form contains no vowel at all (every Arabic word must have at least one vowel)
+4. A weak consonant (و، ي) appears in a position where it would normally elide but has not been elided — raw substitution without applying إعلال
+5. Hamza (ء) appears in a position that violates standard hamza orthography rules (e.g., ء after a long vowel should be ئ or ؤ)
 
-5.3 Training script
+Valid forms that pass all checks are added to the theoretical vocabulary space.
 
-Implement `scripts/train_lm.py` with arguments:
+This gives a grammar-defined closed vocabulary. Every word encountered in the corpus is either:
+- In the (root × template) space → fully analyzed
+- A clitic-bearing form of the above → stripped and analyzed
+- A proper noun → tagged `PROPER`
+- A loanword/Arabized foreign word → tagged `FOREIGN`
 
-* `--language` one of {en, ar, tr}
-* `--regime` one of {baseline, morph}
-* `--config` path to language specific training config
+The corpus filters the theoretical space down to attested forms. Unattested (root × template) combinations are valid but simply never appear — they don't pollute the vocabulary.
 
-Functionality:
+Store pre-computed space in `configs/ar_vocab_space.json`.
 
-* Load model config
-* Load tokenizer and processed data for specified language and regime
-* Instantiate model
-* Run training loop:
+#### Step A — Clitic Stripping + Surface Tagging (النحو)
 
-  * For each step:
+Proclitics to detect and strip (in order):
+- Conjunctions: وَ، فَ (and, so/then)
+- Prepositions: بِ، لِ، كَ (by/with, for/to, like)
+- Definite article: الـ (marks definiteness — معرفة)
 
-    * Sample a batch of token sequences (and feature bundles for morph regime)
-    * Compute language modeling loss (cross entropy over next token)
-    * Backpropagate and update parameters
-    * Log:
+Enclitics to detect and strip:
+- Pronoun suffixes: هُ، هَا، هُم، هُمَا، كَ، نَا etc. (attached object/possessive pronouns)
 
-      * step
-      * loss
-      * perplexity (exp(loss))
-      * number of tokens processed so far
-      * wall clock time
-      * GPU memory usage if available
-* Save:
+Tags assigned to the base form after stripping:
 
-  * final model weights
-  * tokenizer
-  * training logs to `logs/training/{language}_{regime}_training.json`
+| Tag | Values | Arabic term |
+|---|---|---|
+| `pos` | NOM / VERB / ADJ / PART / FOREIGN | اسم / فعل / صفة / حرف |
+| `case` | NOM / ACC / GEN | رفع / نصب / جر |
+| `def` | DEF / INDEF | معرفة / نكرة |
+| `num` | SG / DU / PL | مفرد / مثنى / جمع |
+| `gender` | M / F | مذكر / مؤنث |
+| `tense` | PAST / PRES / IMP / — | ماضي / مضارع / أمر |
+| `person` | 1 / 2 / 3 / — | متكلم / مخاطب / غائب |
+| `mood` | IND / SUBJ / JUS / — | مرفوع / منصوب / مجزوم |
+| `voice` | ACT / PASS / — | معلوم / مجهول |
 
-Train all six combinations:
+Note on diacritics: train and evaluate on diacritized text where available. Diacritics resolve most case and tense ambiguity. Log diacritization coverage rate per corpus.
 
-* (en, baseline), (en, morph)
-* (ar, baseline), (ar, morph)
-* (tr, baseline), (tr, morph)
+#### Step B — Template Detection (الصرف — أوزان الصرف)
 
----
+Match the stripped base form against the canonical inventory of Arabic morphological templates (أوزان). Each وزن carries grammatical and semantic implications beyond the surface form.
 
-## 6. Core evaluation
+Core template inventory (non-exhaustive, to be fully enumerated in `configs/ar_templates.json`):
 
-6.1 Language modeling evaluation
+| Template (وزن) | Typical meaning | Example |
+|---|---|---|
+| فَعَلَ | basic past verb | كَتَبَ (wrote) |
+| فَعِلَ | stative verb | عَلِمَ (knew) |
+| فَاعِل | active participle / agent | كَاتِب (writer) |
+| مَفْعُول | passive participle / patient | مَكْتُوب (written) |
+| فِعَال | verbal noun (masdar) | كِتَاب (book/writing) |
+| تَفْعِيل | verbal noun of Form II | تَعْلِيم (teaching) |
+| اِفْتِعَال | verbal noun of Form VIII | اِكْتِسَاب (acquisition) |
+| فَعَّال | intensive agent | عَلَّام (very knowledgeable) |
+| مَفْعَلَة | place/instrument noun | مَكْتَبَة (library) |
 
-Implement `scripts/eval_lm.py` which:
+If no template matches:
+- Check against a proper noun list → tag `PROPER`
+- Otherwise → tag `FOREIGN` (Arabized loanword, e.g., تِلِفِزْيُون)
+- Both are valid tokens but flagged for separate analysis
 
-* Loads a trained model and tokenizer
-* Evaluates on `val` and `test` splits for that language and regime
-* Computes:
+#### Step C — Root Extraction (الجذر)
 
-  * Average loss per token
-  * Perplexity (exp(loss))
-* Outputs a JSON report:
+Once the template is identified, extract the triconsonantal or quadriconsonantal root by mapping the surface consonants onto the template's فاء-عين-لام (F-A-L) skeleton.
 
-  * `logs/evaluation/{language}_{regime}_lm.json` with:
+Example: كَاتِب → template فَاعِل → root ك-ت-ب (k-t-b)
 
-    * `val_loss`, `val_ppl`
-    * `test_loss`, `test_ppl`
-    * `num_tokens_val`, `num_tokens_test`
+Validate the extracted root against `configs/ar_roots.json` (sourced from the Doha Dictionary):
+- Root found → confirmed, proceed
+- Root not found → flag as `UNVERIFIED_ROOT`, log for review
+- This validation step is only possible because of the pre-computed root lexicon — it's what makes the Doha Dictionary integration meaningful
 
-Run this for all six models.
+The root determines:
+- Semantic field (all words from ك-ت-ب relate to writing/recording)
+- Acceptable prepositions and particles (تعدية الفعل)
+- Whether the verb is transitive/intransitive and what cases it governs
 
----
+Store root in TokenInfo. Root + template together form the core of the tagged token representation.
 
-## 7. Downstream tasks (simple)
+**Vocabulary construction:**
+- Vocabulary tokens are: individual morphemes (root-in-template units) + clitics as separate tokens
+- Each unique (root, template) realization is a vocabulary entry, drawn from the pre-computed space
+- Clitics (وَ، فَ، بِ، الـ، هُ etc.) are a small closed-class vocabulary (~30–50 items)
+- Vocabulary size is bounded by the pre-computed (root × template) space, filtered to corpus-attested forms
+- Expected range: 20k–40k unique tokens
 
-Goal: Check whether morphology-aware models show advantages on simple tasks beyond next token prediction.
-
-7.1 Task selection
-
-Choose at least two task types that exist or can be approximated for all three languages:
-
-1. Text classification (for example sentiment or topic):
-
-   * Use or construct small labeled datasets per language with a similar label space.
-   * For toy scale, some thousands of examples per language are enough.
-
-2. Question answering or short summarization:
-
-   * Use simple QA pairs or short summarization tasks per language.
-
-7.2 Evaluation method
-
-For each task and model:
-
-* Option A: fine-tune the model with a classification head or QA head.
-* Option B: keep model frozen and train a shallow classifier on top of the final hidden state.
-
-Pick one method and use it consistently for all models.
-
-7.3 Implementation
-
-Extend `scripts/eval_lm.py` or create a separate `scripts/eval_downstream.py` to:
-
-* Load model and tokenizer
-* Load task dataset
-* Train task head or probe
-* Evaluate on task test set
-* Log metrics:
-
-  * Classification: accuracy, F1
-  * QA or summarization: exact match, BLEU or ROUGE
-  * Inference latency per example (average)
-
-Store outputs in:
-
-* `logs/evaluation/{language}_{regime}_task_{task_name}.json`
+**Text construction:**
+- Serialize each word as: `[PROCLITIC@]ROOT.TEMPLATE.TAGS[@ENCLITIC]`
+- Example: وَكَتَبُوهَا → `وَ @ كتب.فَعَلَ.VERB.PAST.3.PL.M.ACT @ هَا`
+- Train tokenizer on this structured representation
+- Save to `tokenizers/ar_morph/`
 
 ---
 
-## 8. Morphology-specific evaluation
+### 4.5 tr_morph — Turkish Grammar Engine (Dilbilgisi)
 
-Goal: Quantify effects related to morphological richness and structure.
+Turkish is an agglutinative language. Its formal grammatical science, Dilbilgisi, defines a complete and largely unambiguous system for decomposing any Turkish word into its stem and an ordered chain of suffix slots. Unlike Arabic's templatic system, Turkish morphology is strictly concatenative — meaning is built by appending suffixes in a canonical left-to-right order, each slot carrying a specific grammatical function. A single Turkish word can encode what English expresses in a full clause.
 
-8.1 Tokens per meaning unit
+**Morphological system:** agglutinative, strictly ordered suffix chaining, vowel harmony governs surface forms, highly productive, low structural ambiguity
 
-Define a meaning unit as a content word (noun, verb, adjective) with its core inflectional features.
+**Analyzer:** Zeyrek (pure Python port of Zemberek — no JVM required)
+- Install: `pip install zeyrek`
+- Provides: morphological analysis, lemmatization, root extraction, suffix chain decomposition
+- Internally uses Zemberek's stem lexicon and suffix inventory
+- Preferred over raw Zemberek bindings for Python pipeline compatibility
 
-Procedure per language and regime:
+**Stem lexicon source:** Zeyrek's internal stem lexicon (inherited from Zemberek)
+- Contains the full inventory of native Turkish stems
+- Queried directly at runtime via `analyzer.lexicon` — not serialized to disk
+- A JSON dump would be 700k+ lines with no benefit since Zeyrek is already a pipeline dependency
 
-* Take a subset of the test set (for example 10k sentences).
-* For each sentence:
+**Formal reference:** Dilbilgisi — Turkish Grammar (Türk Dil Kurumu), Kornfilt (1997) *Turkish*, Lewis (1967) *Turkish Grammar*
 
-  * Run the morphological analyzer to get TokenInfo for each word.
-  * Count the number of meaning units.
-  * Count the number of tokens used by the model's tokenizer for that sentence.
-* Compute:
+**Pre-computed vocabulary space:**
 
-  * Average tokens per meaning unit:
-    `avg_tokens_per_unit = total_tokens / total_meaning_units`
+Before corpus processing, extract Zeyrek's stem lexicon and cross it with the canonical suffix slot inventory to establish a closed, grammar-defined vocabulary boundary:
 
-Compare baseline vs morph for each language.
+```python
+# Pseudocode
+for stem in zeyrek_stem_lexicon:
+    for suffix_chain in valid_suffix_combinations(stem.pos):
+        if obeys_vowel_harmony(stem, suffix_chain):
+            theoretical_vocab.add((stem, suffix_chain))
+```
 
-8.2 Agreement and inflection accuracy
+Unlike Arabic, Turkish productivity is extremely high — the theoretical space is very large and not fully enumerable. The value here is establishing a validated stem list and a closed suffix inventory so that every corpus word is either:
+- A known stem + valid suffix chain → fully analyzed
+- A loanword stem + valid suffix chain → stem tagged `FOREIGN`, suffixes analyzed normally
+- A proper noun → tagged `PROPER`
+- An unanalyzable form → tagged `UNKNOWN`
 
-Construct or use an evaluation set that tests:
+Store validated suffix slot inventory in `configs/tr_suffixes.json`.
 
-* Subject verb agreement
-* Case marking and number agreement for nouns
-* Other language specific inflection properties
+#### Vowel Harmony — Pre-processing Rule
 
-Procedure:
+Before any suffix analysis, vowel harmony must be understood as a surface realization rule, not a separate morpheme. Every suffix in Turkish has a canonical logical form and multiple surface variants determined by the last vowel of the preceding syllable.
 
-* For each evaluation sentence:
+Two harmony systems operate simultaneously:
 
-  * Treat the gold sentence as reference.
-  * Option 1: ask the model to score the reference sentence and possibly corrupted variants.
-  * Option 2: ask the model to generate continuations where agreement is needed.
-* For outputs or scored candidates:
+Back/Front harmony:
+- If the last vowel of the stem/preceding suffix is a back vowel (a, ı, o, u) → suffix takes back variant
+- If front vowel (e, i, ö, ü) → suffix takes front variant
 
-  * Use the morphological analyzer and `check_morph_sequence_L` to verify:
+Rounding harmony (applies to high vowels in suffixes):
+- If the last vowel is rounded (o, u, ö, ü) → high vowel in suffix becomes rounded (u/ü)
+- If unrounded → high vowel becomes unrounded (ı/i)
 
-    * Is subject verb agreement correct?
-    * Are required morphological features present and consistent?
+Normalization rule: all surface suffix variants are normalized to their canonical logical form before template matching. Surface variant is stored separately in TokenInfo for reconstruction.
 
-Compute:
+| Logical suffix | Surface variants | Function |
+|---|---|---|
+| `PL` | -lar / -ler | plural |
+| `LOC` | -da / -de / -ta / -te | locative case |
+| `ABL` | -dan / -den / -tan / -ten | ablative case |
+| `DAT` | -a / -e | dative case |
+| `ACC` | -ı / -i / -u / -ü | accusative case |
+| `GEN` | -ın / -in / -un / -ün | genitive case |
+| `PAST` | -dı / -di / -du / -dü / -tı / -ti | definite past tense |
+| `NEG` | -ma / -me | negation |
+| `PROG` | -iyor | present progressive |
+| `FUT` | -acak / -ecek | future tense |
+| `COND` | -sa / -se | conditional mood |
+| `CAUS` | -tır / -tir / -dır / -dir | causative voice |
 
-* Agreement accuracy per model:
+#### Step A — Suffix Stripping + Surface Tagging
 
-  * fraction of items where the model prefers the correct form or generates the correct form.
+Suffixes are stripped from right to left. The stripping order follows the reverse of the canonical Dilbilgisi slot order. Each stripped suffix is normalized to its logical form and its grammatical function is recorded as a tag.
 
-8.3 Lemma plus feature bundle accuracy
+**Inflectional suffixes** (purely grammatical, stripped in Step A):
 
-* For a set of sentences:
+| Tag | Values | Dilbilgisi category |
+|---|---|---|
+| `pos` | NOUN / VERB / ADJ / ADV / POSTP / CONJ | İsim / Fiil / Sıfat / Zarf |
+| `num` | SG / PL | Tekil / Çoğul |
+| `case` | NOM / ACC / DAT / LOC / ABL / GEN / INS | Yalın / Belirtme / Yönelme / Bulunma / Uzaklaşma / İlgi / Araç |
+| `poss` | NONE / 1SG / 2SG / 3SG / 1PL / 2PL / 3PL | İyelik ekleri |
+| `person` | 1 / 2 / 3 | Şahıs |
+| `tense` | PAST_DEF / PAST_NARR / PRES_PROG / PRES_AORIST / FUT | Zaman |
+| `aspect` | PERF / IMPERF / PROG / HAB | Görünüş |
+| `mood` | IND / COND / OPT / IMP / NECESS / INF | Kip |
+| `polarity` | POS / NEG | Olumlu / Olumsuz |
+| `voice` | ACT / PASS / CAUS / RECIP / REFL | Çatı |
 
-  * Use ground truth morphological analysis of reference sentence to extract pairs (lemma, feature bundle) for target positions (for example verbs, core nouns).
-  * Evaluate model outputs:
+Note on tense: Turkish distinguishes definite past (-dı, witnessed) from narrative past (-mış, reported/inferred). This evidentiality distinction is linguistically significant and must be preserved as a tag — it affects meaning, not just form.
 
-    * Map each generated or most likely word at those positions back to (lemma, feature bundle) using the analyzer.
-  * Count correct matches of (lemma, feature bundle).
+**Derivational suffixes** (change stem class or meaning, handled in Step B):
+- These are not stripped in Step A — they are identified as part of the template in Step B
+- Examples: -lık/-lik (forms abstract nouns: iyi → iyilik, goodness), -cı/-ci (forms agent nouns: araba → arabacı, driver), -laş (forms verbs from nouns: insan → insanlaşmak, to become human)
 
-Compute:
+#### Step B — Suffix Chain Template Validation (Dilbilgisi slot order)
 
-* Accuracy per model and language:
+The "template" for Turkish is not a fixed pattern like Arabic أوزان — it is the canonical slot order defined by Dilbilgisi. Step B validates that the extracted suffix chain conforms to this order and identifies any derivational morphology present.
 
-  * `bundle_accuracy = correct_pairs / total_pairs`
+Canonical slot order for nominal words:
+```
+STEM → [DERIV] → [NUM] → [POSS] → [CASE]
+```
 
-8.4 Nats per morpheme
+Canonical slot order for verbal words:
+```
+STEM → [DERIV] → [VOICE] → [NEG] → [TENSE/ASPECT] → [MOOD] → [PERSON+NUM]
+```
 
-For a subset of evaluation sentences:
+Derivational suffix inventory (to be fully enumerated in `configs/tr_derivations.json`):
 
-* For the morph regime:
+| Suffix | Derives | Example |
+|---|---|---|
+| -lık / -lik | Noun → Abstract noun | iyi → iyilik (goodness) |
+| -cı / -ci | Noun → Agent noun | araba → arabacı (driver) |
+| -lı / -li | Noun → Adjective | su → sulu (watery) |
+| -sız / -siz | Noun → Privative adj | su → susuz (waterless) |
+| -laş | Noun/Adj → Verb | insan → insanlaşmak (to humanize) |
+| -landır | Noun → Causative verb | güç → güçlendirmek (to strengthen) |
+| -ış / -iş | Verb → Action noun | gel → geliş (coming, arrival) |
+| -mak / -mek | Verb → Infinitive | git → gitmek (to go) |
 
-  * Compute total loss (in nats) over tokens and divide by number of morphemes underlying those tokens.
-* For baseline:
+If the suffix chain violates canonical slot order → flag via `check_morph_sequence_tr`, log, and mark token as `MALFORMED`.
 
-  * Use the analyzer to map surface words to morphemes and approximate loss per morpheme by distributing token loss across morphemes proportionally or equally.
+If the stem is not found in `configs/tr_stems.json` (Zeyrek's lexicon) → flag as `FOREIGN`.
 
-Compute:
+#### Step C — Stem Identification and Valency
 
-* Average nats per morpheme for baseline and morph.
+After stripping all inflectional suffixes and identifying derivational morphology, the remaining base is the stem. Identify:
 
-8.5 Script
+- Stem class: nominal (isim), verbal (fiil), adjectival (sıfat)
+- For verbal stems: valency — what case(s) the verb governs
+  - Intransitive (nesnesiz): no accusative object
+  - Transitive (geçişli): takes accusative (-ı) object
+  - Ditransitive: takes both accusative and dative (-a) objects
+- Whether the stem is native Turkish or a loanword (`FOREIGN`)
+- Compound stems: Turkish forms compounds by juxtaposition (e.g., başbakan = baş + bakan, prime minister) — detect and tag as `COMPOUND` with constituent stems listed
 
-Implement `scripts/eval_morphology.py` that:
+**Vocabulary construction:**
+- Vocabulary tokens are: stems + individual logical suffix values as separate tokens
+- Derivational suffixes are vocabulary tokens (they change meaning)
+- Inflectional suffixes are tag carriers (they express grammatical relations)
+- Suffix token vocabulary is small and closed (~150–200 logical suffix types), fully enumerated in `configs/tr_suffixes.json`
+- Stem inventory validated against `configs/tr_stems.json` (Zeyrek's lexicon)
+- Total expected range: 25k–50k unique tokens
 
-* For every language and regime:
-
-  * Computes:
-
-    * tokens per meaning unit
-    * agreement and inflection accuracy
-    * lemma plus feature bundle accuracy
-    * nats per morpheme
-  * Saves results to:
-
-    * `logs/evaluation/{language}_{regime}_morph.json`
+**Text construction:**
+- Serialize each word as: `STEM.POS[.DERIV] @ SUFFIX1.TAG @ SUFFIX2.TAG ...`
+- Example: evlerden → `ev.NOUN @ PL @ ABL`
+- Example: gitmeyecekler → `git.VERB @ NEG @ FUT @ 3PL`
+- Example: iyilikten → `iyi.ADJ @ lık.DERIV.NOUN @ ABL`
+- Example: arabacılar → `araba.NOUN @ cı.DERIV.AGENT @ PL`
+- Train tokenizer on this suffix-chain representation, respecting `@` boundaries
+- Save to `tokenizers/tr_morph/`
 
 ---
 
-## 9. Metrics aggregation and comparison
+### 4.6 en_morph — English Grammar Engine
 
-Implement `scripts/compute_metrics.py` to read all JSON logs and produce:
+English is an analytic language. Its morphology is shallow compared to Arabic and Turkish — most grammatical relationships are expressed through word order and function words rather than inflection. However, English has a rich derivational morphology (word-formation) that is well-documented and formally enumerable. The grammar engine for English is grounded in the tradition of English descriptive grammar (Quirk et al. *A Comprehensive Grammar of the English Language*, Huddleston & Pullum *The Cambridge Grammar of the English Language*) and morphological word-formation theory.
 
-9.1 Summary tables
+The key distinction for English is between inflectional morphology (purely grammatical, does not change the word's category or core meaning) and derivational morphology (changes category or meaning, creates new lexical items). These are handled in different steps.
 
-* A table per language, with rows:
+**Morphological system:** concatenative, low inflectional complexity, rich derivational system, significant irregular form inventory, productive compounding
 
-  * baseline model
-  * morph model
+**Analyzer:** spaCy (en_core_web_trf) or stanza
 
-* Columns for each of:
+**Formal reference:** Quirk et al. (1985), Huddleston & Pullum (2002), Bauer (1983) *English Word-Formation*
 
-  * model size (number of parameters)
-  * total tokens processed in training
-  * total training wall time
-  * validation and test perplexity
-  * downstream task metrics
-  * morphology metrics:
+#### Step A — Inflectional Stripping + Surface Tagging
 
-    * tokens per meaning unit
-    * agreement accuracy
-    * bundle accuracy
-    * nats per morpheme
+Inflectional morphology in English is small and closed. Strip only inflectional affixes in Step A — these express grammatical relations without changing the word's category.
 
-* A global table comparing:
+English inflectional inventory (complete):
 
-  * en_base vs en_morph
-  * ar_base vs ar_morph
-  * tr_base vs tr_morph
+| Affix | Function | Example |
+|---|---|---|
+| -s / -es | Noun plural | cat → cats |
+| -'s | Possessive | cat → cat's |
+| -s (3sg) | Verb 3rd person singular present | run → runs |
+| -ed | Past tense / past participle | walk → walked |
+| -ing | Present participle / gerund | run → running |
+| -er | Comparative adjective/adverb | fast → faster |
+| -est | Superlative adjective/adverb | fast → fastest |
 
-9.2 Plots
+**Irregular forms** — English has a significant inventory of irregular inflections that do not follow the above patterns. These must be handled via lookup table, not pattern matching:
 
-* Learning curves:
+| Category | Examples |
+|---|---|
+| Irregular plurals | mouse→mice, child→children, foot→feet, ox→oxen |
+| Irregular past tense | go→went, be→was/were, have→had, do→did, see→saw |
+| Irregular past participle | go→gone, be→been, write→written, break→broken |
+| Suppletive comparatives | good→better→best, bad→worse→worst, far→further→furthest |
 
-  * loss vs tokens for baseline and morph per language
-* Bar plots:
+Store irregular form lookup table in `configs/en_irregulars.json`. If a word matches an irregular form, resolve it to its base and tag accordingly before proceeding.
 
-  * tokens per meaning unit (baseline vs morph for each language)
-  * agreement accuracy (baseline vs morph)
-  * bundle accuracy
-  * nats per morpheme
+Tags assigned after inflectional stripping:
 
-Save numerical tables in CSV and plots as PNG into a folder such as `logs/summary/`.
+| Tag | Values |
+|---|---|
+| `pos` | NOUN / VERB / ADJ / ADV / DET / PRON / PREP / CONJ / PART |
+| `num` | SG / PL / — |
+| `tense` | PAST / PRES / — |
+| `aspect` | SIMPLE / PROG / PERF / PERF_PROG / — |
+| `degree` | POS / COMP / SUPER / — |
+| `person` | 3SG / NON3SG / — |
+| `voice` | ACT / PASS / — |
+| `poss` | YES / NO |
+
+#### Step B — Derivational Pattern Detection (Word-Formation)
+
+After inflectional stripping, the base form is matched against English derivational word-formation patterns. Derivational morphology creates new lexical items — it changes the word's category or core meaning.
+
+**Suffixal derivation** (to be fully enumerated in `configs/en_derivations.json`):
+
+| Pattern | Derives | Semantic function | Example |
+|---|---|---|---|
+| STEM + -tion / -sion / -ation | V → N | action/process nominalization | educate → education |
+| STEM + -ness | ADJ → N | state/quality nominalization | dark → darkness |
+| STEM + -ity / -ty | ADJ → N | state/quality nominalization | real → reality |
+| STEM + -ment | V → N | result/process nominalization | develop → development |
+| STEM + -er / -or / -ar | V/N → N | agent / instrument | teach → teacher |
+| STEM + -ist | N → N | adherent / practitioner | art → artist |
+| STEM + -ism | N → N | doctrine / system | capital → capitalism |
+| STEM + -ize / -ise | N/ADJ → V | verbalization | modern → modernize |
+| STEM + -ify | N/ADJ → V | verbalization | simple → simplify |
+| STEM + -ly | ADJ → ADV | adverbialization | quick → quickly |
+| STEM + -al / -ial | N → ADJ | relational adjective | nation → national |
+| STEM + -ous / -ious | N → ADJ | having quality of | danger → dangerous |
+| STEM + -ful | N → ADJ | full of | hope → hopeful |
+| STEM + -less | N → ADJ | without | hope → hopeless |
+| STEM + -able / -ible | V → ADJ | capable of being | read → readable |
+| STEM + -ing | V → ADJ | active/ongoing quality | interest → interesting |
+| STEM + -ed | V → ADJ | passive/resultant quality | interest → interested |
+
+**Prefixal derivation:**
+
+| Pattern | Derives | Semantic function | Example |
+|---|---|---|---|
+| un- + STEM | ADJ/V → ADJ/V | negation / reversal | happy → unhappy |
+| re- + STEM | V → V | repetition | write → rewrite |
+| pre- + STEM | V/N → V/N | before | view → preview |
+| mis- + STEM | V → V | wrongly | understand → misunderstand |
+| over- + STEM | V/ADJ → V/ADJ | excess | estimate → overestimate |
+| under- + STEM | V/ADJ → V/ADJ | insufficiency | estimate → underestimate |
+| dis- + STEM | V/ADJ → V/ADJ | negation / reversal | agree → disagree |
+| non- + STEM | N/ADJ → N/ADJ | negation | standard → non-standard |
+| anti- + STEM | N/ADJ → N/ADJ | opposition | war → anti-war |
+| inter- + STEM | N/ADJ → N/ADJ | between | national → international |
+
+**Compounding** — English productively forms new words by combining two or more stems:
+- Noun + Noun: software, blackboard, database, keyboard
+- Adj + Noun: greenhouse, blackbird, blueprint
+- Verb + Noun: breakfast, drawback
+- Detect compounds using a compound lexicon + heuristic (two known stems concatenated or hyphenated)
+- Tag as `COMPOUND`, store constituent stems: `software → soft.ADJ + ware.NOUN`
+- Store compound lexicon in `configs/en_compounds.json`
+
+**Phrasal verbs and multi-word expressions:**
+- English has a large inventory of phrasal verbs (give up, look into, take off) where the particle changes the verb's meaning entirely
+- These are semantically opaque — `give up` ≠ `give` + `up`
+- Detect using a phrasal verb lexicon
+- Tag as `PHRASAL_VERB`, store as a single token with the particle: `give_up.VERB`
+- Store lexicon in `configs/en_phrasal_verbs.json`
+
+If no derivational pattern matches and the word is not a known stem:
+- Check proper noun list → tag `PROPER`
+- Check loanword/foreign word list → tag `FOREIGN`
+- Otherwise → tag `UNKNOWN` and log for review
+
+#### Step C — Base Form / Stem Identification and Argument Structure
+
+After inflectional stripping and derivational pattern identification, the base form is the vocabulary stem. Identify:
+
+- Syntactic category of the base (NOUN / VERB / ADJ / ADV)
+- For verbal stems: argument structure
+  - Intransitive: no object (sleep, arrive, fall)
+  - Transitive: takes NP object (eat, write, see)
+  - Ditransitive: takes two objects (give, send, show)
+  - Copular: takes predicative complement (be, seem, become)
+  - Clausal complement: takes that-clause or infinitive (believe, want, expect)
+- For nominal stems: countability (count noun vs mass noun) — affects number tagging
+
+**Vocabulary construction:**
+- Vocabulary tokens are: base stems + derivational affixes as separate tokens + phrasal verb units
+- Inflectional affixes are tag carriers only, not vocabulary tokens
+- Derivational affixes are vocabulary tokens (~150–200 types)
+- Compound constituents are separate tokens
+- Vocabulary size = attested stem inventory + derivational affix set + phrasal verb lexicon
+- Expected range: 15k–25k unique tokens
+
+**Text construction:**
+- Serialize each word as: `BASE.POS[.DERIV_CHAIN] @ INFL_TAG1 @ INFL_TAG2 ...`
+- Inflectional tags follow the base; derivational structure is encoded in the base representation
+- Example: running (progressive) → `run.VERB @ PROG`
+- Example: unhappiness → `happy.ADJ @ un.NEG_PREFIX @ ness.NOM_SUFFIX`
+- Example: teachers → `teach.VERB @ er.AGENT_SUFFIX @ PL`
+- Example: gave up → `give_up.PHRASAL_VERB @ PAST`
+- Example: databases → `data.NOUN+base.NOUN.COMPOUND @ PL`
+- Train tokenizer on this structured representation, respecting `@` boundaries
+- Save to `tokenizers/en_morph/`
 
 ---
 
-## 10. Final summary artifact
+### 4.7 Script
 
-Create a plain text or markdown file:
+`scripts/preprocess_morph.py` — runs the three-step grammar engine for the specified language.
 
-* `logs/summary/conclusion.md`
+```
+python scripts/preprocess_morph.py --language {en,ar,tr}
+```
 
-Contents:
+Outputs per language:
+- `data/processed/L/morph/S_tokens.npy` for each split
+- `data/processed/L/morph/S_feature_ids.npy` (feature bundle IDs aligned to tokens)
+- `tokenizers/L_morph/` tokenizer
+- `tokenizers/L_morph/feature_bundles.json`
+- `configs/ar_roots.json` (Arabic — root lexicon from Doha Dictionary)
+- `configs/ar_vocab_space.json` (Arabic — pre-computed root × template space)
+- `configs/ar_templates.json` (Arabic — full وزن inventory)
+- `configs/tr_stems.json` (Turkish — stem lexicon from Zeyrek)
+- `configs/tr_suffixes.json` (Turkish — canonical suffix slot inventory)
+- `configs/tr_derivations.json` (Turkish — derivational suffix inventory)
+- `configs/en_derivations.json` (English — derivational pattern inventory)
+- `configs/en_irregulars.json` (English — irregular inflection lookup table)
+- `configs/en_compounds.json` (English — compound lexicon)
+- `configs/en_phrasal_verbs.json` (English — phrasal verb lexicon)
+- `logs/evaluation/L_morph_token_stats.json`
+- `logs/evaluation/L_morph_foreign_rate.json` (rate of FOREIGN/PROPER/UNKNOWN tags per language)
 
-* For each language (en, ar, tr):
+---
 
-  * A short paragraph summarizing:
+## 5. Model and Training
 
-    * How morphology-aware models compare to baselines in:
+### 5.1 Model Definition
 
-      * perplexity
-      * downstream performance
-      * morphology metrics
-    * Whether morphology-aware training appears to give a measurable advantage per unit of compute.
+Use Hugging Face `AutoModelForCausalLM` with custom GPT config or implement directly in PyTorch.
 
-* A final section answering:
+Config (all 6 models — shared architecture):
+```json
+{
+  "n_layer": 24,
+  "n_embd": 1024,
+  "n_head": 16,
+  "ffn_dim": 4096,
+  "max_position_embeddings": 1024
+}
+```
 
-  * Do Arabic and Turkish, as morphologically richer languages, show larger benefits from morphology-aware training than English?
-  * Based on these toy-scale experiments, is it justified to invest in scaling up this research?
+Vocabulary size per model:
+- `en_base`, `ar_base`, `tr_base`: `vocab_size = 32000` (fixed BPE)
+- `en_morph`: `vocab_size` = size of attested morpheme inventory (expected 15k–25k)
+- `ar_morph`: `vocab_size` = size of attested (root × pattern) + clitic space (expected 20k–40k)
+- `tr_morph`: `vocab_size` = size of attested (stem × suffix chain) space (expected 25k–50k)
 
-This completes the implementation plan.
+Vocab size for morph models is determined after preprocessing and logged before training begins.
+
+Morph models additionally define:
+- `feature_embedding` table (size: number of feature bundles × 1024)
+- Combined input: `token_embedding[id] + feature_embedding[bundle_id]`
+
+### 5.2 Training Hyperparameters
+
+| Hyperparameter | Value |
+|---|---|
+| Batch size | 32 sequences (adjust to fit A100 80GB) |
+| Sequence length | 1024 tokens |
+| Optimizer | AdamW |
+| Learning rate | 3e-4 |
+| LR schedule | Linear warmup 2000 steps, then cosine decay |
+| Weight decay | 0.01 |
+| Gradient clipping | 1.0 |
+| Total tokens | 8.4B per model |
+| Checkpoint interval | Every 1,000 steps |
+
+Identical budget applied to baseline and morph models within each language.
+
+### 5.3 Training Script
+
+`scripts/train_lm.py --language {en,ar,tr} --regime {baseline,morph} --config configs/training_config_L.json`
+
+Logs per step: loss, perplexity, tokens processed, wall clock time, GPU memory
+Saves to: `logs/training/{language}_{regime}_training.json`
+
+---
+
+## 6. Core Evaluation
+
+`scripts/eval_lm.py` — for each model:
+- Evaluate on val and test splits
+- Compute average loss per token and perplexity
+- Save to `logs/evaluation/{language}_{regime}_lm.json`
+
+Fields: `val_loss`, `val_ppl`, `test_loss`, `test_ppl`, `num_tokens_val`, `num_tokens_test`
+
+---
+
+## 7. Computational Economics Metrics
+
+### 7.1 Compute Cost Metrics
+
+For each model:
+- Estimate FLOPs per forward pass
+- Estimate FLOPs per token
+- Measure inference latency (ms/sample)
+- Measure training steps to reach a fixed validation loss threshold
+
+### 7.2 Attention Distribution Metrics
+
+On test set:
+- Gini coefficient of attention weights (per head, averaged across layers)
+- Shannon entropy of attention weights (per head, averaged across layers)
+
+Save to: `logs/evaluation/{language}_{regime}_compute.json`
+
+---
+
+## 8. Morphology-Specific Evaluation
+
+`scripts/eval_morphology.py` — for each language and regime:
+
+### 8.1 Tokens per Meaning Unit
+
+- Meaning unit = content word (noun/verb/adj) with its inflection
+- Count meaning units and model tokens over 10k test sentences
+- `avg_tokens_per_unit = total_tokens / total_meaning_units`
+
+### 8.2 Agreement Accuracy
+
+- Construct evaluation cases for subject-verb agreement, case marking, number agreement
+- Use `check_morph_sequence_L` to verify model outputs
+- Report fraction of items where model produces or prefers the correct form
+
+### 8.3 Lemma + Feature Bundle Accuracy
+
+- Extract ground truth (lemma, feature bundle) pairs from reference sentences
+- Map model outputs back to (lemma, bundle) via analyzer
+- `bundle_accuracy = correct_pairs / total_pairs`
+
+### 8.4 Nats per Morpheme
+
+- Morph regime: total loss (nats) / number of underlying morphemes
+- Baseline: distribute token loss across morphemes proportionally
+
+Save to: `logs/evaluation/{language}_{regime}_morph.json`
+
+---
+
+## 9. Downstream Tasks
+
+`scripts/eval_downstream.py` — at least two tasks per language:
+
+1. Text classification (sentiment or topic) — accuracy, F1
+2. Short QA or summarization — exact match, BLEU or ROUGE
+
+Concrete dataset sources per language:
+
+| Language | Classification | QA / Summarization |
+|---|---|---|
+| English | SST-2 (sentiment, HuggingFace `datasets`) | SQuAD v1.1 (extractive QA, HuggingFace `datasets`) |
+| Arabic | HARD (hotel reviews sentiment, available on HuggingFace as `hard`) | ARCD (Arabic Reading Comprehension Dataset, HuggingFace `datasets`) |
+| Turkish | TTC-3600 (Turkish text classification, topic labels) | MLQA Turkish subset (HuggingFace `datasets`, `mlqa`, `mlqa.tr.tr`) |
+
+All datasets are freely available and loadable via `datasets.load_dataset()`. No manual download required.
+
+Method: frozen model + shallow probe (single linear layer) trained on final hidden state — consistent across all six models.
+
+Log inference latency per example.
+Save to: `logs/evaluation/{language}_{regime}_task_{task_name}.json`
+
+---
+
+## 10. Metrics Aggregation
+
+`scripts/compute_metrics.py` — reads all JSON logs and produces:
+
+Summary table per language:
+
+| Model | Params | Train Tokens | Train Time | Test PPL | Tokens/Unit | Agreement Acc | Bundle Acc | FLOPs/Token | Latency |
+|---|---|---|---|---|---|---|---|---|---|
+
+Plots:
+- Loss vs tokens (learning curves, baseline vs morph per language)
+- Tokens per meaning unit (bar, baseline vs morph)
+- Agreement accuracy (bar)
+- FLOPs vs accuracy (Pareto view)
+
+Save CSVs and PNGs to `logs/summary/`.
+
+---
+
+## 11. Optional: Compute-Penalized Variant (English Only)
+
+Train two additional English models:
+- `en_base_lambda`
+- `en_morph_lambda`
+
+Modified loss: `L_total = L_task + λ * C_compute`
+
+Where `C_compute = L1 norm of attention weights + L1 norm of FFN activations`
+
+Try λ ∈ {1e-5, 1e-4}. Evaluate accuracy vs FLOPs tradeoff.
+
+---
+
+## 12. Presentation Dashboard
+
+A browser-based dashboard (`dashboard/index.html`) built with HTML, Tailwind CSS, and JavaScript (Chart.js):
+
+- Loads experiment metrics from JSON output files
+- Learning curves per language (baseline vs morph)
+- Side-by-side efficiency comparisons
+- Tokens per meaning unit, agreement accuracy, FLOPs/token visualized as charts
+- Plain-language labels for non-technical audiences
+- Runs locally — no server required, open in browser
+
+The dashboard presents findings neutrally. No conclusions are pre-written. The data is displayed as measured.
+
+**Expected JSON schema the dashboard reads from:**
+
+`logs/evaluation/{language}_{regime}_lm.json`:
+```json
+{
+  "language": "ar",
+  "regime": "morph",
+  "val_loss": 2.31,
+  "val_ppl": 10.07,
+  "test_loss": 2.34,
+  "test_ppl": 10.38,
+  "num_tokens_val": 200000000,
+  "num_tokens_test": 200000000
+}
+```
+
+`logs/training/{language}_{regime}_training.json` (array of step entries):
+```json
+[
+  {
+    "step": 1000,
+    "loss": 4.21,
+    "ppl": 67.4,
+    "tokens_processed": 32000000,
+    "wall_time_sec": 3600,
+    "gpu_memory_gb": 74.2
+  }
+]
+```
+
+`logs/evaluation/{language}_{regime}_morph.json`:
+```json
+{
+  "language": "ar",
+  "regime": "morph",
+  "tokens_per_meaning_unit": 1.43,
+  "agreement_accuracy": 0.87,
+  "bundle_accuracy": 0.79,
+  "nats_per_morpheme": 1.12
+}
+```
+
+`logs/evaluation/{language}_{regime}_compute.json`:
+```json
+{
+  "language": "ar",
+  "regime": "morph",
+  "flops_per_token": 850000000,
+  "inference_latency_ms": 12.4,
+  "attn_gini": 0.61,
+  "attn_entropy": 2.83
+}
+```
+
+`logs/evaluation/{language}_{regime}_task_{task_name}.json`:
+```json
+{
+  "language": "ar",
+  "regime": "morph",
+  "task": "sentiment",
+  "accuracy": 0.83,
+  "f1": 0.82,
+  "inference_latency_ms": 11.1
+}
+```
+
+The dashboard aggregates all of the above into a single view per language pair.
+
+---
+
+## 13. Final Output
+
+`logs/summary/conclusion.md`
+
+For each language (en, ar, tr): a short paragraph reporting measured comparisons across perplexity, downstream performance, and morphology metrics.
+
+Final section addresses:
+1. Does morphology-aware preprocessing reduce tokens per meaning unit?
+2. Does it reduce compute cost at equal performance?
+3. Do Arabic and Turkish benefit more than English?
+4. Is the efficiency gain significant enough to justify scaling research?
+
+Only quantified findings are reported. No interpretation beyond the data.
