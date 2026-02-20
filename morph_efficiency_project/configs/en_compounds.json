@@ -1,0 +1,2722 @@
+[
+  {
+    "compound": "software",
+    "constituents": [
+      {
+        "stem": "soft",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "ware",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "programs for computers"
+  },
+  {
+    "compound": "hardware",
+    "constituents": [
+      {
+        "stem": "hard",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "ware",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "physical computer components"
+  },
+  {
+    "compound": "database",
+    "constituents": [
+      {
+        "stem": "data",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "base",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "organized data store"
+  },
+  {
+    "compound": "keyboard",
+    "constituents": [
+      {
+        "stem": "key",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "board",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "input device"
+  },
+  {
+    "compound": "notebook",
+    "constituents": [
+      {
+        "stem": "note",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "book",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "book for notes"
+  },
+  {
+    "compound": "textbook",
+    "constituents": [
+      {
+        "stem": "text",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "book",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "educational book"
+  },
+  {
+    "compound": "newspaper",
+    "constituents": [
+      {
+        "stem": "news",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "paper",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "printed news publication"
+  },
+  {
+    "compound": "bedroom",
+    "constituents": [
+      {
+        "stem": "bed",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "room",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "room with a bed"
+  },
+  {
+    "compound": "bathroom",
+    "constituents": [
+      {
+        "stem": "bath",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "room",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "room for bathing"
+  },
+  {
+    "compound": "classroom",
+    "constituents": [
+      {
+        "stem": "class",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "room",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "room for classes"
+  },
+  {
+    "compound": "airport",
+    "constituents": [
+      {
+        "stem": "air",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "port",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "port for aircraft"
+  },
+  {
+    "compound": "seaport",
+    "constituents": [
+      {
+        "stem": "sea",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "port",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "port on the sea"
+  },
+  {
+    "compound": "football",
+    "constituents": [
+      {
+        "stem": "foot",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "ball",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "ball game played with feet"
+  },
+  {
+    "compound": "basketball",
+    "constituents": [
+      {
+        "stem": "basket",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "ball",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "ball game with baskets"
+  },
+  {
+    "compound": "baseball",
+    "constituents": [
+      {
+        "stem": "base",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "ball",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "ball game with bases"
+  },
+  {
+    "compound": "sunlight",
+    "constituents": [
+      {
+        "stem": "sun",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "light",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SOURCE",
+    "gloss": "light from the sun"
+  },
+  {
+    "compound": "moonlight",
+    "constituents": [
+      {
+        "stem": "moon",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "light",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SOURCE",
+    "gloss": "light from the moon"
+  },
+  {
+    "compound": "rainfall",
+    "constituents": [
+      {
+        "stem": "rain",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "fall",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "falling rain"
+  },
+  {
+    "compound": "snowfall",
+    "constituents": [
+      {
+        "stem": "snow",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "fall",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "falling snow"
+  },
+  {
+    "compound": "earthquake",
+    "constituents": [
+      {
+        "stem": "earth",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "quake",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "shaking of the earth"
+  },
+  {
+    "compound": "heartbeat",
+    "constituents": [
+      {
+        "stem": "heart",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "beat",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "beating of the heart"
+  },
+  {
+    "compound": "lifetime",
+    "constituents": [
+      {
+        "stem": "life",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "time",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "DURATION",
+    "gloss": "duration of a life"
+  },
+  {
+    "compound": "daytime",
+    "constituents": [
+      {
+        "stem": "day",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "time",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "DURATION",
+    "gloss": "time during the day"
+  },
+  {
+    "compound": "nighttime",
+    "constituents": [
+      {
+        "stem": "night",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "time",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "DURATION",
+    "gloss": "time during the night"
+  },
+  {
+    "compound": "doorstep",
+    "constituents": [
+      {
+        "stem": "door",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "step",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "step at a door"
+  },
+  {
+    "compound": "doorbell",
+    "constituents": [
+      {
+        "stem": "door",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "bell",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "bell at a door"
+  },
+  {
+    "compound": "doorknob",
+    "constituents": [
+      {
+        "stem": "door",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "knob",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "knob on a door"
+  },
+  {
+    "compound": "windmill",
+    "constituents": [
+      {
+        "stem": "wind",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "mill",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "mill powered by wind"
+  },
+  {
+    "compound": "waterfall",
+    "constituents": [
+      {
+        "stem": "water",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "fall",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "falling water"
+  },
+  {
+    "compound": "watercolor",
+    "constituents": [
+      {
+        "stem": "water",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "color",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "paint using water"
+  },
+  {
+    "compound": "firework",
+    "constituents": [
+      {
+        "stem": "fire",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "work",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "explosive display"
+  },
+  {
+    "compound": "fireman",
+    "constituents": [
+      {
+        "stem": "fire",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "man",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "AGENT",
+    "gloss": "man who fights fires"
+  },
+  {
+    "compound": "policeman",
+    "constituents": [
+      {
+        "stem": "police",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "man",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "AGENT",
+    "gloss": "man who polices"
+  },
+  {
+    "compound": "businessman",
+    "constituents": [
+      {
+        "stem": "business",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "man",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "AGENT",
+    "gloss": "man in business"
+  },
+  {
+    "compound": "sportsmanship",
+    "constituents": [
+      {
+        "stem": "sport",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "man",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "QUALITY",
+    "gloss": "fair play in sport"
+  },
+  {
+    "compound": "network",
+    "constituents": [
+      {
+        "stem": "net",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "work",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SYSTEM",
+    "gloss": "interconnected system"
+  },
+  {
+    "compound": "framework",
+    "constituents": [
+      {
+        "stem": "frame",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "work",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SYSTEM",
+    "gloss": "structural framework"
+  },
+  {
+    "compound": "teamwork",
+    "constituents": [
+      {
+        "stem": "team",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "work",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "collaborative work"
+  },
+  {
+    "compound": "homework",
+    "constituents": [
+      {
+        "stem": "home",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "work",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "work done at home"
+  },
+  {
+    "compound": "bookstore",
+    "constituents": [
+      {
+        "stem": "book",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "store",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "store selling books"
+  },
+  {
+    "compound": "bookshelf",
+    "constituents": [
+      {
+        "stem": "book",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "shelf",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "shelf for books"
+  },
+  {
+    "compound": "bookcase",
+    "constituents": [
+      {
+        "stem": "book",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "case",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "CONTAINER",
+    "gloss": "case for books"
+  },
+  {
+    "compound": "cupboard",
+    "constituents": [
+      {
+        "stem": "cup",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "board",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "CONTAINER",
+    "gloss": "board/shelf for cups"
+  },
+  {
+    "compound": "tablecloth",
+    "constituents": [
+      {
+        "stem": "table",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "cloth",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "cloth for a table"
+  },
+  {
+    "compound": "tablespoon",
+    "constituents": [
+      {
+        "stem": "table",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "spoon",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "large spoon"
+  },
+  {
+    "compound": "teaspoon",
+    "constituents": [
+      {
+        "stem": "tea",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "spoon",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "small spoon"
+  },
+  {
+    "compound": "teapot",
+    "constituents": [
+      {
+        "stem": "tea",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "pot",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "CONTAINER",
+    "gloss": "pot for tea"
+  },
+  {
+    "compound": "toothbrush",
+    "constituents": [
+      {
+        "stem": "tooth",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "brush",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "brush for teeth"
+  },
+  {
+    "compound": "toothpaste",
+    "constituents": [
+      {
+        "stem": "tooth",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "paste",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "paste for teeth"
+  },
+  {
+    "compound": "haircut",
+    "constituents": [
+      {
+        "stem": "hair",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "cut",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "cutting of hair"
+  },
+  {
+    "compound": "hairbrush",
+    "constituents": [
+      {
+        "stem": "hair",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "brush",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "brush for hair"
+  },
+  {
+    "compound": "sunscreen",
+    "constituents": [
+      {
+        "stem": "sun",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "screen",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "screen against sun"
+  },
+  {
+    "compound": "sunburn",
+    "constituents": [
+      {
+        "stem": "sun",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "burn",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "burn from sun"
+  },
+  {
+    "compound": "sunflower",
+    "constituents": [
+      {
+        "stem": "sun",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "flower",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "RESEMBLANCE",
+    "gloss": "flower resembling sun"
+  },
+  {
+    "compound": "cornfield",
+    "constituents": [
+      {
+        "stem": "corn",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "field",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "field of corn"
+  },
+  {
+    "compound": "cornstarch",
+    "constituents": [
+      {
+        "stem": "corn",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "starch",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SUBSTANCE",
+    "gloss": "starch from corn"
+  },
+  {
+    "compound": "bloodstream",
+    "constituents": [
+      {
+        "stem": "blood",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "stream",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "SYSTEM",
+    "gloss": "stream of blood"
+  },
+  {
+    "compound": "bloodshot",
+    "constituents": [
+      {
+        "stem": "blood",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "shot",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "STATE",
+    "gloss": "reddened by blood"
+  },
+  {
+    "compound": "brainwave",
+    "constituents": [
+      {
+        "stem": "brain",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "wave",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "electrical brain activity"
+  },
+  {
+    "compound": "brainstorm",
+    "constituents": [
+      {
+        "stem": "brain",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "storm",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "creative thinking session"
+  },
+  {
+    "compound": "backbone",
+    "constituents": [
+      {
+        "stem": "back",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "bone",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "spine"
+  },
+  {
+    "compound": "kneecap",
+    "constituents": [
+      {
+        "stem": "knee",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "cap",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "patella"
+  },
+  {
+    "compound": "eardrum",
+    "constituents": [
+      {
+        "stem": "ear",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "drum",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "tympanic membrane"
+  },
+  {
+    "compound": "eyelid",
+    "constituents": [
+      {
+        "stem": "eye",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "lid",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "lid over the eye"
+  },
+  {
+    "compound": "eyelash",
+    "constituents": [
+      {
+        "stem": "eye",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "lash",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "hair on eyelid"
+  },
+  {
+    "compound": "fingernail",
+    "constituents": [
+      {
+        "stem": "finger",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "nail",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "nail on finger"
+  },
+  {
+    "compound": "fingertip",
+    "constituents": [
+      {
+        "stem": "finger",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "tip",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "tip of finger"
+  },
+  {
+    "compound": "thumbnail",
+    "constituents": [
+      {
+        "stem": "thumb",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "nail",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "nail on thumb"
+  },
+  {
+    "compound": "toenail",
+    "constituents": [
+      {
+        "stem": "toe",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "nail",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "PART",
+    "gloss": "nail on toe"
+  },
+  {
+    "compound": "lipstick",
+    "constituents": [
+      {
+        "stem": "lip",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "stick",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "stick for lips"
+  },
+  {
+    "compound": "lipread",
+    "constituents": [
+      {
+        "stem": "lip",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "read",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "N+V",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "read lips"
+  },
+  {
+    "compound": "handshake",
+    "constituents": [
+      {
+        "stem": "hand",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "shake",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "EVENT",
+    "gloss": "shaking of hands"
+  },
+  {
+    "compound": "handwriting",
+    "constituents": [
+      {
+        "stem": "hand",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "writing",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "writing by hand"
+  },
+  {
+    "compound": "handmade",
+    "constituents": [
+      {
+        "stem": "hand",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "made",
+        "pos": "ADJ"
+      }
+    ],
+    "compound_type": "N+ADJ",
+    "semantic_relation": "MANNER",
+    "gloss": "made by hand"
+  },
+  {
+    "compound": "handout",
+    "constituents": [
+      {
+        "stem": "hand",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "N+ADV",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "something handed out"
+  },
+  {
+    "compound": "outcome",
+    "constituents": [
+      {
+        "stem": "out",
+        "pos": "ADV"
+      },
+      {
+        "stem": "come",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "RESULT",
+    "gloss": "result"
+  },
+  {
+    "compound": "output",
+    "constituents": [
+      {
+        "stem": "out",
+        "pos": "ADV"
+      },
+      {
+        "stem": "put",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "RESULT",
+    "gloss": "produced result"
+  },
+  {
+    "compound": "input",
+    "constituents": [
+      {
+        "stem": "in",
+        "pos": "ADV"
+      },
+      {
+        "stem": "put",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "data entered"
+  },
+  {
+    "compound": "income",
+    "constituents": [
+      {
+        "stem": "in",
+        "pos": "ADV"
+      },
+      {
+        "stem": "come",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "RESULT",
+    "gloss": "money coming in"
+  },
+  {
+    "compound": "outlook",
+    "constituents": [
+      {
+        "stem": "out",
+        "pos": "ADV"
+      },
+      {
+        "stem": "look",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "PERSPECTIVE",
+    "gloss": "view/perspective"
+  },
+  {
+    "compound": "upkeep",
+    "constituents": [
+      {
+        "stem": "up",
+        "pos": "ADV"
+      },
+      {
+        "stem": "keep",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "maintenance"
+  },
+  {
+    "compound": "upbringing",
+    "constituents": [
+      {
+        "stem": "up",
+        "pos": "ADV"
+      },
+      {
+        "stem": "bring",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "PROCESS",
+    "gloss": "raising of a child"
+  },
+  {
+    "compound": "downfall",
+    "constituents": [
+      {
+        "stem": "down",
+        "pos": "ADV"
+      },
+      {
+        "stem": "fall",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "EVENT",
+    "gloss": "ruin/collapse"
+  },
+  {
+    "compound": "downside",
+    "constituents": [
+      {
+        "stem": "down",
+        "pos": "ADV"
+      },
+      {
+        "stem": "side",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADV+N",
+    "semantic_relation": "ASPECT",
+    "gloss": "negative aspect"
+  },
+  {
+    "compound": "upside",
+    "constituents": [
+      {
+        "stem": "up",
+        "pos": "ADV"
+      },
+      {
+        "stem": "side",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADV+N",
+    "semantic_relation": "ASPECT",
+    "gloss": "positive aspect"
+  },
+  {
+    "compound": "bypass",
+    "constituents": [
+      {
+        "stem": "by",
+        "pos": "PREP"
+      },
+      {
+        "stem": "pass",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "PREP+V",
+    "semantic_relation": "ROUTE",
+    "gloss": "route around"
+  },
+  {
+    "compound": "byproduct",
+    "constituents": [
+      {
+        "stem": "by",
+        "pos": "PREP"
+      },
+      {
+        "stem": "product",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "RESULT",
+    "gloss": "secondary product"
+  },
+  {
+    "compound": "bystander",
+    "constituents": [
+      {
+        "stem": "by",
+        "pos": "PREP"
+      },
+      {
+        "stem": "stand",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "PREP+V",
+    "semantic_relation": "AGENT",
+    "gloss": "one standing nearby"
+  },
+  {
+    "compound": "overcoat",
+    "constituents": [
+      {
+        "stem": "over",
+        "pos": "PREP"
+      },
+      {
+        "stem": "coat",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "GARMENT",
+    "gloss": "coat worn over others"
+  },
+  {
+    "compound": "overture",
+    "constituents": [
+      {
+        "stem": "over",
+        "pos": "PREP"
+      },
+      {
+        "stem": "ture",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "MUSIC",
+    "gloss": "opening piece"
+  },
+  {
+    "compound": "underdog",
+    "constituents": [
+      {
+        "stem": "under",
+        "pos": "PREP"
+      },
+      {
+        "stem": "dog",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "AGENT",
+    "gloss": "disadvantaged party"
+  },
+  {
+    "compound": "underworld",
+    "constituents": [
+      {
+        "stem": "under",
+        "pos": "PREP"
+      },
+      {
+        "stem": "world",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "criminal world"
+  },
+  {
+    "compound": "underground",
+    "constituents": [
+      {
+        "stem": "under",
+        "pos": "PREP"
+      },
+      {
+        "stem": "ground",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "below ground"
+  },
+  {
+    "compound": "overhead",
+    "constituents": [
+      {
+        "stem": "over",
+        "pos": "PREP"
+      },
+      {
+        "stem": "head",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "PREP+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "above the head"
+  },
+  {
+    "compound": "forehead",
+    "constituents": [
+      {
+        "stem": "fore",
+        "pos": "ADV"
+      },
+      {
+        "stem": "head",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADV+N",
+    "semantic_relation": "PART",
+    "gloss": "front of head"
+  },
+  {
+    "compound": "foreground",
+    "constituents": [
+      {
+        "stem": "fore",
+        "pos": "ADV"
+      },
+      {
+        "stem": "ground",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADV+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "front of scene"
+  },
+  {
+    "compound": "background",
+    "constituents": [
+      {
+        "stem": "back",
+        "pos": "ADV"
+      },
+      {
+        "stem": "ground",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADV+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "rear of scene"
+  },
+  {
+    "compound": "crossroad",
+    "constituents": [
+      {
+        "stem": "cross",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "road",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "intersection"
+  },
+  {
+    "compound": "crossword",
+    "constituents": [
+      {
+        "stem": "cross",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "word",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "PUZZLE",
+    "gloss": "word puzzle"
+  },
+  {
+    "compound": "shortcut",
+    "constituents": [
+      {
+        "stem": "short",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "cut",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "ROUTE",
+    "gloss": "shorter route"
+  },
+  {
+    "compound": "shortfall",
+    "constituents": [
+      {
+        "stem": "short",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "fall",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "DEFICIT",
+    "gloss": "deficit"
+  },
+  {
+    "compound": "shortlist",
+    "constituents": [
+      {
+        "stem": "short",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "list",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "reduced list"
+  },
+  {
+    "compound": "deadline",
+    "constituents": [
+      {
+        "stem": "dead",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "line",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "TIME",
+    "gloss": "final time limit"
+  },
+  {
+    "compound": "deadlock",
+    "constituents": [
+      {
+        "stem": "dead",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "lock",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "STATE",
+    "gloss": "standstill"
+  },
+  {
+    "compound": "deadpan",
+    "constituents": [
+      {
+        "stem": "dead",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "pan",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "MANNER",
+    "gloss": "expressionless"
+  },
+  {
+    "compound": "blackboard",
+    "constituents": [
+      {
+        "stem": "black",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "board",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "board for writing"
+  },
+  {
+    "compound": "blackbird",
+    "constituents": [
+      {
+        "stem": "black",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "bird",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "ANIMAL",
+    "gloss": "type of bird"
+  },
+  {
+    "compound": "blackberry",
+    "constituents": [
+      {
+        "stem": "black",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "berry",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "PLANT",
+    "gloss": "dark berry"
+  },
+  {
+    "compound": "blackout",
+    "constituents": [
+      {
+        "stem": "black",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "ADJ+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "loss of power/consciousness"
+  },
+  {
+    "compound": "greenhouse",
+    "constituents": [
+      {
+        "stem": "green",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "house",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "LOCATION",
+    "gloss": "glass house for plants"
+  },
+  {
+    "compound": "blueprint",
+    "constituents": [
+      {
+        "stem": "blue",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "print",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "technical plan"
+  },
+  {
+    "compound": "redwood",
+    "constituents": [
+      {
+        "stem": "red",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "wood",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "PLANT",
+    "gloss": "type of tree"
+  },
+  {
+    "compound": "whiteboard",
+    "constituents": [
+      {
+        "stem": "white",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "board",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "white writing board"
+  },
+  {
+    "compound": "highlight",
+    "constituents": [
+      {
+        "stem": "high",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "light",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "EMPHASIS",
+    "gloss": "emphasized part"
+  },
+  {
+    "compound": "highlight",
+    "constituents": [
+      {
+        "stem": "high",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "light",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "EMPHASIS",
+    "gloss": "emphasized part"
+  },
+  {
+    "compound": "lowlife",
+    "constituents": [
+      {
+        "stem": "low",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "life",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "AGENT",
+    "gloss": "person of low character"
+  },
+  {
+    "compound": "longtime",
+    "constituents": [
+      {
+        "stem": "long",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "time",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "DURATION",
+    "gloss": "of long duration"
+  },
+  {
+    "compound": "longtime",
+    "constituents": [
+      {
+        "stem": "long",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "time",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "DURATION",
+    "gloss": "of long duration"
+  },
+  {
+    "compound": "fullback",
+    "constituents": [
+      {
+        "stem": "full",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "back",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "AGENT",
+    "gloss": "defensive player"
+  },
+  {
+    "compound": "halfback",
+    "constituents": [
+      {
+        "stem": "half",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "back",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "ADJ+N",
+    "semantic_relation": "AGENT",
+    "gloss": "midfield player"
+  },
+  {
+    "compound": "quarterback",
+    "constituents": [
+      {
+        "stem": "quarter",
+        "pos": "NOUN"
+      },
+      {
+        "stem": "back",
+        "pos": "NOUN"
+      }
+    ],
+    "compound_type": "N+N",
+    "semantic_relation": "AGENT",
+    "gloss": "offensive player"
+  },
+  {
+    "compound": "drawback",
+    "constituents": [
+      {
+        "stem": "draw",
+        "pos": "VERB"
+      },
+      {
+        "stem": "back",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "DISADVANTAGE",
+    "gloss": "negative aspect"
+  },
+  {
+    "compound": "setback",
+    "constituents": [
+      {
+        "stem": "set",
+        "pos": "VERB"
+      },
+      {
+        "stem": "back",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "reversal of progress"
+  },
+  {
+    "compound": "feedback",
+    "constituents": [
+      {
+        "stem": "feed",
+        "pos": "VERB"
+      },
+      {
+        "stem": "back",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "INFORMATION",
+    "gloss": "response information"
+  },
+  {
+    "compound": "cutback",
+    "constituents": [
+      {
+        "stem": "cut",
+        "pos": "VERB"
+      },
+      {
+        "stem": "back",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "REDUCTION",
+    "gloss": "reduction"
+  },
+  {
+    "compound": "outbreak",
+    "constituents": [
+      {
+        "stem": "out",
+        "pos": "ADV"
+      },
+      {
+        "stem": "break",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "EVENT",
+    "gloss": "sudden occurrence"
+  },
+  {
+    "compound": "outburst",
+    "constituents": [
+      {
+        "stem": "out",
+        "pos": "ADV"
+      },
+      {
+        "stem": "burst",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "EVENT",
+    "gloss": "sudden expression"
+  },
+  {
+    "compound": "breakdown",
+    "constituents": [
+      {
+        "stem": "break",
+        "pos": "VERB"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "failure/analysis"
+  },
+  {
+    "compound": "breakthrough",
+    "constituents": [
+      {
+        "stem": "break",
+        "pos": "VERB"
+      },
+      {
+        "stem": "through",
+        "pos": "PREP"
+      }
+    ],
+    "compound_type": "V+PREP",
+    "semantic_relation": "EVENT",
+    "gloss": "major advance"
+  },
+  {
+    "compound": "takeover",
+    "constituents": [
+      {
+        "stem": "take",
+        "pos": "VERB"
+      },
+      {
+        "stem": "over",
+        "pos": "PREP"
+      }
+    ],
+    "compound_type": "V+PREP",
+    "semantic_relation": "EVENT",
+    "gloss": "acquisition"
+  },
+  {
+    "compound": "turnover",
+    "constituents": [
+      {
+        "stem": "turn",
+        "pos": "VERB"
+      },
+      {
+        "stem": "over",
+        "pos": "PREP"
+      }
+    ],
+    "compound_type": "V+PREP",
+    "semantic_relation": "EVENT",
+    "gloss": "rate of replacement"
+  },
+  {
+    "compound": "turnout",
+    "constituents": [
+      {
+        "stem": "turn",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "number attending"
+  },
+  {
+    "compound": "workout",
+    "constituents": [
+      {
+        "stem": "work",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "exercise session"
+  },
+  {
+    "compound": "standout",
+    "constituents": [
+      {
+        "stem": "stand",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "AGENT",
+    "gloss": "notable person/thing"
+  },
+  {
+    "compound": "standby",
+    "constituents": [
+      {
+        "stem": "stand",
+        "pos": "VERB"
+      },
+      {
+        "stem": "by",
+        "pos": "PREP"
+      }
+    ],
+    "compound_type": "V+PREP",
+    "semantic_relation": "STATE",
+    "gloss": "ready reserve"
+  },
+  {
+    "compound": "standoff",
+    "constituents": [
+      {
+        "stem": "stand",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "deadlock"
+  },
+  {
+    "compound": "startup",
+    "constituents": [
+      {
+        "stem": "start",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "ENTITY",
+    "gloss": "new company"
+  },
+  {
+    "compound": "setup",
+    "constituents": [
+      {
+        "stem": "set",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "ARRANGEMENT",
+    "gloss": "configuration"
+  },
+  {
+    "compound": "makeup",
+    "constituents": [
+      {
+        "stem": "make",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "SUBSTANCE",
+    "gloss": "cosmetics"
+  },
+  {
+    "compound": "makeup",
+    "constituents": [
+      {
+        "stem": "make",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "COMPOSITION",
+    "gloss": "composition"
+  },
+  {
+    "compound": "backup",
+    "constituents": [
+      {
+        "stem": "back",
+        "pos": "ADV"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "ADV+ADV",
+    "semantic_relation": "COPY",
+    "gloss": "reserve copy"
+  },
+  {
+    "compound": "checkup",
+    "constituents": [
+      {
+        "stem": "check",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "medical examination"
+  },
+  {
+    "compound": "cleanup",
+    "constituents": [
+      {
+        "stem": "clean",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "ACTIVITY",
+    "gloss": "act of cleaning"
+  },
+  {
+    "compound": "buildup",
+    "constituents": [
+      {
+        "stem": "build",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "PROCESS",
+    "gloss": "accumulation"
+  },
+  {
+    "compound": "lineup",
+    "constituents": [
+      {
+        "stem": "line",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "ARRANGEMENT",
+    "gloss": "arranged group"
+  },
+  {
+    "compound": "lockup",
+    "constituents": [
+      {
+        "stem": "lock",
+        "pos": "VERB"
+      },
+      {
+        "stem": "up",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "LOCATION",
+    "gloss": "jail"
+  },
+  {
+    "compound": "lockdown",
+    "constituents": [
+      {
+        "stem": "lock",
+        "pos": "VERB"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "STATE",
+    "gloss": "security restriction"
+  },
+  {
+    "compound": "countdown",
+    "constituents": [
+      {
+        "stem": "count",
+        "pos": "VERB"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "PROCESS",
+    "gloss": "counting to zero"
+  },
+  {
+    "compound": "showdown",
+    "constituents": [
+      {
+        "stem": "show",
+        "pos": "VERB"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "final confrontation"
+  },
+  {
+    "compound": "slowdown",
+    "constituents": [
+      {
+        "stem": "slow",
+        "pos": "ADJ"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "ADJ+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "reduction in speed"
+  },
+  {
+    "compound": "rundown",
+    "constituents": [
+      {
+        "stem": "run",
+        "pos": "VERB"
+      },
+      {
+        "stem": "down",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "SUMMARY",
+    "gloss": "brief summary"
+  },
+  {
+    "compound": "runoff",
+    "constituents": [
+      {
+        "stem": "run",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "overflow/deciding race"
+  },
+  {
+    "compound": "layoff",
+    "constituents": [
+      {
+        "stem": "lay",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "dismissal from work"
+  },
+  {
+    "compound": "payoff",
+    "constituents": [
+      {
+        "stem": "pay",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "RESULT",
+    "gloss": "reward/bribe"
+  },
+  {
+    "compound": "playoff",
+    "constituents": [
+      {
+        "stem": "play",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "deciding game"
+  },
+  {
+    "compound": "standoff",
+    "constituents": [
+      {
+        "stem": "stand",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "deadlock"
+  },
+  {
+    "compound": "tradeoff",
+    "constituents": [
+      {
+        "stem": "trade",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "DECISION",
+    "gloss": "compromise"
+  },
+  {
+    "compound": "kickoff",
+    "constituents": [
+      {
+        "stem": "kick",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "start of game"
+  },
+  {
+    "compound": "takeoff",
+    "constituents": [
+      {
+        "stem": "take",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "aircraft departure"
+  },
+  {
+    "compound": "handoff",
+    "constituents": [
+      {
+        "stem": "hand",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "transfer"
+  },
+  {
+    "compound": "dropoff",
+    "constituents": [
+      {
+        "stem": "drop",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "delivery/decline"
+  },
+  {
+    "compound": "cutoff",
+    "constituents": [
+      {
+        "stem": "cut",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "LIMIT",
+    "gloss": "point of termination"
+  },
+  {
+    "compound": "fallout",
+    "constituents": [
+      {
+        "stem": "fall",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "CONSEQUENCE",
+    "gloss": "consequence"
+  },
+  {
+    "compound": "dropout",
+    "constituents": [
+      {
+        "stem": "drop",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "AGENT",
+    "gloss": "one who drops out"
+  },
+  {
+    "compound": "printout",
+    "constituents": [
+      {
+        "stem": "print",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "printed output"
+  },
+  {
+    "compound": "readout",
+    "constituents": [
+      {
+        "stem": "read",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "INSTRUMENT",
+    "gloss": "displayed data"
+  },
+  {
+    "compound": "rollout",
+    "constituents": [
+      {
+        "stem": "roll",
+        "pos": "VERB"
+      },
+      {
+        "stem": "out",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "EVENT",
+    "gloss": "launch/deployment"
+  },
+  {
+    "compound": "spinoff",
+    "constituents": [
+      {
+        "stem": "spin",
+        "pos": "VERB"
+      },
+      {
+        "stem": "off",
+        "pos": "ADV"
+      }
+    ],
+    "compound_type": "V+ADV",
+    "semantic_relation": "RESULT",
+    "gloss": "derived product"
+  },
+  {
+    "compound": "offshoot",
+    "constituents": [
+      {
+        "stem": "off",
+        "pos": "ADV"
+      },
+      {
+        "stem": "shoot",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "RESULT",
+    "gloss": "branch/derivative"
+  },
+  {
+    "compound": "offspring",
+    "constituents": [
+      {
+        "stem": "off",
+        "pos": "ADV"
+      },
+      {
+        "stem": "spring",
+        "pos": "VERB"
+      }
+    ],
+    "compound_type": "ADV+V",
+    "semantic_relation": "AGENT",
+    "gloss": "child/descendant"
+  }
+]
