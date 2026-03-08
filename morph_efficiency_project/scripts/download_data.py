@@ -98,9 +98,9 @@ def extract_text(example: dict, text_field: str, lang: str) -> list:
     lines = raw.split("\n")
     return [c for c in (clean_line(l) for l in lines) if c]
 
-def make_dirs(lang: str):
-    raw_dir = os.path.join("data", "raw", lang)
-    log_dir = os.path.join("logs", "evaluation")
+def make_dirs(lang: str, base_dir: str = "morph_efficiency_project"):
+    raw_dir = os.path.join(base_dir, "data", "raw", lang)
+    log_dir = os.path.join(base_dir, "logs", "evaluation")
     os.makedirs(raw_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
     return (
@@ -133,13 +133,13 @@ def stream_sentences(lang: str):
             log.warning(f"  Skipping {dataset_name}/{config}: {e}")
             continue
 
-def build_corpus(lang: str, max_sentences: int = 0):
+def build_corpus(lang: str, max_sentences: int = 0, base_dir: str = "morph_efficiency_project"):
     """
     max_sentences > 0 activates dry-run mode: stops after that many sentences
     regardless of token targets.
     """
     rng = random.Random(SEEDS[lang])
-    train_path, val_path, test_path = make_dirs(lang)
+    train_path, val_path, test_path = make_dirs(lang, base_dir)
 
     total_target = TARGET["train"] + TARGET["val"] + TARGET["test"]
     p_val  = TARGET["val"]  / total_target
@@ -211,7 +211,7 @@ def build_corpus(lang: str, max_sentences: int = 0):
             "test":  test_path,
         },
     }
-    log_path = os.path.join("logs", "evaluation", f"{lang}_baseline_token_stats.json")
+    log_path = os.path.join(base_dir, "logs", "evaluation", f"{lang}_baseline_token_stats.json")
     with open(log_path, "w", encoding="utf-8") as f:
         json.dump(stats, f, ensure_ascii=False, indent=2)
     log.info(f"[{lang}] Token stats saved to {log_path}")
@@ -221,6 +221,8 @@ def build_corpus(lang: str, max_sentences: int = 0):
 def main():
     parser = argparse.ArgumentParser(description="Download and split corpora.")
     parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
+    parser.add_argument("--base_dir", default="morph_efficiency_project",
+                        help="Project base directory containing data/, logs/.")
     parser.add_argument(
         "--max-sentences", type=int, default=0,
         help="Dry-run cap: stop after this many sentences per language (0 = full run).",
@@ -230,7 +232,7 @@ def main():
     langs = ["en", "ar", "tr"] if args.language == "all" else [args.language]
     for lang in langs:
         log.info(f"=== Building corpus for: {lang} ===")
-        build_corpus(lang, max_sentences=args.max_sentences)
+        build_corpus(lang, max_sentences=args.max_sentences, base_dir=args.base_dir)
     log.info("All done.")
 
 if __name__ == "__main__":

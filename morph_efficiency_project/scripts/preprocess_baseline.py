@@ -36,14 +36,14 @@ SP_TRAIN_SAMPLE  = 10_000_000
 # Tokenize in chunks to avoid loading full corpus into RAM.
 CHUNK_LINES      = 200_000
 
-def get_paths(lang: str) -> dict:
+def get_paths(lang: str, base_dir: str = ".") -> dict:
     return {
-        "train_raw":  os.path.join("data", "raw", lang, "train.txt"),
-        "val_raw":    os.path.join("data", "raw", lang, "val.txt"),
-        "test_raw":   os.path.join("data", "raw", lang, "test.txt"),
-        "tok_dir":    os.path.join("tokenizers", f"{lang}_base"),
-        "proc_dir":   os.path.join("data", "processed", lang, "baseline"),
-        "log_path":   os.path.join("logs", "evaluation", f"{lang}_baseline_token_stats.json"),
+        "train_raw":  os.path.join(base_dir, "data", "raw", lang, "train.txt"),
+        "val_raw":    os.path.join(base_dir, "data", "raw", lang, "val.txt"),
+        "test_raw":   os.path.join(base_dir, "data", "raw", lang, "test.txt"),
+        "tok_dir":    os.path.join(base_dir, "tokenizers", f"{lang}_base"),
+        "proc_dir":   os.path.join(base_dir, "data", "processed", lang, "baseline"),
+        "log_path":   os.path.join(base_dir, "logs", "evaluation", f"{lang}_baseline_token_stats.json"),
     }
 
 # ── Step 1: Train tokenizer ───────────────────────────────────────────────────
@@ -215,8 +215,8 @@ def update_log(lang: str, paths: dict, split_stats: dict):
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def process_language(lang: str, max_sentences: int = 0):
-    paths = get_paths(lang)
+def process_language(lang: str, max_sentences: int = 0, base_dir: str = "."):
+    paths = get_paths(lang, base_dir)
     log.info(f"=== [{lang}] Baseline preprocessing ===")
 
     if not os.path.exists(paths["train_raw"]):
@@ -233,6 +233,8 @@ def process_language(lang: str, max_sentences: int = 0):
 def main():
     parser = argparse.ArgumentParser(description="Baseline tokenization pipeline.")
     parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
+    parser.add_argument("--base_dir", default="morph_efficiency_project",
+                        help="Project base directory containing data/, tokenizers/, logs/.")
     parser.add_argument(
         "--max-sentences", type=int, default=0,
         help="Dry-run cap: stop after this many lines per split (0 = full run).",
@@ -240,7 +242,7 @@ def main():
     args = parser.parse_args()
     langs = ["en", "ar", "tr"] if args.language == "all" else [args.language]
     for lang in langs:
-        process_language(lang, args.max_sentences)
+        process_language(lang, args.max_sentences, args.base_dir)
 
 if __name__ == "__main__":
     main()
