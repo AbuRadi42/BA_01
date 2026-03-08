@@ -47,17 +47,17 @@ SEEDS = {"en": 42, "ar": 43, "tr": 44}
 # text_field may be a string key or "translation:{lang}" for OPUS translation pairs.
 SOURCES = {
     "en": [
-        ("wikipedia",              "20220301.en",  "train", "text"),
+        ("wikimedia/wikipedia",    "20231101.en", "train", "text"),
         ("Helsinki-NLP/opus_books","en-fr",        "train", "translation:en"),
         ("cc100",                  "en",           "train", "text"),
     ],
     "ar": [
-        ("wikipedia",              "20220301.ar",  "train", "text"),
+        ("wikimedia/wikipedia",    "20231101.ar",  "train", "text"),
         ("cc100",                  "ar",           "train", "text"),
         ("Helsinki-NLP/opus-100",  "ar-en",        "train", "translation:ar"),
     ],
     "tr": [
-        ("wikipedia",              "20220301.tr",  "train", "text"),
+        ("wikimedia/wikipedia",    "20231101.tr",  "train", "text"),
         ("cc100",                  "tr",           "train", "text"),
         ("Helsinki-NLP/opus-100",  "tr-en",        "train", "translation:tr"),
     ],
@@ -125,7 +125,6 @@ def stream_sentences(lang: str):
                 config,
                 split=split,
                 streaming=True,
-                trust_remote_code=True,
             )
             for example in ds:
                 for sentence in extract_text(example, text_field, lang):

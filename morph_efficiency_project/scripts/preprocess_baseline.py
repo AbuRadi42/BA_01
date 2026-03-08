@@ -63,7 +63,7 @@ def train_tokenizer(lang: str, paths: dict):
 
     log.info(f"[{lang}] Sampling up to {SP_TRAIN_SAMPLE:,} sentences for tokenizer training...")
 
-    # Write a temp file with the sampled sentences
+    # Write a temp file with the sampled sentences (use all available if fewer than cap)
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt",
                                      delete=False, encoding="utf-8") as tmp:
         tmp_path = tmp.name
@@ -76,6 +76,12 @@ def train_tokenizer(lang: str, paths: dict):
                     count += 1
                     if count >= SP_TRAIN_SAMPLE:
                         break
+
+    if count == 0:
+        raise RuntimeError(
+            f"[{lang}] No sentences found in {paths['train_raw']}. "
+            "Run download_data.py first."
+        )
     log.info(f"[{lang}] Sampled {count:,} sentences. Training SentencePiece BPE...")
 
     spm.SentencePieceTrainer.train(
