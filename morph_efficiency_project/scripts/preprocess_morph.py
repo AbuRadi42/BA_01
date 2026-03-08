@@ -83,7 +83,7 @@ def process_split(
             else:
                 invalid_sentences += 1
             for ti in tokens:
-                if ti.pos in ("FOREIGN", "UNKNOWN") or not ti.root:
+                if ti.pos == "FOREIGN" or not ti.root:
                     foreign_tokens += 1
                 tok_id, bundle_id = vocab.encode(ti)
                 token_ids.append(tok_id)
