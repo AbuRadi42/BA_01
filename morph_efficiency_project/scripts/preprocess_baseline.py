@@ -13,9 +13,8 @@ Outputs per language L in {en, ar, tr}:
 
 Usage:
   python scripts/preprocess_baseline.py --language en
-  python scripts/preprocess_baseline.py --language ar
-  python scripts/preprocess_baseline.py --language tr
   python scripts/preprocess_baseline.py --language all
+  python scripts/preprocess_baseline.py --language en --max-sentences 50000  # dry run
 """
 
 import argparse
@@ -37,7 +36,6 @@ SP_TRAIN_SAMPLE  = 10_000_000
 # Tokenize in chunks to avoid loading full corpus into RAM.
 CHUNK_LINES      = 200_000
 
-
 def get_paths(lang: str) -> dict:
     return {
         "train_raw":  os.path.join("data", "raw", lang, "train.txt"),
@@ -47,7 +45,6 @@ def get_paths(lang: str) -> dict:
         "proc_dir":   os.path.join("data", "processed", lang, "baseline"),
         "log_path":   os.path.join("logs", "evaluation", f"{lang}_baseline_token_stats.json"),
     }
-
 
 # ── Step 1: Train tokenizer ───────────────────────────────────────────────────
 
@@ -102,15 +99,14 @@ def train_tokenizer(lang: str, paths: dict):
     os.unlink(tmp_path)
     log.info(f"[{lang}] Tokenizer saved to {paths['tok_dir']}/")
 
-
 # ── Step 2: Tokenize splits ───────────────────────────────────────────────────
 
 def tokenize_split(lang: str, split: str, raw_path: str, out_dir: str,
-                   sp_model) -> dict:
+                   sp_model, max_sentences: int = 0) -> dict:
     """
-    Tokenizes one split line-by-line in chunks, appending BOS+EOS per line,
-    and saves the full token ID sequence as a memory-mapped .npy file.
-    Returns stats dict.
+    Tokenizes one split line-by-line, appending BOS+EOS per line,
+    and saves the full token ID sequence as a .npy file.
+    max_sentences > 0 caps the number of lines processed (dry-run).
     """
     import sentencepiece as spm
 
@@ -125,14 +121,9 @@ def tokenize_split(lang: str, split: str, raw_path: str, out_dir: str,
 
     log.info(f"[{lang}/{split}] Tokenizing {raw_path} ...")
 
-    # Two-pass: first count tokens to pre-allocate, then fill.
-    # Single-pass with dynamic list is simpler but uses more RAM.
-    # We use a dynamic list then convert — acceptable for 200M token val/test.
-    # For train (8B tokens) we write in chunks to a growing memmap.
-
-    all_ids = []
+    all_ids    = []
     line_count = 0
-    chunk = []
+    chunk      = []
 
     with open(raw_path, encoding="utf-8") as f:
         for line in f:
@@ -143,12 +134,16 @@ def tokenize_split(lang: str, split: str, raw_path: str, out_dir: str,
             chunk.extend(ids)
             line_count += 1
 
-            if len(chunk) >= CHUNK_LINES * 50:  # ~50 tokens/line avg
+            if len(chunk) >= CHUNK_LINES * 50:
                 all_ids.extend(chunk)
                 chunk = []
                 if line_count % 500_000 == 0:
                     log.info(f"  [{lang}/{split}] {line_count:,} lines | "
                              f"{len(all_ids):,} tokens so far")
+
+            if max_sentences > 0 and line_count >= max_sentences:
+                log.info(f"  [{lang}/{split}] Dry-run cap reached at {line_count:,} lines.")
+                break
 
     all_ids.extend(chunk)
     arr = np.array(all_ids, dtype=np.int32)
@@ -163,8 +158,7 @@ def tokenize_split(lang: str, split: str, raw_path: str, out_dir: str,
     log.info(f"[{lang}/{split}] Done. {stats['num_tokens']:,} tokens → {out_path}")
     return stats
 
-
-def tokenize_all_splits(lang: str, paths: dict):
+def tokenize_all_splits(lang: str, paths: dict, max_sentences: int = 0):
     try:
         import sentencepiece as spm
     except ImportError:
@@ -183,11 +177,10 @@ def tokenize_all_splits(lang: str, paths: dict):
         ("val",   paths["val_raw"]),
         ("test",  paths["test_raw"]),
     ]:
-        stats = tokenize_split(lang, split, raw_path, paths["proc_dir"], sp)
+        stats = tokenize_split(lang, split, raw_path, paths["proc_dir"], sp, max_sentences)
         split_stats[split] = stats
 
     return split_stats
-
 
 # ── Log update ────────────────────────────────────────────────────────────────
 
@@ -214,10 +207,9 @@ def update_log(lang: str, paths: dict, split_stats: dict):
         json.dump(existing, f, ensure_ascii=False, indent=2)
     log.info(f"[{lang}] Stats updated at {log_path}")
 
-
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def process_language(lang: str):
+def process_language(lang: str, max_sentences: int = 0):
     paths = get_paths(lang)
     log.info(f"=== [{lang}] Baseline preprocessing ===")
 
@@ -228,23 +220,21 @@ def process_language(lang: str):
         )
 
     train_tokenizer(lang, paths)
-    split_stats = tokenize_all_splits(lang, paths)
+    split_stats = tokenize_all_splits(lang, paths, max_sentences)
     update_log(lang, paths, split_stats)
     log.info(f"=== [{lang}] Baseline preprocessing complete ===\n")
 
-
 def main():
     parser = argparse.ArgumentParser(description="Baseline tokenization pipeline.")
+    parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
     parser.add_argument(
-        "--language",
-        choices=["en", "ar", "tr", "all"],
-        required=True,
+        "--max-sentences", type=int, default=0,
+        help="Dry-run cap: stop after this many lines per split (0 = full run).",
     )
     args = parser.parse_args()
     langs = ["en", "ar", "tr"] if args.language == "all" else [args.language]
     for lang in langs:
-        process_language(lang)
-
+        process_language(lang, args.max_sentences)
 
 if __name__ == "__main__":
     main()

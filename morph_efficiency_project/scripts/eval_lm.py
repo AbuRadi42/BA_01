@@ -34,7 +34,6 @@ from train_lm import GPTModel, TokenDataset, MODEL_CONFIG, TRAIN_CONFIG
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
-
 def load_model(lang: str, regime: str, device: torch.device) -> tuple[GPTModel, int]:
     """Load the latest checkpoint for (lang, regime). Returns (model, step)."""
     morph_mode = (regime == "morph")
@@ -81,7 +80,6 @@ def load_model(lang: str, regime: str, device: torch.device) -> tuple[GPTModel, 
     model.eval()
     return model, step
 
-
 @torch.no_grad()
 def evaluate_split(model: GPTModel, loader: DataLoader,
                    device: torch.device) -> tuple[float, float, int]:
@@ -102,7 +100,6 @@ def evaluate_split(model: GPTModel, loader: DataLoader,
     avg_loss = total_loss / max(total_tokens, 1)
     ppl      = math.exp(min(avg_loss, 20))
     return avg_loss, ppl, total_tokens
-
 
 def evaluate(lang: str, regime: str):
     morph_mode = (regime == "morph")
@@ -155,7 +152,6 @@ def evaluate(lang: str, regime: str):
         json.dump(results, f, indent=2)
     log.info(f"[{lang}/{regime}] Results saved → {log_path}")
 
-
 def main():
     parser = argparse.ArgumentParser(description="Evaluate language model perplexity.")
     parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
@@ -168,7 +164,6 @@ def main():
     for lang in langs:
         for regime in regimes:
             evaluate(lang, regime)
-
 
 if __name__ == "__main__":
     main()

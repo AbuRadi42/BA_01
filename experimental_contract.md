@@ -1,8 +1,8 @@
 # Experimental Contract
 ## Morphological Efficiency in Small Multilingual Language Models
 
-**Author:** Sameh AbuRadi  
-**Purpose:** Internal research contract governing experiment design, execution, and interpretation  
+**Author:** Sameh AbuRadi
+**Purpose:** Internal research contract governing experiment design, execution, and interpretation
 **Status:** Frozen before implementation
 
 ---

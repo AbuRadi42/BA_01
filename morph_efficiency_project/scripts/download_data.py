@@ -4,24 +4,22 @@ download_data.py
 Downloads corpora for EN, AR, TR and creates train/val/test splits.
 
 Sources per language:
-  EN: Wikipedia EN, OPUS (TED2020 + News-Commentary), CC-100 EN
-  AR: Wikipedia AR, OPUS AR, CC-100 AR, OSIAN
-  TR: Wikipedia TR, OPUS TR, CC-100 TR
+  EN: Wikipedia EN, OPUS books, CC-100 EN
+  AR: Wikipedia AR, CC-100 AR, OPUS-100 AR-EN
+  TR: Wikipedia TR, CC-100 TR, OPUS-100 TR-EN
 
 Outputs per language L in {en, ar, tr}:
   data/raw/L/train.txt
   data/raw/L/val.txt
   data/raw/L/test.txt
 
-Each line is one sentence / short document segment (UTF-8).
 Token counts (whitespace-based) are logged to:
   logs/evaluation/L_baseline_token_stats.json
 
 Usage:
   python scripts/download_data.py --language en
-  python scripts/download_data.py --language ar
-  python scripts/download_data.py --language tr
   python scripts/download_data.py --language all
+  python scripts/download_data.py --language en --max-sentences 50000  # dry run
 """
 
 import argparse
@@ -36,100 +34,84 @@ log = logging.getLogger(__name__)
 
 # ── Target sizes (whitespace tokens, approximate) ────────────────────────────
 TARGET = {
-    "train": 8_000_000_000,
-    "val":     200_000_000,
-    "test":    200_000_000,
+    "train": 2_500_000_000,
+    "val":      62_500_000,
+    "test":     62_500_000,
 }
 
 # ── Random seeds (fixed per language for reproducibility) ────────────────────
 SEEDS = {"en": 42, "ar": 43, "tr": 44}
 
 # ── Source configs ────────────────────────────────────────────────────────────
-# Each source is a (dataset_name, config_name, split, text_field) tuple.
-# All loaded via HuggingFace `datasets`.
+# Each entry: (dataset_name, config_name, split, text_field)
+# text_field may be a string key or "translation:{lang}" for OPUS translation pairs.
 SOURCES = {
     "en": [
-        ("wikipedia",        "20220301.en",  "train", "text"),
-        ("Helsinki-NLP/opus_books", "en",    "train", "text"),  # OPUS books
-        ("cc100",            "en",           "train", "text"),
+        ("wikipedia",              "20220301.en",  "train", "text"),
+        ("Helsinki-NLP/opus_books","en-fr",        "train", "translation:en"),
+        ("cc100",                  "en",           "train", "text"),
     ],
     "ar": [
-        ("wikipedia",        "20220301.ar",  "train", "text"),
-        ("cc100",            "ar",           "train", "text"),
-        ("Helsinki-NLP/opus-100", "ar-en",   "train", "translation"),  # OPUS AR side
+        ("wikipedia",              "20220301.ar",  "train", "text"),
+        ("cc100",                  "ar",           "train", "text"),
+        ("Helsinki-NLP/opus-100",  "ar-en",        "train", "translation:ar"),
     ],
     "tr": [
-        ("wikipedia",        "20220301.tr",  "train", "text"),
-        ("cc100",            "tr",           "train", "text"),
-        ("Helsinki-NLP/opus-100", "tr-en",   "train", "translation"),  # OPUS TR side
+        ("wikipedia",              "20220301.tr",  "train", "text"),
+        ("cc100",                  "tr",           "train", "text"),
+        ("Helsinki-NLP/opus-100",  "tr-en",        "train", "translation:tr"),
     ],
 }
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def count_tokens(text: str) -> int:
-    """Whitespace-based token count."""
     return len(text.split())
 
-
-def clean_line(text: str, lang: str) -> str:
-    """
-    Minimal cleaning:
-    - Strip leading/trailing whitespace
-    - Collapse internal whitespace runs to single space
-    - Drop lines that are pure URLs, wiki markup headers, or < 5 tokens
-    """
+def clean_line(text: str) -> str:
     text = text.strip()
     text = re.sub(r"\s+", " ", text)
-    # Drop wiki section headers (== Heading ==)
-    if re.match(r"^=+\s*.+\s*=+$", text):
+    if re.match(r"^=+\s*.+\s*=+$", text):   # wiki section headers
         return ""
-    # Drop bare URLs
-    if re.match(r"^https?://\S+$", text):
+    if re.match(r"^https?://\S+$", text):    # bare URLs
         return ""
-    # Drop very short lines
     if count_tokens(text) < 5:
         return ""
     return text
 
+def extract_text(example: dict, text_field: str, lang: str) -> list:
+    """
+    Handles plain text fields and "translation:{lang}" fields for OPUS pairs.
+    """
+    if text_field.startswith("translation:"):
+        target_lang = text_field.split(":", 1)[1]
+        raw = example.get("translation", {})
+        if isinstance(raw, dict):
+            raw = raw.get(target_lang, "")
+        else:
+            return []
+    else:
+        raw = example.get(text_field, "")
 
-def extract_text(example: dict, text_field: str, lang: str) -> list[str]:
-    """
-    Extract one or more lines of text from a dataset example.
-    Handles the OPUS translation dict format ({"ar": "...", "en": "..."}).
-    """
-    raw = example.get(text_field, "")
-    if isinstance(raw, dict):
-        # OPUS translation pair — take the target language side
-        raw = raw.get(lang, "")
     if not isinstance(raw, str):
         return []
     lines = raw.split("\n")
-    cleaned = [clean_line(l, lang) for l in lines]
-    return [l for l in cleaned if l]
+    return [c for c in (clean_line(l) for l in lines) if c]
 
-
-def make_dirs(lang: str) -> tuple[str, str, str]:
-    """Create output directories and return file paths."""
+def make_dirs(lang: str):
     raw_dir = os.path.join("data", "raw", lang)
     log_dir = os.path.join("logs", "evaluation")
     os.makedirs(raw_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)
-    train_path = os.path.join(raw_dir, "train.txt")
-    val_path   = os.path.join(raw_dir, "val.txt")
-    test_path  = os.path.join(raw_dir, "test.txt")
-    return train_path, val_path, test_path
-
+    return (
+        os.path.join(raw_dir, "train.txt"),
+        os.path.join(raw_dir, "val.txt"),
+        os.path.join(raw_dir, "test.txt"),
+    )
 
 # ── Core pipeline ─────────────────────────────────────────────────────────────
 
 def stream_sentences(lang: str):
-    """
-    Generator: yields cleaned sentences from all sources for `lang`.
-    Uses HuggingFace datasets in streaming mode to avoid loading
-    multi-billion-token corpora into RAM.
-    """
     try:
         from datasets import load_dataset
     except ImportError:
@@ -143,7 +125,7 @@ def stream_sentences(lang: str):
                 config,
                 split=split,
                 streaming=True,
-                trust_remote_content=True,
+                trust_remote_code=True,
             )
             for example in ds:
                 for sentence in extract_text(example, text_field, lang):
@@ -152,44 +134,33 @@ def stream_sentences(lang: str):
             log.warning(f"  Skipping {dataset_name}/{config}: {e}")
             continue
 
-
-def build_corpus(lang: str):
+def build_corpus(lang: str, max_sentences: int = 0):
     """
-    Streams all sources, shuffles with a reservoir, then writes
-    train / val / test splits to data/raw/{lang}/.
+    max_sentences > 0 activates dry-run mode: stops after that many sentences
+    regardless of token targets.
     """
     rng = random.Random(SEEDS[lang])
     train_path, val_path, test_path = make_dirs(lang)
 
-    # Total target tokens across all splits
     total_target = TARGET["train"] + TARGET["val"] + TARGET["test"]
-
-    log.info(f"[{lang}] Starting corpus build. Target: {total_target:,} tokens")
-
-    # ── Pass 1: stream into a temp buffer until we hit the token target ───────
-    # We use a large in-memory list then shuffle before splitting.
-    # For 8B+ token corpora this would OOM — so we cap the buffer at
-    # BUFFER_SENTENCES and write in chunks if needed.
-    # Practical note: at ~15 tokens/sentence average, 8B tokens ≈ 533M sentences.
-    # We stream-write directly to avoid OOM.
-
-    FLUSH_EVERY = 500_000  # sentences between progress logs
-
-    token_counts = {"train": 0, "val": 0, "test": 0}
-    sentence_count = 0
-
-    # Val/test boundaries (fraction of total sentences)
-    # We assign splits probabilistically to avoid two-pass streaming.
-    # P(val) = val_target / total_target, P(test) = test_target / total_target
     p_val  = TARGET["val"]  / total_target
     p_test = TARGET["test"] / total_target
+
+    dry_run = max_sentences > 0
+    if dry_run:
+        log.info(f"[{lang}] DRY RUN — capped at {max_sentences:,} sentences")
+    else:
+        log.info(f"[{lang}] Starting corpus build. Target: {total_target:,} tokens")
+
+    token_counts   = {"train": 0, "val": 0, "test": 0}
+    sentence_count = 0
+    FLUSH_EVERY    = 500_000
 
     with open(train_path, "w", encoding="utf-8") as f_train, \
          open(val_path,   "w", encoding="utf-8") as f_val, \
          open(test_path,  "w", encoding="utf-8") as f_test:
 
         for sentence in stream_sentences(lang):
-            # Probabilistic split assignment (fixed seed → reproducible)
             r = rng.random()
             if r < p_val:
                 f_val.write(sentence + "\n")
@@ -202,6 +173,7 @@ def build_corpus(lang: str):
                 token_counts["train"] += count_tokens(sentence)
 
             sentence_count += 1
+
             if sentence_count % FLUSH_EVERY == 0:
                 log.info(
                     f"  [{lang}] {sentence_count:,} sentences | "
@@ -210,9 +182,12 @@ def build_corpus(lang: str):
                     f"test={token_counts['test']:,} tokens"
                 )
 
-            # Stop once train target is reached (val/test will be proportional)
-            if token_counts["train"] >= TARGET["train"]:
-                log.info(f"  [{lang}] Train target reached. Stopping stream.")
+            # Stop conditions
+            if dry_run and sentence_count >= max_sentences:
+                log.info(f"  [{lang}] Dry-run cap reached. Stopping.")
+                break
+            if not dry_run and token_counts["train"] >= TARGET["train"]:
+                log.info(f"  [{lang}] Train target reached. Stopping.")
                 break
 
     log.info(
@@ -223,11 +198,11 @@ def build_corpus(lang: str):
         f"{sentence_count:,} total sentences"
     )
 
-    # ── Log token stats ───────────────────────────────────────────────────────
     stats = {
-        "language": lang,
+        "language":    lang,
+        "dry_run":     dry_run,
         "sentence_count": sentence_count,
-        "token_counts": token_counts,
+        "token_counts":   token_counts,
         "avg_tokens_per_sentence": round(
             sum(token_counts.values()) / max(sentence_count, 1), 2
         ),
@@ -242,25 +217,22 @@ def build_corpus(lang: str):
         json.dump(stats, f, ensure_ascii=False, indent=2)
     log.info(f"[{lang}] Token stats saved to {log_path}")
 
-
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(description="Download and split corpora.")
+    parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
     parser.add_argument(
-        "--language",
-        choices=["en", "ar", "tr", "all"],
-        required=True,
-        help="Language to download, or 'all' for all three.",
+        "--max-sentences", type=int, default=0,
+        help="Dry-run cap: stop after this many sentences per language (0 = full run).",
     )
     args = parser.parse_args()
 
     langs = ["en", "ar", "tr"] if args.language == "all" else [args.language]
     for lang in langs:
         log.info(f"=== Building corpus for: {lang} ===")
-        build_corpus(lang)
+        build_corpus(lang, max_sentences=args.max_sentences)
     log.info("All done.")
-
 
 if __name__ == "__main__":
     main()
