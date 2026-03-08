@@ -1,15 +1,16 @@
 {
   "architecture": "decoder-only GPT",
-  "n_layer": 24,
-  "n_embd": 1024,
-  "n_head": 16,
-  "ffn_dim": 4096,
+  "n_layer": 12,
+  "n_embd": 768,
+  "n_head": 12,
+  "ffn_dim": 3072,
   "max_position_embeddings": 1024,
-  "parameters_approx": "425M",
+  "parameters_approx": "125M",
   "precision": "bfloat16",
   "notes": {
     "vocab_size": "NOT fixed here — defined per model after preprocessing. Baseline: 32000. Morph: determined by attested morpheme inventory.",
     "feature_embedding": "Morph models only. Size = num_feature_bundles x n_embd. Combined input = token_embedding + feature_embedding.",
-    "chinchilla_point": "425M params x 20 tokens/param = 8.5B training tokens"
+    "chinchilla_point": "125M params x 20 tokens/param = 2.5B training tokens",
+    "scale_downgrade": "Originally designed at 425M params / 8.4B tokens. Reduced to 125M / 2.5B due to compute budget constraints. See feasibility.md §11 for full rationale."
   }
 }

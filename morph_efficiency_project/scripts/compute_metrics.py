@@ -32,7 +32,6 @@ EVAL_DIR    = os.path.join("logs", "evaluation")
 SUMMARY_DIR = os.path.join("logs", "summary")
 TRAIN_DIR   = os.path.join("logs", "training")
 
-
 # ---------------------------------------------------------------------------
 # JSON helpers
 # ---------------------------------------------------------------------------
@@ -47,14 +46,12 @@ def load_json(path: str) -> Optional[Dict]:
         log.warning(f"Could not read {path}: {e}")
         return None
 
-
 def load_training_log(lang: str, regime: str) -> List[Dict]:
     path = os.path.join(TRAIN_DIR, f"{lang}_{regime}_training.json")
     data = load_json(path)
     if data is None:
         return []
     return data if isinstance(data, list) else []
-
 
 # ---------------------------------------------------------------------------
 # Summary table
@@ -96,7 +93,6 @@ def build_summary_table() -> List[Dict]:
             rows.append(row)
     return rows
 
-
 def save_csv(rows: List[Dict], path: str):
     if not rows:
         return
@@ -106,7 +102,6 @@ def save_csv(rows: List[Dict], path: str):
         for row in rows:
             f.write(",".join(str(row.get(c, "")) for c in cols) + "\n")
     log.info(f"Summary table saved → {path}")
-
 
 # ---------------------------------------------------------------------------
 # Plots
@@ -144,7 +139,6 @@ def plot_learning_curves():
             log.info(f"Saved → {out}")
         plt.close(fig)
 
-
 def plot_bar(values_by_model: Dict[str, Optional[float]], ylabel: str,
              title: str, filename: str):
     try:
@@ -169,7 +163,6 @@ def plot_bar(values_by_model: Dict[str, Optional[float]], ylabel: str,
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info(f"Saved → {out}")
-
 
 def plot_flops_vs_accuracy(rows: List[Dict]):
     try:
@@ -197,7 +190,6 @@ def plot_flops_vs_accuracy(rows: List[Dict]):
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info(f"Saved → {out}")
-
 
 # ---------------------------------------------------------------------------
 # Conclusion report
@@ -271,7 +263,6 @@ def write_conclusion(rows: List[Dict]):
         f.writelines(lines)
     log.info(f"Conclusion saved → {path}")
 
-
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -298,7 +289,6 @@ def main():
     write_conclusion(rows)
 
     log.info("compute_metrics.py complete.")
-
 
 if __name__ == "__main__":
     main()

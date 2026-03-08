@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphological Efficiency in Multilingual Language Models</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --en-base: #394195; --en-morph: #a74d79;
+      --ar-base: #59a150; --ar-morph: #1d5619;
+      --tr-base: #769bb9; --tr-morph: #df3e29;
+    }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; }
+
+    /* ── Slide system — full-viewport snap scroll ── */
+    #slides-container {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Hide scrollbar visually but keep it functional */
+    #slides-container::-webkit-scrollbar { display: none; }
+    #slides-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .slide {
+      height: 100vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 6rem;
+      border-bottom: 1px solid #1e2535;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) { .slide { padding: 2rem 1.5rem; } }
+
+    /* ── Nav dots ── */
+    #nav-dots { position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+                display: flex; flex-direction: column; gap: 0.6rem; z-index: 50; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155;
+           cursor: pointer; transition: background 0.2s, transform 0.2s; }
+    .dot.active { background: #60a5fa; transform: scale(1.4); }
+
+    /* ── Cards ── */
+    .card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; padding: 1.5rem; }
+
+    /* ── Model color pills ── */
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
+            font-size: 0.75rem; font-weight: 600; }
+
+    /* ── Chart containers ── */
+    .chart-wrap { width: 100%; overflow: hidden; }
+    svg text { fill: #94a3b8; font-size: 11px; }
+    .axis path, .axis line { stroke: #334155; }
+    .grid line { stroke: #1e2535; stroke-dasharray: 3,3; }
+
+    /* ── Stat number ── */
+    .stat-num { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+
+    /* ── Tooltip ── */
+    #tooltip { position: fixed; background: #1e2535; border: 1px solid #334155;
+               border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.8rem;
+               pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { background: #1e2535; color: #94a3b8; font-weight: 600;
+         padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #2d3748; }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid #1e2535; }
+    tr:hover td { background: #1e2535; }
+
+    /* ── Progress bar ── */
+    .bar-track { background: #1e2535; border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-fill  { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+
+    /* ── Slide-in animation ── */
+    .fade-in { opacity: 0; transform: translateY(20px);
+               transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<!-- ── Navigation dots ── -->
+<nav id="nav-dots"></nav>
+
+<div id="slides-container">
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 0 — Title
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-0">
+  <div class="max-w-4xl">
+    <p class="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-4">Research Presentation</p>
+    <h1 class="text-5xl font-bold leading-tight mb-6">
+      Morphological Efficiency<br/>in Multilingual Language Models
+    </h1>
+    <p class="text-slate-400 text-xl max-w-2xl mb-8">
+      Does teaching a model the grammar of its language — before it sees any data —
+      reduce how much it needs to learn?
+    </p>
+    <div class="flex flex-wrap gap-3 mb-10">
+      <span class="pill" style="background:#1e3a5f;color:#60a5fa">English</span>
+      <span class="pill" style="background:#1a3a1a;color:#4ade80">Arabic</span>
+      <span class="pill" style="background:#2d1a3a;color:#c084fc">Turkish</span>
+      <span class="pill" style="background:#2d2010;color:#fb923c">6 Models</span>
+      <span class="pill" style="background:#1a2535;color:#94a3b8">125M params each</span>
+    </div>
+    <p class="text-slate-500 text-sm">Sameh AbuRadi · Scroll or use the dots →</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 1 — The Experiment
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-1">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">The Experiment</h2>
+    <p class="text-slate-400 mb-8">Six models. Three languages. One question.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
+      <!-- English -->
+      <div class="card">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-2xl">🇬🇧</span>
+          <span class="font-semibold text-lg">English</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">en_base</span>
+            <span class="pill" style="background:#1e3a5f;color:#60a5fa">Baseline BPE</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">en_morph</span>
+            <span class="pill" style="background:#3a2010;color:#fb923c">Grammar-aware</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Derivational + inflectional morphology engine</p>
+        </div>
+      </div>
+      <!-- Arabic -->
+      <div class="card">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-2xl">🇸🇦</span>
+          <span class="font-semibold text-lg">Arabic</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">ar_base</span>
+            <span class="pill" style="background:#1a3a1a;color:#4ade80">Baseline BPE</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">ar_morph</span>
+            <span class="pill" style="background:#3a1a1a;color:#f87171">Grammar-aware</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Root × template (النحو والصرف) engine</p>
+        </div>
+      </div>
+      <!-- Turkish -->
+      <div class="card">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-2xl">🇹🇷</span>
+          <span class="font-semibold text-lg">Turkish</span>
+        </div>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">tr_base</span>
+            <span class="pill" style="background:#1a2d2d;color:#67e8f9">Baseline BPE</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-400 text-sm">tr_morph</span>
+            <span class="pill" style="background:#2d1a2d;color:#d8b4fe">Grammar-aware</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Suffix-chain (Dilbilgisi) engine</p>
+        </div>
+      </div>
+    </div>
+    <div class="mt-8 card fade-in">
+      <p class="text-slate-300 text-sm leading-relaxed">
+        Each pair shares <strong class="text-white">identical architecture</strong> (125M params),
+        <strong class="text-white">identical training data</strong> (2.5B tokens),
+        and <strong class="text-white">identical training budget</strong>.
+        The only difference is whether the model was given grammatical structure before training.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 2 — The 5 Evaluation Metrics
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-2">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-1">How We Compare Them</h2>
+    <p class="text-slate-400 mb-6">Five metrics. Each captures a different dimension of what "learning efficiently" means.</p>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 fade-in">
+
+      <!-- M1 -->
+      <div class="card flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📉</span>
+          <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Metric 1</span>
+        </div>
+        <div class="font-semibold text-white text-sm">Perplexity</div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          How surprised is the model by unseen text?
+          <code class="text-slate-300">PPL = exp(mean(−log P(token)))</code>.
+          Lower = better probability distribution over the language.
+        </p>
+        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_lm.py</div>
+      </div>
+
+      <!-- M2 -->
+      <div class="card flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🗜️</span>
+          <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Metric 2</span>
+        </div>
+        <div class="font-semibold text-white text-sm">Tokens per Meaning Unit</div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          How many tokens to express one idea?
+          Morph unit = (root, template) pair. Lower = more meaning packed per token.
+          Critical for Arabic &amp; Turkish where BPE splits one word into 4–6 fragments.
+        </p>
+        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_morphology.py</div>
+      </div>
+
+      <!-- M3 -->
+      <div class="card flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">✅</span>
+          <span class="text-xs font-bold text-green-400 uppercase tracking-wider">Metric 3</span>
+        </div>
+        <div class="font-semibold text-white text-sm">Agreement Accuracy</div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Does the model produce grammatically agreeing forms?
+          Subject–verb gender/number in Arabic, vowel harmony in Turkish, tense in English.
+          Higher = grammar internalized.
+        </p>
+        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_morphology.py</div>
+      </div>
+
+      <!-- M4 -->
+      <div class="card flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">⚡</span>
+          <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider">Metric 4</span>
+        </div>
+        <div class="font-semibold text-white text-sm">Learning Efficiency</div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          How many tokens to reach a target perplexity threshold?
+          If the morph model gets there in fewer steps, the grammar prior gave it a head start.
+          This is the core test of the research claim.
+        </p>
+        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_lm.py + compute_metrics.py</div>
+      </div>
+
+      <!-- M5 -->
+      <div class="card flex flex-col gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🎯</span>
+          <span class="text-xs font-bold text-orange-400 uppercase tracking-wider">Metric 5</span>
+        </div>
+        <div class="font-semibold text-white text-sm">Downstream Performance</div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Frozen model + single linear probe on sentiment &amp; QA tasks.
+          Tests whether internal representations are useful beyond language modeling.
+          FLOPs also logged for compute-efficiency comparison.
+        </p>
+        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_downstream.py</div>
+      </div>
+
+    </div>
+    <div class="mt-5 card fade-in">
+      <p class="text-slate-400 text-xs leading-relaxed">
+        All five metrics are computed for all six models under identical conditions.
+        The comparison is always <span class="text-white">within-language</span> (en_base vs en_morph, ar_base vs ar_morph, tr_base vs tr_morph).
+        Cross-language perplexity comparisons are not made — vocabularies and token distributions differ.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 3 — Learning Curves (time-series)
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-3">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Learning Curves</h2>
+    <p class="text-slate-400 mb-6">Loss over training tokens — does the morph model learn faster?</p>
+    <div class="flex gap-3 mb-4 flex-wrap" id="curve-lang-tabs">
+      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white" data-lang="en">English</button>
+      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700 text-slate-300" data-lang="ar">Arabic</button>
+      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700 text-slate-300" data-lang="tr">Turkish</button>
+    </div>
+    <div class="card chart-wrap" id="learning-curve-chart" style="height:380px;"></div>
+    <div class="mt-4 flex gap-6 text-sm text-slate-400" id="curve-legend"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 3 — Perplexity Comparison
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-4">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Final Perplexity</h2>
+    <p class="text-slate-400 mb-8">Lower is better. How confused is the model at predicting the next word?</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in" id="ppl-cards"></div>
+    <div class="mt-8 card chart-wrap fade-in" id="ppl-bar-chart" style="height:280px;"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 4 — Tokens per Meaning Unit
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-5">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Representational Efficiency</h2>
+    <p class="text-slate-400 mb-2">Tokens per meaning unit — how many tokens does the model need to express one idea?</p>
+    <p class="text-slate-500 text-sm mb-8">A lower number means the model packs more meaning into fewer tokens.</p>
+    <div class="card chart-wrap fade-in" id="tpu-chart" style="height:300px;"></div>
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 fade-in" id="tpu-delta-cards"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 5 — Morphological Agreement
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-6">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Grammatical Agreement Accuracy</h2>
+    <p class="text-slate-400 mb-2">Does the model produce grammatically correct forms?</p>
+    <p class="text-slate-500 text-sm mb-8">
+      Tested on subject-verb agreement, case marking, and number agreement.
+      Higher = more grammatically consistent outputs.
+    </p>
+    <div class="card chart-wrap fade-in" id="agreement-chart" style="height:300px;"></div>
+    <div class="mt-6 card fade-in">
+      <p class="text-slate-400 text-sm">
+        Agreement accuracy is only meaningful for morph models — baseline models have no explicit grammatical structure to validate against.
+        Baseline values reflect the model's implicit grammatical consistency.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 6 — Learning Efficiency (steps to threshold)
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-7">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Learning Efficiency</h2>
+    <p class="text-slate-400 mb-2">How many training tokens did each model need to reach a target loss?</p>
+    <p class="text-slate-500 text-sm mb-8">
+      If the morph model reaches the threshold earlier, it learned the same thing with less data.
+      That is the core claim of this experiment.
+    </p>
+    <div class="card chart-wrap fade-in" id="efficiency-chart" style="height:320px;"></div>
+    <div class="mt-4 text-xs text-slate-500" id="efficiency-note"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 7 — Downstream Tasks
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-8">
+  <div class="max-w-5xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Downstream Task Performance</h2>
+    <p class="text-slate-400 mb-2">Real-world usefulness — sentiment analysis and reading comprehension.</p>
+    <p class="text-slate-500 text-sm mb-8">
+      A frozen model with a single linear layer on top. If the model learned better representations,
+      even a tiny classifier on top will do better.
+    </p>
+    <div class="card overflow-x-auto fade-in">
+      <table id="downstream-table">
+        <thead>
+          <tr>
+            <th>Model</th><th>Task</th><th>Accuracy</th><th>F1</th>
+            <th>Exact Match</th><th>Latency (ms)</th>
+          </tr>
+        </thead>
+        <tbody id="downstream-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 8 — Compute Efficiency
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-9">
+  <div class="max-w-5xl w-full">
+  <h2 class="text-3xl font-bold mb-2">Compute Efficiency</h2>
+  <p class="text-slate-400 mb-8">FLOPs per token vs test perplexity — the Pareto view.</p>
+  <div class="card chart-wrap fade-in" id="pareto-chart" style="height:360px;"></div>
+  <p class="text-slate-500 text-xs mt-3">
+    Points toward the bottom-left are better: lower compute cost AND lower perplexity.
+  </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 9 — Full Summary Table
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-10">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">All Metrics — Side by Side</h2>
+    <p class="text-slate-400 mb-6">Every measured number for all six models.</p>
+    <div class="card overflow-x-auto fade-in">
+      <table id="summary-table">
+        <thead>
+          <tr>
+            <th>Model</th><th>Test PPL</th><th>Tokens/Unit</th>
+            <th>Agreement</th><th>Nats/Morpheme</th>
+            <th>FLOPs/Token</th><th>Latency (ms)</th><th>Train Time</th>
+          </tr>
+        </thead>
+        <tbody id="summary-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════
+     SLIDE 10 — Findings
+════════════════════════════════════════════════════════════ -->
+<section class="slide" id="slide-11">
+  <div class="max-w-4xl w-full">
+    <h2 class="text-3xl font-bold mb-2">What the Data Shows</h2>
+    <p class="text-slate-400 mb-8">No conclusions are pre-written. These are the measured results.</p>
+    <div id="findings-container" class="space-y-4 fade-in"></div>
+    <div class="mt-8 card border-slate-600">
+      <p class="text-slate-500 text-xs">
+        Results are reported as measured. Correlation is not framed as causation.
+        This experiment is governed by a frozen scientific contract (experimental_contract.md).
+      </p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /slides-container -->
+
+<script src="app.js"></script>
+</body>
+</html>

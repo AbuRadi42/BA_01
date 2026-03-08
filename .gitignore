@@ -41,9 +41,12 @@ morph_efficiency_project/tokenizers/**/*.bin
 # Logs — evaluation and training outputs (generated at runtime)
 morph_efficiency_project/logs/evaluation/*.json
 morph_efficiency_project/logs/training/*.json
+morph_efficiency_project/logs/summary/*.json
 morph_efficiency_project/logs/summary/*.csv
 morph_efficiency_project/logs/summary/*.png
 morph_efficiency_project/logs/summary/conclusion.md
+morph_efficiency_project/logs/logs
+morph_efficiency_project/tokenizers/tokenizers
 
 # Keep .gitkeep files in all of the above
 !**/.gitkeep

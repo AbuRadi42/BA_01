@@ -72,7 +72,6 @@ def check_morph_sequence_ar(token_infos: List[Dict]) -> bool:
             return False
     return True
 
-
 def check_morph_sequence_tr(token_infos: List[Dict]) -> bool:
     """Validate Turkish suffix slot ordering (Dilbilgisi)."""
     NOM_ORDER  = ["DERIV", "NUM", "POSS", "CASE"]
@@ -99,7 +98,6 @@ def check_morph_sequence_tr(token_infos: List[Dict]) -> bool:
                 return False
     return True
 
-
 def check_morph_sequence_en(token_infos: List[Dict]) -> bool:
     """Validate English inflectional tag bundles."""
     POS_ALLOWED = {
@@ -125,7 +123,6 @@ def check_morph_sequence_en(token_infos: List[Dict]) -> bool:
         if tags.get("degree") in ("COMP", "SUPER") and pos not in ("ADJ", "ADV"):
             return False
     return True
-
 
 VALIDATORS = {
     "ar": check_morph_sequence_ar,
@@ -155,7 +152,6 @@ def tokens_per_meaning_unit(token_ids: np.ndarray, feature_ids: Optional[np.ndar
         meaning_units = total_tokens  # baseline: 1 token ≈ 1 unit
     return total_tokens / max(meaning_units, 1)
 
-
 def nats_per_morpheme(loss_per_token: np.ndarray, token_ids: np.ndarray,
                       feature_ids: Optional[np.ndarray], morph_mode: bool) -> float:
     """
@@ -171,7 +167,6 @@ def nats_per_morpheme(loss_per_token: np.ndarray, token_ids: np.ndarray,
     else:
         n_morphemes = int(mask.sum())
     return total_nats / max(n_morphemes, 1)
-
 
 # ---------------------------------------------------------------------------
 # Per-token loss extraction
@@ -201,7 +196,6 @@ def get_per_token_loss(model: GPTModel, loader: DataLoader,
     return (np.concatenate(all_ids),
             np.concatenate(all_feats),
             np.concatenate(all_loss))
-
 
 # ---------------------------------------------------------------------------
 # Agreement accuracy (§8.2) — sampled from test feature_ids
@@ -249,7 +243,6 @@ def agreement_accuracy(lang: str, feature_bundles: Dict[int, str],
 
     return correct / max(total, 1)
 
-
 # ---------------------------------------------------------------------------
 # Bundle accuracy (§8.3)
 # ---------------------------------------------------------------------------
@@ -260,7 +253,6 @@ def bundle_accuracy(pred_feature_ids: np.ndarray, ref_feature_ids: np.ndarray) -
     if mask.sum() == 0:
         return float("nan")
     return float((pred_feature_ids[mask] == ref_feature_ids[mask]).mean())
-
 
 # ---------------------------------------------------------------------------
 # Main evaluation
@@ -305,7 +297,6 @@ def load_model_for_eval(lang: str, regime: str, device: torch.device):
     model.load_state_dict(ckpt["model"])
     model.eval()
     return model, step
-
 
 def evaluate(lang: str, regime: str):
     morph_mode = (regime == "morph")
@@ -395,7 +386,6 @@ def evaluate(lang: str, regime: str):
         json.dump(results, f, indent=2)
     log.info(f"[{lang}/{regime}] Saved → {log_path}")
 
-
 def main():
     parser = argparse.ArgumentParser(description="Morphology-specific evaluation.")
     parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
@@ -408,7 +398,6 @@ def main():
     for lang in langs:
         for regime in regimes:
             evaluate(lang, regime)
-
 
 if __name__ == "__main__":
     main()
