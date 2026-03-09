@@ -90,7 +90,6 @@ def load_tokenizer(lang: str, regime: str):
         sp.load(os.path.join("tokenizers", f"{lang}_base", f"{lang}_base.model"))
         return lambda text: sp.encode(text, out_type=int)
 
-
 # ---------------------------------------------------------------------------
 # Probe datasets
 # ---------------------------------------------------------------------------
@@ -109,7 +108,6 @@ class ClassificationDataset(Dataset):
         ids = ids + [0] * (self.seq_len - len(ids))
         return torch.tensor(ids, dtype=torch.long), torch.tensor(self.labels[idx], dtype=torch.long)
 
-
 class QADataset(Dataset):
     def __init__(self, contexts: List[str], questions: List[str],
                  answers: List[Dict], tokenize, seq_len: int):
@@ -126,7 +124,6 @@ class QADataset(Dataset):
         ids = ids + [0] * (self.seq_len - len(ids))
         return torch.tensor(ids, dtype=torch.long), self.answers[idx]
 
-
 # ---------------------------------------------------------------------------
 # Linear probe
 # ---------------------------------------------------------------------------
@@ -138,7 +135,6 @@ class LinearProbe(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.fc(x)
-
 
 # ---------------------------------------------------------------------------
 # Hidden state extraction
@@ -155,7 +151,6 @@ def extract_mean_hidden(model: GPTModel, input_ids: torch.Tensor,
     mask   = (input_ids != 0).unsqueeze(-1).float()
     pooled = (hidden.float() * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1)
     return pooled
-
 
 # ---------------------------------------------------------------------------
 # Classification task
@@ -230,7 +225,6 @@ def run_classification(model: GPTModel, task: Dict, lang: str, regime: str,
         "accuracy": round(acc, 4), "f1": round(f1, 4),
         "inference_latency_ms": round(latency_ms, 3),
     }
-
 
 # ---------------------------------------------------------------------------
 # QA task
@@ -314,7 +308,6 @@ def run_qa(model: GPTModel, task: Dict, lang: str, regime: str,
         "inference_latency_ms": round(lat, 3) if lat is not None else None,
     }
 
-
 # ---------------------------------------------------------------------------
 # Compute metrics (plan.md §7)
 # ---------------------------------------------------------------------------
@@ -389,7 +382,6 @@ def compute_and_save_compute_metrics(model: GPTModel, lang: str, regime: str,
         json.dump(result, f, indent=2)
     log.info(f"[{lang}/{regime}] Compute metrics saved → {out_path}")
 
-
 # ---------------------------------------------------------------------------
 # Model loader
 # ---------------------------------------------------------------------------
@@ -427,7 +419,6 @@ def load_model(lang: str, regime: str, device: torch.device) -> GPTModel:
     model.eval()
     return model
 
-
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -455,7 +446,6 @@ def evaluate(lang: str, regime: str):
             json.dump(result, f, indent=2)
         log.info(f"[{lang}/{regime}] Saved → {out_path}")
 
-
 def main():
     parser = argparse.ArgumentParser(description="Downstream task + compute evaluation.")
     parser.add_argument("--language", choices=["en", "ar", "tr", "all"], required=True)
@@ -468,7 +458,6 @@ def main():
     for lang in langs:
         for regime in regimes:
             evaluate(lang, regime)
-
 
 if __name__ == "__main__":
     main()

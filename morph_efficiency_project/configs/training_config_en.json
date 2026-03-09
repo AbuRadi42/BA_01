@@ -5,9 +5,9 @@
     "val":   "data/raw/en/val.txt",
     "test":  "data/raw/en/test.txt",
     "sources": ["Wikipedia EN", "OPUS (TED/News)", "CC-100 EN"],
-    "target_train_tokens": 8000000000,
-    "target_val_tokens":    200000000,
-    "target_test_tokens":   200000000
+    "target_train_tokens": 2500000000,
+    "target_val_tokens":    62500000,
+    "target_test_tokens":   62500000
   },
   "tokenizer": {
     "baseline": {
@@ -33,7 +33,7 @@
     "warmup_steps": 2000,
     "weight_decay": 0.01,
     "gradient_clipping": 1.0,
-    "total_tokens": 8400000000,
+    "total_tokens": 2500000000,
     "checkpoint_interval_steps": 1000
   },
   "grammar_engine": {

@@ -30,16 +30,19 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger(__name__)
 
 # ── Architecture (plan.md §5.1) ───────────────────────────────────────────────
+# NOTE: Downgraded from 425M (24L/1024H) to 125M (12L/768H) due to compute
+# budget constraints. See feasibility.md §11 for full rationale.
 MODEL_CONFIG = {
-    "n_layer":                 24,
-    "n_embd":                1024,
-    "n_head":                  16,
-    "ffn_dim":               4096,
+    "n_layer":                 12,
+    "n_embd":                 768,
+    "n_head":                  12,
+    "ffn_dim":               3072,
     "max_position_embeddings":1024,
     "dropout":                0.1,
 }
 
 # ── Training hyperparameters (plan.md §5.2) ───────────────────────────────────
+# Total tokens reduced from 8.4B to 2.5B (Chinchilla-optimal for 125M params).
 TRAIN_CONFIG = {
     "batch_size":           32,
     "sequence_length":    1024,
@@ -47,10 +50,9 @@ TRAIN_CONFIG = {
     "weight_decay":        0.01,
     "grad_clip":            1.0,
     "warmup_steps":        2000,
-    "total_tokens":  8_400_000_000,
+    "total_tokens":  2_500_000_000,
     "checkpoint_every":    1000,
 }
-
 
 # ── Dataset ───────────────────────────────────────────────────────────────────
 
@@ -79,7 +81,6 @@ class TokenDataset(Dataset):
         else:
             f = torch.zeros_like(x)
         return x, f, y
-
 
 # ── Model ─────────────────────────────────────────────────────────────────────
 
@@ -123,7 +124,6 @@ class CausalSelfAttention(nn.Module):
         y = y.transpose(1, 2).contiguous().view(B, T, C)
         return self.resid_drop(self.proj(y))
 
-
 class FFN(nn.Module):
     def __init__(self, n_embd: int, ffn_dim: int, dropout: float):
         super().__init__()
@@ -136,7 +136,6 @@ class FFN(nn.Module):
 
     def forward(self, x):
         return self.net(x)
-
 
 class TransformerBlock(nn.Module):
     def __init__(self, n_embd: int, n_head: int, ffn_dim: int,
@@ -151,7 +150,6 @@ class TransformerBlock(nn.Module):
         x = x + self.attn(self.ln1(x))
         x = x + self.ffn(self.ln2(x))
         return x
-
 
 class GPTModel(nn.Module):
     """
@@ -216,7 +214,6 @@ class GPTModel(nn.Module):
             return logits, loss, hidden
         return logits, loss
 
-
 # ── LR schedule ───────────────────────────────────────────────────────────────
 
 def get_lr(step: int, warmup: int, total_steps: int, max_lr: float) -> float:
@@ -225,8 +222,32 @@ def get_lr(step: int, warmup: int, total_steps: int, max_lr: float) -> float:
     progress = (step - warmup) / max(total_steps - warmup, 1)
     return max_lr * 0.5 * (1.0 + math.cos(math.pi * progress))
 
-
 # ── Checkpoint helpers ────────────────────────────────────────────────────────
+
+# ── Time-series snapshot ──────────────────────────────────────────────────────
+
+def save_timeseries_snapshot(lang: str, regime: str, step: int,
+                              loss: float, ppl: float, tokens_seen: int,
+                              wall_time_sec: float, gpu_mem_gb: float, lr: float):
+    """
+    Appends a single snapshot entry to the time-series JSONL file.
+    Each line is a self-contained JSON object — safe for incremental writes
+    and easy to stream into the dashboard without loading the full file.
+    Format: logs/training/{lang}_{regime}_timeseries.jsonl
+    """
+    path = os.path.join("logs", "training", f"{lang}_{regime}_timeseries.jsonl")
+    entry = {
+        "step":          step,
+        "tokens":        tokens_seen,
+        "loss":          round(loss, 4),
+        "ppl":           round(ppl, 2),
+        "lr":            round(lr, 8),
+        "wall_time_sec": round(wall_time_sec, 1),
+        "gpu_mem_gb":    round(gpu_mem_gb, 2),
+        "ts":            int(time.time()),   # unix timestamp for real-time plotting
+    }
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
 
 def save_checkpoint(model, optimizer, step: int, loss: float, out_dir: str):
     os.makedirs(out_dir, exist_ok=True)
@@ -246,7 +267,6 @@ def save_checkpoint(model, optimizer, step: int, loss: float, out_dir: str):
         os.remove(os.path.join(out_dir, old))
     log.info(f"Checkpoint saved: {path}")
 
-
 def load_latest_checkpoint(model, optimizer, out_dir: str) -> int:
     ckpts = sorted(
         [f for f in os.listdir(out_dir) if f.startswith("ckpt_step")],
@@ -261,7 +281,6 @@ def load_latest_checkpoint(model, optimizer, out_dir: str) -> int:
     step = ckpt["step"]
     log.info(f"Resumed from {path} (step {step})")
     return step
-
 
 # ── Main training loop ────────────────────────────────────────────────────────
 
@@ -416,6 +435,9 @@ def train(lang: str, regime: str, resume: bool = False):
                 "lr":               lr,
             }
             training_log.append(entry)
+            # Write time-series snapshot for dashboard streaming
+            save_timeseries_snapshot(lang, regime, step, loss.item(), ppl,
+                                     tokens_seen, elapsed, mem_gb, lr)
 
         # ── Checkpoint ────────────────────────────────────────────────────────
         if step % TRAIN_CONFIG["checkpoint_every"] == 0:
@@ -431,7 +453,6 @@ def train(lang: str, regime: str, resume: bool = False):
     log.info(f"[{lang}/{regime}] Training complete. {step:,} steps, "
              f"{tokens_seen:,} tokens.")
 
-
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main():
@@ -442,7 +463,6 @@ def main():
                         help="Resume from latest checkpoint.")
     args = parser.parse_args()
     train(args.language, args.regime, args.resume)
-
 
 if __name__ == "__main__":
     main()
