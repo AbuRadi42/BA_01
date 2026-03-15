@@ -5,8 +5,8 @@ Downloads corpora for EN, AR, TR and creates train/val/test splits.
 
 Sources per language:
   EN: Wikipedia EN, OPUS books, CC-100 EN
-  AR: Wikipedia AR, CC-100 AR, OPUS-100 AR-EN
-  TR: Wikipedia TR, CC-100 TR, OPUS-100 TR-EN
+  AR: Wikipedia AR, CC-100 AR, OPUS-100 AR-EN, mC4 AR, MADLAD-400 AR
+  TR: Wikipedia TR, CC-100 TR, OPUS-100 TR-EN, mC4 TR, MADLAD-400 TR
 
 Outputs per language L in {en, ar, tr}:
   data/raw/L/train.txt
@@ -55,11 +55,15 @@ SOURCES = {
         ("wikimedia/wikipedia",    "20231101.ar",  "train", "text"),
         ("cc100",                  "ar",           "train", "text"),
         ("Helsinki-NLP/opus-100",  "ar-en",        "train", "translation:ar"),
+        ("allenai/c4",             "ar",           "train", "text"),
+        ("allenai/MADLAD-400",     "ar",           "clean", "text"),
     ],
     "tr": [
         ("wikimedia/wikipedia",    "20231101.tr",  "train", "text"),
         ("cc100",                  "tr",           "train", "text"),
         ("Helsinki-NLP/opus-100",  "tr-en",        "train", "translation:tr"),
+        ("allenai/c4",             "tr",           "train", "text"),
+        ("allenai/MADLAD-400",     "tr",           "clean", "text"),
     ],
 }
 
@@ -137,6 +141,10 @@ def build_corpus(lang: str, max_sentences: int = 0, base_dir: str = "morph_effic
     """
     max_sentences > 0 activates dry-run mode: stops after that many sentences
     regardless of token targets.
+
+    Resume logic: if train.txt already exists and train token target is met,
+    skip entirely. If partially done (train.txt exists but target not met),
+    append to existing files and continue from where sources left off.
     """
     rng = random.Random(SEEDS[lang])
     train_path, val_path, test_path = make_dirs(lang, base_dir)
@@ -151,13 +159,38 @@ def build_corpus(lang: str, max_sentences: int = 0, base_dir: str = "morph_effic
     else:
         log.info(f"[{lang}] Starting corpus build. Target: {total_target:,} tokens")
 
-    token_counts   = {"train": 0, "val": 0, "test": 0}
+    # ── Resume: count existing tokens ────────────────────────────────────────
+    def count_file_tokens(path):
+        if not os.path.exists(path):
+            return 0
+        count = 0
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                count += len(line.split())
+        return count
+
+    existing_train_tokens = count_file_tokens(train_path) if not dry_run else 0
+    if not dry_run and existing_train_tokens >= TARGET["train"]:
+        log.info(f"[{lang}] Train target already met ({existing_train_tokens:,} tokens). Skipping download.")
+        return
+
+    if existing_train_tokens > 0:
+        log.info(f"[{lang}] Resuming — {existing_train_tokens:,} train tokens already on disk.")
+
+    token_counts   = {
+        "train": existing_train_tokens,
+        "val":   count_file_tokens(val_path)  if not dry_run else 0,
+        "test":  count_file_tokens(test_path) if not dry_run else 0,
+    }
     sentence_count = 0
     FLUSH_EVERY    = 500_000
 
-    with open(train_path, "w", encoding="utf-8") as f_train, \
-         open(val_path,   "w", encoding="utf-8") as f_val, \
-         open(test_path,  "w", encoding="utf-8") as f_test:
+    # Append mode so we don't lose existing data
+    open_mode = "a" if existing_train_tokens > 0 else "w"
+
+    with open(train_path, open_mode, encoding="utf-8") as f_train, \
+         open(val_path,   open_mode, encoding="utf-8") as f_val, \
+         open(test_path,  open_mode, encoding="utf-8") as f_test:
 
         for sentence in stream_sentences(lang):
             r = rng.random()

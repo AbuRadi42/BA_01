@@ -1,79 +1,19 @@
 /* ============================================================
    app.js — Morphological Efficiency Dashboard
-   Reads JSON/JSONL logs from ../../logs/ and renders all charts.
-   Uses D3 v7. No build step required — open index.html in browser.
+   Uses D3 v7. No build step — open index.html in browser.
    ============================================================ */
-
 "use strict";
 
-// ── Model registry ────────────────────────────────────────────────────────────
-const MODELS = [
-  { id: "en_base",  lang: "en", regime: "baseline", label: "en_base",  color: "#394195" },
-  { id: "en_morph", lang: "en", regime: "morph",    label: "en_morph", color: "#a74d79" },
-  { id: "ar_base",  lang: "ar", regime: "baseline", label: "ar_base",  color: "#59a150" },
-  { id: "ar_morph", lang: "ar", regime: "morph",    label: "ar_morph", color: "#1d5619" },
-  { id: "tr_base",  lang: "tr", regime: "baseline", label: "tr_base",  color: "#769bb9" },
-  { id: "tr_morph", lang: "tr", regime: "morph",    label: "tr_morph", color: "#df3e29" },
-];
-
-const LANGS = ["en", "ar", "tr"];
+const LANGS      = ["en", "ar", "tr"];
 const LANG_NAMES = { en: "English", ar: "Arabic", tr: "Turkish" };
-const LOG_BASE = "../../logs";
 
-// ── Data store ────────────────────────────────────────────────────────────────
-const DATA = {
-  timeseries: {},   // { modelId: [{step,tokens,loss,ppl,...}] }
-  lm:         {},   // { modelId: {val_ppl, test_ppl, ...} }
-  morph:      {},   // { modelId: {tokens_per_meaning_unit, agreement_accuracy, ...} }
-  compute:    {},   // { modelId: {flops_per_token, inference_latency_ms, ...} }
-  tasks:      {},   // { modelId: { taskName: {...} } }
+const MINI_COLORS = {
+  en_baseline: "#394195", en_morph: "#a74d79",
+  ar_baseline: "#59a150", ar_morph: "#1d5619",
+  tr_baseline: "#769bb9", tr_morph: "#df3e29",
 };
 
-// ── Fetch helpers ─────────────────────────────────────────────────────────────
-async function fetchJSON(path) {
-  try {
-    const r = await fetch(path);
-    if (!r.ok) return null;
-    return await r.json();
-  } catch { return null; }
-}
-
-async function fetchJSONL(path) {
-  try {
-    const r = await fetch(path);
-    if (!r.ok) return [];
-    const text = await r.text();
-    return text.trim().split("\n").filter(Boolean).map(l => JSON.parse(l));
-  } catch { return []; }
-}
-
-// ── Load all data ─────────────────────────────────────────────────────────────
-async function loadAll() {
-  const promises = MODELS.map(async m => {
-    const base = `${LOG_BASE}`;
-    const [ts, lm, morph, compute] = await Promise.all([
-      fetchJSONL(`${base}/training/${m.id}_timeseries.jsonl`),
-      fetchJSON(`${base}/evaluation/${m.id}_lm.json`),
-      fetchJSON(`${base}/evaluation/${m.id}_morph.json`),
-      fetchJSON(`${base}/evaluation/${m.id}_compute.json`),
-    ]);
-    DATA.timeseries[m.id] = ts;
-    DATA.lm[m.id]         = lm;
-    DATA.morph[m.id]      = morph;
-    DATA.compute[m.id]    = compute;
-
-    // Downstream tasks
-    DATA.tasks[m.id] = {};
-    const taskNames = m.lang === "en" ? ["sentiment","qa"]
-                    : m.lang === "ar" ? ["sentiment","qa"]
-                    : ["classification","qa"];
-    await Promise.all(taskNames.map(async t => {
-      const d = await fetchJSON(`${base}/evaluation/${m.id}_task_${t}.json`);
-      if (d) DATA.tasks[m.id][t] = d;
-    }));
-  });
-  await Promise.all(promises);
-}
+const LANG_COLORS = { en: "#394195", ar: "#59a150", tr: "#769bb9" };
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
 const tip = d3.select("#tooltip");
@@ -87,19 +27,18 @@ function hideTip() { tip.style("opacity", 0); }
 // ── Nav dots ──────────────────────────────────────────────────────────────────
 function buildNav() {
   const container = document.getElementById("slides-container");
-  const slides = document.querySelectorAll(".slide");
-  const nav    = document.getElementById("nav-dots");
+  const slides    = document.querySelectorAll(".slide");
+  const nav       = document.getElementById("nav-dots");
   slides.forEach((s, i) => {
     const dot = document.createElement("div");
     dot.className = "dot" + (i === 0 ? " active" : "");
-    dot.title = s.querySelector("h1,h2")?.textContent || `Slide ${i}`;
-    dot.addEventListener("click", () => {
-      container.scrollTo({ top: s.offsetTop, behavior: "smooth" });
-    });
+    dot.title = s.querySelector("h1,h2")?.textContent?.trim() || `Slide ${i}`;
+    dot.addEventListener("click", () =>
+      container.scrollTo({ top: s.offsetTop, behavior: "smooth" }));
     nav.appendChild(dot);
   });
   const dots = nav.querySelectorAll(".dot");
-  const obs  = new IntersectionObserver(entries => {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         const idx = [...slides].indexOf(e.target);
@@ -124,10 +63,10 @@ function svgOf(containerId, margin, fullW, fullH) {
   const el = document.getElementById(containerId);
   if (!el) return null;
   el.innerHTML = "";
-  const w = fullW  - margin.left - margin.right;
-  const h = fullH  - margin.top  - margin.bottom;
+  const w = fullW - margin.left - margin.right;
+  const h = fullH - margin.top  - margin.bottom;
   const svg = d3.select(el).append("svg")
-    .attr("width", "100%").attr("height", fullH)
+    .attr("width","100%").attr("height", fullH)
     .attr("viewBox", `0 0 ${fullW} ${fullH}`)
     .append("g").attr("transform", `translate(${margin.left},${margin.top})`);
   return { svg, w, h };
@@ -137,30 +76,632 @@ function addGrid(svg, scale, dir, size) {
   const axis = dir === "y"
     ? d3.axisLeft(scale).tickSize(-size).tickFormat("")
     : d3.axisBottom(scale).tickSize(-size).tickFormat("");
-  svg.append("g").attr("class","grid")
-     .call(axis).select(".domain").remove();
+  svg.append("g").attr("class","grid").call(axis).select(".domain").remove();
 }
 
-// ── SLIDE 2 — Learning curves ─────────────────────────────────────────────────
-let activeCurveLang = "en";
+// ── Arabic non-joining letters — tatweel must NOT follow these ───────────────
+// These letters never connect to the next character on their left side.
+const AR_NON_JOINING = new Set([...'اأإآةوردذزرءى']);
+function arCanJoin(char) {
+  // Returns false if this character cannot carry a tatweel on its left side
+  return char && !AR_NON_JOINING.has(char);
+}
 
-function drawLearningCurves(lang) {
+// ── SLIDE 1b — Tokenisation Examples ─────────────────────────────────────────
+function drawTokenisationExamples() {
+  const examples = EMBEDDED_DATA.tok_examples || {};
+  const container = document.getElementById("tok-examples-container");
+  if (!container || !Object.keys(examples).length) return;
+
+  const langOrder   = ["en", "ar", "tr"];
+  const baseColors  = { en: "#394195", ar: "#59a150", tr: "#769bb9" };
+  const morphColors = { en: "#a74d79", ar: "#e56a30", tr: "#df3e29" };
+
+  // Parse a raw tag string into { pre, suf } — both may be null
+  function parseTag(tag) {
+    if (tag === "ROOT") return { pre: null, suf: null };
+    if (tag.startsWith("PRE_") && tag.includes("_SUF_")) {
+      const inner = tag.slice(4);
+      const idx   = inner.indexOf("_SUF_");
+      return { pre: inner.slice(0, idx), suf: inner.slice(idx + 5) };
+    }
+    if (tag.startsWith("PRE_")) return { pre: tag.slice(4), suf: null };
+    if (tag.startsWith("SUF_")) return { pre: null, suf: tag.slice(4) };
+    return { pre: null, suf: tag };
+  }
+
+  // Build one morph chip as a single inline breadcrumb
+  function makeMorphChip(tok, lang, mc) {
+    const { pre, suf } = parseTag(tok.tag);
+    const isAr   = lang === "ar";
+    const isRoot = !pre && !suf;
+
+    const chip = document.createElement("span");
+    chip.className = "morph-chip";
+    chip.style.background = mc + "1a";
+    chip.style.border     = `1px solid ${mc}50`;
+    chip.title = tok.surface;
+
+    if (isRoot) {
+      const r = document.createElement("span");
+      r.className = "mc-root";
+      r.style.opacity = "0.65";
+      r.textContent = tok.root;
+      chip.appendChild(r);
+      return chip;
+    }
+
+    if (isAr) {
+      // Arabic RTL: bake tatweel directly into each span's text so there
+      // are no gaps between the coloured boxes.
+      // Only add tatweel where the last character of the preceding span
+      // is a joining letter (non-joining letters: ا أ إ آ ة و ر د ذ ز).
+      chip.setAttribute("dir", "rtl");
+
+      // Does the prefix end in a joining letter?
+      const preJoins = pre && arCanJoin(pre[pre.length - 1]);
+      // Does the root end in a joining letter?
+      const rootJoins = tok.root && arCanJoin(tok.root[tok.root.length - 1]);
+
+      if (pre) {
+        const preEl = document.createElement("span");
+        preEl.className = "mc-affix";
+        preEl.style.color      = mc;
+        preEl.style.background = mc + "28";
+        preEl.textContent = pre + (preJoins ? "ـ" : "");
+        chip.appendChild(preEl);
+      }
+
+      const rootEl = document.createElement("span");
+      rootEl.className = "mc-root";
+      rootEl.textContent = (preJoins ? "ـ" : "") + tok.root + (suf && rootJoins ? "ـ" : "");
+      chip.appendChild(rootEl);
+
+      if (suf) {
+        const sufEl = document.createElement("span");
+        sufEl.className = "mc-affix";
+        sufEl.style.color      = mc;
+        sufEl.style.background = mc + "28";
+        sufEl.textContent = (rootJoins ? "ـ" : "") + suf;
+        chip.appendChild(sufEl);
+      }
+    } else {
+      // Latin: [pre-]root[suf] inline
+      if (pre) {
+        const preEl = document.createElement("span");
+        preEl.className = "mc-affix";
+        preEl.style.color      = mc;
+        preEl.style.background = mc + "28";
+        preEl.textContent = pre + "-";
+        chip.appendChild(preEl);
+      }
+
+      const rootEl = document.createElement("span");
+      rootEl.className = "mc-root";
+      rootEl.textContent = tok.root;
+      chip.appendChild(rootEl);
+
+      if (suf) {
+        const sufEl = document.createElement("span");
+        sufEl.className = "mc-affix";
+        sufEl.style.color      = mc;
+        sufEl.style.background = mc + "28";
+        sufEl.textContent = suf;
+        chip.appendChild(sufEl);
+      }
+    }
+
+    return chip;
+  }
+
+  // Inject form badge inside the chip itself, below a gray separator line
+  function wrapWithForm(chip, tok) {
+    const hasForm  = tok.form;
+    const hasLabel = tok.form_label;
+    if (!hasForm && !hasLabel) return chip;
+    // Collect existing children into a nowrap row so they never break
+    const row = document.createElement("span");
+    row.style.cssText = "display:inline-flex;align-items:center;white-space:nowrap;";
+    while (chip.firstChild) row.appendChild(chip.firstChild);
+    chip.style.display       = "inline-flex";
+    chip.style.flexDirection = "column";
+    chip.style.alignItems    = "center";
+    chip.appendChild(row);
+    const sep = document.createElement("div");
+    sep.className = "form-sep";
+    sep.style.cssText = "width:100%;border-top:1px solid #333;margin-top:3px;padding-top:2px;font-size:0.5rem;text-align:center;font-family:'Noto Naskh Arabic',sans-serif;line-height:1.3;white-space:nowrap;overflow:hidden;max-height:0;opacity:0;transition:max-height 0.27s ease,opacity 0.27s ease,margin-top 0.27s ease,padding-top 0.27s ease;margin-top:0;padding-top:0;border-top-color:transparent;";
+    sep.setAttribute("dir", "rtl");
+    if (hasForm) {
+      const hasDef = tok.tag && tok.tag.includes("PRE_ال");
+      if (hasDef) {
+        const defSpan = document.createElement("span");
+        defSpan.style.color = "#6b6b6b";
+        defSpan.textContent = "الـ";
+        const patSpan = document.createElement("span");
+        patSpan.style.color = "#b0b0b0";
+        patSpan.textContent = `${tok.form_pattern} · ${tok.form}`;
+        sep.appendChild(defSpan);
+        sep.appendChild(patSpan);
+      } else {
+        const patSpan = document.createElement("span");
+        patSpan.style.color = "#b0b0b0";
+        patSpan.textContent = `${tok.form_pattern} · ${tok.form}`;
+        sep.appendChild(patSpan);
+      }
+    } else {
+      sep.style.color = "#6b6b6b";
+      sep.textContent = tok.form_label;
+    }
+    chip.appendChild(sep);
+    return chip;
+  }
+
+  container.innerHTML = langOrder.map(lang => {
+    const ex = examples[lang];
+    if (!ex) return "";
+    const isRtl = lang === "ar";
+    const bc = baseColors[lang];
+    const mc = morphColors[lang];
+    return `
+    <div class="card" style="padding:1.1rem 1.4rem;">
+      <div class="flex items-baseline gap-3 mb-3 flex-wrap">
+        <span style="font-family:'Noto Naskh Arabic',sans-serif;font-weight:700;font-size:0.85rem;color:#6b6b6b;text-transform:uppercase;letter-spacing:0.08em;">${LANG_NAMES[lang]}</span>
+        <span class="tok-sentence" ${isRtl ? 'dir="rtl" style="flex:1;text-align:right;"' : ''} >${ex.sentence}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-5">
+        <div>
+          <p style="font-size:0.68rem;color:#3d3d3d;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.55rem;">
+            BPE baseline — <span style="color:${bc};font-weight:700;">${ex.baseline.length} tokens</span>
+          </p>
+          <div class="tok-chips-base-${lang}" style="display:flex;flex-wrap:wrap;align-items:center;${isRtl ? 'direction:rtl;' : ''}gap:1px;"></div>
+        </div>
+        <div>
+          <p style="font-size:0.68rem;color:#3d3d3d;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.55rem;display:flex;align-items:center;gap:6px;">
+            Morph — <span style="color:${mc};font-weight:700;">${ex.morph.length} tokens</span>
+            <span style="color:#2a2a2a;margin-left:5px;">(${ex.baseline.length - ex.morph.length} fewer)</span>
+            ${isRtl ? `<button class="forms-toggle-btn" data-lang="${lang}" style="margin-left:auto;font-size:0.6rem;padding:1px 7px;border:1px solid #e56a30;border-radius:3px;background:transparent;color:#6b6b6b;cursor:pointer;letter-spacing:0.05em;font-family:inherit;">Forms</button>` : ''}
+          </p>
+          <div class="tok-chips-morph-${lang}" style="display:flex;flex-wrap:wrap;align-items:flex-start;${isRtl ? 'direction:rtl;' : ''}gap:2px;"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Animate chips in when slide scrolls into view
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      let delay = 0;
+
+      langOrder.forEach(lang => {
+        const ex = examples[lang];
+        if (!ex) return;
+        const bc = baseColors[lang];
+        const mc = morphColors[lang];
+
+        // BPE chips — group fragments into words, add tatweel for Arabic
+        const baseEl = container.querySelector(`.tok-chips-base-${lang}`);
+        if (baseEl) {
+          baseEl.className = baseEl.className.replace(/\S+/g, c => c) + " bpe-row";
+          const isAr = lang === "ar";
+
+          // Group tokens into words: a new word starts whenever ▁ is present
+          const words = [];
+          let cur = [];
+          ex.baseline.forEach(tok => {
+            if (tok.startsWith("▁") && cur.length) { words.push(cur); cur = []; }
+            cur.push(tok);
+          });
+          if (cur.length) words.push(cur);
+
+          let wordDelay = delay;
+          words.forEach((frags, wi) => {
+            const wordEl = document.createElement("span");
+            wordEl.className = "bpe-word";
+            wordEl.style.background = bc + "20";
+            wordEl.style.border     = `1px solid ${bc}45`;
+
+            // For Arabic, bake tatweel into both touching edges of each join
+            // so there are no isolated connector characters between spans.
+            // Skip tatweel if the preceding fragment ends in a non-joining letter.
+            const fragEls = frags.map((tok, fi) => {
+              const raw  = tok.replace(/^▁/, "");
+              let text = raw;
+              if (isAr) {
+                const prevRaw = fi > 0 ? frags[fi - 1].replace(/^▁/, "") : "";
+                const prevJoins = prevRaw && arCanJoin(prevRaw[prevRaw.length - 1]);
+                const nextExists = fi < frags.length - 1;
+                const leadTw  = fi > 0 && prevJoins ? "ـ" : "";
+                // trailing tatweel: only if this frag ends in a joining letter
+                const trailTw = nextExists && arCanJoin(raw[raw.length - 1]) ? "ـ" : "";
+                text = leadTw + raw + trailTw;
+              }
+              const frag = document.createElement("span");
+              frag.className = "bpe-frag " + (fi === 0 ? "frag-first" : "frag-cont");
+              frag.textContent = text;
+              return frag;
+            });
+            fragEls.forEach(f => wordEl.appendChild(f));
+
+            baseEl.appendChild(wordEl);
+            setTimeout(() => wordEl.classList.add("show"), wordDelay + wi * 60);
+          });
+          delay += words.length * 60 + 100;
+        }
+
+        // Morph chips
+        const morphEl = container.querySelector(`.tok-chips-morph-${lang}`);
+        if (morphEl) {
+          ex.morph.forEach((tok, i) => {
+            const chip = makeMorphChip(tok, lang, mc);
+            const el = wrapWithForm(chip, tok);
+            morphEl.appendChild(el);
+            setTimeout(() => chip.classList.add("show"), delay + i * 85);
+          });
+          delay += ex.morph.length * 85 + 140;
+        }
+      });
+
+      // Wire Forms toggle buttons (Arabic only)
+      container.querySelectorAll(".forms-toggle-btn").forEach(btn => {
+        const lang = btn.dataset.lang;
+        const morphEl = container.querySelector(`.tok-chips-morph-${lang}`);
+        let expanded = false;
+
+        function openSep(sep) {
+          sep.style.maxHeight     = sep.scrollHeight + "px";
+          sep.style.opacity       = "1";
+          sep.style.marginTop     = "3px";
+          sep.style.paddingTop    = "2px";
+          sep.style.borderTopColor = "#333";
+        }
+        function closeSep(sep) {
+          sep.style.maxHeight      = "0";
+          sep.style.opacity        = "0";
+          sep.style.marginTop      = "0";
+          sep.style.paddingTop     = "0";
+          sep.style.borderTopColor = "transparent";
+        }
+
+        // Lock min-height on first expand so the card never shrinks
+        let heightLocked = false;
+
+        btn.addEventListener("click", () => {
+          expanded = !expanded;
+          if (expanded && !heightLocked) {
+            // Temporarily open all to measure full height, then lock
+            morphEl.querySelectorAll(".form-sep").forEach(openSep);
+            requestAnimationFrame(() => {
+              morphEl.style.minHeight = morphEl.scrollHeight + "px";
+              heightLocked = true;
+            });
+          } else if (expanded) {
+            morphEl.querySelectorAll(".form-sep").forEach(openSep);
+          } else {
+            morphEl.querySelectorAll(".form-sep").forEach(closeSep);
+          }
+          btn.style.color       = expanded ? mc    : "#6b6b6b";
+          btn.style.borderColor = expanded ? mc    : "#333";
+        });
+      });
+    });
+  }, { root: document.getElementById("slides-container"), threshold: 0.25 });
+
+  const slide = document.getElementById("slide-tok");
+  if (slide) obs.observe(slide);
+}
+
+
+// ── SLIDE 3 — Mini PPL cards + ratio bar ─────────────────────────────────────
+function drawMiniPPL() {
+  const mini   = EMBEDDED_DATA.mini   || {};
+  const evalD  = mini.eval            || {};
+  const byLang = mini.summary?.by_lang || {};
+
+  const cards = document.getElementById("mini-ppl-cards");
+  if (cards) {
+    cards.innerHTML = LANGS.map(lang => {
+      const base  = evalD[`${lang}_baseline`];
+      const morph = evalD[`${lang}_morph`];
+      const bPpl  = base?.test_ppl;
+      const mPpl  = morph?.test_ppl;
+      const ratio = byLang[lang]?.ppl_ratio;
+      const win   = ratio != null && ratio < 1;
+      return `<div class="card text-center">
+        <div class="font-semibold mb-3">${LANG_NAMES[lang]}</div>
+        <div class="flex justify-around">
+          <div>
+            <div class="stat-num" style="color:${MINI_COLORS[lang+'_baseline']}">${bPpl != null ? bPpl.toFixed(1) : "—"}</div>
+            <div class="stat-label">baseline PPL</div>
+          </div>
+          <div>
+            <div class="stat-num" style="color:${MINI_COLORS[lang+'_morph']}">${mPpl != null ? mPpl.toFixed(1) : "—"}</div>
+            <div class="stat-label">morph PPL</div>
+          </div>
+        </div>
+        ${ratio != null ? `<div class="text-xs mt-2 ${win ? 'text-green-400' : 'text-red-400'}">ratio ${ratio.toFixed(3)} — morph ${win ? 'wins' : 'loses'}</div>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  const r = svgOf("mini-ratio-chart", { top: 15, right: 20, bottom: 30, left: 55 }, 860, 155);
+  if (!r) return;
+  const { svg, w, h } = r;
+
+  const items = LANGS.map(lang => ({
+    lang, label: LANG_NAMES[lang],
+    ratio: byLang[lang]?.ppl_ratio ?? null,
+    color: MINI_COLORS[lang + "_morph"],
+  })).filter(d => d.ratio !== null);
+
+  const x = d3.scaleBand().domain(items.map(d => d.label)).range([0, w]).padding(0.4);
+  const y = d3.scaleLinear().domain([0, 1.1]).range([h, 0]);
+
+  addGrid(svg, y, "y", w);
+  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(d3.axisBottom(x));
+  svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(4).tickFormat(d3.format(".1f")));
+
+  svg.append("line").attr("x1",0).attr("x2",w).attr("y1",y(1)).attr("y2",y(1))
+     .attr("stroke","#3d3d3d").attr("stroke-dasharray","4,3").attr("stroke-width",1);
+  svg.append("text").attr("x",w+4).attr("y",y(1)+4).attr("fill","#3d3d3d").attr("font-size",9).text("baseline");
+  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-42)
+     .attr("text-anchor","middle").attr("fill","#6b6b6b").attr("font-size",10).text("morph / baseline PPL");
+
+  svg.selectAll(".bar").data(items).enter().append("rect")
+    .attr("x", d => x(d.label)).attr("width", x.bandwidth())
+    .attr("y", h).attr("height", 0).attr("fill", d => d.color).attr("rx", 4)
+    .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>ratio: ${d.ratio.toFixed(3)}<br/>${d.ratio < 1 ? "morph wins" : "morph loses"}`, event))
+    .on("mouseout", hideTip)
+    .transition().duration(700).delay((_, i) => i * 120)
+    .attr("y", d => y(d.ratio)).attr("height", d => h - y(d.ratio));
+
+  svg.selectAll(".bar-label").data(items).enter().append("text")
+    .attr("x", d => x(d.label) + x.bandwidth() / 2).attr("text-anchor","middle")
+    .attr("y", d => y(d.ratio) - 5).attr("font-size", 11).attr("fill", d => d.color)
+    .text(d => d.ratio.toFixed(3));
+}
+
+// ── SLIDE 3b — Mini learning curves per language ──────────────────────────────
+function drawMiniCurves() {
+  const tsData = EMBEDDED_DATA.mini?.timeseries || {};
+
+  LANGS.forEach(lang => {
+    const containerId = `mini-curve-${lang}`;
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    const baseKey  = `${lang}_baseline`;
+    const morphKey = `${lang}_morph`;
+    const basePts  = tsData[baseKey]  || [];
+    const morphPts = tsData[morphKey] || [];
+
+    if (!basePts.length && !morphPts.length) {
+      el.innerHTML = `<p class="text-slate-500 text-xs p-3">No data</p>`;
+      return;
+    }
+
+    const margin = { top: 28, right: 12, bottom: 36, left: 44 };
+    const fullW = 260, fullH = 300;
+    const w = fullW - margin.left - margin.right;
+    const h = fullH - margin.top  - margin.bottom;
+
+    const svgEl = d3.select(el).append("svg")
+      .attr("viewBox", `0 0 ${fullW} ${fullH}`)
+      .attr("preserveAspectRatio","xMidYMid meet")
+      .style("width","100%").style("height","100%");
+
+    const g = svgEl.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const allPts = [...basePts, ...morphPts];
+    const xMax = d3.max(allPts, d => d.step);
+    const yMax = d3.max(allPts, d => d.loss);
+    const yMin = d3.min(allPts, d => d.loss);
+
+    const x = d3.scaleLinear().domain([0, xMax]).range([0, w]);
+    const y = d3.scaleLinear().domain([yMin * 0.97, yMax * 1.02]).range([h, 0]);
+
+    g.append("g").attr("class","axis").attr("transform",`translate(0,${h})`)
+     .call(d3.axisBottom(x).ticks(4).tickFormat(d => `${d/1000}k`));
+    g.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(4).tickFormat(d3.format(".1f")));
+
+    svgEl.append("text").attr("x", fullW / 2).attr("y", 14)
+      .attr("text-anchor","middle").attr("fill","#8a8a8a").attr("font-size",11)
+      .attr("font-weight","600").text(LANG_NAMES[lang]);
+
+    const lineGen = d3.line().x(d => x(d.step)).y(d => y(d.loss)).curve(d3.curveMonotoneX);
+
+    function animateLine(pts, color, dashed) {
+      if (!pts.length) return;
+      const path = g.append("path").datum(pts).attr("fill","none")
+        .attr("stroke", color).attr("stroke-width", 1.8)
+        .attr("d", lineGen);
+      if (dashed) path.attr("stroke-dasharray","5,3");
+      const len = path.node().getTotalLength();
+      path.attr("stroke-dashoffset", len)
+        .attr("stroke-dasharray", dashed ? `5,3` : `${len}`)
+        .transition().duration(900).ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
+        .on("end", () => { if (!dashed) path.attr("stroke-dasharray", null); });
+    }
+
+    animateLine(basePts,  MINI_COLORS[baseKey],  false);
+    animateLine(morphPts, MINI_COLORS[morphKey], true);
+  });
+
+  // Efficiency summary cards below curves
+  const mini   = EMBEDDED_DATA.mini   || {};
+  const evalD  = mini.eval            || {};
+  const byLang = mini.summary?.by_lang || {};
+  const effCards = document.getElementById("mini-efficiency-cards");
+  if (effCards) {
+    effCards.innerHTML = LANGS.map(lang => {
+      const ratio = byLang[lang]?.ppl_ratio;
+      const pct   = ratio != null ? ((1 - ratio) * 100).toFixed(1) : null;
+      const win   = ratio != null && ratio < 1;
+      return `<div class="card text-center py-2">
+        <div class="text-xs text-slate-500 uppercase tracking-wider mb-1">${LANG_NAMES[lang]}</div>
+        ${pct != null
+          ? `<div class="text-lg font-bold ${win ? 'text-green-400' : 'text-red-400'}">${win ? '-' : '+'}${Math.abs(pct)}% PPL</div>
+             <div class="text-xs text-slate-500">${win ? 'morph wins' : 'morph loses'}</div>`
+          : `<div class="text-slate-500 text-sm">—</div>`}
+      </div>`;
+    }).join("");
+  }
+}
+
+// ── SLIDE 3c — Token compression + TPU + UNK rate ────────────────────────────
+function drawMiniCompression() {
+  const mini  = EMBEDDED_DATA.mini?.eval || {};
+
+  const tokenItems = LANGS.flatMap(lang => {
+    const b = mini[`${lang}_baseline`];
+    const m = mini[`${lang}_morph`];
+    return [
+      { lang, regime: "baseline", label: `${LANG_NAMES[lang]} base`, color: MINI_COLORS[lang+"_baseline"], value: b?.num_tokens ?? null },
+      { lang, regime: "morph",    label: `${LANG_NAMES[lang]} morph`, color: MINI_COLORS[lang+"_morph"],    value: m?.num_tokens ?? null },
+    ];
+  }).filter(d => d.value !== null);
+
+  const r1 = svgOf("mini-tokens-chart", { top: 10, right: 10, bottom: 32, left: 62 }, 380, 220);
+  if (r1) {
+    const { svg, w, h } = r1;
+    const x = d3.scaleBand().domain(tokenItems.map(d => d.label)).range([0, w]).padding(0.25);
+    const y = d3.scaleLinear().domain([0, d3.max(tokenItems, d => d.value) * 1.1]).range([h, 0]);
+    addGrid(svg, y, "y", w);
+    svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`)
+       .call(d3.axisBottom(x).tickFormat(l => l.replace(" base","").replace(" morph","")));
+    svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(4).tickFormat(d => `${(d/1000).toFixed(0)}k`));
+    svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-52)
+       .attr("text-anchor","middle").attr("fill","#6b6b6b").attr("font-size",9).text("Test tokens");
+    svg.selectAll(".bar").data(tokenItems).enter().append("rect")
+      .attr("x", d => x(d.label)).attr("width", x.bandwidth())
+      .attr("y", h).attr("height", 0).attr("fill", d => d.color).attr("rx", 3)
+      .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>${d.value.toLocaleString()} tokens`, event))
+      .on("mouseout", hideTip)
+      .transition().duration(700).delay((_, i) => i * 80)
+      .attr("y", d => y(d.value)).attr("height", d => h - y(d.value));
+  }
+
+  const tpuItems = LANGS.map(lang => ({
+    label: LANG_NAMES[lang],
+    color: MINI_COLORS[lang+"_morph"],
+    value: mini[`${lang}_morph`]?.tokens_per_meaning_unit ?? null,
+  })).filter(d => d.value !== null);
+
+  const r2 = svgOf("mini-tpu-chart", { top: 5, right: 20, bottom: 24, left: 65 }, 380, 135);
+  if (r2) {
+    const { svg, w, h } = r2;
+    const x = d3.scaleLinear().domain([0, d3.max(tpuItems, d => d.value) * 1.1]).range([0, w]);
+    const y = d3.scaleBand().domain(tpuItems.map(d => d.label)).range([0, h]).padding(0.35);
+    svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(d3.axisBottom(x).ticks(4));
+    svg.append("g").attr("class","axis").call(d3.axisLeft(y));
+    svg.selectAll(".bar").data(tpuItems).enter().append("rect")
+      .attr("y", d => y(d.label)).attr("height", y.bandwidth())
+      .attr("x", 0).attr("width", 0).attr("fill", d => d.color).attr("rx", 3)
+      .on("mouseover", (event, d) => showTip(`<b>${d.label} morph</b><br/>${d.value.toFixed(2)} tokens/unit`, event))
+      .on("mouseout", hideTip)
+      .transition().duration(700).delay((_, i) => i * 120)
+      .attr("width", d => x(d.value));
+    svg.selectAll(".bar-label").data(tpuItems).enter().append("text")
+      .attr("y", d => y(d.label) + y.bandwidth() / 2 + 4)
+      .attr("x", d => x(d.value) + 5).attr("font-size", 10).attr("fill", d => d.color)
+      .text(d => d.value.toFixed(2));
+  }
+
+  const unkContainer = document.getElementById("mini-unk-bars");
+  if (unkContainer) {
+    const unkItems = LANGS.map(lang => ({
+      label: LANG_NAMES[lang],
+      color: MINI_COLORS[lang+"_morph"],
+      value: mini[`${lang}_morph`]?.unk_rate ?? null,
+    })).filter(d => d.value !== null);
+    unkContainer.innerHTML = unkItems.map(d => `
+      <div>
+        <div class="flex justify-between text-xs mb-1">
+          <span style="color:${d.color}">${d.label}</span>
+          <span class="text-slate-400">${(d.value * 100).toFixed(1)}% unknown</span>
+        </div>
+        <div style="background:#1a1a1a;border-radius:4px;height:8px;overflow:hidden;">
+          <div style="width:${(d.value*100).toFixed(1)}%;height:100%;background:${d.color};border-radius:4px;transition:width 0.6s ease;"></div>
+        </div>
+      </div>`).join("");
+  }
+}
+
+// ── SLIDE 3d — Bundle Agreement Accuracy bars ─────────────────────────────────
+function drawMiniAgreement() {
+  const evalD  = EMBEDDED_DATA.mini?.eval || {};
+  const byLang = EMBEDDED_DATA.mini?.summary?.by_lang || {};
+  const container = document.getElementById("mini-agreement-bars");
+  if (!container) return;
+
+  // Random baselines: 1/n_bundles per language
+  const randomBaseline = { en: 1/23, ar: 1/270, tr: 1/63 };
+
+  const items = LANGS.map(lang => ({
+    lang,
+    label: LANG_NAMES[lang],
+    color: MINI_COLORS[lang + "_morph"],
+    accuracy: evalD[`${lang}_morph`]?.bundle_accuracy ?? byLang[lang]?.bundle_accuracy ?? null,
+    random: randomBaseline[lang],
+  })).filter(d => d.accuracy !== null);
+
+  container.innerHTML = items.map(d => {
+    const pct = (d.accuracy * 100).toFixed(1);
+    const rndPct = (d.random * 100).toFixed(1);
+    return `
+    <div>
+      <div class="flex justify-between text-xs mb-1">
+        <span style="color:${d.color}" class="font-semibold">${d.label}</span>
+        <span class="text-slate-300">${pct}% accuracy
+          <span class="text-slate-500 ml-2">(random baseline: ${rndPct}%)</span>
+        </span>
+      </div>
+      <div style="background:#1a1a1a;border-radius:4px;height:10px;overflow:hidden;position:relative;">
+        <div class="acc-bar-fill" data-width="${pct}"
+             style="width:0%;height:100%;background:${d.color};border-radius:4px;transition:width 0.8s ease;"></div>
+        <div style="position:absolute;top:0;left:${rndPct}%;width:2px;height:100%;background:#f59e0b;opacity:0.8;"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Animate bars in when slide is visible
+  const slide = document.getElementById("slide-3d");
+  if (!slide) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      container.querySelectorAll(".acc-bar-fill").forEach(el => {
+        setTimeout(() => { el.style.width = el.dataset.width + "%"; }, 200);
+      });
+    });
+  }, { root: document.getElementById("slides-container"), threshold: 0.3 });
+  obs.observe(slide);
+}
+
+// ── SLIDE 6 — EN learning curves (full scale) ─────────────────────────────────
+function drawLearningCurves() {
   const margin = { top: 20, right: 20, bottom: 50, left: 55 };
-  const fullW = 900, fullH = 360;
+  const fullW = 900, fullH = 380;
   const r = svgOf("learning-curve-chart", margin, fullW, fullH);
   if (!r) return;
   const { svg, w, h } = r;
 
-  const langModels = MODELS.filter(m => m.lang === lang);
-  const allSeries  = langModels.map(m => ({
+  const enModels = [
+    { id: "en_baseline", label: "en_baseline", color: "#394195" },
+    { id: "en_morph",    label: "en_morph",    color: "#a74d79" },
+  ];
+
+  const allSeries = enModels.map(m => ({
     model: m,
-    data:  (DATA.timeseries[m.id] || []).filter(d => d.loss != null),
+    data: (EMBEDDED_DATA.timeseries[m.id] || []).filter(d => d.loss != null),
   })).filter(s => s.data.length > 0);
 
   if (allSeries.length === 0) {
-    svg.append("text").attr("x", w/2).attr("y", h/2)
-       .attr("text-anchor","middle").attr("fill","#475569")
-       .text("No training data yet — run train_lm.py to populate logs.");
+    svg.append("text").attr("x",w/2).attr("y",h/2).attr("text-anchor","middle")
+       .attr("fill","#3d3d3d").text("No training data available.");
     return;
   }
 
@@ -172,17 +713,13 @@ function drawLearningCurves(lang) {
   const y = d3.scaleLinear().domain([yMin * 0.95, yMax * 1.02]).range([h, 0]);
 
   addGrid(svg, y, "y", w);
-
   svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(
     d3.axisBottom(x).ticks(6).tickFormat(d => `${(d/1e9).toFixed(1)}B`));
   svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(6));
-
-  svg.append("text").attr("x", w/2).attr("y", h+40)
-     .attr("text-anchor","middle").attr("fill","#64748b").attr("font-size",11)
-     .text("Tokens processed");
-  svg.append("text").attr("transform","rotate(-90)")
-     .attr("x",-h/2).attr("y",-42).attr("text-anchor","middle")
-     .attr("fill","#64748b").attr("font-size",11).text("Loss");
+  svg.append("text").attr("x",w/2).attr("y",h+40).attr("text-anchor","middle")
+     .attr("fill","#6b6b6b").attr("font-size",11).text("Tokens processed");
+  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-42)
+     .attr("text-anchor","middle").attr("fill","#6b6b6b").attr("font-size",11).text("Loss");
 
   const line = d3.line().x(d => x(d.tokens)).y(d => y(d.loss)).curve(d3.curveMonotoneX);
 
@@ -194,7 +731,6 @@ function drawLearningCurves(lang) {
     path.attr("stroke-dasharray", len).attr("stroke-dashoffset", len)
       .transition().duration(1200).ease(d3.easeLinear).attr("stroke-dashoffset", 0);
 
-    // Hover dots
     svg.selectAll(`.dot-${model.id}`).data(data.filter((_,i) => i % 5 === 0))
       .enter().append("circle")
       .attr("cx", d => x(d.tokens)).attr("cy", d => y(d.loss))
@@ -204,429 +740,81 @@ function drawLearningCurves(lang) {
       .on("mouseout", hideTip);
   });
 
-  // Legend
   const leg = document.getElementById("curve-legend");
-  leg.innerHTML = allSeries.map(({ model }) =>
-    `<span style="display:inline-flex;align-items:center;gap:6px;">
-       <span style="width:20px;height:3px;background:${model.color};display:inline-block;border-radius:2px;"></span>
-       ${model.label}
-     </span>`).join("");
-}
-
-function initLearningCurves() {
-  document.querySelectorAll(".curve-tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".curve-tab").forEach(b => {
-        b.className = "curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700 text-slate-300";
-      });
-      btn.className = "curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white";
-      activeCurveLang = btn.dataset.lang;
-      drawLearningCurves(activeCurveLang);
-    });
-  });
-  drawLearningCurves("en");
-}
-
-// ── SLIDE 3 — Perplexity cards + bar chart ────────────────────────────────────
-function drawPerplexity() {
-  const container = document.getElementById("ppl-cards");
-  if (!container) return;
-
-  container.innerHTML = LANGS.map(lang => {
-    const base  = DATA.lm[`${lang}_base`];
-    const morph = DATA.lm[`${lang}_morph`];
-    const bPpl  = base?.test_ppl  ?? "—";
-    const mPpl  = morph?.test_ppl ?? "—";
-    const delta = (base && morph)
-      ? ((morph.test_ppl - base.test_ppl) / base.test_ppl * 100).toFixed(1)
-      : null;
-    const flag  = { en: "🇬🇧", ar: "🇸🇦", tr: "🇹🇷" }[lang];
-    const deltaHtml = delta !== null
-      ? `<span class="text-xs mt-1 ${parseFloat(delta) <= 0 ? 'text-green-400' : 'text-red-400'}">
-           morph ${parseFloat(delta) <= 0 ? "▼" : "▲"} ${Math.abs(delta)}% vs baseline
-         </span>`
-      : "";
-    return `<div class="card text-center">
-      <div class="text-2xl mb-2">${flag} ${LANG_NAMES[lang]}</div>
-      <div class="flex justify-around mt-3">
-        <div>
-          <div class="stat-num" style="color:var(--${lang}-base)">${typeof bPpl === "number" ? bPpl.toFixed(1) : bPpl}</div>
-          <div class="stat-label">baseline PPL</div>
-        </div>
-        <div>
-          <div class="stat-num" style="color:var(--${lang}-morph)">${typeof mPpl === "number" ? mPpl.toFixed(1) : mPpl}</div>
-          <div class="stat-label">morph PPL</div>
-        </div>
-      </div>
-      <div class="flex justify-center mt-2">${deltaHtml}</div>
-    </div>`;
-  }).join("");
-
-  // Bar chart
-  const margin = { top: 20, right: 20, bottom: 40, left: 55 };
-  const fullW = 860, fullH = 260;
-  const r = svgOf("ppl-bar-chart", margin, fullW, fullH);
-  if (!r) return;
-  const { svg, w, h } = r;
-
-  const items = MODELS.map(m => ({
-    label: m.label, color: m.color,
-    value: DATA.lm[m.id]?.test_ppl ?? null,
-  })).filter(d => d.value !== null);
-
-  if (items.length === 0) {
-    svg.append("text").attr("x",w/2).attr("y",h/2).attr("text-anchor","middle")
-       .attr("fill","#475569").text("No evaluation data yet.");
-    return;
+  if (leg) {
+    leg.innerHTML = allSeries.map(({ model }) =>
+      `<span style="display:inline-flex;align-items:center;gap:6px;">
+         <span style="width:20px;height:3px;background:${model.color};display:inline-block;border-radius:2px;"></span>
+         ${model.label}
+       </span>`).join("");
   }
-
-  const x = d3.scaleBand().domain(items.map(d => d.label)).range([0, w]).padding(0.3);
-  const y = d3.scaleLinear().domain([0, d3.max(items, d => d.value) * 1.1]).range([h, 0]);
-
-  addGrid(svg, y, "y", w);
-  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(d3.axisBottom(x));
-  svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(5));
-  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-42)
-     .attr("text-anchor","middle").attr("fill","#64748b").attr("font-size",11).text("Test Perplexity");
-
-  svg.selectAll(".bar").data(items).enter().append("rect")
-    .attr("x", d => x(d.label)).attr("width", x.bandwidth())
-    .attr("y", h).attr("height", 0).attr("fill", d => d.color).attr("rx", 4)
-    .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>Test PPL: ${d.value.toFixed(2)}`, event))
-    .on("mouseout", hideTip)
-    .transition().duration(800).delay((_, i) => i * 80)
-    .attr("y", d => y(d.value)).attr("height", d => h - y(d.value));
-}
-
-// ── SLIDE 4 — Tokens per meaning unit ────────────────────────────────────────
-function drawTPU() {
-  const margin = { top: 20, right: 20, bottom: 40, left: 55 };
-  const fullW = 860, fullH = 280;
-  const r = svgOf("tpu-chart", margin, fullW, fullH);
-  if (!r) return;
-  const { svg, w, h } = r;
-
-  const items = MODELS.map(m => ({
-    label: m.label, color: m.color, lang: m.lang, regime: m.regime,
-    value: DATA.morph[m.id]?.tokens_per_meaning_unit ?? null,
-  })).filter(d => d.value !== null);
-
-  if (items.length === 0) {
-    svg.append("text").attr("x",w/2).attr("y",h/2).attr("text-anchor","middle")
-       .attr("fill","#475569").text("No morphology evaluation data yet.");
-    return;
-  }
-
-  const x = d3.scaleBand().domain(items.map(d => d.label)).range([0, w]).padding(0.3);
-  const y = d3.scaleLinear().domain([0, d3.max(items, d => d.value) * 1.1]).range([h, 0]);
-
-  addGrid(svg, y, "y", w);
-  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(d3.axisBottom(x));
-  svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(5));
-  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-42)
-     .attr("text-anchor","middle").attr("fill","#64748b").attr("font-size",11)
-     .text("Tokens per meaning unit");
-
-  svg.selectAll(".bar").data(items).enter().append("rect")
-    .attr("x", d => x(d.label)).attr("width", x.bandwidth())
-    .attr("y", h).attr("height", 0).attr("fill", d => d.color).attr("rx", 4)
-    .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>Tokens/unit: ${d.value.toFixed(3)}`, event))
-    .on("mouseout", hideTip)
-    .transition().duration(800).delay((_, i) => i * 80)
-    .attr("y", d => y(d.value)).attr("height", d => h - y(d.value));
-
-  // Delta cards
-  const deltaContainer = document.getElementById("tpu-delta-cards");
-  if (deltaContainer) {
-    deltaContainer.innerHTML = LANGS.map(lang => {
-      const b = DATA.morph[`${lang}_base`]?.tokens_per_meaning_unit;
-      const m = DATA.morph[`${lang}_morph`]?.tokens_per_meaning_unit;
-      if (!b || !m) return `<div class="card text-center text-slate-500 text-sm">${LANG_NAMES[lang]}<br/>no data</div>`;
-      const pct = ((m - b) / b * 100).toFixed(1);
-      const better = parseFloat(pct) < 0;
-      return `<div class="card text-center">
-        <div class="text-sm text-slate-400 mb-1">${LANG_NAMES[lang]}</div>
-        <div class="stat-num ${better ? 'text-green-400' : 'text-red-400'}">${better ? "▼" : "▲"} ${Math.abs(pct)}%</div>
-        <div class="stat-label">morph vs baseline</div>
-      </div>`;
-    }).join("");
-  }
-}
-
-// ── SLIDE 5 — Agreement accuracy ──────────────────────────────────────────────
-function drawAgreement() {
-  const margin = { top: 20, right: 20, bottom: 40, left: 55 };
-  const fullW = 860, fullH = 280;
-  const r = svgOf("agreement-chart", margin, fullW, fullH);
-  if (!r) return;
-  const { svg, w, h } = r;
-
-  const items = MODELS.map(m => ({
-    label: m.label, color: m.color,
-    value: DATA.morph[m.id]?.agreement_accuracy ?? null,
-  })).filter(d => d.value !== null);
-
-  if (items.length === 0) {
-    svg.append("text").attr("x",w/2).attr("y",h/2).attr("text-anchor","middle")
-       .attr("fill","#475569").text("No morphology evaluation data yet.");
-    return;
-  }
-
-  const x = d3.scaleBand().domain(items.map(d => d.label)).range([0, w]).padding(0.3);
-  const y = d3.scaleLinear().domain([0, 1]).range([h, 0]);
-
-  addGrid(svg, y, "y", w);
-  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(d3.axisBottom(x));
-  svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%")));
-  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-42)
-     .attr("text-anchor","middle").attr("fill","#64748b").attr("font-size",11)
-     .text("Agreement accuracy");
-
-  svg.selectAll(".bar").data(items).enter().append("rect")
-    .attr("x", d => x(d.label)).attr("width", x.bandwidth())
-    .attr("y", h).attr("height", 0).attr("fill", d => d.color).attr("rx", 4)
-    .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>Agreement: ${(d.value*100).toFixed(1)}%`, event))
-    .on("mouseout", hideTip)
-    .transition().duration(800).delay((_, i) => i * 80)
-    .attr("y", d => y(d.value)).attr("height", d => h - y(d.value));
-}
-
-// ── SLIDE 6 — Learning efficiency (steps to threshold) ────────────────────────
-function drawEfficiency() {
-  const container = document.getElementById("efficiency-chart");
-  const noteEl    = document.getElementById("efficiency-note");
-  if (!container) return;
-
-  // Find threshold: 10% above the best final loss across all models
-  const finalLosses = MODELS.map(m => {
-    const ts = DATA.timeseries[m.id] || [];
-    return ts.length ? ts[ts.length - 1].loss : null;
-  }).filter(Boolean);
-
-  if (finalLosses.length === 0) {
-    container.innerHTML = `<p class="text-slate-500 text-sm p-6">No training data yet.</p>`;
-    return;
-  }
-
-  const threshold = d3.min(finalLosses) * 1.15;
-  if (noteEl) noteEl.textContent = `Threshold loss: ${threshold.toFixed(3)} (15% above best final loss)`;
-
-  const items = MODELS.map(m => {
-    const ts = DATA.timeseries[m.id] || [];
-    const hit = ts.find(d => d.loss <= threshold);
-    return { label: m.label, color: m.color, tokens: hit ? hit.tokens : null };
-  }).filter(d => d.tokens !== null);
-
-  if (items.length === 0) {
-    container.innerHTML = `<p class="text-slate-500 text-sm p-6">No model has reached the threshold yet.</p>`;
-    return;
-  }
-
-  const margin = { top: 20, right: 20, bottom: 40, left: 55 };
-  const fullW = 860, fullH = 300;
-  const r = svgOf("efficiency-chart", margin, fullW, fullH);
-  if (!r) return;
-  const { svg, w, h } = r;
-
-  const x = d3.scaleLinear().domain([0, d3.max(items, d => d.tokens) * 1.05]).range([0, w]);
-  const y = d3.scaleBand().domain(items.map(d => d.label)).range([0, h]).padding(0.35);
-
-  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(
-    d3.axisBottom(x).ticks(5).tickFormat(d => `${(d/1e9).toFixed(2)}B`));
-  svg.append("g").attr("class","axis").call(d3.axisLeft(y));
-  svg.append("text").attr("x",w/2).attr("y",h+36).attr("text-anchor","middle")
-     .attr("fill","#64748b").attr("font-size",11).text("Tokens to reach threshold");
-
-  svg.selectAll(".bar").data(items).enter().append("rect")
-    .attr("y", d => y(d.label)).attr("height", y.bandwidth())
-    .attr("x", 0).attr("width", 0).attr("fill", d => d.color).attr("rx", 4)
-    .on("mouseover", (event, d) => showTip(`<b>${d.label}</b><br/>${(d.tokens/1e6).toFixed(0)}M tokens to threshold`, event))
-    .on("mouseout", hideTip)
-    .transition().duration(900).delay((_, i) => i * 100)
-    .attr("width", d => x(d.tokens));
-
-  svg.selectAll(".bar-label").data(items).enter().append("text")
-    .attr("y", d => y(d.label) + y.bandwidth()/2 + 4)
-    .attr("x", d => x(d.tokens) + 6).attr("font-size", 10).attr("fill","#94a3b8")
-    .text(d => `${(d.tokens/1e6).toFixed(0)}M`);
-}
-
-// ── SLIDE 7 — Downstream tasks table ─────────────────────────────────────────
-function drawDownstream() {
-  const tbody = document.getElementById("downstream-tbody");
-  if (!tbody) return;
-
-  const rows = [];
-  MODELS.forEach(m => {
-    const tasks = DATA.tasks[m.id] || {};
-    Object.entries(tasks).forEach(([task, d]) => {
-      rows.push({
-        model: m.label, color: m.color, task,
-        accuracy: d.accuracy ?? null,
-        f1:       d.f1       ?? null,
-        em:       d.exact_match ?? null,
-        latency:  d.inference_latency_ms ?? null,
-      });
-    });
-  });
-
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="text-slate-500 text-center py-6">No downstream evaluation data yet.</td></tr>`;
-    return;
-  }
-
-  const fmt = v => v !== null ? (v * 100).toFixed(1) + "%" : "—";
-  const fmtN = v => v !== null ? v.toFixed(1) : "—";
-
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td><span style="color:${r.color};font-weight:600">${r.model}</span></td>
-      <td>${r.task}</td>
-      <td>${fmt(r.accuracy)}</td>
-      <td>${fmt(r.f1)}</td>
-      <td>${fmtN(r.em)}</td>
-      <td>${r.latency !== null ? r.latency.toFixed(1) + " ms" : "—"}</td>
-    </tr>`).join("");
-}
-
-// ── SLIDE 8 — Pareto chart (FLOPs vs PPL) ────────────────────────────────────
-function drawPareto() {
-  const margin = { top: 20, right: 30, bottom: 50, left: 70 };
-  const fullW = 860, fullH = 340;
-  const r = svgOf("pareto-chart", margin, fullW, fullH);
-  if (!r) return;
-  const { svg, w, h } = r;
-
-  const items = MODELS.map(m => ({
-    label: m.label, color: m.color,
-    flops: DATA.compute[m.id]?.flops_per_token ?? null,
-    ppl:   DATA.lm[m.id]?.test_ppl ?? null,
-  })).filter(d => d.flops !== null && d.ppl !== null);
-
-  if (items.length === 0) {
-    svg.append("text").attr("x",w/2).attr("y",h/2).attr("text-anchor","middle")
-       .attr("fill","#475569").text("No compute + evaluation data yet.");
-    return;
-  }
-
-  const x = d3.scaleLinear().domain([0, d3.max(items, d => d.flops) * 1.1]).range([0, w]);
-  const y = d3.scaleLinear().domain([0, d3.max(items, d => d.ppl) * 1.1]).range([h, 0]);
-
-  addGrid(svg, y, "y", w);
-  svg.append("g").attr("class","axis").attr("transform",`translate(0,${h})`).call(
-    d3.axisBottom(x).ticks(5).tickFormat(d => `${(d/1e9).toFixed(1)}G`));
-  svg.append("g").attr("class","axis").call(d3.axisLeft(y).ticks(6));
-
-  svg.append("text").attr("x",w/2).attr("y",h+42).attr("text-anchor","middle")
-     .attr("fill","#64748b").attr("font-size",11).text("FLOPs per token");
-  svg.append("text").attr("transform","rotate(-90)").attr("x",-h/2).attr("y",-55)
-     .attr("text-anchor","middle").attr("fill","#64748b").attr("font-size",11)
-     .text("Test Perplexity");
-
-  svg.selectAll(".point").data(items).enter().append("circle")
-    .attr("cx", d => x(d.flops)).attr("cy", d => y(d.ppl))
-    .attr("r", 0).attr("fill", d => d.color).attr("opacity", 0.85)
-    .on("mouseover", (event, d) =>
-      showTip(`<b>${d.label}</b><br/>FLOPs/token: ${(d.flops/1e9).toFixed(2)}G<br/>Test PPL: ${d.ppl.toFixed(2)}`, event))
-    .on("mouseout", hideTip)
-    .transition().duration(600).delay((_, i) => i * 100).attr("r", 10);
-
-  svg.selectAll(".point-label").data(items).enter().append("text")
-    .attr("x", d => x(d.flops) + 13).attr("y", d => y(d.ppl) + 4)
-    .attr("font-size", 10).attr("fill", d => d.color).text(d => d.label);
-}
-
-// ── SLIDE 9 — Summary table ───────────────────────────────────────────────────
-function drawSummaryTable() {
-  const tbody = document.getElementById("summary-tbody");
-  if (!tbody) return;
-
-  const fmtN  = (v, dec=2) => v != null ? (+v).toFixed(dec) : "—";
-  const fmtPct = v => v != null ? (v*100).toFixed(1)+"%" : "—";
-  const fmtG  = v => v != null ? (v/1e9).toFixed(2)+"G" : "—";
-
-  tbody.innerHTML = MODELS.map(m => {
-    const lm      = DATA.lm[m.id]      || {};
-    const morph   = DATA.morph[m.id]   || {};
-    const compute = DATA.compute[m.id] || {};
-    const ts      = DATA.timeseries[m.id] || [];
-    const trainTime = ts.length ? `${(ts[ts.length-1].wall_time_sec/3600).toFixed(1)}h` : "—";
-    return `<tr>
-      <td style="color:${MODELS.find(x=>x.id===m.id).color};font-weight:600">${m.label}</td>
-      <td>${fmtN(lm.test_ppl)}</td>
-      <td>${fmtN(morph.tokens_per_meaning_unit, 3)}</td>
-      <td>${fmtPct(morph.agreement_accuracy)}</td>
-      <td>${fmtN(morph.nats_per_morpheme, 3)}</td>
-      <td>${fmtG(compute.flops_per_token)}</td>
-      <td>${fmtN(compute.inference_latency_ms, 1)} ms</td>
-      <td>${trainTime}</td>
-    </tr>`;
-  }).join("");
-}
-
-// ── SLIDE 10 — Findings ───────────────────────────────────────────────────────
-function drawFindings() {
-  const container = document.getElementById("findings-container");
-  if (!container) return;
-
-  const findings = [];
-
-  LANGS.forEach(lang => {
-    const bLm = DATA.lm[`${lang}_base`];
-    const mLm = DATA.lm[`${lang}_morph`];
-    const bMo = DATA.morph[`${lang}_base`];
-    const mMo = DATA.morph[`${lang}_morph`];
-
-    if (bLm && mLm) {
-      const pplDelta = ((mLm.test_ppl - bLm.test_ppl) / bLm.test_ppl * 100).toFixed(1);
-      const dir = parseFloat(pplDelta) <= 0 ? "lower" : "higher";
-      const color = parseFloat(pplDelta) <= 0 ? "text-green-400" : "text-red-400";
-      findings.push(`<div class="card">
-        <span class="text-slate-300">${LANG_NAMES[lang]}:</span>
-        morph model test perplexity is
-        <span class="${color} font-semibold">${Math.abs(pplDelta)}% ${dir}</span>
-        than baseline (${mLm.test_ppl?.toFixed(1)} vs ${bLm.test_ppl?.toFixed(1)}).
-      </div>`);
-    }
-
-    if (bMo && mMo) {
-      const tpuDelta = ((mMo.tokens_per_meaning_unit - bMo.tokens_per_meaning_unit)
-                        / bMo.tokens_per_meaning_unit * 100).toFixed(1);
-      const dir = parseFloat(tpuDelta) <= 0 ? "fewer" : "more";
-      const color = parseFloat(tpuDelta) <= 0 ? "text-green-400" : "text-red-400";
-      findings.push(`<div class="card">
-        <span class="text-slate-300">${LANG_NAMES[lang]}:</span>
-        morph tokenization uses
-        <span class="${color} font-semibold">${Math.abs(tpuDelta)}% ${dir} tokens per meaning unit</span>
-        than baseline (${mMo.tokens_per_meaning_unit?.toFixed(3)} vs ${bMo.tokens_per_meaning_unit?.toFixed(3)}).
-      </div>`);
-    }
-  });
-
-  if (findings.length === 0) {
-    container.innerHTML = `<div class="card text-slate-500">
-      No results yet. Run the full pipeline to populate findings.
-    </div>`;
-    return;
-  }
-
-  container.innerHTML = findings.join("");
 }
 
 // ── Main init ─────────────────────────────────────────────────────────────────
 async function init() {
+  if (typeof lucide !== "undefined") {
+    lucide.createIcons();
+    // Force token-id-seq icon color — Lucide replaces <i> with <svg> and drops inline style
+    const hashNode = document.getElementById("node-token-id-seq");
+    if (hashNode) {
+      const svg = hashNode.querySelector(".pipeline-node-icon svg");
+      if (svg) { svg.style.color = "#394195"; svg.style.stroke = "#394195"; }
+    }
+  }
   buildNav();
   initFadeIn();
-  await loadAll();
-  initLearningCurves();
-  drawPerplexity();
-  drawTPU();
-  drawAgreement();
-  drawEfficiency();
-  drawDownstream();
-  drawPareto();
-  drawSummaryTable();
-  drawFindings();
+  drawTokenisationExamples();
+  drawMiniPPL();
+  drawMiniCurves();
+  drawMiniCompression();
+  drawMiniAgreement();
+  drawLearningCurves();
+
+  // Fullscreen toggle
+  const btn      = document.getElementById("btn-fullscreen");
+  const iconExp  = document.getElementById("fs-icon-expand");
+  const iconComp = document.getElementById("fs-icon-compress");
+  function syncIcon() {
+    const isFs = !!document.fullscreenElement;
+    iconExp.style.display  = isFs ? "none"  : "";
+    iconComp.style.display = isFs ? ""      : "none";
+  }
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+    document.addEventListener("fullscreenchange", syncIcon);
+    // keyboard shortcut: F key
+    document.addEventListener("keydown", e => {
+      if (e.key === "f" || e.key === "F") btn.click();
+    });
+  }
+
+  // Arrow key slide navigation
+  const scroller = document.getElementById("slides-container");
+  const slideEls = () => [...document.querySelectorAll(".slide")];
+  document.addEventListener("keydown", e => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp" &&
+        e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    const slides  = slideEls();
+    const scrollTop = scroller.scrollTop;
+    // Find the slide closest to the current scroll position
+    let cur = 0;
+    let minDist = Infinity;
+    slides.forEach((s, i) => {
+      const dist = Math.abs(s.offsetTop - scrollTop);
+      if (dist < minDist) { minDist = dist; cur = i; }
+    });
+    const next = (e.key === "ArrowDown" || e.key === "ArrowRight")
+      ? Math.min(cur + 1, slides.length - 1)
+      : Math.max(cur - 1, 0);
+    scroller.scrollTo({ top: slides[next].offsetTop, behavior: "smooth" });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);
