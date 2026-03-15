@@ -1,0 +1,75 @@
+{
+  "results": [
+    {
+      "language": "en",
+      "regime": "baseline",
+      "test_loss": 5.8029,
+      "test_ppl": 331.2731,
+      "num_tokens": 318976,
+      "tokens_per_meaning_unit": null,
+      "unk_rate": null
+    },
+    {
+      "language": "en",
+      "regime": "morph",
+      "test_loss": 5.7922,
+      "test_ppl": 327.718,
+      "num_tokens": 190976,
+      "tokens_per_meaning_unit": 14.5937,
+      "unk_rate": 0.1068,
+      "bundle_accuracy": 0.4591
+    },
+    {
+      "language": "ar",
+      "regime": "baseline",
+      "test_loss": 6.4131,
+      "test_ppl": 609.7784,
+      "num_tokens": 418944,
+      "tokens_per_meaning_unit": null,
+      "unk_rate": null
+    },
+    {
+      "language": "ar",
+      "regime": "morph",
+      "test_loss": 6.2634,
+      "test_ppl": 525.0252,
+      "num_tokens": 244992,
+      "tokens_per_meaning_unit": 12.4627,
+      "unk_rate": 0.1909,
+      "bundle_accuracy": 0.0928
+    },
+    {
+      "language": "tr",
+      "regime": "baseline",
+      "test_loss": 4.1866,
+      "test_ppl": 65.8006,
+      "num_tokens": 101888,
+      "tokens_per_meaning_unit": null,
+      "unk_rate": null
+    },
+    {
+      "language": "tr",
+      "regime": "morph",
+      "test_loss": 3.3439,
+      "test_ppl": 28.3298,
+      "num_tokens": 60800,
+      "tokens_per_meaning_unit": 12.2099,
+      "unk_rate": 0.1578,
+      "bundle_accuracy": 0.4392
+    }
+  ],
+  "by_lang": {
+    "en": {
+      "ppl_ratio": 0.9892683710207681,
+      "bundle_accuracy": 0.4591
+    },
+    "ar": {
+      "ppl_ratio": 0.8610098357042493,
+      "bundle_accuracy": 0.0928
+    },
+    "tr": {
+      "ppl_ratio": 0.43054014705033083,
+      "bundle_accuracy": 0.4392
+    }
+  }
+}
