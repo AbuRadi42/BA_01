@@ -1,0 +1,10 @@
+{
+  "language": "en",
+  "regime": "morph",
+  "test_loss": 5.7922,
+  "test_ppl": 327.718,
+  "num_tokens": 190976,
+  "tokens_per_meaning_unit": 14.5937,
+  "unk_rate": 0.1068,
+  "bundle_accuracy": 0.4591
+}

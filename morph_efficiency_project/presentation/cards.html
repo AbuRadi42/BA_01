@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notes — BA_01</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d0d0d;
+    color: #c8c8c8;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    padding: 1.2rem 1rem 3rem;
+  }
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.15rem;
+  }
+  .subtitle {
+    font-size: 0.68rem;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .slide-tag {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #e56a30;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .slide-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .point {
+    margin-bottom: 0.75rem;
+    padding-left: 0.85rem;
+    border-left: 2px solid #2a2a2a;
+  }
+  .point:last-child { margin-bottom: 0; }
+
+  .point-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #444;
+    margin-bottom: 0.2rem;
+  }
+
+  .point p {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+    line-height: 1.5;
+  }
+
+  .hi { color: #e56a30; font-weight: 600; }
+  code {
+    font-family: monospace;
+    font-size: 0.78rem;
+    background: #1a1a1a;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+
+<h1>BA_01 — Presenter Notes</h1>
+<p class="subtitle">Morphological Efficiency in Multilingual LMs</p>
+
+<div class="card">
+  <div class="slide-tag">Slide 0</div>
+  <div class="slide-title">Title</div>
+  <div class="point">
+    <p>One question: does telling a model the grammar of a language before training make it learn better?</p>
+  </div>
+  <div class="point">
+    <p>Three languages chosen for their grammar type (and I speak them so I won't be making up insights...) — not randomly.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 1</div>
+  <div class="slide-title">The Question</div>
+  <div class="point">
+    <div class="point-label">BPE vs morph</div>
+    <p>BPE chops by frequency — no grammar. Morph gives root + grammatical role. Same data, different signal.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Why these languages</div>
+    <p><span class="hi">English</span> — barely inflects. <span class="hi">Arabic</span> — root + vowel pattern. <span class="hi">Turkish</span> — suffixes stack. Three different morphological types.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 1b</div>
+  <div class="slide-title">What Tokenisation Looks Like</div>
+  <div class="point">
+    <div class="point-label">Left vs right</div>
+    <p>Left = raw fragments, no meaning. Right = root + grammatical tag per chip.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Arabic — tap Forms</div>
+    <p>Shows the وزن pattern for each token. That's the layer BPE never provides.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Fewer tokens</div>
+    <p>Morph side has fewer chips — each one is doing more work.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 1c</div>
+  <div class="slide-title">Two Pipelines</div>
+  <div class="point">
+    <p>Everything identical — architecture, data, budget. Only variable: what the model sees as a token.</p>
+  </div>
+  <div class="point">
+    <p>Morph pipeline adds a grammar engine step + a second embedding stream for the feature bundle.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 1d</div>
+  <div class="slide-title">The Three Grammar Engines</div>
+  <div class="point">
+    <div class="point-label">What a bundle is</div>
+    <p>One unique combination of features — e.g. <code>{form=II, voice=ACT, person=3, gender=MASC}</code>.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Bundle counts</div>
+    <p><span class="hi">English 23</span> — simple inflection. <span class="hi">Turkish 63</span> — suffix chains. <span class="hi">Arabic 270</span> — person × gender × number × tense × voice × form all at once.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Why 270 matters</div>
+    <p>Same 3-letter root → dozens of surface forms, each a different bundle. Broken plurals, duals, nisba, masdar all add more. Each morph token carries far more information than any BPE fragment.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 2</div>
+  <div class="slide-title">Mini Experiment — Setup</div>
+  <div class="point">
+    <p>Small pilot before spending real money — same code, tiny models, small data slice.</p>
+  </div>
+  <div class="point">
+    <p>Goal: validate the pipeline and get a directional signal across all three languages.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 3</div>
+  <div class="slide-title">Metric 1 — Perplexity</div>
+  <div class="point">
+    <div class="point-label">Plain language</div>
+    <p>How surprised is the model by text it hasn't seen. Lower = better. Like a reading comprehension score.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Results</div>
+    <p><span class="hi">Turkish −57%</span>. <span class="hi">Arabic −14%</span> (likely understated). <span class="hi">English ≈flat</span> — expected.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 3b</div>
+  <div class="slide-title">Metric 2 — Learning Speed</div>
+  <div class="point">
+    <p>Dashed line = morph. If it drops below solid early — grammar gave a head start.</p>
+  </div>
+  <div class="point">
+    <p>Turkish: pronounced. Arabic: visible. English: parallel — consistent with perplexity.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 3c</div>
+  <div class="slide-title">Metric 3 — Token Compression</div>
+  <div class="point">
+    <p>Shorthand vs longhand — fewer symbols, each carrying more meaning.</p>
+  </div>
+  <div class="point">
+    <p>Tokens-per-meaning-unit: lower = more efficient use of the context window.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 3d</div>
+  <div class="slide-title">Metrics 4 & 5 — Agreement + Downstream</div>
+  <div class="point">
+    <div class="point-label">Bundle accuracy</div>
+    <p>Did the model correctly predict the grammatical tag? High = it generalised the structure, didn't just memorise.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Arabic 270 bundles context</div>
+    <p>Getting the right bundle out of 270 is a strong signal the model internalised Arabic morphology.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Metric 5 — not measured</div>
+    <p>Downstream tasks need labelled data + fine-tuning budget we didn't have. Most practically meaningful — first priority in a follow-up.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 4</div>
+  <div class="slide-title">What the Mini Tells Us</div>
+  <div class="point">
+    <p>More complex grammar → bigger gain. Exactly what the hypothesis predicted.</p>
+  </div>
+  <div class="point">
+    <p>English being flat is a control, not a failure — confirms the effect is language-specific.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 5</div>
+  <div class="slide-title">Full-Scale Setup</div>
+  <div class="point">
+    <div class="point-label">Scale jump</div>
+    <p>2M → 125M parameters. Small slice → 2.5B tokens. GPT-2-small territory.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Vocabulary explosion</div>
+    <p>Morph tokenizer produced 27M unique tokens — embedding table ~41GB. Capped to top-50k. 1 in 10 words became unknown. Not a fair fight.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 6</div>
+  <div class="slide-title">English — Learning Curves</div>
+  <div class="point">
+    <p>Both curves converge at the same rate — grammar hint doesn't help English at full scale either.</p>
+  </div>
+  <div class="point">
+    <p>Morph curve may sit slightly higher due to 10.68% unknown token rate inflating loss.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 7</div>
+  <div class="slide-title">English — Full-Scale Results</div>
+  <div class="point">
+    <div class="point-label">Lead with the caveat</div>
+    <p>Morph scores worse on PPL (55.5 vs 39.4) — but 10.68% unknown tokens. Every unknown = guaranteed wrong. Not a fair comparison.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">The number that matters</div>
+    <p><span class="hi">4.91× tokens-per-meaning-unit.</span> Each morph token carries nearly 5× more grammatical info. Holds regardless of PPL.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Bundle accuracy 100%</div>
+    <p>Perfectly predicted every grammatical tag. Generalised — didn't memorise.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 8</div>
+  <div class="slide-title">Arabic & Turkish — Deferred</div>
+  <div class="point">
+    <div class="point-label">What was built</div>
+    <p>Corpora, tokenizers, engines, baseline models — all done. Morph preprocessing and training never started.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Mini signal</div>
+    <p>AR −14%, TR −57% at small scale. If that holds at full scale, the effect dwarfs English. Full experiment ≈ €1,800.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="slide-tag">Slide 9</div>
+  <div class="slide-title">What Actually Happened</div>
+  <div class="point">
+    <div class="point-label">Two reboots</div>
+    <p>Provider wiped the instance mid-run twice. Fixed with checkpointing.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Pool deadlock</div>
+    <p>Multiprocessing hung at 27/33 chunks. Fixed with <code>maxtasksperchild=1</code>.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Vocab explosion</div>
+    <p>27M tokens → OOM. Capped to 50k. Training completed.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">Credits ran out</div>
+    <p>AR/TR baselines trained. Morph training never started. Eval never ran.</p>
+  </div>
+  <div class="point">
+    <div class="point-label">The point</div>
+    <p>Every failure was diagnosed and fixed. That's also part of the research.</p>
+  </div>
+</div>
+
+</body>
+</html>

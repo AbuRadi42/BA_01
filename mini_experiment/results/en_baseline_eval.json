@@ -1,0 +1,9 @@
+{
+  "language": "en",
+  "regime": "baseline",
+  "test_loss": 5.8029,
+  "test_ppl": 331.2731,
+  "num_tokens": 318976,
+  "tokens_per_meaning_unit": null,
+  "unk_rate": null
+}

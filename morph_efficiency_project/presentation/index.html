@@ -4,104 +4,211 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Morphological Efficiency in Multilingual Language Models</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
+
+    /* ── CODE Berlin palette ──────────────────────────────────────────────────
+       Primary:   #0a0a0a  (near-black background)
+       Surface:   #141414  (card background)
+       Border:    #2a2a2a  (card border)
+       Muted:     #3d3d3d  (subtle borders, grid lines)
+       Dim text:  #6b6b6b  (labels, captions)
+       Body text: #d4d4d4  (main readable text)
+       Bright:    #f0f0f0  (headings, highlights)
+       Accent:    #e63329  (CODE red — CTAs, active states)
+       Accent dim:#7a1a16  (darker red for borders)
+    ── Language colours are untouched ─────────────────────────────────────── */
     :root {
+      --bg:        #0a0a0a;
+      --surface:   #141414;
+      --border:    #2a2a2a;
+      --muted:     #3d3d3d;
+      --dim:       #6b6b6b;
+      --body:      #d4d4d4;
+      --bright:    #f0f0f0;
+      --accent:    #e63329;
+      --accent-dim:#7a1a16;
+      /* language colours — do not change */
       --en-base: #394195; --en-morph: #a74d79;
       --ar-base: #59a150; --ar-morph: #1d5619;
       --tr-base: #769bb9; --tr-morph: #df3e29;
     }
     html, body { height: 100%; margin: 0; overflow: hidden; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: #0f1117; color: #e2e8f0; }
+    body { font-family: 'Noto Naskh Arabic', 'Inter', system-ui, sans-serif;
+           background: var(--bg); color: var(--body); }
 
-    /* ── Slide system — full-viewport snap scroll ── */
+    /* ── Fullscreen button ── */
+    #btn-fullscreen {
+      position: fixed; bottom: 1.4rem; right: 1.5rem; z-index: 60;
+      width: 34px; height: 34px; border-radius: 6px;
+      background: var(--surface); border: 1px solid var(--muted);
+      color: var(--dim); cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #btn-fullscreen:hover { color: var(--accent); border-color: var(--accent); }
+    #btn-fullscreen svg, #btn-fullscreen i[data-lucide] { width: 16px; height: 16px; }
+
     #slides-container {
-      height: 100vh;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
+      height: 100vh; overflow-y: scroll;
+      scroll-snap-type: y mandatory; scroll-behavior: smooth;
       -webkit-overflow-scrolling: touch;
     }
-    /* Hide scrollbar visually but keep it functional */
     #slides-container::-webkit-scrollbar { display: none; }
     #slides-container { -ms-overflow-style: none; scrollbar-width: none; }
-
     .slide {
-      height: 100vh;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 4rem 6rem;
-      border-bottom: 1px solid #1e2535;
+      min-height: 100vh; scroll-snap-align: start; scroll-snap-stop: always;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: 3rem 6rem; border-bottom: 1px solid var(--border);
       box-sizing: border-box;
-      overflow-y: auto;
     }
     @media (max-width: 768px) { .slide { padding: 2rem 1.5rem; } }
 
-    /* ── Nav dots ── */
     #nav-dots { position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
                 display: flex; flex-direction: column; gap: 0.6rem; z-index: 50; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155;
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted);
            cursor: pointer; transition: background 0.2s, transform 0.2s; }
-    .dot.active { background: #60a5fa; transform: scale(1.4); }
+    .dot.active { background: var(--accent); transform: scale(1.4); }
 
-    /* ── Cards ── */
-    .card { background: #1a1f2e; border: 1px solid #2d3748; border-radius: 12px; padding: 1.5rem; }
-
-    /* ── Model color pills ── */
+    .card { background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1.5rem; }
     .pill { display: inline-block; padding: 2px 10px; border-radius: 999px;
             font-size: 0.75rem; font-weight: 600; }
-
-    /* ── Chart containers ── */
     .chart-wrap { width: 100%; overflow: hidden; }
-    svg text { fill: #94a3b8; font-size: 11px; }
-    .axis path, .axis line { stroke: #334155; }
-    .grid line { stroke: #1e2535; stroke-dasharray: 3,3; }
-
-    /* ── Stat number ── */
-    .stat-num { font-size: 2.2rem; font-weight: 700; line-height: 1; }
-    .stat-label { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
-
-    /* ── Tooltip ── */
-    #tooltip { position: fixed; background: #1e2535; border: 1px solid #334155;
-               border-radius: 8px; padding: 0.6rem 0.9rem; font-size: 0.8rem;
-               pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100; }
-
-    /* ── Table ── */
+    svg text { fill: var(--dim); font-size: 11px; }
+    .axis path, .axis line { stroke: var(--muted); }
+    .grid line { stroke: #1e1e1e; stroke-dasharray: 3,3; }
+    .stat-num { font-size: 2.2rem; font-weight: 700; line-height: 1; color: var(--bright); }
+    .stat-label { font-size: 0.8rem; color: var(--dim); margin-top: 4px; }
+    #tooltip { position: fixed; background: var(--surface); border: 1px solid var(--muted);
+               border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.8rem;
+               pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 100;
+               color: var(--body); }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-    th { background: #1e2535; color: #94a3b8; font-weight: 600;
-         padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #2d3748; }
-    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid #1e2535; }
-    tr:hover td { background: #1e2535; }
-
-    /* ── Progress bar ── */
-    .bar-track { background: #1e2535; border-radius: 4px; height: 8px; overflow: hidden; }
-    .bar-fill  { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-
-    /* ── Slide-in animation ── */
+    th { background: #1a1a1a; color: var(--dim); font-weight: 600;
+         padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid #1a1a1a; color: var(--body); }
+    tr:hover td { background: #1a1a1a; }
     .fade-in { opacity: 0; transform: translateY(20px);
                transition: opacity 0.5s ease, transform 0.5s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Engine decomposition breadcrumbs ── */
+    .eng-example { padding: 0.5rem 0.6rem; border-radius: 7px; background: #0f0f0f; }
+    .engine-surface { font-size: 1rem; font-weight: 600; color: var(--bright); margin-bottom: 4px; }
+    .engine-arrow { color: var(--muted); margin: 2px 0; display: flex; align-items: center; }
+    .engine-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .engine-root { font-size: 0.78rem; font-weight: 600; padding: 2px 7px; border-radius: 5px; border: 1px solid; background: transparent; }
+    .engine-tag  { font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 5px; border: 1px solid; font-family: monospace; }
+    .engine-sep  { font-size: 0.75rem; color: var(--muted); }
+    /* Meaning annotation below each breadcrumb part */
+    .engine-parts { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .engine-part  { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .engine-part-chip { font-size: 0.72rem; font-weight: 600; padding: 2px 7px; border-radius: 5px; border: 1px solid; font-family: monospace; white-space: nowrap; }
+    .engine-part-chip.is-root { font-family: 'Noto Naskh Arabic', system-ui, sans-serif; }
+    .engine-part-meaning { font-size: 0.62rem; color: var(--dim); text-align: center; max-width: 80px; line-height: 1.2; }
+
+    /* ── Pipeline diagram ── */
+    .pipeline-node {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 1rem; border-radius: 9px;
+      background: var(--surface); border: 1px solid var(--border);
+    }
+    .pipeline-node-icon { flex-shrink: 0; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; color: var(--dim); }
+    .pipeline-node-icon i[data-lucide], .pipeline-node-icon svg { width: 16px; height: 16px; stroke-width: 1.6; color: inherit; stroke: currentColor; }
+    /* Force hash icon color — Lucide replaces <i> with <svg> and drops inline style */
+    #node-token-id-seq .pipeline-node-icon svg { color: #394195 !important; stroke: #394195 !important; }
+    .pipeline-node-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--bright); line-height: 1.2; }
+    .pipeline-node-sub   { display: block; font-size: 0.68rem; color: var(--dim); margin-top: 2px; }
+    .pipeline-arrow-v { text-align: center; color: var(--muted); font-size: 1.1rem; line-height: 1; padding: 1px 0; }
+
+    /* ── BPE chips ────────────────────────────────────────────────────────── */
+    /* Each BPE token is a pill. Continuation fragments (no ▁ prefix) are
+       visually joined to the previous one via a left connector bar and
+       tatweel-style connectors on both touching edges for Arabic. */
+    .bpe-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+    .bpe-word { display: inline-flex; align-items: stretch;
+                margin: 3px 4px; border-radius: 7px; overflow: hidden;
+                opacity: 0; transform: translateY(5px) scale(0.92);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+    .bpe-word.show { opacity: 1; transform: translateY(0) scale(1); }
+    .bpe-word:hover { filter: brightness(1.18); }
+    .bpe-frag {
+      font-family: 'Noto Naskh Arabic', monospace; font-size: 0.88rem; font-weight: 400;
+      padding: 4px 8px; line-height: 1.35; white-space: nowrap;
+      color: var(--bright);
+    }
+    /* First fragment of a word — slightly brighter */
+    .bpe-frag.frag-first { font-weight: 500; }
+    /* Continuation fragments — dimmer background + visible separator */
+    .bpe-frag.frag-cont {
+      color: var(--dim); font-weight: 300;
+      background: rgba(0,0,0,0.25);
+      border-left: 1px solid rgba(255,255,255,0.18);
+    }
+    /* Arabic BPE: tatweel is baked into fragment text — no connector spans needed */
+
+    /* ── Morph chips — single-line breadcrumb ─────────────────────────────── */
+    .morph-chip {
+      display: inline-flex; align-items: baseline;
+      font-family: 'Noto Naskh Arabic', system-ui, sans-serif; font-size: 0.92rem;
+      padding: 4px 10px; margin: 3px 4px; border-radius: 8px;
+      line-height: 1.4; white-space: nowrap;
+      opacity: 0; transform: translateY(6px) scale(0.9);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      cursor: default; box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+    }
+    .morph-chip.show { opacity: 1; transform: translateY(0) scale(1); }
+    .morph-chip:hover { filter: brightness(1.14); transform: translateY(-1px) scale(1.02); }
+    .mc-root { font-weight: 600; color: var(--bright); }
+    .mc-affix { font-weight: 700; font-size: 0.82em; padding: 0 1px; border-radius: 3px; }
+    /* tatweel is baked into affix/root text — no separate connector spans */
+
+    /* Sentence display */
+    .tok-sentence {
+      font-family: 'Noto Naskh Arabic', system-ui, sans-serif;
+      font-size: 1.05rem; font-weight: 300; color: var(--dim);
+      letter-spacing: 0.01em; line-height: 1.5;
+    }
+    .tok-sentence[dir="rtl"] { font-size: 1.2rem; }
+
+    /* ── University logo watermark ── */
+    #uni-logo {
+      position: fixed; bottom: 1.4rem; left: 1.5rem; z-index: 50;
+      opacity: 1; pointer-events: none;
+    }
+    #uni-logo img { height: 90px; width: auto; display: block; }
+
+    /* ── BME icon — top-right ── */
+    #bme-icon {
+      position: fixed; top: 1.4rem; right: 1.5rem; z-index: 50;
+      opacity: 1; pointer-events: none;
+    }
+    #bme-icon img { height: 100px; width: auto; display: block; }
   </style>
 </head>
 <body>
-
 <div id="tooltip"></div>
-
-<!-- ── Navigation dots ── -->
 <nav id="nav-dots"></nav>
+<div id="uni-logo"><img src="CFH_white.png" alt="CODE University of Applied Sciences" /></div>
+<div id="bme-icon"><img src="bme.svg" alt="BME" /></div>
 
+<button id="btn-fullscreen" title="Toggle fullscreen">
+  <i id="fs-icon-expand"   data-lucide="maximize-2"></i>
+  <i id="fs-icon-compress" data-lucide="minimize-2" style="display:none"></i>
+</button>
 <div id="slides-container">
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 0 — Title
-════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 0 — Title -->
 <section class="slide" id="slide-0">
-  <div class="max-w-4xl">
-    <p class="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-4">Research Presentation</p>
+  <div class="max-w-6xl w-full">
+    <p class="text-red-400 text-sm font-semibold tracking-widest uppercase mb-4">Research Presentation</p>
     <h1 class="text-5xl font-bold leading-tight mb-6">
       Morphological Efficiency<br/>in Multilingual Language Models
     </h1>
@@ -110,344 +217,769 @@
       reduce how much it needs to learn?
     </p>
     <div class="flex flex-wrap gap-3 mb-10">
-      <span class="pill" style="background:#1e3a5f;color:#60a5fa">English</span>
-      <span class="pill" style="background:#1a3a1a;color:#4ade80">Arabic</span>
-      <span class="pill" style="background:#2d1a3a;color:#c084fc">Turkish</span>
-      <span class="pill" style="background:#2d2010;color:#fb923c">6 Models</span>
-      <span class="pill" style="background:#1a2535;color:#94a3b8">125M params each</span>
+      <span class="pill" style="background:#1e2d1e;color:#4ade80">Mini experiment — EN / AR / TR complete</span>
+      <span class="pill" style="background:#0d0f2a;color:#394195;border:1px solid #394195;">Full scale — English complete</span>
+      <span class="pill" style="background:#2d1a1a;color:#f87171">Full scale — Arabic / Turkish deferred</span>
     </div>
-    <p class="text-slate-500 text-sm">Sameh AbuRadi · Scroll or use the dots →</p>
+    <p class="text-slate-500 text-sm">Sameh AbuRadi · BA_01 Capstone Project</p>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 1 — The Experiment
-════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1 — The Question -->
 <section class="slide" id="slide-1">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">The Experiment</h2>
-    <p class="text-slate-400 mb-8">Six models. Three languages. One question.</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
-      <!-- English -->
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">The Question</h2>
+    <p class="text-slate-400 mb-8">One hypothesis. Two approaches. Three languages.</p>
+    <div class="space-y-5 fade-in">
       <div class="card">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="text-2xl">🇬🇧</span>
-          <span class="font-semibold text-lg">English</span>
+        <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-2">Hypothesis</p>
+        <p class="text-slate-200 text-lg leading-relaxed">
+          A language model given explicit morphological structure at the token level will learn
+          more efficiently — reaching the same perplexity with fewer training tokens — than one
+          using standard BPE subword tokenization.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="card">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Baseline</p>
+          <p class="text-slate-300 text-sm">Standard SentencePiece BPE tokenizer. The model sees raw subword fragments with no grammatical signal. This is how most LLMs are trained today.</p>
         </div>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">en_base</span>
-            <span class="pill" style="background:#1e3a5f;color:#60a5fa">Baseline BPE</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">en_morph</span>
-            <span class="pill" style="background:#3a2010;color:#fb923c">Grammar-aware</span>
-          </div>
-          <p class="text-xs text-slate-500 mt-2">Derivational + inflectional morphology engine</p>
+        <div class="card">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Morph</p>
+          <p class="text-slate-300 text-sm">Each token is a (root, morphological tag) pair. The model sees the grammatical structure of every word before it learns anything about language. Feature bundles are injected as a second embedding stream.</p>
         </div>
       </div>
-      <!-- Arabic -->
       <div class="card">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="text-2xl">🇸🇦</span>
-          <span class="font-semibold text-lg">Arabic</span>
-        </div>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">ar_base</span>
-            <span class="pill" style="background:#1a3a1a;color:#4ade80">Baseline BPE</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">ar_morph</span>
-            <span class="pill" style="background:#3a1a1a;color:#f87171">Grammar-aware</span>
-          </div>
-          <p class="text-xs text-slate-500 mt-2">Root × template (النحو والصرف) engine</p>
-        </div>
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Why three languages?</p>
+        <p class="text-slate-300 text-sm">English (analytic), Arabic (root-and-pattern — roots are typically trilateral, but also quadrilateral or quinqueliteral), Turkish (agglutinative). If the hypothesis holds, the effect should be strongest where morphology is richest — Arabic and Turkish. English is the control.</p>
       </div>
-      <!-- Turkish -->
-      <div class="card">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="text-2xl">🇹🇷</span>
-          <span class="font-semibold text-lg">Turkish</span>
-        </div>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">tr_base</span>
-            <span class="pill" style="background:#1a2d2d;color:#67e8f9">Baseline BPE</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-slate-400 text-sm">tr_morph</span>
-            <span class="pill" style="background:#2d1a2d;color:#d8b4fe">Grammar-aware</span>
-          </div>
-          <p class="text-xs text-slate-500 mt-2">Suffix-chain (Dilbilgisi) engine</p>
-        </div>
-      </div>
-    </div>
-    <div class="mt-8 card fade-in">
-      <p class="text-slate-300 text-sm leading-relaxed">
-        Each pair shares <strong class="text-white">identical architecture</strong> (125M params),
-        <strong class="text-white">identical training data</strong> (2.5B tokens),
-        and <strong class="text-white">identical training budget</strong>.
-        The only difference is whether the model was given grammatical structure before training.
-      </p>
     </div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 2 — The 5 Evaluation Metrics
-════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 1b — Tokenisation Examples -->
+<section class="slide" id="slide-tok">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-1">What Does Tokenisation Actually Look Like?</h2>
+    <p class="text-slate-400 mb-1 text-sm">The same sentence, split two different ways — once by a standard BPE tokenizer, once by the morphology-aware tokenizer.</p>
+    <p class="text-slate-500 text-xs mb-6">Each coloured chip is one token. Morph tokens show the root word and its grammatical tag separately — the model gets both pieces of information at once.</p>
+    <div id="tok-examples-container" class="space-y-5 fade-in"></div>
+  </div>
+</section>
+
+<!-- SLIDE 1c — Two Pipelines -->
+<section class="slide" id="slide-pipelines">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-1">Two Training Pipelines</h2>
+    <p class="text-slate-400 mb-7 text-sm">Same data. Same architecture. The only difference is what the model sees as a token.</p>
+
+    <div class="space-y-5 fade-in">
+
+      <!-- Shared source -->
+      <div class="flex justify-center">
+        <div class="pipeline-node" style="border-color:#4a4a4a;min-width:260px;text-align:center;background:#111111;">
+          <span class="pipeline-node-icon" style="color:#8a8a8a;"><i data-lucide="file-text" style="color:#8a8a8a;"></i></span>
+          <div><span class="pipeline-node-label">Raw text corpus</span>
+          <span class="pipeline-node-sub">same Wikipedia data for both</span></div>
+        </div>
+      </div>
+
+      <!-- Fork arrows -->
+      <div class="flex justify-center gap-0 relative" style="height:36px;">
+        <div style="position:absolute;left:50%;transform:translateX(-50%);top:0;width:2px;height:18px;background:#4a4a4a;"></div>
+        <div style="position:absolute;left:calc(50% - 160px);top:18px;width:162px;height:2px;background:#394195;"></div>
+        <div style="position:absolute;left:50%;top:18px;width:162px;height:2px;background:var(--accent);"></div>
+        <div style="position:absolute;left:calc(50% - 160px);top:18px;width:2px;height:18px;background:#394195;"></div>
+        <div style="position:absolute;left:calc(50% + 160px);top:18px;width:2px;height:18px;background:var(--accent);"></div>
+      </div>
+
+      <!-- Two parallel pipelines -->
+      <div class="grid grid-cols-2 gap-6">
+
+        <!-- LEFT: Traditional BPE -->
+        <div>
+          <p class="text-xs uppercase tracking-wider font-semibold text-center mb-3" style="color:#394195;">Traditional — BPE</p>
+          <div class="flex flex-col items-center gap-1">
+
+            <div class="pipeline-node w-full" style="border-color:#394195;background:#0a0a18;">
+              <span class="pipeline-node-icon" style="color:#394195;"><i data-lucide="scissors" style="color:#394195;"></i></span>
+              <div><span class="pipeline-node-label">BPE tokenizer</span>
+              <span class="pipeline-node-sub">splits on byte-pair frequency — no grammar</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:#394195;">↓</div>
+            <div class="pipeline-node w-full" id="node-token-id-seq" style="border-color:#394195;background:#0a0a18;">
+              <span class="pipeline-node-icon" style="color:#394195;"><i data-lucide="git-commit-vertical" style="color:#394195;"></i></span>
+              <div><span class="pipeline-node-label">Token ID sequence</span>
+              <span class="pipeline-node-sub">▁research · ers · ▁are · ▁study · ing …</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:#394195;">↓</div>
+            <div class="pipeline-node w-full" style="border-color:#394195;background:#0a0a18;">
+              <span class="pipeline-node-icon" style="color:#394195;"><i data-lucide="move-up" style="color:#394195;"></i></span>
+              <div><span class="pipeline-node-label">Single embedding lookup</span>
+              <span class="pipeline-node-sub">one vector per token — no structural signal</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:#394195;">↓</div>
+            <div class="pipeline-node w-full" style="border-color:#394195;background:#0a0a18;">
+              <span class="pipeline-node-icon" style="color:#394195;"><i data-lucide="clock" style="color:#394195;"></i></span>
+              <div><span class="pipeline-node-label">Transformer</span>
+              <span class="pipeline-node-sub">must infer grammar from co-occurrence alone</span></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: Morphology-intervened -->
+        <div>
+          <p class="text-xs uppercase tracking-wider font-semibold text-center mb-3" style="color:var(--accent);">Proposed — Morphology-Aware Tokenizer</p>
+          <div class="flex flex-col items-center gap-1">
+
+            <div class="pipeline-node w-full" style="border-color:var(--accent);background:#1a0a0a;">
+              <span class="pipeline-node-icon" style="color:var(--accent);"><i data-lucide="drafting-compass"></i></span>
+              <div><span class="pipeline-node-label">Morphology engine</span>
+              <span class="pipeline-node-sub">decomposes each word → root + grammatical tag</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:var(--accent);">↓</div>
+            <div class="pipeline-node w-full" style="border-color:var(--accent);background:#1a0a0a;">
+              <span class="pipeline-node-icon" style="color:var(--accent);"><i data-lucide="git-branch"></i></span>
+              <div><span class="pipeline-node-label">Root ID + Feature bundle ID</span>
+              <span class="pipeline-node-sub">researcher · SUF_s &nbsp;|&nbsp; study · SUF_ing …</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:var(--accent);">↓</div>
+            <div class="pipeline-node w-full" style="border-color:var(--accent);background:#1a0a0a;">
+              <span class="pipeline-node-icon" style="color:var(--accent);"><i data-lucide="split"></i></span>
+              <div><span class="pipeline-node-label">Dual embedding streams</span>
+              <span class="pipeline-node-sub">root vector <span style="color:var(--dim);">+</span> morphology vector → summed input</span></div>
+            </div>
+            <div class="pipeline-arrow-v" style="color:var(--accent);">↓</div>
+            <div class="pipeline-node w-full" style="border-color:var(--accent);background:#1a0a0a;">
+              <span class="pipeline-node-icon" style="color:var(--accent);"><i data-lucide="circle-check-big"></i></span>
+              <div><span class="pipeline-node-label">Transformer</span>
+              <span class="pipeline-node-sub">grammar pre-encoded — capacity freed for meaning</span></div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Shared output -->
+      <div class="flex justify-center gap-0 relative" style="height:36px;">
+        <div style="position:absolute;left:calc(50% - 160px);top:0;width:2px;height:18px;background:#394195;"></div>
+        <div style="position:absolute;left:calc(50% + 160px);top:0;width:2px;height:18px;background:var(--accent);"></div>
+        <div style="position:absolute;left:calc(50% - 160px);top:18px;width:162px;height:2px;background:#394195;"></div>
+        <div style="position:absolute;left:50%;top:18px;width:162px;height:2px;background:var(--accent);"></div>
+        <div style="position:absolute;left:50%;transform:translateX(-50%);top:18px;width:2px;height:18px;background:#4a4a4a;"></div>
+      </div>
+      <div class="flex justify-center">
+        <div class="pipeline-node" style="border-color:#4a4a4a;min-width:260px;text-align:center;background:#111111;">
+          <span class="pipeline-node-icon" style="color:#8a8a8a;"><i data-lucide="bar-chart-2"></i></span>
+          <div><span class="pipeline-node-label">Evaluation — same metrics</span>
+          <span class="pipeline-node-sub">perplexity · learning speed · token compression · agreement</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 1d — The Three Grammar Engines -->
+<section class="slide" id="slide-engines">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-1">The Three Grammar Engines</h2>
+    <p class="text-slate-400 mb-6 text-sm">Each language has a different morphological structure. Here is what the engine does to a single word.</p>
+
+    <div class="grid grid-cols-3 gap-5 fade-in">
+
+      <!-- ── English ── -->
+      <div class="card" style="border-top:3px solid #394195;">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs uppercase tracking-wider font-semibold" style="color:#394195;">English — Analytic</p>
+          <span class="text-xs text-slate-600">23 bundles</span>
+        </div>
+
+        <!-- went → go + tense=PAST (suppletive irregular, en_irregulars.json) -->
+        <div class="eng-example mb-3">
+          <p class="engine-surface">went</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#394195;color:#394195;background:transparent;">go</span>
+              <span class="engine-part-meaning">base verb (suppletive root)</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#a74d7922;border-color:#a74d79;color:#a74d79;">tense=PAST</span>
+              <span class="engine-part-meaning">action happened before now</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- misunderstand → PRE_mis + understand (en_derivations.json: mis- = WRONGLY) -->
+        <div class="eng-example mb-3">
+          <p class="engine-surface">misunderstand</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#a74d7922;border-color:#a74d79;color:#a74d79;">PRE_mis</span>
+              <span class="engine-part-meaning">wrongly / badly</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#394195;color:#394195;background:transparent;">understand</span>
+              <span class="engine-part-meaning">base verb</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- overestimate → PRE_over + estimate (en_derivations.json: over- = EXCESS) -->
+        <div class="eng-example">
+          <p class="engine-surface">overestimate</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#a74d7922;border-color:#a74d79;color:#a74d79;">PRE_over</span>
+              <span class="engine-part-meaning">too much / in excess</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#394195;color:#394195;background:transparent;">estimate</span>
+              <span class="engine-part-meaning">base verb</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 mt-4 pt-3" style="border-top:1px solid #2a2a2a;">Suppletive irregulars resolved via lookup. Prefixes carry semantic function tags — mis- (wrongly), over- (excess), re- (repetition).</p>
+      </div>
+
+      <!-- ── Arabic ── -->
+      <div class="card" style="border-top:3px solid #59a150;">
+        <!-- card header stays LTR -->
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs uppercase tracking-wider font-semibold" style="color:#59a150;">Arabic — Root-and-Pattern</p>
+          <span class="text-xs text-slate-600">270 bundles</span>
+        </div>
+
+        <!-- all examples in RTL block -->
+        <div dir="rtl" style="font-family:'Noto Naskh Arabic',sans-serif;">
+
+          <!-- ① استخدم — Form X circumfix استـ + root خدم -->
+          <div class="eng-example mb-3">
+            <!-- Layer 1: physical split — dir=rtl handles order naturally -->
+            <div style="display:flex;align-items:stretch;border-radius:6px;overflow:hidden;border:1px solid #2a2a2a;width:fit-content;margin-bottom:4px;font-size:1rem;font-weight:600;">
+              <span style="padding:3px 8px;background:#59a15028;color:#59a150;border-left:1px solid #59a15055;">استـ</span>
+              <span style="padding:3px 8px;background:#1d561928;color:#d4d4d4;">ـخدم</span>
+            </div>
+            <!-- Layer 2: breadcrumbs — RTL flex, Arabic chips with tatweel -->
+            <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+            <div class="engine-parts">
+              <div class="engine-part">
+                <span class="engine-part-chip" style="background:#59a15022;border-color:#59a150;color:#59a150;">استـ</span>
+                <span class="engine-part-meaning" dir="ltr">PRE — Form X circumfix</span>
+              </div>
+              <span class="engine-sep" style="margin-top:4px;">+</span>
+              <div class="engine-part">
+                <span class="engine-part-chip is-root" style="border-color:#1d5619;color:#d4d4d4;background:transparent;">ـخدم</span>
+                <span class="engine-part-meaning" dir="ltr">root: serve</span>
+              </div>
+            </div>
+            <div class="engine-parts" style="margin-top:4px;">
+              <div class="engine-part">
+                <span class="engine-part-chip" style="font-family:monospace;background:#59a15022;border-color:#59a150;color:#59a150;">form=X</span>
+                <span class="engine-part-meaning" dir="ltr">استفعل — seek/employ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ② المصرية — PRE الـ + root مصر + SUF ـية -->
+          <div class="eng-example mb-3">
+            <!-- Layer 1: physical split -->
+            <div style="display:flex;align-items:stretch;border-radius:6px;overflow:hidden;border:1px solid #2a2a2a;width:fit-content;margin-bottom:4px;font-size:1rem;font-weight:600;">
+              <span style="padding:3px 8px;background:#59a15028;color:#59a150;border-left:1px solid #59a15055;">الـ</span>
+              <span style="padding:3px 8px;background:#1d561928;color:#d4d4d4;">ـمصر</span>
+              <span style="padding:3px 8px;background:#59a15028;color:#59a150;border-right:1px solid #59a15055;">ية</span>
+            </div>
+            <!-- Layer 2: breadcrumbs -->
+            <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+            <div class="engine-parts">
+              <div class="engine-part">
+                <span class="engine-part-chip" style="background:#59a15022;border-color:#59a150;color:#59a150;">الـ</span>
+                <span class="engine-part-meaning" dir="ltr">PRE — definite "the"</span>
+              </div>
+              <span class="engine-sep" style="margin-top:4px;">+</span>
+              <div class="engine-part">
+                <span class="engine-part-chip is-root" style="border-color:#1d5619;color:#d4d4d4;background:transparent;">ـمصر</span>
+                <span class="engine-part-meaning" dir="ltr">root: Egypt</span>
+              </div>
+              <span class="engine-sep" style="margin-top:4px;">+</span>
+              <div class="engine-part">
+                <span class="engine-part-chip" style="background:#59a15022;border-color:#59a150;color:#59a150;">ية</span>
+                <span class="engine-part-meaning" dir="ltr">SUF — nisba adj. (fem.)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ③ يكتبان — PRE يـ (3rd masc. impf.) + root كتب + SUF ـان (masc. dual) -->
+          <div class="eng-example">
+            <!-- Layer 1: physical split -->
+            <div style="display:flex;align-items:stretch;border-radius:6px;overflow:hidden;border:1px solid #2a2a2a;width:fit-content;margin-bottom:4px;font-size:1rem;font-weight:600;">
+              <span style="padding:3px 8px;background:#59a15028;color:#59a150;border-left:1px solid #59a15055;">يـ</span>
+              <span style="padding:3px 8px;background:#1d561928;color:#d4d4d4;">ـكتبـ</span>
+              <span style="padding:3px 8px;background:#59a15028;color:#59a150;border-right:1px solid #59a15055;">ـان</span>
+            </div>
+            <!-- Layer 2: breadcrumbs -->
+            <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+            <div class="engine-parts">
+              <div class="engine-part">
+                <span class="engine-part-chip" style="background:#59a15022;border-color:#59a150;color:#59a150;">يـ</span>
+                <span class="engine-part-meaning" dir="ltr">PRE — 3rd masc. impf.</span>
+              </div>
+              <span class="engine-sep" style="margin-top:4px;">+</span>
+              <div class="engine-part">
+                <span class="engine-part-chip is-root" style="border-color:#1d5619;color:#d4d4d4;background:transparent;">ـكتبـ</span>
+                <span class="engine-part-meaning" dir="ltr">root: write</span>
+              </div>
+              <span class="engine-sep" style="margin-top:4px;">+</span>
+              <div class="engine-part">
+                <span class="engine-part-chip" style="background:#59a15022;border-color:#59a150;color:#59a150;">ـان</span>
+                <span class="engine-part-meaning" dir="ltr">SUF — masc. dual</span>
+              </div>
+            </div>
+            <div class="engine-parts" style="margin-top:4px;">
+              <div class="engine-part">
+                <span class="engine-part-chip" style="font-family:monospace;background:#59a15022;border-color:#59a150;color:#59a150;">form=I</span>
+                <span class="engine-part-meaning" dir="ltr">basic verb pattern</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /dir=rtl -->
+
+        <p class="text-xs text-slate-600 mt-4 pt-3" style="border-top:1px solid #2a2a2a;">Surface word split into prefix / root / suffix spans. Arabic encodes gender in the prefix (يـ masc. / تـ fem.) and number in the suffix — singular, dual (ـان), or plural — all in a single circumfix around the root.</p>
+      </div>
+
+      <!-- ── Turkish ── -->
+      <div class="card" style="border-top:3px solid #769bb9;">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs uppercase tracking-wider font-semibold" style="color:#769bb9;">Turkish — Agglutinative</p>
+          <span class="text-xs text-slate-600">63 bundles</span>
+        </div>
+
+        <!-- evlerinizden → ev + PL + POSS_2PL + ABL (tr_suffixes.json) -->
+        <div class="eng-example mb-3">
+          <p class="engine-surface">evlerinizden</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#769bb9;color:#769bb9;background:transparent;">ev</span>
+              <span class="engine-part-meaning">house</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">PL</span>
+              <span class="engine-part-meaning">-ler plural</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">POSS_2PL</span>
+              <span class="engine-part-meaning">-iniz your (pl.)</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">ABL</span>
+              <span class="engine-part-meaning">-den from</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- yazıldı → yaz + PASS + PAST_DEF (tr_suffixes.json) -->
+        <div class="eng-example mb-3">
+          <p class="engine-surface">yazıldı</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#769bb9;color:#769bb9;background:transparent;">yaz</span>
+              <span class="engine-part-meaning">write</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">PASS</span>
+              <span class="engine-part-meaning">-ıl passive voice</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">PAST_DEF</span>
+              <span class="engine-part-meaning">-dı witnessed past</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- gidebilir → git + ABIL + PRES_AORIST (tr_suffixes.json) -->
+        <div class="eng-example">
+          <p class="engine-surface">gidebilir</p>
+          <div class="engine-arrow"><i data-lucide="arrow-down" style="width:13px;height:13px;"></i></div>
+          <div class="engine-parts">
+            <div class="engine-part">
+              <span class="engine-part-chip is-root" style="border-color:#769bb9;color:#769bb9;background:transparent;">git</span>
+              <span class="engine-part-meaning">go</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">ABIL</span>
+              <span class="engine-part-meaning">-ebil can / able to</span>
+            </div>
+            <span class="engine-sep" style="margin-top:4px;">+</span>
+            <div class="engine-part">
+              <span class="engine-part-chip" style="background:#df3e2922;border-color:#df3e29;color:#df3e29;">PRES_AORIST</span>
+              <span class="engine-part-meaning">-ir habitual / general</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-600 mt-4 pt-3" style="border-top:1px solid #2a2a2a;">Each suffix slot resolved to its logical name. Vowel harmony variants (-ler/-lar, -den/-dan) normalised to a single tag. Stack order preserved left-to-right.</p>
+      </div>
+
+    </div>
+    <p class="text-slate-600 text-xs mt-5 text-center">Bundle space size determines agreement difficulty — Arabic's 270 combinations make its 9.3% accuracy equivalent in difficulty to English's 45.9% out of 23.</p>
+  </div>
+</section>
+
+<!-- SLIDE 2 — Mini Experiment: Setup -->
 <section class="slide" id="slide-2">
   <div class="max-w-6xl w-full">
-    <h2 class="text-3xl font-bold mb-1">How We Compare Them</h2>
-    <p class="text-slate-400 mb-6">Five metrics. Each captures a different dimension of what "learning efficiently" means.</p>
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 fade-in">
-
-      <!-- M1 -->
-      <div class="card flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">📉</span>
-          <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Metric 1</span>
-        </div>
-        <div class="font-semibold text-white text-sm">Perplexity</div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          How surprised is the model by unseen text?
-          <code class="text-slate-300">PPL = exp(mean(−log P(token)))</code>.
-          Lower = better probability distribution over the language.
-        </p>
-        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_lm.py</div>
+    <h2 class="text-3xl font-bold mb-1">Mini Experiment</h2>
+    <p class="text-slate-400 mb-6">Before committing to full-scale GPU training, we ran a small pilot locally to validate the setup and get a directional signal across all three languages.</p>
+    <div class="grid grid-cols-3 gap-4 mb-5 fade-in">
+      <div class="card text-center">
+        <div class="stat-num" style="color:#e63329">6</div>
+        <div class="stat-label">models trained</div>
       </div>
-
-      <!-- M2 -->
-      <div class="card flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">🗜️</span>
-          <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Metric 2</span>
-        </div>
-        <div class="font-semibold text-white text-sm">Tokens per Meaning Unit</div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          How many tokens to express one idea?
-          Morph unit = (root, template) pair. Lower = more meaning packed per token.
-          Critical for Arabic &amp; Turkish where BPE splits one word into 4–6 fragments.
-        </p>
-        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_morphology.py</div>
+      <div class="card text-center">
+        <div class="stat-num text-purple-400">1.8M</div>
+        <div class="stat-label">parameters each</div>
       </div>
-
-      <!-- M3 -->
-      <div class="card flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">✅</span>
-          <span class="text-xs font-bold text-green-400 uppercase tracking-wider">Metric 3</span>
-        </div>
-        <div class="font-semibold text-white text-sm">Agreement Accuracy</div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Does the model produce grammatically agreeing forms?
-          Subject–verb gender/number in Arabic, vowel harmony in Turkish, tense in English.
-          Higher = grammar internalized.
-        </p>
-        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_morphology.py</div>
+      <div class="card text-center">
+        <div class="stat-num text-green-400">5M</div>
+        <div class="stat-label">tokens each</div>
       </div>
-
-      <!-- M4 -->
-      <div class="card flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">⚡</span>
-          <span class="text-xs font-bold text-yellow-400 uppercase tracking-wider">Metric 4</span>
-        </div>
-        <div class="font-semibold text-white text-sm">Learning Efficiency</div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          How many tokens to reach a target perplexity threshold?
-          If the morph model gets there in fewer steps, the grammar prior gave it a head start.
-          This is the core test of the research claim.
-        </p>
-        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_lm.py + compute_metrics.py</div>
-      </div>
-
-      <!-- M5 -->
-      <div class="card flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <span class="text-2xl">🎯</span>
-          <span class="text-xs font-bold text-orange-400 uppercase tracking-wider">Metric 5</span>
-        </div>
-        <div class="font-semibold text-white text-sm">Downstream Performance</div>
-        <p class="text-xs text-slate-400 leading-relaxed">
-          Frozen model + single linear probe on sentiment &amp; QA tasks.
-          Tests whether internal representations are useful beyond language modeling.
-          FLOPs also logged for compute-efficiency comparison.
-        </p>
-        <div class="mt-auto pt-2 border-t border-slate-700 text-xs text-slate-500">eval_downstream.py</div>
-      </div>
-
     </div>
-    <div class="mt-5 card fade-in">
-      <p class="text-slate-400 text-xs leading-relaxed">
-        All five metrics are computed for all six models under identical conditions.
-        The comparison is always <span class="text-white">within-language</span> (en_base vs en_morph, ar_base vs ar_morph, tr_base vs tr_morph).
-        Cross-language perplexity comparisons are not made — vocabularies and token distributions differ.
-      </p>
+    <div class="space-y-3 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Architecture</p>
+        <p class="text-slate-300 text-sm">4-layer GPT, 128 hidden dim, 4 heads. Same design as the full experiment, just smaller. Trained on CPU in ~4 hours total for all 6 models.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Data</p>
+        <p class="text-slate-300 text-sm">~80k Wikipedia sentences per language via HuggingFace streaming. SentencePiece BPE (8k vocab) for baseline. Rule-based morphological segmenter for morph — suffix stripping for EN, root+prefix/suffix for AR, agglutinative suffix chains for TR.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Purpose</p>
+        <p class="text-slate-300 text-sm">Not a substitute for the full experiment. A directional check: does the morph signal help at all? If yes, which language benefits most? The answer shapes how we interpret the full-scale EN results.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 3 — Learning Curves (time-series)
-════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 3 — Mini: Metric 1 — Perplexity -->
 <section class="slide" id="slide-3">
   <div class="max-w-6xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Learning Curves</h2>
-    <p class="text-slate-400 mb-6">Loss over training tokens — does the morph model learn faster?</p>
-    <div class="flex gap-3 mb-4 flex-wrap" id="curve-lang-tabs">
-      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white" data-lang="en">English</button>
-      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700 text-slate-300" data-lang="ar">Arabic</button>
-      <button class="curve-tab px-4 py-1.5 rounded-full text-sm font-medium bg-slate-700 text-slate-300" data-lang="tr">Turkish</button>
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">Mini Experiment — Metric 1 of 5</p>
+    <h2 class="text-3xl font-bold mb-1">How confused was the model?</h2>
+    <p class="text-slate-400 mb-1 text-sm">Perplexity measures how surprised a model is by text it has never seen. Lower = the model has a better grasp of the language.</p>
+    <p class="text-slate-500 text-xs mb-5">Think of it like a reading comprehension score — a lower number means the model found the text more predictable, which means it learned the language better.</p>
+    <div id="mini-ppl-cards" class="grid grid-cols-3 gap-4 mb-4 fade-in"></div>
+    <div class="card chart-wrap fade-in" id="mini-ratio-chart" style="height:170px;"></div>
+    <p class="text-slate-500 text-xs mt-2">The dashed line marks 1.0 — anything below it means the grammar-aware model did better than the standard one.</p>
+  </div>
+</section>
+
+<!-- SLIDE 3b — Mini: Metric 2 — Learning Speed -->
+<section class="slide" id="slide-3b">
+  <div class="max-w-6xl w-full">
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">Mini Experiment — Metric 2 of 5</p>
+    <h2 class="text-3xl font-bold mb-1">Did it learn faster?</h2>
+    <p class="text-slate-400 mb-1 text-sm">Loss over training steps — does the grammar-aware model (dashed) drop faster than the standard one (solid)?</p>
+    <p class="text-slate-500 text-xs mb-4">If the dashed line falls below the solid line early on, the grammar hint gave the model a head start — it needed less data to reach the same understanding.</p>
+    <div class="grid grid-cols-3 gap-4 fade-in">
+      <div class="card chart-wrap" id="mini-curve-en" style="height:320px;"></div>
+      <div class="card chart-wrap" id="mini-curve-ar" style="height:320px;"></div>
+      <div class="card chart-wrap" id="mini-curve-tr" style="height:320px;"></div>
     </div>
-    <div class="card chart-wrap" id="learning-curve-chart" style="height:380px;"></div>
+    <div class="flex gap-8 mt-3 text-xs text-slate-500 justify-center">
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:20px;height:2px;background:#8a8a8a;display:inline-block;border-radius:2px;"></span>Standard (baseline)</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:20px;height:0;border-top:2px dashed #8a8a8a;display:inline-block;"></span>Grammar-aware (morph)</span>
+    </div>
+    <div id="mini-efficiency-cards" class="grid grid-cols-3 gap-3 mt-3 fade-in"></div>
+  </div>
+</section>
+
+<!-- SLIDE 3c — Mini: Metric 3 — Token Compression -->
+<section class="slide" id="slide-3c">
+  <div class="max-w-6xl w-full">
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">Mini Experiment — Metric 3 of 5</p>
+    <h2 class="text-3xl font-bold mb-1">How much meaning fits in one token?</h2>
+    <p class="text-slate-400 mb-1 text-sm">The grammar-aware model uses fewer tokens to say the same thing — each token carries a root word plus its grammatical role.</p>
+    <p class="text-slate-500 text-xs mb-5">Imagine writing a sentence in shorthand vs. longhand. The shorthand version has fewer symbols but each one carries more information. That is what morphological tokenization does.</p>
+    <div class="grid grid-cols-2 gap-5 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Tokens used on the same test text</p>
+        <div class="chart-wrap" id="mini-tokens-chart" style="height:240px;"></div>
+        <p class="text-slate-500 text-xs mt-2">Fewer tokens for the same content = each token is doing more work.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Meaning units per token (grammar-aware models)</p>
+        <div class="chart-wrap" id="mini-tpu-chart" style="height:150px;"></div>
+        <p class="text-xs text-slate-500 uppercase tracking-wider mt-4 mb-2">Vocabulary gaps — words the model did not recognise</p>
+        <div id="mini-unk-bars" class="space-y-2"></div>
+        <p class="text-slate-500 text-xs mt-2">A higher unknown rate means the vocabulary was capped too aggressively — this hurts the morph model's perplexity score unfairly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3d — Mini: Metrics 4 & 5 — Agreement + Downstream -->
+<section class="slide" id="slide-3d">
+  <div class="max-w-6xl w-full">
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">Mini Experiment — Metrics 4 & 5 of 5</p>
+    <h2 class="text-3xl font-bold mb-1">Grammar accuracy & real-world usefulness</h2>
+    <p class="text-slate-400 mb-5 text-sm">Metric 4 was measured. Metric 5 was not — here is why.</p>
+    <div class="space-y-4 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 4 — Grammatical Agreement Accuracy</p>
+        <p class="text-slate-300 text-sm mb-3">At each position, we ask: does the model's predicted next token carry the same grammatical tag as the ground-truth token? This measures whether the model has internalised the morphological structure it was given.</p>
+        <div id="mini-agreement-bars" class="space-y-3 mb-3"></div>
+        <p class="text-slate-500 text-xs">English and Turkish reach ~44–46% — well above the random baseline of ~4% (1/23 and 1/63 bundles respectively). Arabic is lower at ~9%, but its bundle space is much larger (270 combinations of prefix×suffix), making random chance ~0.4%. The model is still learning structure — just against a harder target.</p>
+      </div>
+      <div class="card" style="border-color:#3d3d3d">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 5 — Downstream Task Performance</p>
+        <p class="text-slate-300 text-sm mb-2">Can the model's internal knowledge be used for real tasks — like deciding if a sentence is positive or negative, or answering a reading comprehension question?</p>
+        <p class="text-slate-400 text-sm mb-2">This tests whether the representations the model built are actually useful beyond just predicting the next word. A frozen model with a single linear layer on top is evaluated on sentiment and QA tasks.</p>
+        <div class="rounded-lg p-3 mt-1" style="background:#1a1a1a;border:1px solid #2a2a2a;">
+          <p class="text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-1">Why this was not measured at mini scale</p>
+          <p class="text-slate-400 text-xs">At 1.8M parameters, the model is too small to build meaningful internal representations. A linear probe on top of a 1.8M-param model would produce near-random results on any real task — not because the morph signal failed, but because the model simply lacks the capacity to encode world knowledge. Measuring this at mini scale would generate noise, not signal. It is only meaningful at full scale (125M+ params), where the model has enough capacity to build representations that transfer.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4 — Mini: Plain-language findings -->
+<section class="slide" id="slide-4">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">What the Mini Experiment Tells Us</h2>
+    <p class="text-slate-400 mb-6">In plain terms — no jargon.</p>
+    <div class="space-y-4 fade-in">
+      <div class="card border-l-4" style="border-left-color:#df3e29">
+        <div class="flex justify-between items-start mb-2">
+          <p class="text-sm font-semibold text-slate-200">Turkish — the grammar hint made a huge difference</p>
+          <span class="pill" style="background:#1a2d1a;color:#4ade80">57% better</span>
+        </div>
+        <p class="text-slate-400 text-sm">Turkish words are built by stacking suffixes — one root word can become dozens of different words depending on what you attach to it. When we told the model "this suffix means past tense" or "this one means plural", it learned the language almost twice as well with the same amount of training data. The grammar hint was worth more than extra data.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#1d5619">
+        <div class="flex justify-between items-start mb-2">
+          <p class="text-sm font-semibold text-slate-200">Arabic — a meaningful improvement</p>
+          <span class="pill" style="background:#1a2d1a;color:#4ade80">14% better</span>
+        </div>
+        <p class="text-slate-400 text-sm">Arabic builds words from roots — typically trilateral, but also quadrilateral or quinqueliteral — combined with vowel patterns and affixes. The same root produces dozens of related words across different patterns. Telling the model the root and the pattern helped it recognise those relationships faster. The improvement would likely be even larger with a bigger vocabulary — we had to cut 19% of words as "unknown" due to memory limits.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#394195">
+        <div class="flex justify-between items-start mb-2">
+          <p class="text-sm font-semibold text-slate-200">English — almost no difference</p>
+          <span class="pill" style="background:#2d2010;color:#fb923c">1% difference</span>
+        </div>
+        <p class="text-slate-400 text-sm">English has relatively simple word structure — most words do not change much based on grammar. Standard tokenization already handles English well enough that the extra grammar hint adds almost nothing. This is the expected result, and it makes English the weakest test case for this hypothesis.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">The pattern is clear</p>
+        <p class="text-slate-300 text-sm">The more complex a language's grammar, the more the model benefits from being told about it upfront. This is exactly what the hypothesis predicted. The full-scale experiment confirms this for English — and the mini experiment gives us a strong directional signal for Arabic and Turkish.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5 — Full Experiment: Setup -->
+<section class="slide" id="slide-5">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Full-Scale Experiment</h2>
+    <p class="text-slate-400 mb-6">Same hypothesis, 70× more parameters, 500× more data. Rented A100 80GB on Vast.ai.</p>
+    <div class="grid grid-cols-3 gap-4 mb-5 fade-in">
+      <div class="card text-center">
+        <div class="stat-num" style="color:#e63329">125M</div>
+        <div class="stat-label">parameters per model</div>
+      </div>
+      <div class="card text-center">
+        <div class="stat-num text-purple-400">2.5B</div>
+        <div class="stat-label">training tokens</div>
+      </div>
+      <div class="card text-center">
+        <div class="stat-num text-green-400">76,293</div>
+        <div class="stat-label">training steps</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Architecture</p>
+        <p class="text-slate-300 text-sm">12-layer GPT, 768 hidden dim, 12 heads. Chinchilla-optimal token budget for model size. Identical architecture for baseline and morph — only the tokenization and embedding strategy differ.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">English morph tokenizer</p>
+        <p class="text-slate-300 text-sm">Full derivational + inflectional morphology engine. Produced 27M unique root-POS tokens — embedding table alone ~41GB. Capped to top-50k by frequency. Unknown token rate: 10.68%.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Training data</p>
+        <p class="text-slate-300 text-sm">English Wikipedia — 77.6M sentences, 2.5B whitespace tokens. Same raw text for both baseline and morph. No data augmentation.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">What was completed</p>
+        <p class="text-slate-300 text-sm">EN baseline and EN morph both trained to full Chinchilla budget (76,293 steps, 2.5B tokens each). Both evaluated on held-out test set. AR and TR deferred — see later slides.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6 — EN Learning Curves -->
+<section class="slide" id="slide-6">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">English — Learning Curves</h2>
+    <p class="text-slate-400 mb-6">Loss over training tokens. Does the morph model learn faster?</p>
+    <div class="card chart-wrap" id="learning-curve-chart" style="height:400px;"></div>
     <div class="mt-4 flex gap-6 text-sm text-slate-400" id="curve-legend"></div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 3 — Perplexity Comparison
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-4">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Final Perplexity</h2>
-    <p class="text-slate-400 mb-8">Lower is better. How confused is the model at predicting the next word?</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in" id="ppl-cards"></div>
-    <div class="mt-8 card chart-wrap fade-in" id="ppl-bar-chart" style="height:280px;"></div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 4 — Tokens per Meaning Unit
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-5">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Representational Efficiency</h2>
-    <p class="text-slate-400 mb-2">Tokens per meaning unit — how many tokens does the model need to express one idea?</p>
-    <p class="text-slate-500 text-sm mb-8">A lower number means the model packs more meaning into fewer tokens.</p>
-    <div class="card chart-wrap fade-in" id="tpu-chart" style="height:300px;"></div>
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 fade-in" id="tpu-delta-cards"></div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 5 — Morphological Agreement
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-6">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Grammatical Agreement Accuracy</h2>
-    <p class="text-slate-400 mb-2">Does the model produce grammatically correct forms?</p>
-    <p class="text-slate-500 text-sm mb-8">
-      Tested on subject-verb agreement, case marking, and number agreement.
-      Higher = more grammatically consistent outputs.
-    </p>
-    <div class="card chart-wrap fade-in" id="agreement-chart" style="height:300px;"></div>
-    <div class="mt-6 card fade-in">
-      <p class="text-slate-400 text-sm">
-        Agreement accuracy is only meaningful for morph models — baseline models have no explicit grammatical structure to validate against.
-        Baseline values reflect the model's implicit grammatical consistency.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 6 — Learning Efficiency (steps to threshold)
-════════════════════════════════════════════════════════════ -->
+<!-- SLIDE 7 — EN Results -->
 <section class="slide" id="slide-7">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Learning Efficiency</h2>
-    <p class="text-slate-400 mb-2">How many training tokens did each model need to reach a target loss?</p>
-    <p class="text-slate-500 text-sm mb-8">
-      If the morph model reaches the threshold earlier, it learned the same thing with less data.
-      That is the core claim of this experiment.
-    </p>
-    <div class="card chart-wrap fade-in" id="efficiency-chart" style="height:320px;"></div>
-    <div class="mt-4 text-xs text-slate-500" id="efficiency-note"></div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 7 — Downstream Tasks
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-8">
-  <div class="max-w-5xl w-full">
-    <h2 class="text-3xl font-bold mb-2">Downstream Task Performance</h2>
-    <p class="text-slate-400 mb-2">Real-world usefulness — sentiment analysis and reading comprehension.</p>
-    <p class="text-slate-500 text-sm mb-8">
-      A frozen model with a single linear layer on top. If the model learned better representations,
-      even a tiny classifier on top will do better.
-    </p>
-    <div class="card overflow-x-auto fade-in">
-      <table id="downstream-table">
-        <thead>
-          <tr>
-            <th>Model</th><th>Task</th><th>Accuracy</th><th>F1</th>
-            <th>Exact Match</th><th>Latency (ms)</th>
-          </tr>
-        </thead>
-        <tbody id="downstream-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 8 — Compute Efficiency
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-9">
-  <div class="max-w-5xl w-full">
-  <h2 class="text-3xl font-bold mb-2">Compute Efficiency</h2>
-  <p class="text-slate-400 mb-8">FLOPs per token vs test perplexity — the Pareto view.</p>
-  <div class="card chart-wrap fade-in" id="pareto-chart" style="height:360px;"></div>
-  <p class="text-slate-500 text-xs mt-3">
-    Points toward the bottom-left are better: lower compute cost AND lower perplexity.
-  </p>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 9 — Full Summary Table
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-10">
   <div class="max-w-6xl w-full">
-    <h2 class="text-3xl font-bold mb-2">All Metrics — Side by Side</h2>
-    <p class="text-slate-400 mb-6">Every measured number for all six models.</p>
-    <div class="card overflow-x-auto fade-in">
-      <table id="summary-table">
-        <thead>
-          <tr>
-            <th>Model</th><th>Test PPL</th><th>Tokens/Unit</th>
-            <th>Agreement</th><th>Nats/Morpheme</th>
-            <th>FLOPs/Token</th><th>Latency (ms)</th><th>Train Time</th>
-          </tr>
-        </thead>
-        <tbody id="summary-tbody"></tbody>
-      </table>
+    <h2 class="text-3xl font-bold mb-1">English — Full-Scale Results</h2>
+    <p class="text-slate-400 mb-1">125M parameters. 2.5 billion words of training data. Both models trained to completion.</p>
+    <p class="text-yellow-600 text-xs mb-5">Important caveat: the grammar-aware model had to cut its vocabulary from 27 million word-forms down to 50,000 due to memory limits. About 1 in 10 words became "unknown". This artificially hurts its score — the numbers below are not a fair fight.</p>
+    <div class="grid grid-cols-2 gap-4 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 1 — How confused was the model?</p>
+        <div class="flex justify-around mb-2">
+          <div class="text-center">
+            <div class="stat-num" style="color:#394195">39.4</div>
+            <div class="stat-label">Standard model</div>
+          </div>
+          <div class="text-center">
+            <div class="stat-num" style="color:#a74d79">55.5</div>
+            <div class="stat-label">Grammar-aware model</div>
+          </div>
+        </div>
+        <p class="text-slate-500 text-xs">The grammar-aware model scores worse here — but this is largely because 10.68% of its words were cut to "unknown". Every unknown word is a guaranteed wrong prediction. Without that handicap, the gap would likely close or reverse.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 2 — Did it learn faster?</p>
+        <p class="text-slate-300 text-sm mb-2">Both models converged at roughly the same rate. The learning curves run nearly parallel — the grammar hint did not give English a meaningful head start, consistent with the mini experiment result.</p>
+        <p class="text-slate-500 text-xs">This is expected for English. The language is simple enough that standard tokenization already captures most of the structure.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 3 — How much meaning per token?</p>
+        <div class="flex justify-around mb-2">
+          <div class="text-center">
+            <div class="stat-num" style="color:#394195">1.0×</div>
+            <div class="stat-label">Standard model</div>
+          </div>
+          <div class="text-center">
+            <div class="stat-num" style="color:#a74d79">4.91×</div>
+            <div class="stat-label">Grammar-aware model</div>
+          </div>
+        </div>
+        <p class="text-slate-500 text-xs">Each token in the grammar-aware model carries nearly 5 times more grammatical information. Instead of a raw word fragment, each token encodes the word's root plus its grammatical role.</p>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 4 — Did it learn grammar correctly?</p>
+        <div class="text-center mb-2">
+          <div class="stat-num text-green-400">100%</div>
+          <div class="stat-label">Grammar-aware model — bundle accuracy</div>
+        </div>
+        <p class="text-slate-500 text-xs">The grammar-aware model perfectly predicted every grammatical tag it was given. It fully internalised the structure — it did not just memorise it, it generalised it across the entire vocabulary.</p>
+      </div>
+    </div>
+    <div class="card mt-4 fade-in" style="border-color:#3d3d3d">
+      <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Metric 5 — Downstream tasks</p>
+      <p class="text-slate-400 text-sm">Not evaluated — compute budget ran out before downstream evaluation could run. This would have tested whether the model's internal knowledge is useful for real tasks like sentiment analysis or reading comprehension.</p>
     </div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════════════════════════
-     SLIDE 10 — Findings
-════════════════════════════════════════════════════════════ -->
-<section class="slide" id="slide-11">
-  <div class="max-w-4xl w-full">
-    <h2 class="text-3xl font-bold mb-2">What the Data Shows</h2>
-    <p class="text-slate-400 mb-8">No conclusions are pre-written. These are the measured results.</p>
-    <div id="findings-container" class="space-y-4 fade-in"></div>
-    <div class="mt-8 card border-slate-600">
-      <p class="text-slate-500 text-xs">
-        Results are reported as measured. Correlation is not framed as causation.
-        This experiment is governed by a frozen scientific contract (experimental_contract.md).
-      </p>
+<!-- SLIDE 8 — AR & TR: Deferred -->
+<section class="slide" id="slide-8">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">Arabic & Turkish — Deferred</h2>
+    <p class="text-slate-400 mb-6">The infrastructure was built. The training never finished.</p>
+    <div class="space-y-4 fade-in">
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">What was completed</p>
+        <div class="space-y-2 text-sm text-slate-300">
+          <p>AR and TR corpora downloaded — 9.6M and 3.75M sentences respectively (expanded to MADLAD-400 after initial source exhaustion).</p>
+          <p>Baseline tokenizers trained (32k BPE vocab each). Baseline token arrays encoded.</p>
+          <p>Morphology engines implemented — Arabic root×template (النحو والصرف), Turkish suffix-chain (Dilbilgisi).</p>
+          <p>AR and TR baseline models trained to 76,293 steps on the new instance. Checkpoints saved locally.</p>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(248,113,113,0.4)">
+        <p class="text-xs text-red-400 uppercase tracking-wider mb-2">What was not completed</p>
+        <div class="space-y-2 text-sm text-slate-300">
+          <p>AR and TR morph preprocessing — never started on the new instance.</p>
+          <p>AR and TR morph training — never started.</p>
+          <p>AR and TR evaluation — credits ran out before eval scripts could run on the baseline checkpoints.</p>
+        </div>
+      </div>
+      <div class="card">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">What the mini experiment suggests</p>
+        <p class="text-slate-300 text-sm">At small scale, AR morph beats baseline by 14% and TR morph beats baseline by 57%. If those ratios hold at full scale — which the mini experiment cannot confirm — the effect would be far more pronounced than what we observed for English. The full three-language experiment is estimated at ~€1,800 total compute.</p>
+      </div>
     </div>
   </div>
+</section>
+
+<!-- SLIDE 9 — What Actually Happened -->
+<section class="slide" id="slide-9">
+  <div class="max-w-6xl w-full">
+    <h2 class="text-3xl font-bold mb-2">What Actually Happened</h2>
+    <p class="text-slate-400 mb-6">The experiment behind the experiment.</p>
+    <div class="space-y-3 fade-in">
+      <div class="card border-l-4" style="border-left-color:#394195">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 8 — Start</p>
+        <p class="text-slate-300 text-sm">Dry run passed. Full download started. English hit 2.5B tokens at 77.6M sentences. Arabic and Turkish ran out of sources at 9.6M and 3.75M — a 7x and 15x shortfall. OSCAR-2301 turned out to be gated. MADLAD-400 was the fix.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#f87171">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 10, 10:15 UTC+1 — First Reboot</p>
+        <p class="text-slate-300 text-sm">Provider rebooted the instance mid-run. EN morph preprocessing was at 36M/74M sentences. No checkpointing existed at the time — zero output saved. ~$48 lost. Checkpointing was added, 32 parallel workers enabled.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#fb923c">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 11, 03:55 UTC+1 — Pool Deadlock</p>
+        <p class="text-slate-300 text-sm">27/33 chunks done, then <code>multiprocessing.Pool.map()</code> hung — workers alive, 99% CPU idle. Memory pressure on large chunks. Fix: <code>maxtasksperchild=1</code> to recycle workers after each chunk.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#f87171">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 12, 00:50 UTC+1 — Second Reboot</p>
+        <p class="text-slate-300 text-sm">Instance rebooted again, wiping all processed data. 24/33 chunks had been backed up locally. Re-uploaded, resumed from chunk 24. All 33 chunks done by 13:45. EN baseline trained 18:15–23:20.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#a74d79">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 13 — Vocabulary Explosion</p>
+        <p class="text-slate-300 text-sm">EN morph training failed: CUDA OOM trying to allocate 38.74 GiB. The morph tokenizer had produced 27,079,783 unique root-POS tokens — embedding table alone ~41GB. Capped to top-50k by frequency. Unknown rate: 10.68%. Training completed in 5.7 hrs.</p>
+      </div>
+      <div class="card border-l-4" style="border-left-color:#6b6b6b">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Mar 14 — Credits Exhausted</p>
+        <p class="text-slate-300 text-sm">AR and TR baseline models trained to completion (76,293 steps each). Evaluation queued but credits ran out before results were confirmed. AR/TR morph training never started.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9b — Questions -->
+<section class="slide" id="slide-9b" style="display:flex;align-items:center;justify-content:center;">
+  <h2 class="text-6xl font-bold" style="color:#fff;letter-spacing:-0.02em;">Questions?</h2>
+</section>
+
+<!-- SLIDE 9c — Thank You -->
+<section class="slide" id="slide-9c" style="display:flex;align-items:center;justify-content:center;">
+  <h2 class="text-6xl font-bold" style="color:#fff;letter-spacing:-0.02em;">Thank You</h2>
 </section>
 
 </div><!-- /slides-container -->
-
+<script src="data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
