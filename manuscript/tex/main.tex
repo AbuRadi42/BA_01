@@ -1,0 +1,105 @@
+% =====================================================================
+% Morphological Efficiency in Multilingual Language Models
+% Submission to Natural Language Processing (Cambridge University Press)
+%
+% TEMPLATE NOTE
+% =============
+% This file compiles standalone with `article`. Before submission, replace
+% the document-class line below with the Cambridge NLP class (cambridge7A
+% or equivalent, distributed via the journal's Overleaf template or via
+% the "NLP LaTeX Files" download from the journal's Instructions for
+% Contributors). The section structure, bibliography style, and figure
+% references are written to be portable; only the preamble should need
+% adjustment when swapping templates.
+% =====================================================================
+
+\documentclass[11pt, a4paper]{article}
+
+% -- Packages -----------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
+\usepackage{natbib}          % author-date citations; Cambridge compatible
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, citecolor=blue!60!black, linkcolor=blue!60!black, urlcolor=blue!60!black}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{csquotes}
+% Arabic script support for the case-study section.
+% When compiled under the Cambridge template, verify the correct package
+% name and font configuration for polyglossia or arabtex.
+\usepackage{fontspec}        % requires XeLaTeX or LuaLaTeX
+\newfontfamily\arabicfont[Script=Arabic]{Amiri}   % fallback if Amiri unavailable
+% -----------------------------------------------------------------------
+
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\singlespacing
+
+% Figure path
+\graphicspath{{../figures/}}
+
+% Title and authors
+\title{%
+Morphology-Aware Tokenization as a Capacity Lever: \\
+Rethinking Scaling Laws for Morphologically Rich Languages
+}
+
+\author{%
+Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0008-0716-7598}{0009-0008-0716-7598}. Email: \href{mailto:Sameh.AbuRadi@CODE.Berlin}{Sameh.AbuRadi@CODE.Berlin}.} \\
+\textit{CODE University of Applied Sciences, Berlin} \\
+\textit{Supervised by Fabian Geier}
+}
+
+\date{Draft of \today}
+
+\begin{document}
+\maketitle
+
+% -- Abstract -----------------------------------------------------------
+\input{sections/sec_01_abstract}
+
+\vspace{6pt}
+\noindent\textbf{Keywords:} morphological tokenization; transformer scaling laws; linguistic typology; information theory in NLP; edge-hostable language models; Agglutinative Compounding Effect; Templatic Lexical Surplus.
+
+\vspace{12pt}
+
+% -- Body ---------------------------------------------------------------
+\input{sections/sec_02_introduction}
+\input{sections/sec_03_related_work}
+\input{sections/sec_04_framework}
+\input{sections/sec_05_case_studies}
+\input{sections/sec_06_results}
+\input{sections/sec_07_discussion}
+\input{sections/sec_08_conclusion}
+
+% -- References ---------------------------------------------------------
+\bibliographystyle{plainnat}  % swap for Cambridge NLP style when template installed
+\bibliography{references}
+
+% -- Disclosures (per Cambridge NLP policy) -----------------------------
+
+\section*{Declarations}
+
+\paragraph{Use of generative AI tools.}
+Claude (Anthropic) was used during manuscript preparation to assist with
+prose drafting, derivation cross-checking, and script scaffolding.
+All scientific claims, citations, numerical results, and final wording were
+verified and revised by the human author.
+
+\paragraph{Competing interests.}
+The author declares no competing interests.
+
+\paragraph{Data and code availability.}
+Source code for the three grammar engines, the Phase 1 training pipeline,
+and the analysis scripts (\texttt{compute\_hl.py}, \texttt{fit\_alpha.py},
+\texttt{make\_figures.py}) is available from the corresponding author on
+request, pending institutional archiving.
+
+\end{document}

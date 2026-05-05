@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Basque Morphology &mdash; Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#ec4899',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .section-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, #ec4899, #f472b6, #f9a8d4);
+      border-radius: 1px; margin: 0 auto;
+    }
+    .morpheme-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; margin: 2px;
+    }
+    .glow-pink { box-shadow: 0 0 30px rgba(236,72,153,0.3); }
+    .stat-callout {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 24px; text-align: center;
+    }
+    .tag-grid-cell {
+      width: 6px; height: 6px; border-radius: 1px; display: inline-block;
+      background: rgba(236,72,153,0.15); transition: all 0.3s ease;
+    }
+    .decomp-step {
+      background: linear-gradient(135deg, rgba(236,72,153,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(236,72,153,0.15); border-radius: 16px; padding: 24px;
+    }
+    .token-box {
+      display: inline-block; padding: 4px 8px; border-radius: 6px; margin: 2px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    }
+
+    /* Three-lane highway */
+    .lane {
+      height: 40px; border-radius: 8px; position: relative; overflow: hidden;
+    }
+    .lane-fill {
+      height: 100%; border-radius: 8px; position: absolute; left: 0; top: 0;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+    .lane.active .lane-fill { width: 100%; }
+
+    /* Agreement matrix */
+    .matrix-cell {
+      width: 36px; height: 28px; border-radius: 4px; display: flex;
+      align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      background: rgba(236,72,153,0.05); border: 1px solid rgba(236,72,153,0.1);
+      transition: all 0.4s ease; cursor: default;
+    }
+    .matrix-cell.highlight {
+      background: rgba(236,72,153,0.25); border-color: #ec4899;
+      box-shadow: 0 0 12px rgba(236,72,153,0.4); color: #f9a8d4;
+    }
+    .matrix-cell:hover {
+      background: rgba(236,72,153,0.15); border-color: rgba(236,72,153,0.4);
+    }
+
+    /* Ergativity toggle */
+    .erg-case {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    }
+
+    @keyframes converge {
+      0% { opacity: 0.3; transform: scaleX(0.3); }
+      100% { opacity: 1; transform: scaleX(1); }
+    }
+    .converge-anim { animation: converge 1.5s ease-out forwards; }
+
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+
+    /* === Inside the Engine === */
+    .engine-node {
+      background: rgba(236,72,153,0.06);
+      border: 1px solid rgba(236,72,153,0.18);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .engine-node-accent {
+      background: rgba(236,72,153,0.12);
+      border: 1px solid rgba(236,72,153,0.35);
+      color: #f472b6;
+    }
+    .engine-arrow-down {
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+      margin: 4px 0; color: rgba(236,72,153,0.4); font-size: 0.85rem; line-height: 1;
+    }
+    .engine-arrow-down .arrow-line {
+      width: 1px; height: 14px; background: rgba(236,72,153,0.25);
+    }
+    .engine-branch {
+      border-left: 2px solid rgba(236,72,153,0.15);
+      padding-left: 16px; margin-left: 12px; margin-top: 6px;
+    }
+    .engine-branch-item {
+      position: relative; padding: 5px 0; font-size: 0.72rem; color: #94a3b8;
+    }
+    .engine-branch-item::before {
+      content: ''; position: absolute; left: -16px; top: 14px;
+      width: 12px; height: 1px; background: rgba(236,72,153,0.2);
+    }
+    .glass-engine {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+    }
+    .accent-e { color: #f472b6; }
+    .aux-matrix-cell {
+      width: auto; min-width: 44px; height: 32px; border-radius: 4px; display: flex;
+      align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+      background: rgba(236,72,153,0.04); border: 1px solid rgba(236,72,153,0.08);
+      transition: all 0.4s ease; cursor: pointer; padding: 0 4px;
+    }
+    .aux-matrix-cell:hover {
+      background: rgba(236,72,153,0.2); border-color: #ec4899;
+      box-shadow: 0 0 12px rgba(236,72,153,0.4); color: #f9a8d4;
+    }
+    .aux-matrix-cell.lit {
+      background: rgba(236,72,153,0.25); border-color: #ec4899;
+      box-shadow: 0 0 16px rgba(236,72,153,0.5); color: #fce7f3;
+    }
+    .compare-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px;
+      font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    }
+    .amb-card {
+      background: rgba(236,72,153,0.06); border: 1px solid rgba(236,72,153,0.15);
+      border-radius: 10px; padding: 10px 14px; transition: all 0.3s ease;
+    }
+    .erg-flow-node {
+      background: rgba(236,72,153,0.08); border: 1px solid rgba(236,72,153,0.2);
+      border-radius: 10px; padding: 10px 16px; text-align: center;
+      font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ======================================== -->
+  <!-- SECTION 1: HEADER -->
+  <!-- ======================================== -->
+  <header class="relative pt-16 pb-12 md:pt-24 md:pb-16 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
+           style="background: radial-gradient(ellipse at center, rgba(236,72,153,0.2) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a href="index.html" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-pink-400 mb-6 hover:text-pink-300 transition-colors">&larr; All Languages</a>
+      <h1 id="header-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.08] mb-4 opacity-0">
+        <span class="text-pink-300">Euskara</span>
+        <span class="text-slate-500 mx-3">&mdash;</span>
+        Basque
+      </h1>
+      <p class="text-sm text-slate-500 mb-4 opacity-0" id="header-isolate">Language isolate. No known relatives. Predates Indo-European expansion.</p>
+      <div class="flex items-center justify-center gap-3 mb-6 opacity-0" id="header-badges">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(236,72,153,0.15); color: #ec4899;">Polypersonal</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(139,92,246,0.15); color: #a78bfa;">Ergative</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(251,191,36,0.15); color: #fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex items-center justify-center gap-4 opacity-0" id="header-meter">
+        <span class="text-sm text-slate-400">Complexity</span>
+        <div class="w-48 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
+          <div class="h-full rounded-full" style="background: linear-gradient(90deg, #ec4899, #f472b6); width: 90%;"></div>
+        </div>
+        <span class="text-sm font-mono text-pink-300">~190 bundles</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2: HOW BASQUE BUILDS WORDS -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="how-it-works">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-16">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">How Basque Builds Words</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Basque packs <strong class="text-pink-300">three agreement slots</strong> into a single auxiliary verb. Subject, object, and indirect object converge like three lanes merging into one tunnel.
+        </p>
+      </div>
+
+      <!-- Three-Lane Highway -->
+      <div class="mb-20" id="three-lane">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">The Three-Lane Highway</p>
+          <p class="text-sm text-slate-400">Three streams of information. One auxiliary word.</p>
+        </div>
+
+        <div class="rounded-2xl p-6 md:p-8" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);">
+          <!-- Lanes -->
+          <div class="space-y-3 mb-8">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-blue-400 w-24 flex-shrink-0 text-right">ABS (NOR)</span>
+              <div class="lane flex-1" style="background:rgba(96,165,250,0.1);">
+                <div class="lane-fill" style="background:linear-gradient(90deg, rgba(96,165,250,0.05), rgba(96,165,250,0.4));"></div>
+                <div class="absolute inset-0 flex items-center px-4">
+                  <span class="text-xs font-mono text-blue-300 opacity-0 lane-label">3SG &rarr; &ldquo;it&rdquo; (the object)</span>
+                </div>
+              </div>
+              <div class="w-16 text-center">
+                <span class="font-mono text-xl font-bold text-blue-400">d-</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-emerald-400 w-24 flex-shrink-0 text-right">DAT (NORI)</span>
+              <div class="lane flex-1" style="background:rgba(52,211,153,0.1);">
+                <div class="lane-fill" style="background:linear-gradient(90deg, rgba(52,211,153,0.05), rgba(52,211,153,0.4));"></div>
+                <div class="absolute inset-0 flex items-center px-4">
+                  <span class="text-xs font-mono text-emerald-300 opacity-0 lane-label">3SG &rarr; &ldquo;to him/her&rdquo;</span>
+                </div>
+              </div>
+              <div class="w-16 text-center">
+                <span class="font-mono text-xl font-bold text-emerald-400">-o-</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-pink-400 w-24 flex-shrink-0 text-right">ERG (NORK)</span>
+              <div class="lane flex-1" style="background:rgba(236,72,153,0.1);">
+                <div class="lane-fill" style="background:linear-gradient(90deg, rgba(236,72,153,0.05), rgba(236,72,153,0.4));"></div>
+                <div class="absolute inset-0 flex items-center px-4">
+                  <span class="text-xs font-mono text-pink-300 opacity-0 lane-label">1SG &rarr; &ldquo;I&rdquo; (the agent)</span>
+                </div>
+              </div>
+              <div class="w-16 text-center">
+                <span class="font-mono text-xl font-bold text-pink-400">-t</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Convergence point -->
+          <div class="flex items-center justify-center gap-4 mb-6">
+            <div class="h-px flex-1" style="background:linear-gradient(90deg, transparent, rgba(236,72,153,0.3));"></div>
+            <div class="p-4 rounded-xl glow-pink" style="background:rgba(236,72,153,0.12);border:2px solid #ec4899;" id="converge-box">
+              <p class="font-mono text-3xl md:text-4xl font-black text-white tracking-wider">d-i-o-t</p>
+              <p class="font-mono text-sm text-pink-300 mt-1">diot</p>
+            </div>
+            <div class="h-px flex-1" style="background:linear-gradient(90deg, rgba(236,72,153,0.3), transparent);"></div>
+          </div>
+
+          <div class="text-center">
+            <p class="text-sm text-slate-400 mb-2">&ldquo;I [verb] it to him/her&rdquo;</p>
+            <p class="text-xs text-slate-500">Three agreement lanes &rarr; 4 characters. This is the densest morphological encoding in the experiment.</p>
+          </div>
+
+          <!-- More examples -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8">
+            <div class="text-center p-3 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+              <p class="font-mono text-lg text-pink-300 font-bold">dut</p>
+              <p class="text-[10px] text-slate-500">I have it</p>
+              <p class="text-[9px] text-slate-600">ABS.3SG + ERG.1SG</p>
+            </div>
+            <div class="text-center p-3 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+              <p class="font-mono text-lg text-pink-300 font-bold">diegu</p>
+              <p class="text-[10px] text-slate-500">we [v] them to him</p>
+              <p class="text-[9px] text-slate-600">ABS.3PL + DAT.3SG + ERG.1PL</p>
+            </div>
+            <div class="text-center p-3 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+              <p class="font-mono text-lg text-pink-300 font-bold">naute</p>
+              <p class="text-[10px] text-slate-500">they have me</p>
+              <p class="text-[9px] text-slate-600">ABS.1SG + ERG.3PL</p>
+            </div>
+            <div class="text-center p-3 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+              <p class="font-mono text-lg text-pink-300 font-bold">zait</p>
+              <p class="text-[10px] text-slate-500">it is to me</p>
+              <p class="text-[9px] text-slate-600">ABS.3SG + DAT.1SG</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOR-NORK Agreement Matrix -->
+      <div class="mb-20" id="matrix-section">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">NOR-NORK Agreement Matrix</p>
+          <p class="text-sm text-slate-400">Present tense transitive auxiliary. Each cell is a unique word form.</p>
+        </div>
+
+        <div class="rounded-2xl p-6 md:p-8 overflow-x-auto" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);">
+          <table class="mx-auto" style="border-spacing: 4px; border-collapse: separate;">
+            <thead>
+              <tr>
+                <th class="w-20"></th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.1SG</th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.2SG</th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.3SG</th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.1PL</th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.2PL</th>
+                <th class="text-[10px] font-mono text-blue-400 text-center px-1">ABS.3PL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.1SG</td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="zaitut">zaitut</div></td>
+                <td><div class="matrix-cell highlight" data-form="dut">dut</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="zaituzt.">zaitzt.</div></td>
+                <td><div class="matrix-cell" data-form="ditut">ditut</div></td>
+              </tr>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.2SG</td>
+                <td><div class="matrix-cell" data-form="nauzu">nauzu</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="duzu">duzu</div></td>
+                <td><div class="matrix-cell" data-form="gaituzu">gaituzu</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="dituzu">dituzu</div></td>
+              </tr>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.3SG</td>
+                <td><div class="matrix-cell" data-form="nau">nau</div></td>
+                <td><div class="matrix-cell" data-form="zaitu">zaitu</div></td>
+                <td><div class="matrix-cell highlight" data-form="du">du</div></td>
+                <td><div class="matrix-cell" data-form="gaitu">gaitu</div></td>
+                <td><div class="matrix-cell" data-form="zaituzte">zaituzte</div></td>
+                <td><div class="matrix-cell" data-form="ditu">ditu</div></td>
+              </tr>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.1PL</td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="zaitugu">zaitugu</div></td>
+                <td><div class="matrix-cell" data-form="dugu">dugu</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="zaitztgu.">zaitztgu.</div></td>
+                <td><div class="matrix-cell" data-form="ditugu">ditugu</div></td>
+              </tr>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.2PL</td>
+                <td><div class="matrix-cell" data-form="nauzue">nauzue</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="duzue">duzue</div></td>
+                <td><div class="matrix-cell" data-form="gaituzue">gaituzue</div></td>
+                <td><div class="matrix-cell text-slate-600">&mdash;</div></td>
+                <td><div class="matrix-cell" data-form="dituzue">dituzue</div></td>
+              </tr>
+              <tr>
+                <td class="text-[10px] font-mono text-pink-400 text-right pr-2">ERG.3PL</td>
+                <td><div class="matrix-cell" data-form="naute">naute</div></td>
+                <td><div class="matrix-cell" data-form="zaituzte">zaituzte</div></td>
+                <td><div class="matrix-cell highlight" data-form="dute">dute</div></td>
+                <td><div class="matrix-cell" data-form="gaituzte">gaituzte</div></td>
+                <td><div class="matrix-cell" data-form="zaituztete">zaituztete</div></td>
+                <td><div class="matrix-cell" data-form="dituzte">dituzte</div></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="text-[10px] text-slate-600 text-center mt-4">36 cells in present tense alone. Multiply by past, hypothetical, imperative &rarr; ~132 transitive forms. Add NOR-NORI-NORK (ditransitive) &rarr; 200+ additional forms.</p>
+        </div>
+      </div>
+
+      <!-- Ergativity Demo -->
+      <div class="mb-12" id="ergativity">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">Ergative-Absolutive Alignment</p>
+          <p class="text-sm text-slate-400">The child changes case depending on transitivity.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Intransitive -->
+          <div class="rounded-2xl p-6" style="background:rgba(96,165,250,0.04);border:1px solid rgba(96,165,250,0.1);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-bold text-blue-400 px-2 py-0.5 rounded" style="background:rgba(96,165,250,0.15);">Intransitive</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <div>
+                <span class="font-mono text-xl text-white font-bold">Umea</span>
+                <span class="erg-case ml-1" style="background:rgba(96,165,250,0.2);color:#93c5fd;">ABS</span>
+              </div>
+              <span class="font-mono text-lg text-slate-400">lo dago</span>
+            </div>
+            <p class="text-sm text-slate-400">&ldquo;The child sleeps&rdquo;</p>
+            <p class="text-xs text-slate-500 mt-2">Child = sole argument of intransitive verb &rarr; <strong class="text-blue-400">absolutive</strong> case (unmarked)</p>
+          </div>
+
+          <!-- Transitive -->
+          <div class="rounded-2xl p-6" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-bold text-pink-400 px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.15);">Transitive</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              <div>
+                <span class="font-mono text-xl text-white font-bold">Umeak</span>
+                <span class="erg-case ml-1" style="background:rgba(236,72,153,0.2);color:#f9a8d4;">ERG</span>
+              </div>
+              <div>
+                <span class="font-mono text-xl text-white">liburua</span>
+                <span class="erg-case ml-1" style="background:rgba(96,165,250,0.2);color:#93c5fd;">ABS</span>
+              </div>
+              <span class="font-mono text-lg text-slate-400">irakurtzen du</span>
+            </div>
+            <p class="text-sm text-slate-400">&ldquo;The child reads the book&rdquo;</p>
+            <p class="text-xs text-slate-500 mt-2">Child = agent of transitive verb &rarr; <strong class="text-pink-400">ergative</strong> case (-k). Book = patient &rarr; <strong class="text-blue-400">absolutive</strong>.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl p-6" style="background:rgba(52,211,153,0.04);border:1px solid rgba(52,211,153,0.1);">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-emerald-400 px-2 py-0.5 rounded" style="background:rgba(52,211,153,0.15);">Ditransitive</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <div>
+              <span class="font-mono text-xl text-white font-bold">Umeak</span>
+              <span class="erg-case ml-1" style="background:rgba(236,72,153,0.2);color:#f9a8d4;">ERG</span>
+            </div>
+            <div>
+              <span class="font-mono text-xl text-white">amari</span>
+              <span class="erg-case ml-1" style="background:rgba(52,211,153,0.2);color:#6ee7b7;">DAT</span>
+            </div>
+            <div>
+              <span class="font-mono text-xl text-white">liburua</span>
+              <span class="erg-case ml-1" style="background:rgba(96,165,250,0.2);color:#93c5fd;">ABS</span>
+            </div>
+            <span class="font-mono text-lg text-slate-400">eman dio</span>
+          </div>
+          <p class="text-sm text-slate-400">&ldquo;The child gives the book to the mother&rdquo;</p>
+          <p class="text-xs text-slate-500 mt-2">Three participants, three cases. The auxiliary <strong class="text-pink-300">dio</strong> encodes all three agreements: ABS.3SG + DAT.3SG + ERG.3SG.</p>
+        </div>
+      </div>
+
+      <!-- 14 cases -->
+      <div class="rounded-2xl p-6 md:p-8" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);">
+        <h3 class="text-sm font-bold text-pink-300 mb-4">14 Productive Cases</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2">
+          <div class="text-center p-2 rounded-lg" style="background:rgba(96,165,250,0.08);">
+            <p class="font-mono text-xs text-blue-300 font-bold">ABS</p>
+            <p class="text-[9px] text-slate-500">-a/-ak</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(236,72,153,0.08);">
+            <p class="font-mono text-xs text-pink-300 font-bold">ERG</p>
+            <p class="text-[9px] text-slate-500">-ak/-ek</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(52,211,153,0.08);">
+            <p class="font-mono text-xs text-emerald-300 font-bold">DAT</p>
+            <p class="text-[9px] text-slate-500">-ari/-ei</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(251,191,36,0.08);">
+            <p class="font-mono text-xs text-amber-300 font-bold">GEN</p>
+            <p class="text-[9px] text-slate-500">-aren/-en</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(139,92,246,0.08);">
+            <p class="font-mono text-xs text-violet-300 font-bold">COM</p>
+            <p class="text-[9px] text-slate-500">-arekin</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(249,115,22,0.08);">
+            <p class="font-mono text-xs text-orange-300 font-bold">INS</p>
+            <p class="text-[9px] text-slate-500">-az/-ez</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(244,114,182,0.08);">
+            <p class="font-mono text-xs text-pink-200 font-bold">INES</p>
+            <p class="text-[9px] text-slate-500">-an/-etan</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(34,211,238,0.08);">
+            <p class="font-mono text-xs text-cyan-300 font-bold">ALLAT</p>
+            <p class="text-[9px] text-slate-500">-ara/-etara</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(239,68,68,0.08);">
+            <p class="font-mono text-xs text-red-300 font-bold">ABLAT</p>
+            <p class="text-[9px] text-slate-500">-atik/-etatik</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(168,85,247,0.08);">
+            <p class="font-mono text-xs text-purple-300 font-bold">LOC_GEN</p>
+            <p class="text-[9px] text-slate-500">-ako/-etako</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(20,184,166,0.08);">
+            <p class="font-mono text-xs text-teal-300 font-bold">DEST</p>
+            <p class="text-[9px] text-slate-500">-arako</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(245,158,11,0.08);">
+            <p class="font-mono text-xs text-yellow-300 font-bold">MOT</p>
+            <p class="text-[9px] text-slate-500">-agatik</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(156,163,175,0.08);">
+            <p class="font-mono text-xs text-gray-300 font-bold">PART</p>
+            <p class="text-[9px] text-slate-500">-rik</p>
+          </div>
+          <div class="text-center p-2 rounded-lg" style="background:rgba(156,163,175,0.08);">
+            <p class="font-mono text-xs text-gray-300 font-bold">PROL</p>
+            <p class="text-[9px] text-slate-500">-tzat</p>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-600 mt-3">Definiteness is fused into the case suffix: &ldquo;etxea&rdquo; = etxe + -a (house + DEF.SG.ABS). The engine strips them as a single unit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2.5: INSIDE THE ENGINE -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="inside-engine">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-4xl font-bold text-white text-center mb-4">Inside the Engine</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Basque has the most unusual algorithm: the auxiliary is handled by a <strong class="text-pink-300">lookup table (~690 forms)</strong> rather than suffix stripping, because it is too fusional to decompose.
+      </p>
+
+      <!-- ── 1. Pipeline Flowchart ── -->
+      <div class="glass-engine p-8 md:p-12 mb-12" id="eu-pipeline">
+        <h3 class="text-lg font-bold text-white mb-6 text-center">Analysis Pipeline</h3>
+        <div class="flex flex-col items-center gap-0">
+
+          <div class="engine-node engine-node-accent text-center w-full max-w-xs" id="eu-pipe-0" style="opacity:0;">
+            Input word
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="eu-pipe-1" style="opacity:0;">
+            <span class="accent-e font-semibold">Closed-class lookup</span> <span class="text-slate-500">(~82 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return immediately</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- AUXILIARY LOOKUP - the key insight -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="eu-pipe-2" style="opacity:0; border: 2px solid rgba(236,72,153,0.3); background: rgba(236,72,153,0.05);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase text-pink-400 mb-3">Auxiliary Lookup (~690 forms)</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="text-[11px] text-slate-400 font-mono space-y-1">
+                <div>Match? &rarr; Return FULL decomposition:</div>
+                <div class="ml-3 text-pink-300">agr_obj (ABS): person + number</div>
+                <div class="ml-3 text-emerald-300">agr_subj (ERG): person + number</div>
+                <div class="ml-3 text-blue-300">agr_iobj (DAT): person + number</div>
+                <div class="ml-3 text-yellow-300">tense: PRES / PAST</div>
+                <div class="ml-3 text-violet-300">paradigm: NOR / NOR-NORK / NOR-NORI / NOR-NORI-NORK</div>
+              </div>
+              <div class="rounded-lg p-3" style="background:rgba(236,72,153,0.08); border:1px solid rgba(236,72,153,0.15);">
+                <div class="text-[11px] text-pink-300 font-bold mb-1">KEY INSIGHT</div>
+                <div class="text-[11px] text-slate-400">Auxiliaries are too fusional to decompose algorithmically. The engine uses a lookup table instead of stripping &mdash; <span class="text-pink-300">O(1) and 100% accurate</span>.</div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Step A: Inflectional -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="eu-pipe-3" style="opacity:0; border: 2px solid rgba(236,72,153,0.2); background: rgba(236,72,153,0.03);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase accent-e mb-4">Step A: Inflectional Stripping</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="rounded-lg p-3" style="background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.12);">
+                <div class="text-xs font-bold text-pink-300 mb-2">Non-finite verbs</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>-tu/-du &rarr; PERF participle</div>
+                  <div>-tzen/-ten &rarr; IMPERF</div>
+                  <div>-(r)en/-ko/-go &rarr; PROSP/future</div>
+                </div>
+              </div>
+              <div class="rounded-lg p-3" style="background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.12);">
+                <div class="text-xs font-bold text-pink-300 mb-2">Noun declension (14 cases)</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>Try longest case suffix first</div>
+                  <div>Handle fused definite article (-a/-ak/-ek)</div>
+                  <div class="text-yellow-400">ERG vs ABS ambiguity: -ak</div>
+                  <div>Adjective degree: -ago (COMP), -en (SUPER)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="eu-pipe-4" style="opacity:0;">
+            <span class="accent-e font-semibold">Step B: Derivational</span> <span class="text-slate-500">(~37 rules)</span>
+            <div class="text-[11px] text-slate-500 mt-1">-tasun, -garri, -tzaile, -keta, -era, -kuntza, -tegi, des-, bir-, ez-, gain-</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="eu-pipe-5" style="opacity:0;">
+            <span class="accent-e font-semibold">Step C: Iterative</span> <span class="text-slate-500">(max 3 rounds)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node engine-node-accent text-center w-full max-w-lg" id="eu-pipe-6" style="opacity:0;">
+            <span class="font-mono text-sm">TokenInfo(root, pos, tags)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 2. Auxiliary Lookup Matrix (NOR-NORK) ── -->
+      <div class="glass-engine p-8 md:p-12 mb-12" id="eu-aux-matrix">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">NOR-NORK Auxiliary Matrix</h3>
+        <p class="text-xs text-slate-400 text-center mb-4 max-w-lg mx-auto">
+          The engine looks up each auxiliary in this matrix. Hover over any cell to see the agreement decomposition. Click <span class="text-pink-300 font-mono">dut</span> or <span class="text-pink-300 font-mono">dituzte</span> below to see the lookup animate.
+        </p>
+
+        <!-- Interactive buttons -->
+        <div class="flex justify-center gap-3 mb-6">
+          <button class="px-4 py-1.5 rounded-lg text-xs font-mono font-bold text-pink-300 hover:text-white transition-colors" style="background:rgba(236,72,153,0.12); border:1px solid rgba(236,72,153,0.3);" onclick="highlightAuxCell('dut')">Lookup: dut</button>
+          <button class="px-4 py-1.5 rounded-lg text-xs font-mono font-bold text-pink-300 hover:text-white transition-colors" style="background:rgba(236,72,153,0.12); border:1px solid rgba(236,72,153,0.3);" onclick="highlightAuxCell('dituzte')">Lookup: dituzte</button>
+          <button class="px-4 py-1.5 rounded-lg text-xs font-mono font-bold text-slate-400 hover:text-white transition-colors" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);" onclick="clearAuxCells()">Clear</button>
+        </div>
+
+        <!-- Matrix table -->
+        <div class="overflow-x-auto">
+          <table class="mx-auto text-center" style="border-collapse: separate; border-spacing: 3px;" id="aux-table">
+            <thead>
+              <tr>
+                <th class="text-[9px] text-slate-600 p-1 w-14"></th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">3SG</th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">3PL</th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">1SG</th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">2SG</th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">1PL</th>
+                <th class="text-[9px] text-blue-400 p-1 font-mono">2PL</th>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="6" class="text-[8px] text-blue-600 pb-1">&larr; ABS (NOR) &rarr;</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">1SG</td>
+                <td><div class="aux-matrix-cell" data-form="dut" data-erg="1SG" data-abs="3SG" title="I [verb] it">dut</div></td>
+                <td><div class="aux-matrix-cell" data-form="ditut" data-erg="1SG" data-abs="3PL" title="I [verb] them">ditut</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+              </tr>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">2SG</td>
+                <td><div class="aux-matrix-cell" data-form="duzu" data-erg="2SG" data-abs="3SG" title="You [verb] it">duzu</div></td>
+                <td><div class="aux-matrix-cell" data-form="dituzu" data-erg="2SG" data-abs="3PL" title="You [verb] them">dituzu</div></td>
+                <td><div class="aux-matrix-cell" data-form="nauzu" data-erg="2SG" data-abs="1SG" title="You [verb] me">nauzu</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+              </tr>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">3SG</td>
+                <td><div class="aux-matrix-cell" data-form="du" data-erg="3SG" data-abs="3SG" title="He/she [verbs] it">du</div></td>
+                <td><div class="aux-matrix-cell" data-form="ditu" data-erg="3SG" data-abs="3PL" title="He/she [verbs] them">ditu</div></td>
+                <td><div class="aux-matrix-cell" data-form="nau" data-erg="3SG" data-abs="1SG" title="He/she [verbs] me">nau</div></td>
+                <td><div class="aux-matrix-cell" data-form="zaitu" data-erg="3SG" data-abs="2SG" title="He/she [verbs] you">zaitu</div></td>
+                <td><div class="aux-matrix-cell" data-form="gaitu" data-erg="3SG" data-abs="1PL" title="He/she [verbs] us">gaitu</div></td>
+                <td><div class="aux-matrix-cell" data-form="zaituzte" data-erg="3SG" data-abs="2PL" title="He/she [verbs] you all">zaituzte</div></td>
+              </tr>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">1PL</td>
+                <td><div class="aux-matrix-cell" data-form="dugu" data-erg="1PL" data-abs="3SG" title="We [verb] it">dugu</div></td>
+                <td><div class="aux-matrix-cell" data-form="ditugu" data-erg="1PL" data-abs="3PL" title="We [verb] them">ditugu</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+              </tr>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">2PL</td>
+                <td><div class="aux-matrix-cell" data-form="duzue" data-erg="2PL" data-abs="3SG" title="You all [verb] it">duzue</div></td>
+                <td><div class="aux-matrix-cell" data-form="dituzue" data-erg="2PL" data-abs="3PL" title="You all [verb] them">dituzue</div></td>
+                <td><div class="aux-matrix-cell" data-form="nauzue" data-erg="2PL" data-abs="1SG" title="You all [verb] me">nauzue</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+              </tr>
+              <tr>
+                <td class="text-[9px] text-pink-400 font-mono text-right pr-2">3PL</td>
+                <td><div class="aux-matrix-cell" data-form="dute" data-erg="3PL" data-abs="3SG" title="They [verb] it">dute</div></td>
+                <td><div class="aux-matrix-cell" data-form="dituzte" data-erg="3PL" data-abs="3PL" title="They [verb] them">dituzte</div></td>
+                <td><div class="aux-matrix-cell" data-form="naute" data-erg="3PL" data-abs="1SG" title="They [verb] me">naute</div></td>
+                <td><div class="aux-matrix-cell" data-form="zaituzte2" data-erg="3PL" data-abs="2SG" title="They [verb] you">zaituzte</div></td>
+                <td><div class="aux-matrix-cell" data-form="gaituzte" data-erg="3PL" data-abs="1PL" title="They [verb] us">gaituzte</div></td>
+                <td><div class="aux-matrix-cell text-slate-700">&mdash;</div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex justify-between mt-2 px-8">
+          <span class="text-[8px] text-pink-600">ERG (NORK) &darr;</span>
+          <span class="text-[8px] text-slate-600">Present tense paradigm (PRES)</span>
+        </div>
+
+        <!-- Lookup result display -->
+        <div id="aux-result" class="text-center mt-6 p-4 rounded-xl" style="opacity:0; background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.15);">
+          <span class="font-mono text-lg text-pink-300 font-bold" id="aux-result-form"></span>
+          <span class="text-slate-500 mx-2">&rarr;</span>
+          <span class="text-sm text-slate-300" id="aux-result-desc"></span>
+        </div>
+      </div>
+
+      <!-- ── 3. Auxiliary vs Algorithmic Stripping ── -->
+      <div class="glass-engine p-8 md:p-12 mb-12" id="eu-aux-vs-strip">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Why Lookup Beats Stripping</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          For most languages, the engine strips suffixes algorithmically. For Basque auxiliaries, this fails because the morphemes are <strong class="text-pink-300">fused beyond separation</strong>.
+        </p>
+
+        <div class="max-w-xl mx-auto space-y-3" id="eu-compare-steps">
+          <div class="compare-row" id="eu-cmp-0" style="opacity:0; background:rgba(236,72,153,0.04); border:1px solid rgba(236,72,153,0.1);">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">input</span>
+            <span class="text-white font-bold text-sm">dut</span>
+            <span class="text-xs text-slate-500">&mdash; can you strip this?</span>
+          </div>
+          <div class="compare-row" id="eu-cmp-1" style="opacity:0; background:rgba(236,72,153,0.04); border:1px solid rgba(236,72,153,0.1);">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">try strip</span>
+            <span class="text-xs text-slate-400"><span class="text-blue-300">d-</span> = ABS.3SG prefix? Maybe... <span class="text-pink-300">-t</span> = ERG.1SG suffix? Maybe...</span>
+          </div>
+          <div class="compare-row" id="eu-cmp-2" style="opacity:0; background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.15);">
+            <span class="text-[10px] text-red-400 w-16 shrink-0">problem</span>
+            <span class="text-xs text-slate-400">But <span class="text-white font-bold">"u"</span> is not a separable morpheme &mdash; it is <span class="text-red-400">fused</span> with the root</span>
+          </div>
+          <div class="compare-row" id="eu-cmp-3" style="opacity:0; background:rgba(239,68,68,0.04); border:1px solid rgba(239,68,68,0.15);">
+            <span class="text-[10px] text-red-400 w-16 shrink-0">verdict</span>
+            <span class="text-xs text-slate-400">Stripping requires knowing <em>all</em> prefix+root+suffix combos &rarr; impractical</span>
+          </div>
+          <div class="compare-row" id="eu-cmp-4" style="opacity:0; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15);">
+            <span class="text-[10px] text-emerald-400 w-16 shrink-0">lookup</span>
+            <span class="text-xs text-slate-400"><span class="text-emerald-300 font-bold">O(1)</span> hash lookup &rarr; <span class="text-emerald-300">100% accurate</span>, no ambiguity</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 4. The -ak Ambiguity Resolution ── -->
+      <div class="glass-engine p-8 md:p-12 mb-12" id="eu-ak-ambiguity">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">The -ak Ambiguity</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The suffix <span class="font-mono text-pink-300">-ak</span> has two incompatible interpretations. The engine tags <em>both</em> at word level and lets the sentence-level validator decide.
+        </p>
+
+        <div class="max-w-lg mx-auto" id="eu-ak-vis">
+          <div class="text-center mb-6" id="eu-ak-0" style="opacity:0;">
+            <span class="font-mono text-2xl text-white font-bold">gizon<span class="text-pink-300">ak</span></span>
+            <p class="text-xs text-slate-500 mt-1">gizon + -ak</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="amb-card" id="eu-ak-1" style="opacity:0;">
+              <div class="text-xs font-bold text-blue-300 mb-2">Interpretation 1</div>
+              <div class="text-[11px] text-slate-400 font-mono">
+                <span class="text-blue-400">ABS</span>.DEF.<span class="text-blue-400">PL</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1">"the men" (subject of intransitive OR object)</div>
+            </div>
+            <div class="amb-card" id="eu-ak-2" style="opacity:0;">
+              <div class="text-xs font-bold text-pink-300 mb-2">Interpretation 2</div>
+              <div class="text-[11px] text-slate-400 font-mono">
+                <span class="text-pink-400">ERG</span>.DEF.<span class="text-pink-400">SG</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-1">"the man" (subject of transitive verb)</div>
+            </div>
+          </div>
+
+          <div class="text-center rounded-xl p-4" id="eu-ak-3" style="opacity:0; background:rgba(236,72,153,0.06); border:1px solid rgba(236,72,153,0.15);">
+            <p class="text-[11px] text-slate-400">At <span class="text-white font-semibold">word level</span>: tag BOTH interpretations</p>
+            <p class="text-[11px] text-slate-400 mt-1">At <span class="text-white font-semibold">sentence level</span>: validator checks verb auxiliary for ERG/ABS agreement to disambiguate</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 5. Ergativity Flow ── -->
+      <div class="glass-engine p-8 md:p-12" id="eu-ergativity">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Ergativity: Case Assignment Algorithm</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Unlike most European languages, Basque assigns cases based on verb transitivity. The engine cannot determine this at word level but validates at sentence level.
+        </p>
+
+        <div class="flex flex-col items-center gap-0 max-w-md mx-auto" id="eu-erg-flow">
+          <div class="erg-flow-node w-full" id="eu-erg-0" style="opacity:0;">
+            Is the verb transitive?
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div></div>
+
+          <div class="grid grid-cols-2 gap-4 w-full" id="eu-erg-1" style="opacity:0;">
+            <div class="erg-flow-node">
+              <div class="text-xs font-bold text-emerald-300 mb-1">YES</div>
+              <div class="text-[11px] text-slate-400">Subject &rarr; <span class="text-pink-300 font-bold">ERG (-k)</span></div>
+              <div class="text-[11px] text-slate-400">Object &rarr; <span class="text-blue-300 font-bold">ABS (-&empty;/-a)</span></div>
+            </div>
+            <div class="erg-flow-node">
+              <div class="text-xs font-bold text-yellow-300 mb-1">NO</div>
+              <div class="text-[11px] text-slate-400">Subject &rarr; <span class="text-blue-300 font-bold">ABS (-&empty;/-a)</span></div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="erg-flow-node w-full" id="eu-erg-2" style="opacity:0;">
+            <div class="text-[11px] text-slate-400">Validator checks auxiliary paradigm:</div>
+            <div class="text-[11px] text-pink-300 mt-1">NOR-NORK &rarr; transitive &nbsp;|&nbsp; NOR &rarr; intransitive</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 3: LIVE DECOMPOSITION -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="decomposition">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Live Decomposition</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          A causative construction: main verb + auxiliary. The auxiliary encodes <strong class="text-pink-300">three agreement values</strong> via lookup.
+        </p>
+      </div>
+
+      <div class="text-center mb-10">
+        <p class="font-mono text-4xl md:text-5xl text-white mb-3" id="decomp-word">irakurraraziko diet</p>
+        <p class="text-sm text-slate-400">&ldquo;I will make them read it for you&rdquo;</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="decomp-steps">
+        <!-- Main verb -->
+        <div class="space-y-4">
+          <div class="decomp-step opacity-0" data-decomp>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-bold text-pink-400 px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.15);">Main Verb</span>
+              <span class="text-sm font-semibold text-white">irakurraraziko</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg" style="background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);">
+                  <span class="font-mono text-sm text-violet-300">irakur-</span>
+                </div>
+                <span class="text-xs text-slate-400">ROOT: &ldquo;read&rdquo;</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg" style="background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.2);">
+                  <span class="font-mono text-sm text-pink-300">-arazi-</span>
+                </div>
+                <span class="text-xs text-slate-400">CAUS: &ldquo;make/cause to&rdquo;</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-lg" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);">
+                  <span class="font-mono text-sm text-amber-300">-ko</span>
+                </div>
+                <span class="text-xs text-slate-400">PROSP: future/prospective</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auxiliary -->
+        <div class="space-y-4">
+          <div class="decomp-step opacity-0" data-decomp>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-bold text-pink-400 px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.15);">Auxiliary</span>
+              <span class="text-sm font-semibold text-white">diet</span>
+            </div>
+            <div class="p-4 rounded-lg glow-pink mb-3" style="background:rgba(236,72,153,0.1);border:2px solid #ec4899;">
+              <p class="text-xs text-slate-400 mb-2">Lookup &rarr; NOR-NORI-NORK paradigm</p>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="text-center p-2 rounded" style="background:rgba(96,165,250,0.15);">
+                  <p class="font-mono text-sm text-blue-300 font-bold">d-</p>
+                  <p class="text-[9px] text-slate-500">ABS.3SG</p>
+                </div>
+                <div class="text-center p-2 rounded" style="background:rgba(52,211,153,0.15);">
+                  <p class="font-mono text-sm text-emerald-300 font-bold">-e-</p>
+                  <p class="text-[9px] text-slate-500">DAT.2SG</p>
+                </div>
+                <div class="text-center p-2 rounded" style="background:rgba(236,72,153,0.15);">
+                  <p class="font-mono text-sm text-pink-300 font-bold">-t</p>
+                  <p class="text-[9px] text-slate-500">ERG.1SG</p>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-slate-500">4 characters. 3 agreement values + tense. No other language in the experiment packs this much.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Complete tag set -->
+      <div class="decomp-step opacity-0 mt-6" data-decomp>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs font-bold text-pink-400 px-2 py-0.5 rounded" style="background:rgba(236,72,153,0.15);">Result</span>
+          <span class="text-sm font-semibold text-white">Complete Tag Set</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <span class="morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;">root=irakur</span>
+          <span class="morpheme-badge" style="background:rgba(244,114,182,0.2);color:#f9a8d4;">voice=CAUS</span>
+          <span class="morpheme-badge" style="background:rgba(251,191,36,0.2);color:#fde68a;">aspect=PROSP</span>
+          <span class="morpheme-badge" style="background:rgba(96,165,250,0.2);color:#93c5fd;">abs=3SG</span>
+          <span class="morpheme-badge" style="background:rgba(52,211,153,0.2);color:#6ee7b7;">dat=2SG</span>
+          <span class="morpheme-badge" style="background:rgba(236,72,153,0.2);color:#f9a8d4;">erg=1SG</span>
+          <span class="morpheme-badge" style="background:rgba(249,115,22,0.2);color:#fdba74;">tense=PRES</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">7 tags from a 2-word construction. The auxiliary alone carries 4 tags in 4 characters.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 4: TAG INVENTORY -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="tag-inventory">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">The Tag Inventory</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          <strong class="text-pink-300">~190 unique bundles</strong> &mdash; dominated by tri-personal agreement combinations. The NOR-NORI-NORK paradigm alone produces hundreds of distinct auxiliary forms.
+        </p>
+      </div>
+
+      <div class="rounded-2xl p-8 mb-8" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);" id="tag-grid-container">
+        <div class="flex flex-wrap gap-[3px] justify-center" id="tag-grid"></div>
+        <div class="mt-6 flex flex-wrap justify-center gap-4 text-[10px]">
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#ec4899;"></div><span class="text-slate-400">Auxiliary Forms (90)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#f472b6;"></div><span class="text-slate-400">Case Suffixes (42)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#f9a8d4;"></div><span class="text-slate-400">Verb Morphology (36)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#be185d;"></div><span class="text-slate-400">Closed-Class (22)</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-pink-300 mb-1">~400</p>
+          <p class="text-xs text-slate-500">Auxiliary Verb Forms</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-pink-300 mb-1">14</p>
+          <p class="text-xs text-slate-500">Productive Cases</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-pink-300 mb-1">82</p>
+          <p class="text-xs text-slate-500">Closed-Class Entries</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-pink-300 mb-1">3</p>
+          <p class="text-xs text-slate-500">Agreement Slots per Aux</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 5: WHY THIS MATTERS FOR AI -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="ai-impact">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Why This Matters for AI</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Basque&rsquo;s fusional auxiliary verbs are opaque to BPE &mdash; subword splits destroy the tri-personal agreement structure. Morph-aware lookup recovers everything.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="rounded-2xl p-6" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#ef4444;"></div>
+            <span class="text-sm font-bold text-red-300">BPE Tokenization</span>
+          </div>
+          <p class="font-mono text-lg text-slate-300 mb-3">irakurraraziko diet</p>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">irak</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.10);color:#fca5a5;">urrar</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">aziko</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.10);color:#fca5a5;">diet</span>
+          </div>
+          <p class="text-xs text-slate-500">4 chunks. The root &ldquo;irakur&rdquo; is split across two tokens. The causative &ldquo;-arazi-&rdquo; is mangled. The auxiliary &ldquo;diet&rdquo; is a single token but opaque &mdash; its 3 agreement values are invisible.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-red-400">4</span>
+            <span class="text-xs text-slate-500">tokens, 0 features exposed</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl p-6" style="background:rgba(236,72,153,0.04);border:1px solid rgba(236,72,153,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#ec4899;"></div>
+            <span class="text-sm font-bold text-pink-300">Morph-Aware Tokenization</span>
+          </div>
+          <p class="font-mono text-lg text-slate-300 mb-3">irakurraraziko diet</p>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(139,92,246,0.15);color:#c4b5fd;">irakur</span>
+            <span class="token-box" style="background:rgba(244,114,182,0.15);color:#f9a8d4;">CAUS</span>
+            <span class="token-box" style="background:rgba(251,191,36,0.15);color:#fde68a;">PROSP</span>
+            <span class="token-box" style="background:rgba(96,165,250,0.15);color:#93c5fd;">ABS.3SG</span>
+            <span class="token-box" style="background:rgba(52,211,153,0.15);color:#6ee7b7;">DAT.2SG</span>
+            <span class="token-box" style="background:rgba(236,72,153,0.15);color:#f9a8d4;">ERG.1SG</span>
+          </div>
+          <p class="text-xs text-slate-500">6 meaningful units. Root intact. Causative explicit. All three agreement slots decoded from the auxiliary lookup table.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-pink-400">7</span>
+            <span class="text-xs text-slate-500">tags recovered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl p-8 text-center glow-pink" style="background:linear-gradient(135deg, rgba(236,72,153,0.08) 0%, rgba(236,72,153,0.02) 100%);border:1px solid rgba(236,72,153,0.2);">
+        <p class="text-4xl md:text-6xl font-black text-pink-300 mb-2">Predicted Strongest</p>
+        <p class="text-sm text-slate-400 mb-3">of all 9 languages in the experiment</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 max-w-3xl mx-auto text-left">
+          <div class="p-4 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+            <p class="text-xs font-bold text-pink-300 mb-1">Tri-personal agreement</p>
+            <p class="text-[10px] text-slate-500">Each auxiliary word encodes 3&ndash;4 agreement values that BPE cannot segment.</p>
+          </div>
+          <div class="p-4 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+            <p class="text-xs font-bold text-pink-300 mb-1">Fusional, not agglutinative</p>
+            <p class="text-[10px] text-slate-500">Morpheme boundaries are invisible in the surface form. Lookup tables are the only option.</p>
+          </div>
+          <div class="p-4 rounded-xl" style="background:rgba(236,72,153,0.06);border:1px solid rgba(236,72,153,0.15);">
+            <p class="text-xs font-bold text-pink-300 mb-1">Language isolate</p>
+            <p class="text-[10px] text-slate-500">No related languages in training data to provide analogical support. Morph-awareness is even more critical.</p>
+          </div>
+        </div>
+        <div class="mt-6 inline-block px-4 py-1.5 rounded-full text-xs font-semibold" style="background:rgba(251,191,36,0.15);color:#fbbf24;">PROJECTION &mdash; TESTING PENDING</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 6: FOOTER -->
+  <!-- ======================================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(236,72,153,0.15);color:#ec4899;">Polypersonal</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(139,92,246,0.15);color:#a78bfa;">Ergative</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(251,191,36,0.15);color:#fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4 mb-6 text-xs">
+        <a href="index.html" class="text-slate-500 hover:text-pink-400 transition-colors">Overview</a>
+        <a href="zh.html" class="text-slate-500 hover:text-pink-400 transition-colors">Mandarin</a>
+        <a href="en.html" class="text-slate-500 hover:text-pink-400 transition-colors">English</a>
+        <a href="de.html" class="text-slate-500 hover:text-pink-400 transition-colors">German</a>
+        <a href="es.html" class="text-slate-500 hover:text-pink-400 transition-colors">Spanish</a>
+        <a href="hu.html" class="text-slate-500 hover:text-pink-400 transition-colors">Hungarian</a>
+        <a href="tr.html" class="text-slate-500 hover:text-pink-400 transition-colors">Turkish</a>
+        <a href="ar.html" class="text-slate-500 hover:text-pink-400 transition-colors">Arabic</a>
+        <a href="sw.html" class="text-slate-500 hover:text-pink-400 transition-colors">Swahili</a>
+        <a href="eu.html" class="text-pink-400 font-semibold">Basque</a>
+      </div>
+      <p class="text-xs text-slate-600 text-center">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ======================================== -->
+  <!-- GSAP Animations -->
+  <!-- ======================================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Header entrance
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .fromTo('#header-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
+      .fromTo('#header-isolate', { opacity: 0 }, { opacity: 1, duration: 0.5 }, '-=0.3')
+      .fromTo('#header-badges', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2')
+      .fromTo('#header-meter', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+
+    // Three-lane highway activation
+    ScrollTrigger.create({
+      trigger: '#three-lane',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        document.querySelectorAll('.lane').forEach((lane, i) => {
+          setTimeout(() => {
+            lane.classList.add('active');
+            const label = lane.querySelector('.lane-label');
+            if (label) gsap.to(label, { opacity: 1, duration: 0.5, delay: 0.8 });
+          }, i * 400);
+        });
+        // Pulse the convergence box
+        setTimeout(() => {
+          const box = document.getElementById('converge-box');
+          box.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          box.style.transform = 'scale(1.05)';
+          setTimeout(() => box.style.transform = 'scale(1)', 500);
+        }, 1800);
+      }
+    });
+
+    // Matrix highlight cascade
+    ScrollTrigger.create({
+      trigger: '#matrix-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const cells = document.querySelectorAll('.matrix-cell[data-form]');
+        cells.forEach((cell, i) => {
+          setTimeout(() => {
+            cell.style.color = '#f9a8d4';
+            cell.style.background = 'rgba(236,72,153,0.08)';
+          }, i * 60);
+        });
+      }
+    });
+
+    // Decomposition steps
+    gsap.fromTo('[data-decomp]',
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1, y: 0, duration: 0.6, stagger: 0.3,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: '#decomp-steps', start: 'top 70%', once: true }
+      }
+    );
+
+    // --- Inside the Engine: Auxiliary matrix interactive ---
+    function highlightAuxCell(form) {
+      clearAuxCells();
+      const cell = document.querySelector('.aux-matrix-cell[data-form="' + form + '"]');
+      if (!cell) return;
+      cell.classList.add('lit');
+      const result = document.getElementById('aux-result');
+      const resultForm = document.getElementById('aux-result-form');
+      const resultDesc = document.getElementById('aux-result-desc');
+      resultForm.textContent = form;
+      const erg = cell.dataset.erg;
+      const abs = cell.dataset.abs;
+      const meanings = {
+        'dut': 'ERG.1SG + ABS.3SG = "I [verb] it"',
+        'dituzte': 'ERG.3PL + ABS.3PL = "They [verb] them"',
+        'du': 'ERG.3SG + ABS.3SG = "He/she [verbs] it"',
+        'ditu': 'ERG.3SG + ABS.3PL = "He/she [verbs] them"',
+        'nau': 'ERG.3SG + ABS.1SG = "He/she [verbs] me"',
+        'dugu': 'ERG.1PL + ABS.3SG = "We [verb] it"',
+        'dute': 'ERG.3PL + ABS.3SG = "They [verb] it"'
+      };
+      resultDesc.textContent = meanings[form] || ('ERG.' + erg + ' + ABS.' + abs);
+      gsap.to(result, { opacity: 1, duration: 0.4 });
+    }
+
+    function clearAuxCells() {
+      document.querySelectorAll('.aux-matrix-cell.lit').forEach(c => c.classList.remove('lit'));
+      gsap.to('#aux-result', { opacity: 0, duration: 0.3 });
+    }
+
+    // --- Inside the Engine: Pipeline ---
+    ScrollTrigger.create({
+      trigger: '#eu-pipeline',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const pTl = gsap.timeline();
+        for (let i = 0; i <= 6; i++) {
+          pTl.fromTo('#eu-pipe-' + i, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i === 0 ? '+=0.1' : '+=0.2');
+        }
+      }
+    });
+
+    // --- Inside the Engine: Matrix cascade ---
+    ScrollTrigger.create({
+      trigger: '#eu-aux-matrix',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const cells = document.querySelectorAll('.aux-matrix-cell[data-form]');
+        cells.forEach((cell, i) => {
+          setTimeout(() => {
+            cell.style.color = '#f9a8d4';
+            cell.style.background = 'rgba(236,72,153,0.08)';
+          }, i * 50);
+        });
+      }
+    });
+
+    // --- Inside the Engine: Comparison ---
+    ScrollTrigger.create({
+      trigger: '#eu-aux-vs-strip',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const cTl = gsap.timeline();
+        for (let i = 0; i <= 4; i++) {
+          cTl.fromTo('#eu-cmp-' + i, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.45 }, i === 0 ? '+=0.2' : '+=0.25');
+        }
+      }
+    });
+
+    // --- Inside the Engine: -ak ambiguity ---
+    ScrollTrigger.create({
+      trigger: '#eu-ak-ambiguity',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const aTl = gsap.timeline();
+        aTl
+          .fromTo('#eu-ak-0', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }, '+=0.2')
+          .fromTo('#eu-ak-1', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.2')
+          .fromTo('#eu-ak-2', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.5 }, '-=0.3')
+          .fromTo('#eu-ak-3', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '+=0.3');
+      }
+    });
+
+    // --- Inside the Engine: Ergativity flow ---
+    ScrollTrigger.create({
+      trigger: '#eu-ergativity',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const eTl = gsap.timeline();
+        eTl
+          .fromTo('#eu-erg-0', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '+=0.2')
+          .fromTo('#eu-erg-1', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.6 }, '+=0.3')
+          .fromTo('#eu-erg-2', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '+=0.3');
+      }
+    });
+
+    // Tag grid
+    (function() {
+      const grid = document.getElementById('tag-grid');
+      const colors = ['#ec4899','#f472b6','#f9a8d4','#be185d'];
+      const counts = [90, 42, 36, 22]; // total = 190
+      let cells = [];
+      counts.forEach((count, ci) => {
+        for (let i = 0; i < count; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'tag-grid-cell';
+          cell.style.background = 'rgba(236,72,153,0.08)';
+          cell.dataset.targetColor = colors[ci];
+          grid.appendChild(cell);
+          cells.push(cell);
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: '#tag-grid-container',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+          cells.forEach((cell, i) => {
+            setTimeout(() => {
+              cell.style.background = cell.dataset.targetColor;
+              cell.style.boxShadow = '0 0 4px ' + cell.dataset.targetColor + '66';
+            }, i * 8);
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

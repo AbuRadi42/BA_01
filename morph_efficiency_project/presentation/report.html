@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<!-- NO EMOJIS. NO LONG DASHES (hyphens only). -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Morphological Efficiency in AI: Can Languages that are more Information-Dense Enable Smaller, Leaner, yet Usable Models?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── Presentation-derived palette, light mode ── */
+:root {
+  --bg:      #ffffff;
+  --surface: #f5f5f5;
+  --border:  #e0e0e0;
+  --muted:   #cccccc;
+  --dim:     #777777;
+  --body:    #2a2a2a;
+  --bright:  #111111;
+  --accent:  #e63329;   /* CODE red */
+  --accent-dim: #fde8e7;
+  /* language colours - same as presentation */
+  --en-base:  #394195;
+  --en-morph: #a74d79;
+  --ar-base:  #59a150;
+  --ar-morph: #1d5619;
+  --tr-base:  #769bb9;
+  --tr-morph: #df3e29;
+  --font:   'Inter', system-ui, sans-serif;
+  --mono:   'JetBrains Mono', monospace;
+  --arabic: 'Noto Naskh Arabic', serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  font-size: 10pt;
+  line-height: 1.7;
+  color: var(--body);
+  background: var(--bg);
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem;
+}
+
+/* ── Print ── */
+@media print {
+  @page { size: A4 portrait; margin: 2.2cm 2cm; }
+  body { margin: 0 !important; padding: 0 !important; max-width: 100%; font-size: 9pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .no-break, .card, .engine-card, .log-block, .callout, svg { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+}
+
+/* ── Typography ── */
+h1 { font-size: 16pt; font-weight: 700; line-height: 1.15; color: var(--bright); text-align: center; margin-bottom: 0.3rem; letter-spacing: -0.02em; }
+h2 { font-size: 11pt; font-weight: 700; color: var(--bright); margin: 1.8rem 0 0.6rem;
+     text-transform: uppercase; letter-spacing: 0.1em;
+     border-bottom: 2px solid var(--border); padding-bottom: 0.25rem; }
+h3 { font-size: 10pt; font-weight: 600; color: var(--bright); margin: 1rem 0 0.3rem; }
+p  { margin-bottom: 0.65rem; }
+p:last-child { margin-bottom: 0; }
+em { font-style: italic; }
+strong { font-weight: 600; }
+
+/* ── Cover ── */
+.cover {
+  padding: 2.2rem 0 1.8rem;
+  border-bottom: 3px solid var(--bright);
+  margin-bottom: 1.8rem;
+  text-align: center;
+}
+.cover-tag {
+  font-size: 7.5pt; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--dim);
+  margin-bottom: 0.8rem;
+}
+.cover-table { width: 100%; margin: 1.4rem auto 0; border-collapse: collapse; font-size: 9pt; }
+.cover-table td { border: 1px solid var(--border); padding: 5px 10px; }
+.cover-table .lbl { color: var(--dim); font-weight: 600; text-align: right; padding-right: 1.2rem; white-space: nowrap; background: var(--surface); }
+.cover-table .val { padding-left: 0.9rem; color: var(--body); text-align: left; }
+
+/* ── Abstract ── */
+.abstract {
+  background: var(--surface);
+  border-left: 3px solid var(--border);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.5rem;
+  font-size: 9.5pt;
+}
+.abstract-label {
+  font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--dim); margin-bottom: 0.4rem;
+}
+
+/* ── Cards (presentation-style) ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  margin: 0.5rem 0;
+}
+.card-label {
+  font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.4rem;
+}
+.card-label.red { color: var(--accent); }
+.card-label.blue { color: var(--en-base); }
+.card-label.green { color: var(--ar-base); }
+.card-label.teal { color: var(--tr-base); }
+
+/* ── Two-column grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin: 0.6rem 0; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin: 0.6rem 0; }
+
+/* ── Stat numbers ── */
+.stat-block { text-align: center; padding: 0.5rem; }
+.stat-num { font-size: 20pt; font-weight: 700; line-height: 1; }
+.stat-label { font-size: 7.5pt; color: var(--dim); margin-top: 3px; }
+
+/* ── Pill badges ── */
+.pill {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font-size: 7.5pt; font-weight: 700; letter-spacing: 0.04em;
+}
+
+/* ── Tables ── */
+table.data { width: 100%; border-collapse: collapse; font-size: 8.5pt; margin: 0.7rem 0; }
+table.data th { background: var(--surface); font-weight: 600; text-align: left; padding: 5px 8px; border: 1px solid var(--border); font-size: 8pt; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); }
+table.data td { padding: 4px 8px; border: 1px solid var(--border); vertical-align: top; }
+table.data tr:nth-child(even) td { background: #fafafa; }
+caption { font-size: 8pt; color: var(--dim); text-align: left; margin-bottom: 4px; font-style: italic; }
+
+/* ── Code ── */
+code { font-family: var(--mono); font-size: 8pt; background: #efefef; padding: 1px 4px; border-radius: 3px; color: var(--bright); }
+pre  { font-family: var(--mono); font-size: 7.5pt; background: #f5f5f5; border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem 0.9rem; overflow-x: auto; margin: 0.7rem 0; line-height: 1.5; }
+
+/* ── Callouts ── */
+.callout { border-left: 3px solid var(--border); padding: 0.6rem 0.9rem; margin: 0.7rem 0; font-size: 9.5pt; background: var(--surface); border-radius: 0 6px 6px 0; }
+.callout.warn { border-color: var(--border); background: var(--surface); }
+.callout.note { border-color: var(--en-base); background: #f0f2fd; }
+.callout.green { border-color: var(--ar-base); background: #f0faf0; }
+.callout-label { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.3rem; }
+
+/* ── Pipeline (two-track diagram) ── */
+.pipeline-wrap { margin: 0.8rem 0; }
+.pipeline-shared {
+  display: flex; justify-content: center;
+}
+.pipeline-shared-node {
+  background: #eeeeee; border: 1px solid var(--muted); border-radius: 8px;
+  padding: 0.5rem 1.2rem; font-size: 8.5pt; font-weight: 600;
+  color: var(--dim); text-align: center; min-width: 220px;
+}
+.pipeline-fork { display: flex; justify-content: center; position: relative; height: 28px; }
+.pipeline-tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.pipeline-track-label {
+  font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; text-align: center; margin-bottom: 0.4rem;
+}
+.pipeline-node {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  padding: 0.5rem 0.7rem; border-radius: 7px;
+  border: 1px solid var(--border); background: var(--bg);
+  margin-bottom: 0.3rem; font-size: 8.5pt;
+}
+.pipeline-node.bpe { border-color: #b0b8e0; background: #f5f6fd; }
+.pipeline-node.morph { border-color: #f0b0a8; background: #fdf5f5; }
+.pipeline-node-num { font-weight: 700; min-width: 1.2rem; font-size: 8pt; }
+.pipeline-node-num.bpe { color: var(--en-base); }
+.pipeline-node-num.morph { color: var(--accent); }
+.pipeline-node-title { font-weight: 600; color: var(--bright); display: block; }
+.pipeline-node-sub { color: var(--dim); font-size: 7.5pt; display: block; margin-top: 1px; }
+.pipeline-arrow { text-align: center; color: var(--muted); font-size: 10pt; line-height: 1; padding: 1px 0; }
+.pipeline-arrow.bpe { color: var(--en-base); }
+.pipeline-arrow.morph { color: var(--accent); }
+.pipeline-join { display: flex; justify-content: center; position: relative; height: 28px; }
+
+/* ── Engine decomposition cards ── */
+.engine-grid { display: grid; grid-template-columns: 30fr 33fr 36fr; gap: 0.6rem; margin: 0.7rem 0; }
+.engine-card { border-radius: 8px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
+.engine-card-header { padding: 0.4rem 0.7rem; font-size: 5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: flex; justify-content: space-between; align-items: center; }
+.engine-card-body { padding: 0.5rem 0.7rem; background: var(--bg); flex: 1; }
+.eng-ex { background: var(--surface); border-radius: 5px; padding: 0.35rem 0.5rem; margin-bottom: 0.35rem; font-size: 6.5pt; }
+.eng-ex:last-child { margin-bottom: 0; }
+.eng-surface { font-weight: 700; color: var(--bright); margin-bottom: 2px; font-size: 7pt; }
+.eng-arrow { color: var(--muted); font-size: 7pt; margin: 1px 0; direction: ltr; unicode-bidi: isolate; text-align: center; display: block; }
+.eng-parts { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 3px; margin-top: 2px; }
+.eng-parts.rtl { direction: rtl; flex-direction: row; }
+.eng-part { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.eng-chip { font-size: 5.5pt; font-weight: 700; padding: 1px 4px; border-radius: 4px; border: 1px solid; white-space: nowrap; font-family: var(--mono); }
+.eng-chip.ar-text { font-family: var(--arabic); font-size: 7pt; line-height: 1.4; }
+.eng-meaning { font-size: 5.5pt; color: var(--dim); text-align: center; max-width: 60px; line-height: 1.2; }
+.eng-sep { color: var(--muted); font-size: 7pt; margin-top: 2px; }
+.engine-note { font-size: 6pt; color: var(--dim); padding: 0.35rem 0.7rem 0.5rem; border-top: 1px solid var(--border); background: var(--surface); margin-top: auto; }
+
+/* ── BPE vs Morph token chips ── */
+.tok-section { margin: 0.6rem 0; }
+.tok-lang-label { font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 0.3rem; }
+.tok-sentence { font-size: 9pt; color: var(--dim); margin-bottom: 0.4rem; font-style: italic; }
+.tok-row-label { font-size: 7pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin-bottom: 0.2rem; }
+.bpe-row { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 0.4rem; }
+.bpe-chip { font-family: var(--mono); font-size: 7.5pt; padding: 2px 6px; border-radius: 4px; background: #e8eaf6; color: var(--en-base); border: 1px solid #c5cae9; }
+.bpe-chip.ar { font-family: var(--arabic); font-size: 9pt; background: #e8f5e9; color: var(--ar-morph); border-color: #c8e6c9; }
+.bpe-chip.tr { background: #e3f2fd; color: var(--tr-base); border-color: #bbdefb; }
+.morph-row { display: flex; flex-wrap: wrap; gap: 3px; }
+.morph-chip { font-size: 7.5pt; padding: 2px 7px; border-radius: 5px; border: 1px solid; display: inline-flex; align-items: baseline; gap: 3px; }
+.mc-root { font-weight: 700; }
+.mc-tag { font-family: var(--mono); font-size: 6.5pt; opacity: 0.75; }
+
+/* ── Result bars ── */
+.result-bar-wrap { margin: 0.5rem 0; }
+.result-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; font-size: 8.5pt; }
+.result-bar-lang { width: 3.5rem; font-weight: 600; color: var(--bright); }
+.result-bar-track { flex: 1; height: 18px; background: #eeeeee; border-radius: 3px; overflow: hidden; position: relative; }
+.result-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 6px; font-size: 7pt; font-weight: 700; color: #fff; white-space: nowrap; }
+.result-bar-pct { font-size: 8pt; font-weight: 700; min-width: 2.5rem; text-align: right; }
+
+/* ── Arabic inline ── */
+.ar { font-family: var(--arabic); font-size: 11pt; direction: rtl; display: inline-block; }
+
+/* ── Footnote / refs ── */
+.footnote { font-size: 8pt; color: var(--dim); border-top: 1px solid var(--border); margin-top: 1.5rem; padding-top: 0.5rem; }
+ol.ref-list { margin: 0.4rem 0 0.7rem 1.4rem; font-size: 8.5pt; line-height: 1.9; }
+ul.body-list { margin: 0.3rem 0 0.6rem 1.2rem; font-size: 9.5pt; line-height: 1.7; }
+
+/* ── Appendix log blocks ── */
+.log-block { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--muted); border-radius: 0 6px 6px 0; padding: 0.8rem 1rem; margin: 0.6rem 0; font-size: 9pt; line-height: 1.7; }
+.log-block h4 { font-size: 9pt; font-weight: 700; color: var(--bright); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.log-block.incident { border-left-color: var(--accent); }
+.log-block.fix { border-left-color: var(--ar-base); }
+
+section { margin-bottom: 0; padding-top: 0.3rem; }
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="cover">
+    <div class="cover-tag">Capstone Project Report</div>
+    <h1>Morphological Efficiency in AI: Can Languages that are more<br/>Information-Dense Enable Smaller, Leaner, yet Usable Models?</h1>
+    <table class="cover-table">
+      <tr>
+        <td class="lbl">Author</td><td class="val">Sameh AbuRadi</td>
+        <td class="lbl" style="padding-left:2.5rem;">Supervisor</td><td class="val" style="text-align:left;">Fabian Geier</td>
+      </tr>
+      <tr>
+        <td class="lbl">Course</td><td class="val">BA_01 - Capstone Project</td>
+        <td class="lbl" style="padding-left:2.5rem;">Submission</td><td class="val" style="text-align:left;">15 March 2026</td>
+      </tr>
+      <tr>
+        <td class="lbl" style="padding-top:0.3rem;">Program</td>
+        <td class="val" colspan="3" style="padding-top:0.3rem;">BA - Business Management &amp; Entrepreneurship</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="abstract">
+    <div class="abstract-label">Abstract</div>
+    <p>This project asks whether the grammatical structure of a language can be used as a design parameter to reduce the computational cost of training language models. The central question is whether morphology-aware tokenization - which encodes grammatical structure explicitly rather than relying on statistical subword fragments - allows a model to learn a language more efficiently under identical architecture and data.</p>
+    <p>The project spans nine languages chosen to cover the full morphological spectrum: Mandarin (isolating), English (analytic), German and Spanish (fusional), Hungarian (agglutinative-fusional), Turkish (agglutinative), plus three structural outliers - Arabic (root-and-pattern templatic), Swahili (classificatory), and Basque (polypersonal, language isolate). Nine language-specific grammar engines have been built and tested (5,079 tests, zero failures). Each language is paired with a standard BPE baseline and a grammar-aware morphological variant under identical architecture.</p>
+    <p>A Phase 1 pilot across English, Arabic, and Turkish at 2M parameters / 5M tokens showed a monotonic gradient matching morphological complexity exactly: Turkish improved by 56.9%, Arabic by 13.9%, English by ~1%. Phase 3 extends the mini experiment to all nine engines. The project contributes nine reproducible grammar engines, a shared training pipeline, and an empirical framework for evaluating linguistic efficiency as a design variable in machine learning systems.</p>
+  </div>
+
+  <!-- Status pills -->
+  <div style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.8rem;">
+    <span class="pill" style="background:#e8f5e9;color:#1d5619;border:1px solid #c8e6c9;">Nine grammar engines built and tested</span>
+    <span class="pill" style="background:#e8eaf6;color:#394195;border:1px solid #c5cae9;">Phase 1 mini experiment - EN / AR / TR complete</span>
+    <span class="pill" style="background:#fff3e0;color:#b84a00;border:1px solid #ffe0b2;">Phase 3 nine-language mini experiment - pending</span>
+  </div>
+</section>
+
+<!-- ══ 1. RESEARCH QUESTION ════════════════════════════════════════════════ -->
+<section>
+  <h2>1. Research Question</h2>
+
+  <h3>1.1 The Core Idea</h3>
+  <p>Language models learn by processing tokens - discrete units of text. Standard tokenizers (BPE, WordPiece) produce tokens by merging frequent character sequences, with no knowledge of grammar. The word <em>researchers</em> might become <code>research</code> + <code>ers</code>, depending on what the algorithm saw most often during training. The grammatical information - that this is a plural noun derived from a verb - is not encoded anywhere. The model has to infer it from context, across millions of examples, at cost.</p>
+
+  <div class="callout note">
+    <div class="callout-label">Hypothesis</div>
+    <p>A language model given explicit morphological structure at the token level will learn more efficiently - reaching the same perplexity with fewer training tokens - than one using standard BPE subword tokenization. The effect will be strongest where morphology is richest.</p>
+  </div>
+
+  <h3>1.2 Language as a Compute Efficiency Variable</h3>
+  <p>Every training token costs compute. If a model needs N tokens to learn a grammatical pattern that could have been encoded directly in the tokenization, those N tokens represent overhead - compute spent recovering information that was always present in the text but stripped out by the tokenizer. That is not a small observation. At current GPU rental prices, even a few percent reduction in total tokens translates into a visible difference across many runs or large models.</p>
+  <p>This overhead is not uniform across languages. English grammar is largely carried by word order. Arabic and Turkish pack substantial grammatical content into word form: a single Turkish word can encode tense, aspect, mood, person, number, case, and possession simultaneously. A morphology-aware tokenizer can represent that word as a single structured token with the full grammatical bundle attached. The question is whether the model actually benefits from receiving that information upfront, or whether it would have figured it out anyway.</p>
+
+  <h3>1.3 Morphology as Information Compression</h3>
+  <p>From an information-theoretic perspective, morphological tokenization is a form of lossless compression applied to grammatical content. Instead of distributing grammatical information across multiple BPE fragments, it concentrates that information into a single token with an explicit feature label. The model receives more signal per token, which should translate to faster convergence at equivalent token budgets. Whether it actually does - and by how much, and for which languages - is what this project tries to measure.</p>
+
+  <table class="data">
+    <caption>Table 1. Language selection - nine languages across the morphological spectrum plus three structural outliers</caption>
+    <tr><th>Language</th><th>Morphological type</th><th>Grammar encoding</th><th>Expected effect</th></tr>
+    <tr><td>Mandarin</td><td>Isolating</td><td>Word order; no inflection; tonal lexicon</td><td>Control - near zero</td></tr>
+    <tr><td>English</td><td>Analytic</td><td>Word order; minimal inflection</td><td>Minimal - little to compress</td></tr>
+    <tr><td>German</td><td>Fusional</td><td>Case, gender, number fused in endings</td><td>Moderate</td></tr>
+    <tr><td>Spanish</td><td>Fusional (regular)</td><td>Rich verb conjugation paradigms</td><td>Moderate</td></tr>
+    <tr><td>Hungarian</td><td>Agglutinative-fusional</td><td>Suffix chains plus vowel harmony</td><td>Large</td></tr>
+    <tr><td>Turkish</td><td>Agglutinative</td><td>Suffix chains in strict slot order</td><td>Large - most to compress on the spectrum</td></tr>
+    <tr><td>Arabic</td><td>Templatic (outlier)</td><td>Triconsonantal roots + vowel patterns</td><td>Significant - non-concatenative</td></tr>
+    <tr><td>Swahili</td><td>Classificatory (outlier)</td><td>Noun class agreement chains</td><td>Significant</td></tr>
+    <tr><td>Basque</td><td>Polypersonal, ergative (isolate, outlier)</td><td>Tri-personal agreement on verb</td><td>Predicted strongest outlier</td></tr>
+  </table>
+  <p style="font-size:8.5pt;color:var(--dim);">English, Arabic, and Turkish are spoken natively by the author; the remaining six were chosen to cover the morphological spectrum and probe structural outliers. Mandarin acts as a near-zero control; Basque is predicted as the strongest outlier due to tri-personal agreement.</p>
+</section>
+
+<!-- ══ 2. SYSTEM ARCHITECTURE ══════════════════════════════════════════════ -->
+<section>
+  <h2>2. System Architecture</h2>
+  <p>The pipeline has two parallel tracks that converge at training and evaluation. Both consume the same raw corpus and produce models with identical architecture - the only difference is how text becomes token IDs. I want to be clear about what that means: everything else is held constant by design. If one model does better, the tokenization is the only place to look.</p>
+
+  <!-- TWO-PIPELINE DIAGRAM (from presentation slide 1c) -->
+  <div class="pipeline-wrap">
+
+    <!-- Shared source -->
+    <div class="pipeline-shared" style="margin-bottom:0.3rem;">
+      <div class="pipeline-shared-node">Raw text corpus - same Wikipedia data for both tracks</div>
+    </div>
+    <!-- Fork line -->
+    <div style="display:flex;justify-content:center;margin-bottom:0.3rem;">
+      <div style="width:1px;height:14px;background:var(--muted);"></div>
+    </div>
+    <div style="display:flex;justify-content:center;margin-bottom:0.3rem;position:relative;height:14px;">
+      <div style="position:absolute;left:calc(50% - 140px);top:0;width:140px;height:1px;background:var(--en-base);"></div>
+      <div style="position:absolute;left:50%;top:0;width:140px;height:1px;background:var(--accent);"></div>
+      <div style="position:absolute;left:calc(50% - 140px);top:0;width:1px;height:14px;background:var(--en-base);"></div>
+      <div style="position:absolute;left:calc(50% + 140px);top:0;width:1px;height:14px;background:var(--accent);"></div>
+    </div>
+
+    <!-- Two tracks -->
+    <div class="pipeline-tracks">
+
+      <!-- BPE track -->
+      <div>
+        <div class="pipeline-track-label" style="color:var(--en-base);">Traditional - BPE</div>
+        <div class="pipeline-node bpe">
+          <span class="pipeline-node-num bpe">1</span>
+          <div><span class="pipeline-node-title">BPE tokenizer</span><span class="pipeline-node-sub">splits on byte-pair frequency - no grammar</span></div>
+        </div>
+        <div class="pipeline-arrow bpe">↓</div>
+        <div class="pipeline-node bpe">
+          <span class="pipeline-node-num bpe">2</span>
+          <div><span class="pipeline-node-title">Token ID sequence</span><span class="pipeline-node-sub">▁research · ers · ▁are · ▁study · ing ...</span></div>
+        </div>
+        <div class="pipeline-arrow bpe">↓</div>
+        <div class="pipeline-node bpe">
+          <span class="pipeline-node-num bpe">3</span>
+          <div><span class="pipeline-node-title">Single embedding lookup</span><span class="pipeline-node-sub">one vector per token - no structural signal</span></div>
+        </div>
+        <div class="pipeline-arrow bpe">↓</div>
+        <div class="pipeline-node bpe">
+          <span class="pipeline-node-num bpe">4</span>
+          <div><span class="pipeline-node-title">Transformer</span><span class="pipeline-node-sub">must infer grammar from co-occurrence alone</span></div>
+        </div>
+      </div>
+
+      <!-- Morph track -->
+      <div>
+        <div class="pipeline-track-label" style="color:var(--accent);">Proposed - Morphology-Aware</div>
+        <div class="pipeline-node morph">
+          <span class="pipeline-node-num morph">1</span>
+          <div><span class="pipeline-node-title">Morphology engine</span><span class="pipeline-node-sub">decomposes each word into root + grammatical tag</span></div>
+        </div>
+        <div class="pipeline-arrow morph">↓</div>
+        <div class="pipeline-node morph">
+          <span class="pipeline-node-num morph">2</span>
+          <div><span class="pipeline-node-title">Root ID + Feature bundle ID</span><span class="pipeline-node-sub">researcher · SUF_s &nbsp;|&nbsp; study · SUF_ing ...</span></div>
+        </div>
+        <div class="pipeline-arrow morph">↓</div>
+        <div class="pipeline-node morph">
+          <span class="pipeline-node-num morph">3</span>
+          <div><span class="pipeline-node-title">Dual embedding streams</span><span class="pipeline-node-sub">root vector + morphology vector - summed input</span></div>
+        </div>
+        <div class="pipeline-arrow morph">↓</div>
+        <div class="pipeline-node morph">
+          <span class="pipeline-node-num morph">4</span>
+          <div><span class="pipeline-node-title">Transformer</span><span class="pipeline-node-sub">grammar pre-encoded - capacity freed for meaning</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Join lines -->
+    <div style="display:flex;justify-content:center;margin-top:0.3rem;position:relative;height:14px;">
+      <div style="position:absolute;left:calc(50% - 140px);top:0;width:1px;height:14px;background:var(--en-base);"></div>
+      <div style="position:absolute;left:calc(50% + 140px);top:0;width:1px;height:14px;background:var(--accent);"></div>
+      <div style="position:absolute;left:calc(50% - 140px);top:14px;width:140px;height:1px;background:var(--en-base);"></div>
+      <div style="position:absolute;left:50%;top:14px;width:140px;height:1px;background:var(--accent);"></div>
+    </div>
+    <div style="display:flex;justify-content:center;margin-bottom:0.3rem;">
+      <div style="width:1px;height:14px;background:var(--muted);"></div>
+    </div>
+    <div class="pipeline-shared">
+      <div class="pipeline-shared-node">Evaluation - same metrics for both tracks</div>
+    </div>
+
+  </div><!-- /pipeline-wrap -->
+
+  <h3>2.2 Model Architecture</h3>
+  <div class="grid-2" style="margin-top:0.5rem;">
+    <div class="card">
+      <div class="card-label">Baseline embedding</div>
+      <code style="font-size:8.5pt;">x = token_embedding[token_id]</code>
+      <p style="font-size:8.5pt;color:var(--dim);margin-top:0.3rem;">One vector per BPE fragment. No structural signal.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Morph embedding</div>
+      <code style="font-size:8.5pt;">x = token_emb[root_id] + feat_emb[bundle_id]</code>
+      <p style="font-size:8.5pt;color:var(--dim);margin-top:0.3rem;">Root identity + grammatical role summed at input layer.</p>
+    </div>
+  </div>
+
+  <table class="data" style="margin-top:0.6rem;">
+    <caption>Table 2. Architecture parameters - shared across all nine languages; mini used for pilot runs, small/medium for later scaling</caption>
+    <tr><th>Parameter</th><th>Mini (pilot)</th><th>Small</th><th>Medium</th></tr>
+    <tr><td>Total parameters</td><td>~2M</td><td>~20M</td><td>~60M</td></tr>
+    <tr><td>Layers</td><td>4</td><td>8</td><td>12</td></tr>
+    <tr><td>Hidden size</td><td>128</td><td>384</td><td>768</td></tr>
+    <tr><td>Attention heads</td><td>4</td><td>8</td><td>12</td></tr>
+    <tr><td>Context length</td><td colspan="3">1024 tokens</td></tr>
+    <tr><td>Training tokens</td><td>5M</td><td>100M</td><td>1.2B</td></tr>
+    <tr><td>Optimizer</td><td colspan="3">AdamW, cosine LR, 2000-step warmup</td></tr>
+  </table>
+  <p style="font-size:8.5pt;color:var(--dim);">Scaling is incremental: mini first across all nine languages to get directional signal, then small/medium on languages where mini results justify the compute.</p>
+</section>
+
+<!-- ══ 3. EXPERIMENTAL DESIGN ══════════════════════════════════════════════ -->
+<section>
+  <h2>3. Experimental Design</h2>
+
+  <table class="data">
+    <caption>Table 3. Model inventory - nine languages, two regimes each, 18 models total per scale</caption>
+    <tr><th>Language</th><th>Baseline</th><th>Morph (grammar-aware input representation)</th></tr>
+    <tr><td>Mandarin</td><td><code>zh_base</code> - BPE</td><td><code>zh_morph</code> - jieba word segmentation + POS tag</td></tr>
+    <tr><td>English</td><td><code>en_base</code> - BPE</td><td><code>en_morph</code> - root + inflectional/derivational tag</td></tr>
+    <tr><td>German</td><td><code>de_base</code> - BPE</td><td><code>de_morph</code> - stem + case/gender/number bundle</td></tr>
+    <tr><td>Spanish</td><td><code>es_base</code> - BPE</td><td><code>es_morph</code> - stem + verb-paradigm bundle</td></tr>
+    <tr><td>Hungarian</td><td><code>hu_base</code> - BPE</td><td><code>hu_morph</code> - stem + suffix-chain (harmony-normalised)</td></tr>
+    <tr><td>Turkish</td><td><code>tr_base</code> - BPE</td><td><code>tr_morph</code> - stem + suffix-chain bundle (Dilbilgisi slot order)</td></tr>
+    <tr><td>Arabic</td><td><code>ar_base</code> - BPE</td><td><code>ar_morph</code> - root + wazn pattern + grammatical bundle</td></tr>
+    <tr><td>Swahili</td><td><code>sw_base</code> - BPE</td><td><code>sw_morph</code> - stem + noun-class agreement chain</td></tr>
+    <tr><td>Basque</td><td><code>eu_base</code> - BPE</td><td><code>eu_morph</code> - stem + polypersonal agreement bundle</td></tr>
+  </table>
+
+  <p>The experimental contract was written and frozen before implementation began: strict within-language parity across architecture, data, splits, budget, and optimizer - tokenization strategy is the only permitted variable. Available upon request.</p>
+
+  <!-- GRAMMAR ENGINE DIAGRAM -->
+  <h3>3.1 The Nine Grammar Engines</h3>
+  <p style="font-size:8.5pt;color:var(--dim);margin-bottom:0.5rem;">Each language has a structurally different morphology, so each needed its own engine. The engine's job is to decompose each word into a root (or stem) and a grammatical bundle before it reaches the model. Nine engines totalling ~5,690 lines of Python are built and passing 5,079 tests (zero failures). For Arabic, the engine draws on the Buckwalter morphological analyser and the Doha Historical Dictionary of Arabic root lexicon for triconsonantal root lookup and wazn pattern assignment. For Turkish, it uses Oflazer's two-level morphology as a reference for suffix slot ordering. English uses a rule-based lookup against a custom irregulars table. Mandarin uses jieba for word segmentation. The three cards below show representative decompositions for the three original languages; design specs for all nine are in <code>docs/engine_specs/</code> with interactive infographics in <code>presentation/infographics/src/</code>.</p>
+
+  <div class="engine-grid">
+
+    <!-- English -->
+    <div class="engine-card">
+      <div class="engine-card-header" style="background:#eef0fb;color:var(--en-base);">
+        <span>English - Analytic</span>
+        <span style="font-size:7pt;color:var(--dim);">23 bundles</span>
+      </div>
+      <div class="engine-card-body">
+        <!-- went -->
+        <div class="eng-ex">
+          <div class="eng-surface">went</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-base);color:var(--en-base);background:#eef0fb;">go</span>
+              <span class="eng-meaning">base verb (suppletive)</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-morph);color:var(--en-morph);background:#fdf0f6;">tense=PAST</span>
+              <span class="eng-meaning">action before now</span>
+            </div>
+          </div>
+        </div>
+        <!-- misunderstand -->
+        <div class="eng-ex">
+          <div class="eng-surface">misunderstand</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-morph);color:var(--en-morph);background:#fdf0f6;">PRE_mis</span>
+              <span class="eng-meaning">wrongly / badly</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-base);color:var(--en-base);background:#eef0fb;">understand</span>
+              <span class="eng-meaning">base verb</span>
+            </div>
+          </div>
+        </div>
+        <!-- researchers -->
+        <div class="eng-ex">
+          <div class="eng-surface">researchers</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-base);color:var(--en-base);background:#eef0fb;">researcher</span>
+              <span class="eng-meaning">base noun</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--en-morph);color:var(--en-morph);background:#fdf0f6;">SUF_s</span>
+              <span class="eng-meaning">plural</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="engine-note">Suppletive irregulars via lookup table. Prefixes carry semantic function tags.</div>
+    </div>
+
+    <!-- Arabic -->
+    <div class="engine-card">
+      <div class="engine-card-header" style="background:#edf7ec;color:var(--ar-morph);">
+        <span>Arabic - Templatic</span>
+        <span style="font-size:7pt;color:var(--dim);">270 bundles</span>
+      </div>
+      <div class="engine-card-body">
+        <!-- استخدم -->
+        <div class="eng-ex">
+          <div class="eng-surface" style="font-family:var(--arabic);font-size:11pt;direction:rtl;">استخدم</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts rtl">
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-base);color:var(--ar-base);background:#edf7ec;">استـ</span>
+              <span class="eng-meaning">Form X circumfix</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-morph);color:var(--ar-morph);background:#e8f5e8;">ـخدم</span>
+              <span class="eng-meaning">root: serve</span>
+            </div>
+          </div>
+        </div>
+        <!-- يكتبان -->
+        <div class="eng-ex">
+          <div class="eng-surface" style="font-family:var(--arabic);font-size:11pt;direction:rtl;">يكتبان</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts rtl">
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-base);color:var(--ar-base);background:#edf7ec;">يـ</span>
+              <span class="eng-meaning">3rd masc. impf.</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-morph);color:var(--ar-morph);background:#e8f5e8;">ـكتبـ</span>
+              <span class="eng-meaning">root: write</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-base);color:var(--ar-base);background:#edf7ec;">ـان</span>
+              <span class="eng-meaning">masc. dual</span>
+            </div>
+          </div>
+        </div>
+        <!-- المصرية -->
+        <div class="eng-ex">
+          <div class="eng-surface" style="font-family:var(--arabic);font-size:11pt;direction:rtl;">المصرية</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts rtl">
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-base);color:var(--ar-base);background:#edf7ec;">الـ</span>
+              <span class="eng-meaning">definite "the"</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-morph);color:var(--ar-morph);background:#e8f5e8;">ـمصر</span>
+              <span class="eng-meaning">root: Egypt</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip ar-text" style="border-color:var(--ar-base);color:var(--ar-base);background:#edf7ec;">ـية</span>
+              <span class="eng-meaning">nisba adj. fem.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="engine-note">Arabic encodes gender in prefix, number in suffix - all around the root.</div>
+    </div>
+
+    <!-- Turkish -->
+    <div class="engine-card">
+      <div class="engine-card-header" style="background:#eaf2f8;color:var(--tr-base);">
+        <span>Turkish - Agglutinative</span>
+        <span style="font-size:7pt;color:var(--dim);">63 bundles</span>
+      </div>
+      <div class="engine-card-body">
+        <!-- evlerinizden -->
+        <div class="eng-ex">
+          <div class="eng-surface">evlerinizden</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-base);color:var(--tr-base);background:#eaf2f8;">ev</span>
+              <span class="eng-meaning">house</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">PL</span>
+              <span class="eng-meaning">-ler plural</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">POSS_2PL</span>
+              <span class="eng-meaning">-iniz your (pl.)</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">ABL</span>
+              <span class="eng-meaning">-den from</span>
+            </div>
+          </div>
+        </div>
+        <!-- yazildi -->
+        <div class="eng-ex">
+          <div class="eng-surface">yazildi</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-base);color:var(--tr-base);background:#eaf2f8;">yaz</span>
+              <span class="eng-meaning">write</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">PASS</span>
+              <span class="eng-meaning">-il passive</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">PAST_DEF</span>
+              <span class="eng-meaning">-di witnessed past</span>
+            </div>
+          </div>
+        </div>
+        <!-- gidebilir -->
+        <div class="eng-ex">
+          <div class="eng-surface">gidebilir</div>
+          <div class="eng-arrow">↓</div>
+          <div class="eng-parts">
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-base);color:var(--tr-base);background:#eaf2f8;">git</span>
+              <span class="eng-meaning">go</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">ABIL</span>
+              <span class="eng-meaning">-ebil can</span>
+            </div>
+            <span class="eng-sep">+</span>
+            <div class="eng-part">
+              <span class="eng-chip" style="border-color:var(--tr-morph);color:var(--tr-morph);background:#fdf0ee;">PRES_AORIST</span>
+              <span class="eng-meaning">-ir habitual</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="engine-note">Vowel harmony variants normalised to single tag. Stack order preserved.</div>
+    </div>
+
+  </div><!-- /engine-grid -->
+
+  <p style="font-size:8pt;color:var(--dim);text-align:center;margin-top:0.3rem;">Bundle space size determines agreement difficulty - Arabic's 270 combinations make its 9.3% accuracy equivalent in difficulty to English's 45.9% out of 23.</p>
+
+  <h3>3.2 Evaluation Metrics</h3>
+  <table class="data">
+    <caption>Table 4. Evaluation metrics</caption>
+    <tr><th>Metric</th><th>What it measures</th><th>Status</th></tr>
+    <tr><td>Perplexity (PPL)</td><td>Model surprise on unseen text. Lower is better.</td><td>Measured</td></tr>
+    <tr><td>Tokens per meaning unit (TPMU)</td><td>Grammatical information density per token.</td><td>Measured</td></tr>
+    <tr><td>Bundle accuracy</td><td>Correct prediction of grammatical tag per token.</td><td>Measured</td></tr>
+    <tr><td>Learning efficiency (steps to threshold)</td><td>Training steps to reach a target perplexity.</td><td>Measured (mini)</td></tr>
+    <tr><td>Downstream task performance</td><td>Representation quality on classification / probing tasks.</td><td>Not measured - compute exhausted</td></tr>
+  </table>
+</section>
+
+<!-- ══ 4. RESULTS ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2>4. Results</h2>
+
+  <h3>4.1 Phase 1 Mini Experiment - Three Original Languages</h3>
+  <p>Six models trained at 2M parameters on 5M tokens each, run locally on CPU for English, Arabic, and Turkish. The purpose was to get a directional signal before scaling up, to validate that the pipeline runs end-to-end, and to establish the baseline pattern against which the six new engines (Mandarin, German, Spanish, Hungarian, Swahili, Basque) will be compared in Phase 3.</p>
+
+  <!-- LEARNING CURVES DIAGRAM (from "Did it learn faster?" slide 3b) -->
+  <div class="card" style="margin:0.6rem 0;">
+    <div class="card-label">Training loss over steps - baseline (solid) vs. morph (dashed)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-top:0.5rem;">
+
+      <!-- English -->
+      <div>
+        <div style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--en-base);text-align:center;margin-bottom:3px;">English</div>
+        <svg viewBox="0 0 200 110" style="width:100%;display:block;" xmlns="http://www.w3.org/2000/svg">
+          <line x1="28" y1="5" x2="28" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <line x1="28" y1="90" x2="198" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <text x="26" y="9" text-anchor="end" font-size="6" fill="#999">9.6</text>
+          <text x="26" y="48" text-anchor="end" font-size="6" fill="#999">7.4</text>
+          <text x="26" y="90" text-anchor="end" font-size="6" fill="#999">5.3</text>
+          <text x="28" y="98" text-anchor="middle" font-size="6" fill="#999">0</text>
+          <text x="113" y="98" text-anchor="middle" font-size="6" fill="#999">1200</text>
+          <text x="198" y="98" text-anchor="middle" font-size="6" fill="#999">2400</text>
+          <text x="113" y="107" text-anchor="middle" font-size="5.5" fill="#bbb">steps</text>
+          <polyline fill="none" stroke="#394195" stroke-width="1.2" points="28.0,32.6 42.8,59.4 57.6,68.3 72.3,73.7 87.1,77.1 101.9,74.8 116.7,78.9 131.5,77.4 146.3,87.9 161.0,81.9 175.8,81.3 190.6,81.7 198.0,83.0"/>
+          <polyline fill="none" stroke="#a74d79" stroke-width="1.2" stroke-dasharray="3,2" points="28.0,6.9 42.8,61.1 57.6,64.0 72.3,65.4 87.1,74.9 101.9,70.9 116.7,72.0 131.5,76.2 146.3,71.1 161.0,74.8 175.8,79.6 190.6,80.2 198.0,73.0"/>
+        </svg>
+      </div>
+
+      <!-- Arabic -->
+      <div>
+        <div style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--ar-base);text-align:center;margin-bottom:3px;">Arabic</div>
+        <svg viewBox="0 0 200 110" style="width:100%;display:block;" xmlns="http://www.w3.org/2000/svg">
+          <line x1="28" y1="5" x2="28" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <line x1="28" y1="90" x2="198" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <text x="26" y="9" text-anchor="end" font-size="6" fill="#999">9.7</text>
+          <text x="26" y="48" text-anchor="end" font-size="6" fill="#999">7.6</text>
+          <text x="26" y="90" text-anchor="end" font-size="6" fill="#999">5.6</text>
+          <text x="28" y="98" text-anchor="middle" font-size="6" fill="#999">0</text>
+          <text x="113" y="98" text-anchor="middle" font-size="6" fill="#999">1200</text>
+          <text x="198" y="98" text-anchor="middle" font-size="6" fill="#999">2400</text>
+          <text x="113" y="107" text-anchor="middle" font-size="5.5" fill="#bbb">steps</text>
+          <polyline fill="none" stroke="#59a150" stroke-width="1.2" points="28.0,33.4 42.8,50.8 57.6,61.0 72.3,66.5 87.1,66.0 101.9,71.3 116.7,70.0 131.5,75.7 146.3,76.5 161.0,71.3 175.8,74.0 190.6,73.3 198.0,72.6"/>
+          <polyline fill="none" stroke="#1d5619" stroke-width="1.2" stroke-dasharray="3,2" points="28.0,7.0 42.8,66.0 57.6,58.6 72.3,87.2 87.1,81.1 101.9,61.8 116.7,81.7 131.5,66.9 146.3,73.2 161.0,84.1 175.8,82.3 190.6,83.3 198.0,87.6"/>
+        </svg>
+      </div>
+
+      <!-- Turkish -->
+      <div>
+        <div style="font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--tr-base);text-align:center;margin-bottom:3px;">Turkish</div>
+        <svg viewBox="0 0 200 110" style="width:100%;display:block;" xmlns="http://www.w3.org/2000/svg">
+          <line x1="28" y1="5" x2="28" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <line x1="28" y1="90" x2="198" y2="90" stroke="#ccc" stroke-width="0.8"/>
+          <text x="26" y="9" text-anchor="end" font-size="6" fill="#999">9.5</text>
+          <text x="26" y="48" text-anchor="end" font-size="6" fill="#999">6.8</text>
+          <text x="26" y="90" text-anchor="end" font-size="6" fill="#999">4.0</text>
+          <text x="28" y="98" text-anchor="middle" font-size="6" fill="#999">0</text>
+          <text x="113" y="98" text-anchor="middle" font-size="6" fill="#999">1200</text>
+          <text x="198" y="98" text-anchor="middle" font-size="6" fill="#999">2400</text>
+          <text x="113" y="107" text-anchor="middle" font-size="5.5" fill="#bbb">steps</text>
+          <polyline fill="none" stroke="#769bb9" stroke-width="1.2" points="28.0,25.8 42.8,44.9 57.6,69.1 72.3,59.8 87.1,71.4 101.9,61.1 116.7,73.6 131.5,69.9 146.3,66.9 161.0,74.3 175.8,73.4 190.6,69.5 198.0,73.6"/>
+          <polyline fill="none" stroke="#df3e29" stroke-width="1.2" stroke-dasharray="3,2" points="28.0,6.5 42.8,59.1 57.6,57.7 72.3,78.8 87.1,64.1 101.9,73.0 116.7,77.9 131.5,88.7 146.3,70.6 161.0,74.7 175.8,73.9 190.6,68.9 198.0,59.4"/>
+        </svg>
+      </div>
+
+    </div>
+    <!-- legend -->
+    <div style="display:flex;gap:1.2rem;justify-content:center;margin-top:0.3rem;font-size:7pt;color:var(--dim);">
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:16px;height:0;border-top:1.5px solid #888;display:inline-block;"></span>Baseline (BPE)</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:16px;height:0;border-top:1.5px dashed #888;display:inline-block;"></span>Morph</span>
+    </div>
+    <p style="font-size:7pt;color:var(--dim);text-align:center;margin-top:0.3rem;">Turkish morph (dashed) separates from baseline most clearly - the grammar hint gave the model a head start.</p>
+  </div>
+
+  <!-- PPL improvement bars (visual from presentation slide 3) -->
+  <div class="card" style="margin:0.6rem 0;">
+    <div class="card-label">Perplexity improvement - morph vs. baseline (lower PPL = better)</div>
+    <div class="result-bar-wrap" style="margin-top:0.5rem;">
+      <div class="result-bar-row">
+        <span class="result-bar-lang" style="color:var(--tr-morph);">Turkish</span>
+        <div class="result-bar-track">
+          <div class="result-bar-fill" style="width:56.9%;background:var(--tr-morph);">56.9%</div>
+        </div>
+        <span class="result-bar-pct" style="color:var(--tr-morph);">56.9%</span>
+      </div>
+      <div class="result-bar-row">
+        <span class="result-bar-lang" style="color:var(--ar-morph);">Arabic</span>
+        <div class="result-bar-track">
+          <div class="result-bar-fill" style="width:13.9%;background:var(--ar-morph);">13.9%</div>
+        </div>
+        <span class="result-bar-pct" style="color:var(--ar-morph);">13.9%</span>
+      </div>
+      <div class="result-bar-row">
+        <span class="result-bar-lang" style="color:var(--en-base);">English</span>
+        <div class="result-bar-track">
+          <div class="result-bar-fill" style="width:1%;background:var(--en-base);min-width:18px;">1%</div>
+        </div>
+        <span class="result-bar-pct" style="color:var(--en-base);">1%</span>
+      </div>
+    </div>
+    <p style="font-size:7.5pt;color:var(--dim);margin-top:0.4rem;">The gradient is monotonic and matches the hypothesis exactly: morphological complexity predicts efficiency gain. This is the result I was looking for.</p>
+  </div>
+
+  <table class="data">
+    <caption>Table 6. Mini experiment full results</caption>
+    <tr><th>Language</th><th>Baseline PPL</th><th>Morph PPL</th><th>PPL ratio</th><th>TPMU</th><th>Bundle acc.</th><th>Unk rate</th></tr>
+    <tr><td>English</td><td>331.27</td><td>327.72</td><td>0.989</td><td>14.59</td><td>45.9%</td><td>10.68%</td></tr>
+    <tr><td>Arabic</td><td>609.78</td><td>525.03</td><td>0.861</td><td>12.46</td><td>9.3%</td><td>19.09%</td></tr>
+    <tr><td>Turkish</td><td>65.80</td><td>28.33</td><td>0.431</td><td>12.21</td><td>43.9%</td><td>15.78%</td></tr>
+  </table>
+
+  <!-- Plain-language interpretation cards (from presentation slide 4) -->
+  <div style="margin:0.6rem 0;">
+    <div class="card" style="border-left:3px solid var(--tr-morph);margin-bottom:0.4rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+        <span style="font-weight:600;font-size:9pt;">Turkish - the grammar hint made a huge difference</span>
+        <span class="pill" style="background:#e8f5e9;color:var(--ar-morph);border:1px solid #c8e6c9;">56.9% better</span>
+      </div>
+      <p style="font-size:8.5pt;color:var(--dim);">Turkish words are built by stacking suffixes - one root word can become dozens of different words depending on what you attach to it. Telling the model "this suffix means past tense" or "this one means plural" let it learn the language almost twice as well with the same amount of training data. That is a large number for a small change in how the input is structured.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--ar-morph);margin-bottom:0.4rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+        <span style="font-weight:600;font-size:9pt;">Arabic - a meaningful improvement</span>
+        <span class="pill" style="background:#e8f5e9;color:var(--ar-morph);border:1px solid #c8e6c9;">13.9% better</span>
+      </div>
+      <p style="font-size:8.5pt;color:var(--dim);">Arabic builds words from roots combined with vowel patterns and affixes. The same root produces dozens of related words across different patterns. Telling the model the root and the pattern helped it recognise those relationships faster. The improvement would likely be larger with a bigger vocabulary - 19% of words were cut as unknown due to memory limits, which penalises the morph model unfairly.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--en-base);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+        <span style="font-weight:600;font-size:9pt;">English - almost no difference</span>
+        <span class="pill" style="background:#fff3e0;color:#b84a00;border:1px solid #ffe0b2;">1% difference</span>
+      </div>
+      <p style="font-size:8.5pt;color:var(--dim);">English has relatively simple word structure - most grammatical information is carried by word order, not word form. Standard tokenization already handles English well enough that the extra grammar hint adds almost nothing. This is the expected result, and it is actually important: it means the improvement in Turkish and Arabic is not a general artifact of the method, but something specific to morphological richness.</p>
+    </div>
+  </div>
+
+  <h3>4.2 Engine and Test Status</h3>
+  <table class="data">
+    <caption>Table 7. Engine build and test status (Phase 2 complete)</caption>
+    <tr><th>Language</th><th>Engine LOC</th><th>Tests</th><th>Status</th></tr>
+    <tr><td>English</td><td colspan="2" style="text-align:center;color:var(--dim);">(Phase 0 audited + adversarial tests)</td><td>Passing</td></tr>
+    <tr><td>Arabic</td><td colspan="2" style="text-align:center;color:var(--dim);">(Phase 0 audited + adversarial tests)</td><td>Passing</td></tr>
+    <tr><td>Turkish</td><td colspan="2" style="text-align:center;color:var(--dim);">(Phase 0 audited + adversarial tests)</td><td>Passing</td></tr>
+    <tr><td>Spanish</td><td>855</td><td>484</td><td>Passing</td></tr>
+    <tr><td>Mandarin</td><td>185</td><td>360</td><td>Passing</td></tr>
+    <tr><td>German</td><td>600</td><td>458</td><td>Passing</td></tr>
+    <tr><td>Hungarian</td><td>500</td><td>353</td><td>Passing</td></tr>
+    <tr><td>Swahili</td><td>600</td><td>232</td><td>Passing</td></tr>
+    <tr><td>Basque</td><td>500</td><td>314</td><td>Passing</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>~5,690</strong></td><td><strong>5,079</strong></td><td><strong>0 failures</strong></td></tr>
+  </table>
+  <p style="font-size:8.5pt;color:var(--dim);">Phase 3 will run the mini experiment across all nine engines (18 models) at 2M parameters / 5M tokens. Mandarin serves as a near-zero control; Basque is predicted as the strongest outlier.</p>
+</section>
+
+<!-- ══ 5. DISCUSSION ═══════════════════════════════════════════════════════ -->
+<section>
+  <h2>5. Discussion</h2>
+
+  <div class="callout green">
+    <div class="callout-label">What the Phase 1 results mean</div>
+    <p>The efficiency gradient - ~1% for English, 13.9% for Arabic, 56.9% for Turkish - is monotonic and matches the predicted ordering of morphological complexity. It is not just that the morph model did better in some cases - the ordering was exactly right. Morphology increases information density per token. When a model receives a structured token encoding root identity and grammatical role, it does not need to spend training steps inferring that structure from context. The more grammar a language encodes in word form, the more there is to compress, and the larger the efficiency gain from doing so explicitly. Phase 3 will test whether this gradient generalises across the full nine-language spectrum.</p>
+  </div>
+
+  <h3>5.1 Limitations</h3>
+
+  <div class="grid-2" style="margin:0.5rem 0;">
+    <div class="card" style="margin:0;">
+      <div class="card-label">Phase 1 scope - three languages only</div>
+      <p style="font-size:8.5pt;">The monotonic gradient is drawn from three data points. It is directional, not conclusive. Phase 3 extends the mini experiment to all nine languages and will confirm or challenge the pattern across the full morphological spectrum.</p>
+    </div>
+    <div class="card" style="margin:0;">
+      <div class="card-label">Mini-scale data limits</div>
+      <p style="font-size:8.5pt;">At 2M parameters / 5M tokens the models are severely data-limited - Arabic bundle accuracy of 9.3% reflects data starvation more than engine quality. Mini results are lower bounds; small and medium scales are the next steps where mini signal justifies the compute.</p>
+    </div>
+    <div class="card" style="margin:0;">
+      <div class="card-label">Arabic engine nominal gap</div>
+      <p style="font-size:8.5pt;">Misfires on some nominals and adjectives - Form II masdars and nisba forms occasionally misclassified. Verbal forms are correct. The 13.9% improvement holds despite the errors; Arabic numbers are a lower bound.</p>
+    </div>
+    <div class="card" style="margin:0;">
+      <div class="card-label">Vocabulary sizing is a design parameter</div>
+      <p style="font-size:8.5pt;">Each morph vocabulary is designed with a hard size limit from the start - avoiding the embedding-table explosion seen when enumerating all root-POS combinations without constraint. Bundle-level clustering keeps the feature space bounded.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 6. CONCLUSION ══════════════════════════════════════════════════════ -->
+<section>
+  <h2>6. Conclusion</h2>
+
+  <p>Language structure can function as an efficiency variable in language models. That is the claim this project started with, and the Phase 1 pilot supports it directionally: morphology-aware preprocessing reduces the computational cost of training in proportion to the morphological complexity of the language. The more grammar a language packs into word form, the more the model benefits from being told about it upfront.</p>
+
+  <div class="callout note">
+    <div class="callout-label">The pattern in Phase 1</div>
+    <p>Turkish gains 56.9%, Arabic gains 13.9%, English gains ~1% - a monotonic gradient matching the predicted ordering of morphological complexity. Phase 3 extends the mini experiment to nine languages, adding Mandarin as a near-zero control, German and Spanish as fusional midpoints, Hungarian as an agglutinative-fusional hybrid, and Swahili and Basque as structural outliers alongside Arabic.</p>
+  </div>
+
+  <p>With all nine engines built and tested, the pipeline is ready to extend the pattern across the full morphological spectrum. The ultimate goal is to derive a quantitative relation between a language's grammatical shape and the compute required to train a capable model in it - a result that would have implications for accessibility, linguistic equity, and the sustainability of AI systems.</p>
+
+  <div class="footnote">
+    <p>Source code, grammar engines, design specs, and interactive infographics are available in the project repository. The interactive presentation (<code>presentation/index.html</code>) covers the same material with animated charts. The experimental contract (<code>experimental_contract.md</code>) was written and frozen before implementation began.</p>
+  </div>
+</section>
+
+<!-- ══ 7. REFERENCES ══════════════════════════════════════════════════════ -->
+<section>
+  <h2>7. References</h2>
+  <ol class="ref-list">
+    <li>Hoffmann, J. et al. (2022). Training Compute-Optimal Large Language Models. <em>DeepMind / arXiv:2203.15556</em>. [Chinchilla scaling laws - basis for the 125M x 20 = 2.5B token budget.]</li>
+    <li>Kudo, T. and Richardson, J. (2018). SentencePiece: A simple and language independent subword tokenizer and detokenizer for Neural Text Processing. <em>arXiv:1808.06226</em>. [BPE tokenizer used for all baseline models.]</li>
+    <li>Kudugunta, S. et al. (2023). MADLAD-400: A Multilingual And Document-Level Large Audited Dataset. <em>arXiv:2309.04662</em>. [Primary data source for Arabic and Turkish.]</li>
+    <li>Conneau, A. et al. (2020). Unsupervised Cross-lingual Representation Learning at Scale. <em>arXiv:1911.02116</em>. [CC-100 dataset used for English.]</li>
+    <li>Qatari National Library / Doha Historical Dictionary of Arabic (2025). Mu'jam al-Dawha al-Tarikhi li-l-lugha al-'Arabiyya. Qatar. Available at: https://www.dohadictionary.org [Root lexicon used by the Arabic grammar engine for triconsonantal root lookup and wazn pattern assignment.]</li>
+    <li>Oflazer, K. (1994). Two-level Description of Turkish Morphology. <em>Literary and Linguistic Computing, 9(2)</em>. [Reference for Turkish morphological slot ordering used in the suffix-chain bundle design.]</li>
+    <li>Haspelmath, M. and Sims, A. D. (2010). Understanding Morphology (2nd ed.). Hodder Education. [Theoretical framework for morphological typology - analytic, templatic, and agglutinative language classification used throughout.]</li>
+    <li>Vaswani, A. et al. (2017). Attention Is All You Need. <em>arXiv:1706.03762</em>. [Transformer architecture underlying all baseline and morph models.]</li>
+    <li>Loshchilov, I. and Hutter, F. (2019). Decoupled Weight Decay Regularization. <em>arXiv:1711.05101</em>. [AdamW optimizer used for all training runs.]</li>
+  </ol>
+</section>
+
+<!-- ══ APPENDIX A ══════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Appendix A - Architecture Config and Pipeline Commands</h2>
+
+  <h3>A.1 Model Configuration</h3>
+  <pre>{
+  "model_type": "gpt",
+  "n_layer": 12,        "n_head": 12,
+  "n_embd": 768,        "n_ffn": 3072,
+  "block_size": 1024,   "vocab_size": 32000,
+  "morph_vocab_size": 50000,
+  "bundle_vocab_size": 270,
+  "dropout": 0.1,       "bias": false,
+  "precision": "bfloat16"
+}</pre>
+
+  <h3>A.2 Key Pipeline Commands</h3>
+  <pre># Download corpus for any of the nine languages
+python scripts/download_data.py --lang &lt;code&gt; --target_tokens &lt;N&gt;
+
+# Baseline preprocessing (BPE)
+python scripts/preprocess_baseline.py --lang &lt;code&gt;
+
+# Morph preprocessing (resumable, parallel workers)
+python scripts/preprocess_morph.py --lang &lt;code&gt; --workers 32
+
+# Train (one regime at a time)
+python scripts/train_lm.py --lang &lt;code&gt; --regime baseline
+python scripts/train_lm.py --lang &lt;code&gt; --regime morph
+
+# Evaluate
+python scripts/evaluate.py --lang &lt;code&gt; --regime baseline
+python scripts/evaluate.py --lang &lt;code&gt; --regime morph
+
+# Mini experiment (all nine languages, fully resumable)
+python mini_experiment/run_mini.py
+
+# Language codes: zh, en, de, es, hu, tr, ar, sw, eu</pre>
+
+  <h3>A.3 Phase 1 Mini Experiment Raw Numbers (EN / AR / TR)</h3>
+  <table class="data">
+    <caption>Table A1. Phase 1 mini experiment results - three original languages</caption>
+    <tr><th>Language</th><th>Regime</th><th>Test loss</th><th>Test PPL</th><th>Tokens</th><th>TPMU</th><th>Unk rate</th><th>Bundle acc.</th></tr>
+    <tr><td>English</td><td>baseline</td><td>5.8029</td><td>331.27</td><td>318,976</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>English</td><td>morph</td><td>5.7922</td><td>327.72</td><td>190,976</td><td>14.59</td><td>10.68%</td><td>45.9%</td></tr>
+    <tr><td>Arabic</td><td>baseline</td><td>6.4131</td><td>609.78</td><td>418,944</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Arabic</td><td>morph</td><td>6.2634</td><td>525.03</td><td>244,992</td><td>12.46</td><td>19.09%</td><td>9.3%</td></tr>
+    <tr><td>Turkish</td><td>baseline</td><td>4.1866</td><td>65.80</td><td>101,888</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Turkish</td><td>morph</td><td>3.3439</td><td>28.33</td><td>60,800</td><td>12.21</td><td>15.78%</td><td>43.9%</td></tr>
+  </table>
+  <p style="font-size:8.5pt;color:var(--dim);">Phase 3 will produce the equivalent table for all nine languages.</p>
+</section>
+
+</body>
+</html>

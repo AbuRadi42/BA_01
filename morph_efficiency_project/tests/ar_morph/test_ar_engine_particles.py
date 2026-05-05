@@ -150,14 +150,14 @@ ANOMALIES = [
 ]
 
 # ── Loanword behavior ─────────────────────────────────────────────────────────
-# Engine does not tag loanwords as FOREIGN — it returns the consonant skeleton
-# or the first 3 consonants if they happen to be in root_set.
+# Engine now detects loanwords as FOREIGN — returns stripped surface as root
+# and template=LOANWORD with tags={"origin": "FOREIGN"}.
 LOANWORDS = [
-    ("تِلِفِزْيُون",  "تلف",    None,  "LOAN television — تلف in root_set"),
-    ("رَادِيُو",      "ردي",    None,  "LOAN radio — raw skeleton"),
-    ("بَنْك",         "بنك",    None,  "LOAN bank — raw skeleton"),
-    ("فِيلْم",        "فيل",    None,  "LOAN film — raw skeleton"),
-    ("تِلِفُون",      "تلف",    None,  "LOAN telephone — تلف in root_set"),
+    ("تِلِفِزْيُون",  "تلفزيون",  "LOANWORD",  "LOAN television — FOREIGN"),
+    ("رَادِيُو",      "راديو",    "LOANWORD",  "LOAN radio — FOREIGN"),
+    ("بَنْك",         "بنك",      "LOANWORD",  "LOAN bank — FOREIGN"),
+    ("فِيلْم",        "فيلم",     "LOANWORD",  "LOAN film — FOREIGN"),
+    ("تِلِفُون",      "تلفون",    "LOANWORD",  "LOAN telephone — FOREIGN"),
 ]
 
 ALL_CASES = (

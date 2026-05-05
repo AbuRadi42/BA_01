@@ -1,0 +1,497 @@
+[
+  {
+    "suffix": "-ság/-ség",
+    "surface_variants": ["-ság", "-ség"],
+    "harmony_rule": "back→-ság, front→-ség",
+    "direction": "N/ADJ→N",
+    "function": "Abstract quality noun (-ness, -ity)",
+    "example": "szép→szépség (beauty), ember→emberség (humanity)",
+    "derives": "QUALITY_NOUN",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ás/-és",
+    "surface_variants": ["-ás", "-és"],
+    "harmony_rule": "back→-ás, front→-és",
+    "direction": "V→N",
+    "function": "Verbal noun / action noun (-tion, -ing)",
+    "example": "ír→írás (writing), kér→kérés (request)",
+    "derives": "VERBAL_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ó/-ő",
+    "surface_variants": ["-ó", "-ő"],
+    "harmony_rule": "back→-ó, front→-ő",
+    "direction": "V→N/ADJ",
+    "function": "Agent noun / present participle (-er, -ing)",
+    "example": "tanít→tanító (teacher), kér→kérő (requester)",
+    "derives": "AGENT_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-at/-et",
+    "surface_variants": ["-at", "-et"],
+    "harmony_rule": "back→-at, front→-et",
+    "direction": "V→N",
+    "function": "Result noun",
+    "example": "gondol→gondolat (thought), ítél→ítélet (judgment)",
+    "derives": "RESULT_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-alom/-elem",
+    "surface_variants": ["-alom", "-elem"],
+    "harmony_rule": "back→-alom, front→-elem",
+    "direction": "V→N",
+    "function": "Abstract noun (state/condition)",
+    "example": "fél→félelem (fear), ír→irodalom (literature)",
+    "derives": "ABSTRACT_STATE",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-mány/-mény",
+    "surface_variants": ["-mány", "-mény"],
+    "harmony_rule": "back→-mány, front→-mény",
+    "direction": "V→N",
+    "function": "Product/result noun",
+    "example": "talál→találmány (invention), süt→sütemény (pastry)",
+    "derives": "PRODUCT_NOUN",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ány/-ény",
+    "surface_variants": ["-ány", "-ény"],
+    "harmony_rule": "back→-ány, front→-ény",
+    "direction": "V→N",
+    "function": "Result noun (variant)",
+    "example": "tud→tudomány (science), kör→környék→környéke",
+    "derives": "RESULT_NOUN_2",
+    "input_pos": "VERB",
+    "output_pos": "NOUN"
+  },
+
+  {
+    "suffix": "-i",
+    "surface_variants": ["-i"],
+    "harmony_rule": "invariant",
+    "direction": "N→ADJ",
+    "function": "Relational adjective (relating to, -an, -ese)",
+    "example": "Budapest→budapesti, ország→országi",
+    "derives": "RELATIONAL_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-s",
+    "surface_variants": ["-s", "-os", "-as", "-es", "-ös"],
+    "harmony_rule": "back→-os/-as, front-unrnd→-es, front-rnd→-ös; after vowel→-s",
+    "direction": "N→ADJ",
+    "function": "Possessive/characterizing adjective (-ful, having)",
+    "example": "erő→erős (strong), víz→vizes (watery)",
+    "derives": "POSSESSIVE_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ú/-ű",
+    "surface_variants": ["-ú", "-ű"],
+    "harmony_rule": "back→-ú, front→-ű",
+    "direction": "N→ADJ",
+    "function": "Characterized-by adjective (-ed)",
+    "example": "nagy szemű (big-eyed), hosszú hajú (long-haired)",
+    "derives": "CHARACTERIZED_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-tlan/-telen",
+    "surface_variants": ["-tlan", "-telen", "-talan", "-telen", "-atlan", "-etlen"],
+    "harmony_rule": "back→-tlan/-talan/-atlan, front→-telen/-etlen",
+    "direction": "N/V→ADJ",
+    "function": "Privative adjective (without, un-, -less)",
+    "example": "határ→határtalan (boundless), ír→íratlan (unwritten)",
+    "derives": "PRIVATIVE_ADJ",
+    "input_pos": "NOUN_VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-ható/-hető",
+    "surface_variants": ["-ható", "-hető"],
+    "harmony_rule": "back→-ható, front→-hető",
+    "direction": "V→ADJ",
+    "function": "Possibility adjective (-able, -ible)",
+    "example": "ír→írható (writable), ért→érthető (understandable)",
+    "derives": "POSSIBILITY_ADJ",
+    "input_pos": "VERB",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-beli",
+    "surface_variants": ["-beli"],
+    "harmony_rule": "invariant",
+    "direction": "N→ADJ",
+    "function": "Pertaining-to adjective",
+    "example": "város→városbeli (urban), vidék→vidékbeli (rural)",
+    "derives": "PERTAINING_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-nyi",
+    "surface_variants": ["-nyi"],
+    "harmony_rule": "invariant",
+    "direction": "N→ADJ",
+    "function": "Quantity/measure adjective",
+    "example": "ujj→ujjnyi (finger-wide), marok→maroknyi (handful)",
+    "derives": "MEASURE_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-szerű",
+    "surface_variants": ["-szerű"],
+    "harmony_rule": "invariant",
+    "direction": "N→ADJ",
+    "function": "Similar-to adjective (-like)",
+    "example": "cél→célszerű (purposeful), tör→törvényszerű (lawful)",
+    "derives": "SIMILAR_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+  {
+    "suffix": "-féle",
+    "surface_variants": ["-féle"],
+    "harmony_rule": "invariant",
+    "direction": "N→ADJ",
+    "function": "Kind-of adjective (sort of)",
+    "example": "minden→mindenféle (all kinds of)",
+    "derives": "KIND_ADJ",
+    "input_pos": "NOUN",
+    "output_pos": "ADJ"
+  },
+
+  {
+    "suffix": "-ít",
+    "surface_variants": ["-ít"],
+    "harmony_rule": "invariant",
+    "direction": "ADJ/N→V",
+    "function": "Causative verb (to make X)",
+    "example": "szép→szépít (to beautify), tanú→tanúsít (to certify)",
+    "derives": "CAUSATIVE_V",
+    "input_pos": "ADJ_NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ul/-ül",
+    "surface_variants": ["-ul", "-ül"],
+    "harmony_rule": "back→-ul, front→-ül",
+    "direction": "ADJ/N→V",
+    "function": "Intransitive/inchoative verb (to become X)",
+    "example": "szép→szépül (to become beautiful), tanul (to study)",
+    "derives": "INTRANSITIVE_V",
+    "input_pos": "ADJ_NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-hat/-het",
+    "surface_variants": ["-hat", "-het"],
+    "harmony_rule": "back→-hat, front→-het",
+    "direction": "V→V",
+    "function": "Possibility suffix (can, may)",
+    "example": "ír→írhat (can write), kér→kérhet (can ask)",
+    "derives": "POSSIBILITY_V",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-gat/-get",
+    "surface_variants": ["-gat", "-get", "-ogat", "-eget", "-öget"],
+    "harmony_rule": "back→-gat/-ogat, front-unrnd→-get/-eget, front-rnd→-öget",
+    "direction": "V→V",
+    "function": "Frequentative/iterative verb (to do repeatedly)",
+    "example": "ír→írogat (to write repeatedly), néz→nézeget (to look around)",
+    "derives": "FREQUENTATIVE_V",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-kodik/-kedik/-ködik",
+    "surface_variants": ["-kodik", "-kedik", "-ködik", "-kózik", "-kézik", "-közik"],
+    "harmony_rule": "back→-kodik/-kózik, front-unrnd→-kedik/-kézik, front-rnd→-ködik/-közik",
+    "direction": "N/ADJ→V",
+    "function": "Reflexive/middle voice verb",
+    "example": "tanul→tanulkodik (to study intently), viselkedik (to behave)",
+    "derives": "REFLEXIVE_V",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-tat/-tet",
+    "surface_variants": ["-tat", "-tet"],
+    "harmony_rule": "back→-tat, front→-tet",
+    "direction": "V→V",
+    "function": "Causative verb (to have something done)",
+    "example": "ír→írat (to have written), kér→kéret (to have asked)",
+    "derives": "CAUSATIVE_V2",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-odik/-edik/-ödik",
+    "surface_variants": ["-odik", "-edik", "-ödik"],
+    "harmony_rule": "back→-odik, front-unrnd→-edik, front-rnd→-ödik",
+    "direction": "ADJ/N→V",
+    "function": "Inchoative verb (to become)",
+    "example": "öreg→öregedik (to grow old), méreg→mérgedik (to get angry)",
+    "derives": "INCHOATIVE_V",
+    "input_pos": "ADJ_NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-z/-oz/-ez/-öz",
+    "surface_variants": ["-z", "-oz", "-ez", "-öz", "-áz", "-éz"],
+    "harmony_rule": "back→-oz/-áz, front-unrnd→-ez/-éz, front-rnd→-öz; after vowel→-z",
+    "direction": "N→V",
+    "function": "Denominal verb (to do/use X)",
+    "example": "foci→focizik (to play soccer), ebéd→ebédezik (to have lunch)",
+    "derives": "DENOMINAL_V",
+    "input_pos": "NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-l/-ol/-el/-öl",
+    "surface_variants": ["-l", "-ol", "-el", "-öl", "-ál", "-él"],
+    "harmony_rule": "back→-ol/-ál, front-unrnd→-el/-él, front-rnd→-öl; after vowel→-l",
+    "direction": "N→V",
+    "function": "Denominal verb (to use/perform X)",
+    "example": "szó→szólal (to speak up), vacsora→vacsorál (to have dinner)",
+    "derives": "DENOMINAL_V2",
+    "input_pos": "NOUN",
+    "output_pos": "VERB"
+  },
+  {
+    "suffix": "-ász/-ész",
+    "surface_variants": ["-ász", "-ész"],
+    "harmony_rule": "back→-ász, front→-ész",
+    "direction": "N→N",
+    "function": "Agent noun (profession)",
+    "example": "hal→halász (fisherman), kert→kertész (gardener)",
+    "derives": "PROFESSION_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-ista",
+    "surface_variants": ["-ista"],
+    "harmony_rule": "invariant (international suffix)",
+    "direction": "N→N",
+    "function": "Agent/adherent noun (-ist)",
+    "example": "szocializmus→szocialista, gitár→gitárista",
+    "derives": "IST_NOUN",
+    "input_pos": "NOUN",
+    "output_pos": "NOUN"
+  },
+  {
+    "suffix": "-izmus",
+    "surface_variants": ["-izmus"],
+    "harmony_rule": "invariant (international suffix)",
+    "direction": "N/ADJ→N",
+    "function": "Ideology/system noun (-ism)",
+    "example": "szocial→szocializmus, ideal→idealizmus",
+    "derives": "ISM_NOUN",
+    "input_pos": "NOUN_ADJ",
+    "output_pos": "NOUN"
+  },
+
+  {
+    "suffix": "-an/-en (adv)",
+    "surface_variants": ["-an", "-en"],
+    "harmony_rule": "back→-an, front→-en",
+    "direction": "ADJ→ADV",
+    "function": "Manner adverb",
+    "example": "gyors→gyorsan (quickly), szép→szépen (beautifully)",
+    "derives": "MANNER_ADV",
+    "input_pos": "ADJ",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-ul/-ül (adv)",
+    "surface_variants": ["-ul", "-ül"],
+    "harmony_rule": "back→-ul, front→-ül",
+    "direction": "ADJ→ADV",
+    "function": "Manner adverb (variant)",
+    "example": "rossz→rosszul (badly), jó→jól (-l variant)",
+    "derives": "MANNER_ADV_2",
+    "input_pos": "ADJ",
+    "output_pos": "ADV"
+  },
+  {
+    "suffix": "-lag/-leg",
+    "surface_variants": ["-lag", "-leg"],
+    "harmony_rule": "back→-lag, front→-leg",
+    "direction": "ADJ→ADV",
+    "function": "Manner adverb (-ly, marginal)",
+    "example": "általános→általánosságlag (marginal)",
+    "derives": "MANNER_ADV_3",
+    "input_pos": "ADJ",
+    "output_pos": "ADV"
+  },
+
+  {
+    "prefix": "meg-",
+    "surface_variants": ["meg"],
+    "direction": "V→V",
+    "function": "Perfective/completive prefix",
+    "example": "ír→megír (to finish writing), csinál→megcsinál (to complete)",
+    "derives": "PERF",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "el-",
+    "surface_variants": ["el"],
+    "direction": "V→V",
+    "function": "Away/beginning prefix",
+    "example": "megy→elmegy (to go away), kezd→elkezd (to begin)",
+    "derives": "AWAY",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "ki-",
+    "surface_variants": ["ki"],
+    "direction": "V→V",
+    "function": "Out prefix",
+    "example": "megy→kimegy (to go out), lát→kilát (to look out)",
+    "derives": "OUT",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "be-",
+    "surface_variants": ["be"],
+    "direction": "V→V",
+    "function": "In/into prefix",
+    "example": "megy→bemegy (to go in), ír→beír (to write in/register)",
+    "derives": "IN",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "fel-",
+    "surface_variants": ["fel", "föl"],
+    "direction": "V→V",
+    "function": "Up prefix",
+    "example": "megy→felmegy (to go up), kel→felkel (to get up)",
+    "derives": "UP",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "le-",
+    "surface_variants": ["le"],
+    "direction": "V→V",
+    "function": "Down prefix",
+    "example": "megy→lemegy (to go down), ír→leír (to write down)",
+    "derives": "DOWN",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "vissza-",
+    "surface_variants": ["vissza"],
+    "direction": "V→V",
+    "function": "Back prefix",
+    "example": "megy→visszamegy (to go back), ad→visszaad (to give back)",
+    "derives": "BACK",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "át-",
+    "surface_variants": ["át"],
+    "direction": "V→V",
+    "function": "Across/through prefix",
+    "example": "megy→átmegy (to cross), lát→átlát (to see through)",
+    "derives": "ACROSS",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "össze-",
+    "surface_variants": ["össze"],
+    "direction": "V→V",
+    "function": "Together prefix",
+    "example": "gyűjt→összegyűjt (to gather together)",
+    "derives": "TOGETHER",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "szét-",
+    "surface_variants": ["szét"],
+    "direction": "V→V",
+    "function": "Apart prefix",
+    "example": "szed→szétszed (to take apart)",
+    "derives": "APART",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "hozzá-",
+    "surface_variants": ["hozzá"],
+    "direction": "V→V",
+    "function": "To/added-to prefix",
+    "example": "szokik→hozzászokik (to get used to)",
+    "derives": "ADDED",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "bele-",
+    "surface_variants": ["bele"],
+    "direction": "V→V",
+    "function": "Into prefix",
+    "example": "esik→beleesik (to fall into)",
+    "derives": "INTO",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "rá-",
+    "surface_variants": ["rá"],
+    "direction": "V→V",
+    "function": "Onto prefix",
+    "example": "néz→ránéz (to look at), mutat→rámutat (to point at)",
+    "derives": "ONTO",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "ide-",
+    "surface_variants": ["ide"],
+    "direction": "V→V",
+    "function": "Hither prefix",
+    "example": "jön→idejön (to come here)",
+    "derives": "HITHER",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  },
+  {
+    "prefix": "oda-",
+    "surface_variants": ["oda"],
+    "direction": "V→V",
+    "function": "Thither prefix",
+    "example": "megy→odamegy (to go there)",
+    "derives": "THITHER",
+    "input_pos": "VERB",
+    "output_pos": "VERB"
+  }
+]
