@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Swahili Morphology &mdash; Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#06b6d4',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .section-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, #06b6d4, #22d3ee, #67e8f9);
+      border-radius: 1px; margin: 0 auto;
+    }
+    .morpheme-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; margin: 2px;
+    }
+    .glow-cyan { box-shadow: 0 0 30px rgba(6,182,212,0.3); }
+    .stat-callout {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 24px; text-align: center;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .tag-grid-cell {
+      width: 6px; height: 6px; border-radius: 1px; display: inline-block;
+      background: rgba(6,182,212,0.15); transition: all 0.3s ease;
+    }
+    .decomp-step {
+      background: linear-gradient(135deg, rgba(6,182,212,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(6,182,212,0.15); border-radius: 16px; padding: 24px;
+    }
+    .token-box {
+      display: inline-block; padding: 4px 8px; border-radius: 6px; margin: 2px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    }
+    .domino {
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: bottom center;
+    }
+    .domino.fallen {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
+    .domino.standing {
+      transform: rotateX(-90deg);
+      opacity: 0;
+    }
+    @keyframes cascade-pulse {
+      0% { box-shadow: 0 0 0 rgba(6,182,212,0); }
+      50% { box-shadow: 0 0 20px rgba(6,182,212,0.4); }
+      100% { box-shadow: 0 0 0 rgba(6,182,212,0); }
+    }
+    .cascade-glow { animation: cascade-pulse 1s ease-out; }
+    .verb-slot {
+      border: 2px solid rgba(6,182,212,0.2);
+      border-radius: 8px; padding: 8px 12px; text-align: center;
+      transition: all 0.4s ease;
+    }
+    .verb-slot.active {
+      border-color: #06b6d4;
+      background: rgba(6,182,212,0.1);
+    }
+
+    /* === Inside the Engine === */
+    .engine-node {
+      background: rgba(6,182,212,0.06);
+      border: 1px solid rgba(6,182,212,0.18);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .engine-node-accent {
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.35);
+      color: #22d3ee;
+    }
+    .engine-arrow-down {
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+      margin: 4px 0; color: rgba(6,182,212,0.4); font-size: 0.85rem; line-height: 1;
+    }
+    .engine-arrow-down .arrow-line {
+      width: 1px; height: 14px; background: rgba(6,182,212,0.25);
+    }
+    .engine-branch {
+      border-left: 2px solid rgba(6,182,212,0.15);
+      padding-left: 16px; margin-left: 12px; margin-top: 6px;
+    }
+    .engine-branch-item {
+      position: relative; padding: 5px 0; font-size: 0.72rem; color: #94a3b8;
+    }
+    .engine-branch-item::before {
+      content: ''; position: absolute; left: -16px; top: 14px;
+      width: 12px; height: 1px; background: rgba(6,182,212,0.2);
+    }
+    .glass {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+    }
+    .accent { color: #22d3ee; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .slot-box {
+      border: 2px solid rgba(6,182,212,0.2); border-radius: 8px;
+      padding: 8px 6px; text-align: center; min-width: 56px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      transition: all 0.4s ease; position: relative;
+    }
+    .slot-box.filled {
+      border-color: #06b6d4; background: rgba(6,182,212,0.1);
+    }
+    .slot-label {
+      font-size: 0.55rem; color: #64748b; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .ext-card {
+      background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.15);
+      border-radius: 10px; padding: 10px 14px; transition: all 0.3s ease;
+    }
+    .ext-card:hover { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.1); }
+    .nc-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px;
+      background: rgba(6,182,212,0.04); border: 1px solid rgba(6,182,212,0.1);
+      font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ======================================== -->
+  <!-- SECTION 1: HEADER -->
+  <!-- ======================================== -->
+  <header class="relative pt-16 pb-12 md:pt-24 md:pb-16 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
+           style="background: radial-gradient(ellipse at center, rgba(6,182,212,0.2) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a href="index.html" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-cyan-400 mb-6 hover:text-cyan-300 transition-colors">&larr; All Languages</a>
+      <h1 id="header-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.08] mb-4 opacity-0">
+        <span class="text-cyan-300">Kiswahili</span>
+        <span class="text-slate-500 mx-3">&mdash;</span>
+        Swahili
+      </h1>
+      <div class="flex items-center justify-center gap-3 mb-6 opacity-0" id="header-badges">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Classificatory</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(251,191,36,0.15); color: #fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex items-center justify-center gap-4 opacity-0" id="header-meter">
+        <span class="text-sm text-slate-400">Complexity</span>
+        <div class="w-48 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
+          <div class="h-full rounded-full" style="background: linear-gradient(90deg, #06b6d4, #22d3ee); width: 75%;"></div>
+        </div>
+        <span class="text-sm font-mono text-cyan-300">~130 bundles</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2: HOW SWAHILI BUILDS WORDS -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="how-it-works">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-16">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">How Swahili Builds Words</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Swahili uses a <strong class="text-cyan-300">noun class agreement cascade</strong>. When a noun&rsquo;s class prefix appears, it triggers a <em>chain reaction</em> &mdash; every related word in the sentence must match.
+        </p>
+      </div>
+
+      <!-- Agreement Cascade / Domino Effect -->
+      <div class="mb-20">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">The Agreement Cascade</p>
+          <p class="text-sm text-slate-400">One prefix tips &mdash; everything follows.</p>
+        </div>
+
+        <!-- Class 7 cascade -->
+        <div class="rounded-2xl p-6 md:p-8 mb-6" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);" id="cascade-7">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Class 7 (KI-)</span>
+            <span class="text-sm text-slate-400">Tools, diminutives, languages</span>
+          </div>
+          <div class="flex flex-wrap items-end gap-3 md:gap-4 mb-6" id="domino-row-7">
+            <div class="domino standing text-center" data-delay="0">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(6,182,212,0.15);border:2px solid #06b6d4;">
+                <p class="font-mono text-lg md:text-xl text-cyan-300 font-bold">ki-</p>
+              </div>
+              <p class="font-mono text-sm text-white">tabu</p>
+              <p class="text-[10px] text-slate-500">book</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">NOUN</p>
+            </div>
+            <div class="text-2xl text-cyan-700 mb-6">&rarr;</div>
+            <div class="domino standing text-center" data-delay="300">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(6,182,212,0.1);border:2px solid rgba(6,182,212,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-300 font-bold">ki-</p>
+              </div>
+              <p class="font-mono text-sm text-white">na-anguka</p>
+              <p class="text-[10px] text-slate-500">is falling</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">VERB</p>
+            </div>
+            <div class="domino standing text-center" data-delay="600">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(6,182,212,0.1);border:2px solid rgba(6,182,212,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-300 font-bold">ki-</p>
+              </div>
+              <p class="font-mono text-sm text-white">kubwa</p>
+              <p class="text-[10px] text-slate-500">big</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">ADJ</p>
+            </div>
+            <div class="domino standing text-center" data-delay="900">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(6,182,212,0.1);border:2px solid rgba(6,182,212,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-300 font-bold">hi-ki</p>
+              </div>
+              <p class="font-mono text-sm text-white">&nbsp;</p>
+              <p class="text-[10px] text-slate-500">this</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">DEM</p>
+            </div>
+            <div class="domino standing text-center" data-delay="1200">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(6,182,212,0.1);border:2px solid rgba(6,182,212,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-300 font-bold">ch-</p>
+              </div>
+              <p class="font-mono text-sm text-white">angu</p>
+              <p class="text-[10px] text-slate-500">my</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">POSS</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500">The <span class="text-cyan-400 font-semibold">ki-</span> prefix on the noun forces matching prefixes on every related word.</p>
+        </div>
+
+        <!-- Class 8 cascade (plural) -->
+        <div class="rounded-2xl p-6 md:p-8 mb-6" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);" id="cascade-8">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Class 8 (VI-)</span>
+            <span class="text-sm text-slate-400">Plural of Class 7</span>
+          </div>
+          <div class="flex flex-wrap items-end gap-3 md:gap-4 mb-6" id="domino-row-8">
+            <div class="domino standing text-center" data-delay="0">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(34,211,238,0.15);border:2px solid #22d3ee;">
+                <p class="font-mono text-lg md:text-xl text-cyan-200 font-bold">vi-</p>
+              </div>
+              <p class="font-mono text-sm text-white">tabu</p>
+              <p class="text-[10px] text-slate-500">books</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">NOUN</p>
+            </div>
+            <div class="text-2xl text-cyan-700 mb-6">&rarr;</div>
+            <div class="domino standing text-center" data-delay="300">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(34,211,238,0.1);border:2px solid rgba(34,211,238,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-200 font-bold">vi-</p>
+              </div>
+              <p class="font-mono text-sm text-white">na-anguka</p>
+              <p class="text-[10px] text-slate-500">are falling</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">VERB</p>
+            </div>
+            <div class="domino standing text-center" data-delay="600">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(34,211,238,0.1);border:2px solid rgba(34,211,238,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-200 font-bold">vi-</p>
+              </div>
+              <p class="font-mono text-sm text-white">kubwa</p>
+              <p class="text-[10px] text-slate-500">big</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">ADJ</p>
+            </div>
+            <div class="domino standing text-center" data-delay="900">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(34,211,238,0.1);border:2px solid rgba(34,211,238,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-200 font-bold">hi-vi</p>
+              </div>
+              <p class="font-mono text-sm text-white">&nbsp;</p>
+              <p class="text-[10px] text-slate-500">these</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">DEM</p>
+            </div>
+            <div class="domino standing text-center" data-delay="1200">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(34,211,238,0.1);border:2px solid rgba(34,211,238,0.4);">
+                <p class="font-mono text-lg md:text-xl text-cyan-200 font-bold">vy-</p>
+              </div>
+              <p class="font-mono text-sm text-white">angu</p>
+              <p class="text-[10px] text-slate-500">my</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">POSS</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500">Switch from Class 7 to Class 8, and <strong>every</strong> agreement prefix changes in lockstep.</p>
+        </div>
+
+        <!-- Class 1/2 cascade -->
+        <div class="rounded-2xl p-6 md:p-8" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);" id="cascade-1">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Class 1 (M-)</span>
+            <span class="text-sm text-slate-400">Humans (singular)</span>
+          </div>
+          <div class="flex flex-wrap items-end gap-3 md:gap-4 mb-6" id="domino-row-1">
+            <div class="domino standing text-center" data-delay="0">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(20,184,166,0.15);border:2px solid #14b8a6;">
+                <p class="font-mono text-lg md:text-xl text-teal-300 font-bold">m-</p>
+              </div>
+              <p class="font-mono text-sm text-white">toto</p>
+              <p class="text-[10px] text-slate-500">child</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">NOUN</p>
+            </div>
+            <div class="text-2xl text-cyan-700 mb-6">&rarr;</div>
+            <div class="domino standing text-center" data-delay="300">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(20,184,166,0.1);border:2px solid rgba(20,184,166,0.4);">
+                <p class="font-mono text-lg md:text-xl text-teal-300 font-bold">a-</p>
+              </div>
+              <p class="font-mono text-sm text-white">na-soma</p>
+              <p class="text-[10px] text-slate-500">is reading</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">VERB</p>
+            </div>
+            <div class="domino standing text-center" data-delay="600">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(20,184,166,0.1);border:2px solid rgba(20,184,166,0.4);">
+                <p class="font-mono text-lg md:text-xl text-teal-300 font-bold">m-</p>
+              </div>
+              <p class="font-mono text-sm text-white">zuri</p>
+              <p class="text-[10px] text-slate-500">good</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">ADJ</p>
+            </div>
+            <div class="domino standing text-center" data-delay="900">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(20,184,166,0.1);border:2px solid rgba(20,184,166,0.4);">
+                <p class="font-mono text-lg md:text-xl text-teal-300 font-bold">huyu</p>
+              </div>
+              <p class="font-mono text-sm text-white">&nbsp;</p>
+              <p class="text-[10px] text-slate-500">this</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">DEM</p>
+            </div>
+            <div class="domino standing text-center" data-delay="1200">
+              <div class="rounded-xl p-3 md:p-4 mb-1" style="background:rgba(20,184,166,0.1);border:2px solid rgba(20,184,166,0.4);">
+                <p class="font-mono text-lg md:text-xl text-teal-300 font-bold">w-</p>
+              </div>
+              <p class="font-mono text-sm text-white">angu</p>
+              <p class="text-[10px] text-slate-500">my</p>
+              <p class="text-[9px] text-cyan-600 mt-0.5">POSS</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500">Class 1 human nouns: subject prefix <span class="text-teal-400 font-semibold">a-</span>, adjective prefix <span class="text-teal-400 font-semibold">m-</span>, demonstrative <span class="text-teal-400 font-semibold">huyu</span>, possessive <span class="text-teal-400 font-semibold">w-</span>.</p>
+        </div>
+      </div>
+
+      <!-- Verb Template -->
+      <div class="mb-12">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">The Verb Template</p>
+          <p class="text-sm text-slate-400">Eight slots, one word.</p>
+        </div>
+        <div class="rounded-2xl p-6 md:p-8" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);">
+          <div class="flex flex-wrap justify-center gap-2 mb-6" id="verb-template">
+            <div class="verb-slot" data-slot="0">
+              <p class="font-mono text-lg text-red-400 font-bold">ha-</p>
+              <p class="text-[10px] text-slate-500">NEG</p>
+            </div>
+            <div class="verb-slot" data-slot="1">
+              <p class="font-mono text-lg text-cyan-300 font-bold">tu-</p>
+              <p class="text-[10px] text-slate-500">SUBJ.1PL</p>
+            </div>
+            <div class="verb-slot" data-slot="2">
+              <p class="font-mono text-lg text-amber-300 font-bold">ku-</p>
+              <p class="text-[10px] text-slate-500">PAST</p>
+            </div>
+            <div class="verb-slot" data-slot="3">
+              <p class="font-mono text-lg text-emerald-300 font-bold">ki-</p>
+              <p class="text-[10px] text-slate-500">OBJ.CL7</p>
+            </div>
+            <div class="verb-slot" data-slot="4">
+              <p class="font-mono text-lg text-violet-300 font-bold">som-</p>
+              <p class="text-[10px] text-slate-500">ROOT</p>
+            </div>
+            <div class="verb-slot" data-slot="5">
+              <p class="font-mono text-lg text-pink-300 font-bold">-esh-</p>
+              <p class="text-[10px] text-slate-500">CAUS</p>
+            </div>
+            <div class="verb-slot" data-slot="6">
+              <p class="font-mono text-lg text-blue-300 font-bold">-e-</p>
+              <p class="text-[10px] text-slate-500">APPL</p>
+            </div>
+            <div class="verb-slot" data-slot="7">
+              <p class="font-mono text-lg text-orange-300 font-bold">-a</p>
+              <p class="text-[10px] text-slate-500">FV.IND</p>
+            </div>
+          </div>
+          <div class="text-center">
+            <p class="font-mono text-sm text-cyan-300 mb-1">ha-tu-ku-ki-som-esh-e-a</p>
+            <p class="text-sm text-slate-400">&ldquo;we did not cause it (class 7) to be read for (someone)&rdquo;</p>
+            <p class="text-[10px] text-slate-600 mt-2">8 morphemes in a single orthographic word. What English needs a 12-word sentence for.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2.5: INSIDE THE ENGINE -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="inside-engine">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-4xl font-bold text-white text-center mb-4">Inside the Engine</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Swahili&rsquo;s unique algorithm: verb slots are stripped in <strong class="text-cyan-300">reverse order</strong> (outside-in), and noun class detection drives agreement validation across the entire sentence.
+      </p>
+
+      <!-- ── 1. Pipeline Flowchart ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="sw-pipeline">
+        <h3 class="text-lg font-bold text-white mb-6 text-center">Analysis Pipeline</h3>
+        <div class="flex flex-col items-center gap-0">
+
+          <div class="engine-node engine-node-accent text-center w-full max-w-xs" id="sw-pipe-0" style="opacity:0;">
+            Input word
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="sw-pipe-1" style="opacity:0;">
+            <span class="accent font-semibold">Closed-class lookup</span> <span class="text-slate-500">(~95 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return immediately</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="sw-pipe-2" style="opacity:0;">
+            <span class="accent font-semibold">Auxiliary / copula check</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return with tense/person tags</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Verb vs Noun branch -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-sm" id="sw-pipe-3" style="opacity:0;">
+            Is it a verb? (check subject agreement prefix)
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div></div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl" id="sw-pipe-4" style="opacity:0;">
+            <!-- Verb path -->
+            <div class="rounded-xl p-4" style="border: 2px solid rgba(6,182,212,0.2); background: rgba(6,182,212,0.03);">
+              <div class="text-xs font-bold tracking-[0.15em] uppercase accent mb-3 text-center">YES &rarr; Verb Template Stripping</div>
+              <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                <div class="text-cyan-400">Strip OUTSIDE-IN (reverse):</div>
+                <div>1. Final vowel (-a/-e/-i) &rarr; tag mood</div>
+                <div>2. Extensions R-to-L: -an-, -w-, -ish-, -i-, -ik-</div>
+                <div>3. Split OBJ + ROOT at boundary</div>
+                <div>4. Strip tense marker (na-/li-/ta-/me-/ki-)</div>
+                <div>5. Strip negation (ha-/si-)</div>
+                <div>6. Subject agreement prefix &rarr; person+num+class</div>
+              </div>
+            </div>
+            <!-- Noun path -->
+            <div class="rounded-xl p-4" style="border: 2px solid rgba(6,182,212,0.2); background: rgba(6,182,212,0.03);">
+              <div class="text-xs font-bold tracking-[0.15em] uppercase accent mb-3 text-center">NO &rarr; Noun / Adjective</div>
+              <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                <div>Try all noun class prefixes:</div>
+                <div>m-/wa-/mi-/ki-/vi-/n-/u-/ma-/ji-</div>
+                <div>Match longest &rarr; tag nc=class, num=SG/PL</div>
+                <div>Check locative suffix -ni</div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node text-center w-full max-w-md" id="sw-pipe-5" style="opacity:0;">
+            <span class="accent font-semibold">Step B: Derivational</span> <span class="text-slate-500">(~20 rules)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="engine-node engine-node-accent text-center w-full max-w-lg" id="sw-pipe-6" style="opacity:0;">
+            <span class="mono text-sm">TokenInfo(root, pos, tags)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 2. Verb Template Slot Diagram ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="sw-slot-diagram">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">The 8-Slot Verb Template</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          A Swahili verb packs up to 8 morphemes into fixed positional slots. Speakers compose <strong class="text-cyan-300">left-to-right</strong>, but the engine strips <strong class="text-orange-300">right-to-left</strong>.
+        </p>
+
+        <!-- Slot boxes -->
+        <div class="flex flex-wrap justify-center gap-1 md:gap-2 mb-6" id="sw-slots">
+          <div class="slot-box" id="sw-slot-0" style="opacity:0;">
+            <div class="slot-label">NEG</div>
+            <div class="text-red-400 font-bold">ha-</div>
+          </div>
+          <div class="slot-box" id="sw-slot-1" style="opacity:0;">
+            <div class="slot-label">SUBJ</div>
+            <div class="text-cyan-300 font-bold">tu-</div>
+          </div>
+          <div class="slot-box" id="sw-slot-2" style="opacity:0;">
+            <div class="slot-label">TENSE</div>
+            <div class="text-yellow-300 font-bold">li-</div>
+          </div>
+          <div class="slot-box" id="sw-slot-3" style="opacity:0;">
+            <div class="slot-label">REL</div>
+            <div class="text-slate-500">&empty;</div>
+          </div>
+          <div class="slot-box" id="sw-slot-4" style="opacity:0;">
+            <div class="slot-label">OBJ</div>
+            <div class="text-emerald-300 font-bold">ki-</div>
+          </div>
+          <div class="slot-box" id="sw-slot-5" style="opacity:0;">
+            <div class="slot-label">ROOT</div>
+            <div class="text-white font-bold">som</div>
+          </div>
+          <div class="slot-box" id="sw-slot-6" style="opacity:0;">
+            <div class="slot-label">EXT</div>
+            <div class="text-violet-300 font-bold">-esh-</div>
+          </div>
+          <div class="slot-box" id="sw-slot-7" style="opacity:0;">
+            <div class="slot-label">FV</div>
+            <div class="text-orange-300 font-bold">-a</div>
+          </div>
+        </div>
+
+        <!-- Direction arrows -->
+        <div class="flex justify-center items-center gap-6 mb-4" id="sw-directions" style="opacity:0;">
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-cyan-400 font-semibold">Composition order</span>
+            <span class="text-cyan-400">&rarr;</span>
+          </div>
+          <div class="w-px h-4" style="background:rgba(255,255,255,0.15);"></div>
+          <div class="flex items-center gap-2">
+            <span class="text-orange-400">&larr;</span>
+            <span class="text-[11px] text-orange-400 font-semibold">Stripping order (engine)</span>
+          </div>
+        </div>
+
+        <p class="text-[10px] text-slate-600 text-center">The engine strips from the <span class="text-orange-300">outside in</span>: first the final vowel, then extensions, then works leftward to negation and subject.</p>
+      </div>
+
+      <!-- ── 3. Noun Class Agreement Cascade ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="sw-nc-cascade">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Noun Class Agreement Algorithm</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Once the engine identifies a noun class prefix, it looks up the entire agreement table. Every related word in the sentence must match.
+        </p>
+
+        <div class="max-w-xl mx-auto space-y-3" id="sw-nc-steps">
+          <div class="nc-row" id="sw-nc-0" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-14 shrink-0">Step 1</span>
+            <span class="text-cyan-300 font-bold">ki-</span>
+            <span class="text-xs text-slate-400">tabu &rarr; Identify noun class <span class="accent">7</span></span>
+          </div>
+          <div class="nc-row" id="sw-nc-1" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-14 shrink-0">Step 2</span>
+            <span class="text-xs text-slate-400">Lookup class 7 agreement table:</span>
+          </div>
+          <div class="ml-16 grid grid-cols-2 sm:grid-cols-4 gap-2" id="sw-nc-table" style="opacity:0;">
+            <div class="text-center p-2 rounded-lg" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15);">
+              <div class="text-[9px] text-slate-500">Verb subj</div>
+              <div class="font-mono text-sm text-cyan-300 font-bold">ki-</div>
+            </div>
+            <div class="text-center p-2 rounded-lg" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15);">
+              <div class="text-[9px] text-slate-500">Adjective</div>
+              <div class="font-mono text-sm text-cyan-300 font-bold">ki-</div>
+            </div>
+            <div class="text-center p-2 rounded-lg" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15);">
+              <div class="text-[9px] text-slate-500">Demonstrative</div>
+              <div class="font-mono text-sm text-cyan-300 font-bold">hi-ki</div>
+            </div>
+            <div class="text-center p-2 rounded-lg" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15);">
+              <div class="text-[9px] text-slate-500">Possessive</div>
+              <div class="font-mono text-sm text-cyan-300 font-bold">ch-</div>
+            </div>
+          </div>
+          <div class="nc-row" id="sw-nc-2" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-14 shrink-0">Step 3</span>
+            <span class="text-xs text-slate-400">Validate: do other words in sentence match class 7 prefixes?</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 4. Extension Stacking Logic ── -->
+      <div class="glass p-8 md:p-12" id="sw-ext-stack">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Extension Stacking</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Verb extensions stack onto the root in a fixed order. The engine strips from the <strong class="text-orange-300">outermost</strong> extension inward, recognizing each one.
+        </p>
+
+        <div class="max-w-md mx-auto space-y-3" id="sw-ext-steps">
+          <div class="ext-card flex items-center gap-3" id="sw-ext-0" style="opacity:0;">
+            <span class="font-mono text-sm text-white font-bold w-28">pik-<span class="text-orange-300">a</span></span>
+            <span class="text-[11px] text-slate-400">cook</span>
+            <span class="text-[10px] text-slate-600 ml-auto">(bare root)</span>
+          </div>
+          <div class="ext-card flex items-center gap-3" id="sw-ext-1" style="opacity:0;">
+            <span class="font-mono text-sm text-white font-bold w-28">pik-<span class="text-violet-300">w</span>-a</span>
+            <span class="text-[11px] text-slate-400">be cooked</span>
+            <span class="text-[10px] text-cyan-600 ml-auto">PASS</span>
+          </div>
+          <div class="ext-card flex items-center gap-3" id="sw-ext-2" style="opacity:0;">
+            <span class="font-mono text-sm text-white font-bold w-28">pik-<span class="text-yellow-300">ish</span>-a</span>
+            <span class="text-[11px] text-slate-400">make cook</span>
+            <span class="text-[10px] text-cyan-600 ml-auto">CAUS</span>
+          </div>
+          <div class="ext-card flex items-center gap-3" id="sw-ext-3" style="opacity:0;">
+            <span class="font-mono text-sm text-white font-bold w-28">pik-<span class="text-yellow-300">ish</span>-<span class="text-violet-300">w</span>-a</span>
+            <span class="text-[11px] text-slate-400">be made to cook</span>
+            <span class="text-[10px] text-cyan-600 ml-auto">CAUS+PASS</span>
+          </div>
+          <div class="ext-card flex items-center gap-3" id="sw-ext-4" style="opacity:0;">
+            <span class="font-mono text-sm text-white font-bold w-28">pik-<span class="text-emerald-300">i</span>-<span class="text-violet-300">w</span>-a</span>
+            <span class="text-[11px] text-slate-400">be cooked for</span>
+            <span class="text-[10px] text-cyan-600 ml-auto">APPL+PASS</span>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-600 text-center mt-6">The engine strips <span class="text-orange-300">-w-</span> first (outermost), then <span class="text-yellow-300">-ish-</span> or <span class="text-emerald-300">-i-</span>, arriving at the root <span class="text-white">pik</span>.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 3: LIVE DECOMPOSITION -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="decomposition">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Live Decomposition</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Watch the engine strip <strong class="text-cyan-300">seven morphemes</strong> from a single Swahili verb.
+        </p>
+      </div>
+
+      <!-- The word -->
+      <div class="text-center mb-10">
+        <p class="font-mono text-4xl md:text-6xl text-white mb-3" id="decomp-word">hatukusomeshana</p>
+        <p class="text-sm text-slate-400">&ldquo;we did not cause each other to read&rdquo;</p>
+      </div>
+
+      <!-- Morpheme slots filling in -->
+      <div class="space-y-4" id="decomp-steps">
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Strip 1</span>
+            <span class="text-sm font-semibold text-white">Final Vowel</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="p-3 rounded-lg" style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.2);">
+              <span class="font-mono text-lg text-orange-300">-a</span>
+              <span class="text-xs text-slate-500 ml-2">FV: indicative mood</span>
+            </div>
+            <span class="text-xs text-slate-600">&rarr; hatukusomeshan</span>
+          </div>
+        </div>
+
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Strip 2</span>
+            <span class="text-sm font-semibold text-white">Extension: Reciprocal</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="p-3 rounded-lg" style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);">
+              <span class="font-mono text-lg text-blue-300">-an-</span>
+              <span class="text-xs text-slate-500 ml-2">RECIP: &ldquo;each other&rdquo;</span>
+            </div>
+            <span class="text-xs text-slate-600">&rarr; hatukusomesh</span>
+          </div>
+        </div>
+
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Strip 3</span>
+            <span class="text-sm font-semibold text-white">Extension: Causative</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="p-3 rounded-lg" style="background:rgba(244,114,182,0.1);border:1px solid rgba(244,114,182,0.2);">
+              <span class="font-mono text-lg text-pink-300">-esh-</span>
+              <span class="text-xs text-slate-500 ml-2">CAUS: &ldquo;cause to&rdquo;</span>
+            </div>
+            <span class="text-xs text-slate-600">&rarr; hatukusom</span>
+          </div>
+        </div>
+
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Strip 4</span>
+            <span class="text-sm font-semibold text-white">Negation + Subject + Tense</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="p-3 rounded-lg" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);">
+              <span class="font-mono text-lg text-red-300">ha-</span>
+              <span class="text-xs text-slate-500 ml-2">NEG</span>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);">
+              <span class="font-mono text-lg text-cyan-300">tu-</span>
+              <span class="text-xs text-slate-500 ml-2">SUBJ.1PL: &ldquo;we&rdquo;</span>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.2);">
+              <span class="font-mono text-lg text-amber-300">ku-</span>
+              <span class="text-xs text-slate-500 ml-2">PAST (neg.)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Root</span>
+            <span class="text-sm font-semibold text-white">Extracted Root</span>
+          </div>
+          <div class="flex items-center gap-4 flex-wrap">
+            <div class="p-4 rounded-lg glow-cyan" style="background:rgba(6,182,212,0.12);border:2px solid #06b6d4;">
+              <span class="font-mono text-3xl text-white font-bold">-som-</span>
+              <span class="text-sm text-slate-400 ml-3">&ldquo;read&rdquo;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-cyan-400 px-2 py-0.5 rounded" style="background:rgba(6,182,212,0.15);">Result</span>
+            <span class="text-sm font-semibold text-white">Complete Tag Set</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="morpheme-badge" style="background:rgba(6,182,212,0.2);color:#67e8f9;">root=som</span>
+            <span class="morpheme-badge" style="background:rgba(239,68,68,0.2);color:#fca5a5;">polarity=NEG</span>
+            <span class="morpheme-badge" style="background:rgba(6,182,212,0.2);color:#67e8f9;">subj=1PL</span>
+            <span class="morpheme-badge" style="background:rgba(251,191,36,0.2);color:#fde68a;">tense=PAST</span>
+            <span class="morpheme-badge" style="background:rgba(244,114,182,0.2);color:#f9a8d4;">voice=CAUS</span>
+            <span class="morpheme-badge" style="background:rgba(96,165,250,0.2);color:#93c5fd;">voice=RECIP</span>
+            <span class="morpheme-badge" style="background:rgba(249,115,22,0.2);color:#fdba74;">mood=IND</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">7 tags from one word. BPE sees &ldquo;hatu&rdquo; + &ldquo;kusome&rdquo; + &ldquo;shana&rdquo; &mdash; meaningless fragments.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 4: TAG INVENTORY -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="tag-inventory">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">The Tag Inventory</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          <strong class="text-cyan-300">~130 unique bundles</strong> &mdash; dominated by noun class &times; person combinations. The cascade mechanism multiplies every grammatical category by 15+ noun classes.
+        </p>
+      </div>
+
+      <div class="rounded-2xl p-8 mb-8" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);" id="tag-grid-container">
+        <div class="flex flex-wrap gap-[3px] justify-center" id="tag-grid"></div>
+        <div class="mt-6 flex flex-wrap justify-center gap-4 text-[10px]">
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#06b6d4;"></div><span class="text-slate-400">Verb Morphology (55)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#22d3ee;"></div><span class="text-slate-400">Noun Class Prefixes (36)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#67e8f9;"></div><span class="text-slate-400">Agreement Markers (24)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#0891b2;"></div><span class="text-slate-400">Extensions (15)</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-cyan-300 mb-1">15+</p>
+          <p class="text-xs text-slate-500">Noun Classes</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-cyan-300 mb-1">10</p>
+          <p class="text-xs text-slate-500">Tense/Aspect Markers</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-cyan-300 mb-1">7</p>
+          <p class="text-xs text-slate-500">Verb Extensions</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-cyan-300 mb-1">95</p>
+          <p class="text-xs text-slate-500">Closed-Class Entries</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 5: WHY THIS MATTERS FOR AI -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="ai-impact">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Why This Matters for AI</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Swahili&rsquo;s agreement cascade means BPE splits destroy the cross-word dependency chain. A morph-aware approach preserves it.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="rounded-2xl p-6" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#ef4444;"></div>
+            <span class="text-sm font-bold text-red-300">BPE Tokenization</span>
+          </div>
+          <p class="font-mono text-lg text-slate-300 mb-3">hatukusomeshana</p>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">hatu</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.10);color:#fca5a5;">kusome</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">shana</span>
+          </div>
+          <p class="text-xs text-slate-500">3 opaque chunks. Negation, subject, tense, root, causative, reciprocal &mdash; all invisible.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-red-400">3</span>
+            <span class="text-xs text-slate-500">tokens, 0 features exposed</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl p-6" style="background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#06b6d4;"></div>
+            <span class="text-sm font-bold text-cyan-300">Morph-Aware Tokenization</span>
+          </div>
+          <p class="font-mono text-lg text-slate-300 mb-3">hatukusomeshana</p>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">NEG</span>
+            <span class="token-box" style="background:rgba(6,182,212,0.15);color:#67e8f9;">1PL</span>
+            <span class="token-box" style="background:rgba(251,191,36,0.15);color:#fde68a;">PAST</span>
+            <span class="token-box" style="background:rgba(139,92,246,0.15);color:#c4b5fd;">som</span>
+            <span class="token-box" style="background:rgba(244,114,182,0.15);color:#f9a8d4;">CAUS</span>
+            <span class="token-box" style="background:rgba(96,165,250,0.15);color:#93c5fd;">RECIP</span>
+            <span class="token-box" style="background:rgba(249,115,22,0.15);color:#fdba74;">IND</span>
+          </div>
+          <p class="text-xs text-slate-500">7 meaningful units. Every morpheme slot is transparent. The model learns that &ldquo;-esh-&rdquo; always means causative.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-cyan-400">7</span>
+            <span class="text-xs text-slate-500">tags recovered</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl p-8 text-center glow-cyan" style="background:linear-gradient(135deg, rgba(6,182,212,0.08) 0%, rgba(6,182,212,0.02) 100%);border:1px solid rgba(6,182,212,0.2);">
+        <p class="text-5xl md:text-7xl font-black text-cyan-300 mb-2">10&ndash;20%</p>
+        <p class="text-sm text-slate-400 mb-1">projected efficiency improvement</p>
+        <p class="text-xs text-slate-500">Not yet tested at scale &mdash; projected from the agreement cascade density and noun class multiplier effect. The cross-word dependencies suggest even larger gains at sentence level.</p>
+        <div class="mt-4 inline-block px-4 py-1.5 rounded-full text-xs font-semibold" style="background:rgba(251,191,36,0.15);color:#fbbf24;">PROJECTION &mdash; TESTING PENDING</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 6: FOOTER -->
+  <!-- ======================================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(6,182,212,0.15);color:#06b6d4;">Classificatory</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(251,191,36,0.15);color:#fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4 mb-6 text-xs">
+        <a href="index.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Overview</a>
+        <a href="zh.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Mandarin</a>
+        <a href="en.html" class="text-slate-500 hover:text-cyan-400 transition-colors">English</a>
+        <a href="de.html" class="text-slate-500 hover:text-cyan-400 transition-colors">German</a>
+        <a href="es.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Spanish</a>
+        <a href="hu.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Hungarian</a>
+        <a href="tr.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Turkish</a>
+        <a href="ar.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Arabic</a>
+        <a href="sw.html" class="text-cyan-400 font-semibold">Swahili</a>
+        <a href="eu.html" class="text-slate-500 hover:text-cyan-400 transition-colors">Basque</a>
+      </div>
+      <p class="text-xs text-slate-600 text-center">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ======================================== -->
+  <!-- GSAP + Domino Cascade -->
+  <!-- ======================================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Header entrance
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .fromTo('#header-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
+      .fromTo('#header-badges', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
+      .fromTo('#header-meter', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+
+    // Domino cascades
+    function setupCascade(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const dominoes = container.querySelectorAll('.domino');
+
+      ScrollTrigger.create({
+        trigger: container,
+        start: 'top 75%',
+        once: true,
+        onEnter: () => {
+          dominoes.forEach(d => {
+            const delay = parseInt(d.dataset.delay) || 0;
+            setTimeout(() => {
+              d.classList.remove('standing');
+              d.classList.add('fallen');
+              d.querySelector('.rounded-xl').classList.add('cascade-glow');
+            }, delay);
+          });
+        }
+      });
+    }
+
+    ['cascade-7', 'cascade-8', 'cascade-1'].forEach(setupCascade);
+
+    // Verb template slot activation
+    ScrollTrigger.create({
+      trigger: '#verb-template',
+      start: 'top 75%',
+      once: true,
+      onEnter: () => {
+        document.querySelectorAll('.verb-slot').forEach((slot, i) => {
+          setTimeout(() => slot.classList.add('active'), i * 200);
+        });
+      }
+    });
+
+    // Decomposition steps
+    gsap.fromTo('[data-decomp]',
+      { opacity: 0, x: -30 },
+      {
+        opacity: 1, x: 0, duration: 0.6, stagger: 0.25,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: '#decomp-steps', start: 'top 70%', once: true }
+      }
+    );
+
+    // --- Inside the Engine: Pipeline ---
+    ScrollTrigger.create({
+      trigger: '#sw-pipeline',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const pTl = gsap.timeline();
+        for (let i = 0; i <= 6; i++) {
+          pTl.fromTo('#sw-pipe-' + i, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i === 0 ? '+=0.1' : '+=0.2');
+        }
+      }
+    });
+
+    // --- Inside the Engine: Slot diagram ---
+    ScrollTrigger.create({
+      trigger: '#sw-slot-diagram',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const sTl = gsap.timeline();
+        for (let i = 0; i <= 7; i++) {
+          sTl.fromTo('#sw-slot-' + i, { opacity: 0, y: 15, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.7)' }, i === 0 ? '+=0.2' : '+=0.12');
+        }
+        sTl.fromTo('#sw-directions', { opacity: 0 }, { opacity: 1, duration: 0.6 }, '+=0.3');
+      }
+    });
+
+    // --- Inside the Engine: Noun class cascade ---
+    ScrollTrigger.create({
+      trigger: '#sw-nc-cascade',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const nTl = gsap.timeline();
+        nTl
+          .fromTo('#sw-nc-0', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.2')
+          .fromTo('#sw-nc-1', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.3')
+          .fromTo('#sw-nc-table', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.6 }, '+=0.2')
+          .fromTo('#sw-nc-2', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.3');
+      }
+    });
+
+    // --- Inside the Engine: Extension stacking ---
+    ScrollTrigger.create({
+      trigger: '#sw-ext-stack',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const eTl = gsap.timeline();
+        for (let i = 0; i <= 4; i++) {
+          eTl.fromTo('#sw-ext-' + i, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.4 }, i === 0 ? '+=0.2' : '+=0.2');
+        }
+      }
+    });
+
+    // Tag grid
+    (function() {
+      const grid = document.getElementById('tag-grid');
+      const colors = ['#06b6d4','#22d3ee','#67e8f9','#0891b2'];
+      const counts = [55, 36, 24, 15]; // total = 130
+      let cells = [];
+      counts.forEach((count, ci) => {
+        for (let i = 0; i < count; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'tag-grid-cell';
+          cell.style.background = 'rgba(6,182,212,0.1)';
+          cell.dataset.targetColor = colors[ci];
+          grid.appendChild(cell);
+          cells.push(cell);
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: '#tag-grid-container',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+          cells.forEach((cell, i) => {
+            setTimeout(() => {
+              cell.style.background = cell.dataset.targetColor;
+              cell.style.boxShadow = '0 0 4px ' + cell.dataset.targetColor + '66';
+            }, i * 12);
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

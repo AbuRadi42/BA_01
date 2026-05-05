@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: {
+              950: '#0f172a',
+              900: '#1e293b',
+              800: '#1e293b',
+            },
+            lang: {
+              zh: '#ef4444',
+              en: '#3b82f6',
+              de: '#f59e0b',
+              es: '#f97316',
+              hu: '#10b981',
+              tr: '#e11d48',
+              ar: '#8b5cf6',
+              sw: '#06b6d4',
+              eu: '#ec4899',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .spectrum-bar {
+      background: linear-gradient(90deg,
+        #ef4444 0%,
+        #3b82f6 18%,
+        #f59e0b 38%,
+        #f97316 52%,
+        #10b981 72%,
+        #e11d48 100%
+      );
+      height: 6px;
+      border-radius: 3px;
+      position: relative;
+    }
+    .spectrum-node {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .spectrum-node:hover {
+      transform: translate(-50%, -50%) scale(1.12);
+    }
+    .spectrum-node:hover .node-ring {
+      box-shadow: 0 0 24px 4px var(--glow);
+    }
+    .node-ring {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      transition: box-shadow 0.3s ease;
+    }
+    .outlier-card {
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    }
+    .outlier-card:hover {
+      transform: translateY(-6px);
+    }
+    .lang-card {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .lang-card:hover {
+      transform: translateY(-8px);
+    }
+    .complexity-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+    }
+    .complexity-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+    .morpheme {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 1px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+    }
+    .dotted-connector {
+      position: absolute;
+      border-left: 2px dashed rgba(255,255,255,0.15);
+    }
+    .stat-callout {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .token-box {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+    .glow-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .lang-card:hover .glow-line {
+      opacity: 1;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .float-anim {
+      animation: float 4s ease-in-out infinite;
+    }
+    .section-divider {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, #8b5cf6, #3b82f6, #06b6d4);
+      border-radius: 1px;
+      margin: 0 auto;
+    }
+    @media (max-width: 768px) {
+      .spectrum-desktop { display: none; }
+      .spectrum-mobile { display: block !important; }
+    }
+    @media (min-width: 769px) {
+      .spectrum-mobile { display: none !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ======================================== -->
+  <!-- HEADER -->
+  <!-- ======================================== -->
+  <header class="relative pt-16 pb-12 md:pt-24 md:pb-16 px-6 text-center overflow-hidden">
+    <!-- Background glow -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-radial opacity-20"
+           style="background: radial-gradient(ellipse at center, rgba(139,92,246,0.25) 0%, transparent 70%);"></div>
+    </div>
+
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <p id="header-badge" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-violet-400 mb-6 opacity-0">
+        Computational Linguistics Research
+      </p>
+      <h1 id="header-title" class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08] mb-5 opacity-0">
+        Morphological Efficiency<br class="hidden sm:block" /> in AI
+      </h1>
+      <p id="header-subtitle" class="text-base md:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8 opacity-0">
+        How 9 Languages Build Words&hairsp;&mdash;&hairsp;And Why It Matters for Computing
+      </p>
+      <p id="header-author" class="text-sm text-slate-500 font-medium tracking-wide opacity-0">
+        Sameh AbuRadi
+      </p>
+    </div>
+  </header>
+
+  <!-- ======================================== -->
+  <!-- THE SPECTRUM (Hero Section) -->
+  <!-- ======================================== -->
+  <section class="relative px-6 pt-8 pb-20 md:pb-28">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">The Spectrum</h2>
+        <p class="text-xl md:text-2xl font-bold text-white">From Isolating to Agglutinative</p>
+      </div>
+
+      <!-- DESKTOP SPECTRUM -->
+      <div class="spectrum-desktop relative" style="min-height: 420px;">
+        <!-- Axis labels -->
+        <div class="flex justify-between text-xs text-slate-500 font-medium mb-3 px-2">
+          <span class="uppercase tracking-wider">Isolating</span>
+          <span class="uppercase tracking-wider">Fusional</span>
+          <span class="uppercase tracking-wider">Agglutinative</span>
+        </div>
+
+        <!-- The gradient bar -->
+        <div class="spectrum-bar mx-2" id="spectrum-bar">
+          <!-- Spectrum nodes positioned along the bar -->
+          <!-- Mandarin: 2% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 4%; --glow: #ef4444;">
+            <div class="node-ring" style="background: #ef4444;"></div>
+            <div class="absolute top-8 left-1/2 -translate-x-1/2 w-36 text-center">
+              <p class="text-lg mb-0.5">&#x4E2D;&#x6587;</p>
+              <p class="text-sm font-semibold text-white">Mandarin</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(239,68,68,0.15); color: #ef4444;">Isolating</span>
+              <div class="mt-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 12%; background: #ef4444;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~1.0 morphemes/word</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- English: 20% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 22%; --glow: #3b82f6;">
+            <div class="node-ring" style="background: #3b82f6;"></div>
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-36 text-center" style="top: auto; bottom: 24px; transform: translate(-50%, 0);">
+              <div class="mb-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 25%; background: #3b82f6;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~1.5 morphemes/word</p>
+              </div>
+              <span class="inline-block mb-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(59,130,246,0.15); color: #3b82f6;">Analytic</span>
+              <p class="text-sm font-semibold text-white">English</p>
+              <p class="text-base mb-0.5">English</p>
+            </div>
+          </div>
+
+          <!-- German: 42% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 40%; --glow: #f59e0b;">
+            <div class="node-ring" style="background: #f59e0b;"></div>
+            <div class="absolute top-8 left-1/2 -translate-x-1/2 w-36 text-center">
+              <p class="text-lg mb-0.5">Deutsch</p>
+              <p class="text-sm font-semibold text-white">German</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(245,158,11,0.15); color: #f59e0b;">Fusional</span>
+              <div class="mt-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 42%; background: #f59e0b;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~2.2 morphemes/word</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spanish: 52% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 54%; --glow: #f97316;">
+            <div class="node-ring" style="background: #f97316;"></div>
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-36 text-center" style="top: auto; bottom: 24px; transform: translate(-50%, 0);">
+              <div class="mb-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 50%; background: #f97316;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~2.5 morphemes/word</p>
+              </div>
+              <span class="inline-block mb-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(249,115,22,0.15); color: #f97316;">Fusional</span>
+              <p class="text-sm font-semibold text-white">Spanish</p>
+              <p class="text-base mb-0.5">Espa&ntilde;ol</p>
+            </div>
+          </div>
+
+          <!-- Hungarian: 75% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 74%; --glow: #10b981;">
+            <div class="node-ring" style="background: #10b981;"></div>
+            <div class="absolute top-8 left-1/2 -translate-x-1/2 w-36 text-center">
+              <p class="text-lg mb-0.5">Magyar</p>
+              <p class="text-sm font-semibold text-white">Hungarian</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(16,185,129,0.15); color: #10b981;">Agglutinative</span>
+              <div class="mt-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 72%; background: #10b981;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~3.5 morphemes/word</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Turkish: 95% -->
+          <div class="spectrum-node opacity-0" data-spectrum-node style="left: 94%; --glow: #e11d48;">
+            <div class="node-ring" style="background: #e11d48;"></div>
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-36 text-center" style="top: auto; bottom: 24px; transform: translate(-50%, 0);">
+              <div class="mb-2">
+                <div class="complexity-bar w-24 mx-auto">
+                  <div class="complexity-fill" style="width: 88%; background: #e11d48;"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1">~4.2 morphemes/word</p>
+              </div>
+              <span class="inline-block mb-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(225,29,72,0.15); color: #e11d48;">Agglutinative</span>
+              <p class="text-sm font-semibold text-white">Turkish</p>
+              <p class="text-base mb-0.5">T&uuml;rk&ccedil;e</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outlier section label -->
+        <div class="mt-44 mb-6 text-center">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-600">Non-linear Morphologies</p>
+        </div>
+
+        <!-- Outlier cards -->
+        <div class="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
+          <!-- Arabic -->
+          <div class="outlier-card opacity-0 rounded-2xl p-5 text-center" data-outlier
+               style="background: linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(139,92,246,0.02) 100%); border: 1px solid rgba(139,92,246,0.2);">
+            <p class="text-2xl mb-1" style="font-family: 'Noto Sans Arabic', serif;">&#x0639;&#x0631;&#x0628;&#x064A;</p>
+            <p class="text-sm font-semibold text-white mb-1">Arabic</p>
+            <span class="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Templatic</span>
+            <div class="complexity-bar w-20 mx-auto">
+              <div class="complexity-fill" style="width: 65%; background: #8b5cf6;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Root-pattern system</p>
+          </div>
+          <!-- Swahili -->
+          <div class="outlier-card opacity-0 rounded-2xl p-5 text-center" data-outlier
+               style="background: linear-gradient(135deg, rgba(6,182,212,0.08) 0%, rgba(6,182,212,0.02) 100%); border: 1px solid rgba(6,182,212,0.2);">
+            <p class="text-2xl mb-1">Kiswahili</p>
+            <p class="text-sm font-semibold text-white mb-1">Swahili</p>
+            <span class="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Classificatory</span>
+            <div class="complexity-bar w-20 mx-auto">
+              <div class="complexity-fill" style="width: 75%; background: #06b6d4;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Noun-class agreement</p>
+          </div>
+          <!-- Basque -->
+          <div class="outlier-card opacity-0 rounded-2xl p-5 text-center" data-outlier
+               style="background: linear-gradient(135deg, rgba(236,72,153,0.08) 0%, rgba(236,72,153,0.02) 100%); border: 1px solid rgba(236,72,153,0.2);">
+            <p class="text-2xl mb-1">Euskara</p>
+            <p class="text-sm font-semibold text-white mb-1">Basque</p>
+            <span class="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3" style="background: rgba(236,72,153,0.15); color: #ec4899;">Polypersonal</span>
+            <div class="complexity-bar w-20 mx-auto">
+              <div class="complexity-fill" style="width: 90%; background: #ec4899;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Verb encodes all arguments</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOBILE SPECTRUM (vertical list) -->
+      <div class="spectrum-mobile">
+        <div class="space-y-3 max-w-sm mx-auto">
+          <!-- Mobile nodes rendered as a simple vertical list -->
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #ef4444;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Mandarin <span class="text-slate-500 font-normal">&#x4E2D;&#x6587;</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #ef4444;">Isolating</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:12%;background:#ef4444;"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #3b82f6;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">English</p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #3b82f6;">Analytic</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:25%;background:#3b82f6;"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #f59e0b;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">German <span class="text-slate-500 font-normal">Deutsch</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #f59e0b;">Fusional</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:42%;background:#f59e0b;"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(249,115,22,0.06); border: 1px solid rgba(249,115,22,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #f97316;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Spanish <span class="text-slate-500 font-normal">Espa&ntilde;ol</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #f97316;">Fusional</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:50%;background:#f97316;"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #10b981;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Hungarian <span class="text-slate-500 font-normal">Magyar</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #10b981;">Agglutinative</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:72%;background:#10b981;"></div></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(225,29,72,0.06); border: 1px solid rgba(225,29,72,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #e11d48;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Turkish <span class="text-slate-500 font-normal">T&uuml;rk&ccedil;e</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #e11d48;">Agglutinative</span>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="complexity-bar w-16"><div class="complexity-fill" style="width:88%;background:#e11d48;"></div></div>
+            </div>
+          </div>
+          <div class="pt-4 pb-2 text-center">
+            <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-600">Non-linear Morphologies</p>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #8b5cf6;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Arabic <span class="text-slate-500 font-normal">&#x0639;&#x0631;&#x0628;&#x064A;</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #8b5cf6;">Templatic</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #06b6d4;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Swahili <span class="text-slate-500 font-normal">Kiswahili</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #06b6d4;">Classificatory</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 rounded-xl" style="background: rgba(236,72,153,0.06); border: 1px solid rgba(236,72,153,0.15);">
+            <div class="w-3 h-3 rounded-full flex-shrink-0" style="background: #ec4899;"></div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">Basque <span class="text-slate-500 font-normal">Euskara</span></p>
+              <span class="text-[10px] font-semibold uppercase tracking-wider" style="color: #ec4899;">Polypersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- WHAT IS MORPHOLOGICAL COMPLEXITY? -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="what-is">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">What is Morphological Complexity?</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Languages differ dramatically in how they package meaning into words. Some keep things simple&hairsp;&mdash;&hairsp;one
+          word, one idea. Others stack multiple grammatical markers into a single word, creating dense bundles
+          of information that challenge conventional tokenization.
+        </p>
+      </div>
+
+      <!-- Sentence comparison -->
+      <div class="rounded-2xl p-6 md:p-8 mb-4" style="background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); border: 1px solid rgba(255,255,255,0.06);">
+        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-6 text-center">
+          "The researchers are studying the effect of morphological information density on LLM training efficiency" &mdash; across 9 languages
+        </p>
+
+        <div class="space-y-4">
+          <!-- Mandarin -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#ef4444;"></div>
+              <span class="text-xs font-semibold text-slate-400">Mandarin</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;">&#x7814;&#x7A76;&#x4EBA;&#x5458;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x5728;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;">&#x7814;&#x7A76;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x5F62;&#x6001;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;">&#x4FE1;&#x606F;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x5BC6;&#x5EA6;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;">&#x5BF9;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x5927;&#x8BED;&#x8A00;&#x6A21;&#x578B;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;">&#x8BAD;&#x7EC3;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x6548;&#x7387;</span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.15); color: #fca5a5;"><span style="color:#ef4444; font-weight:600;">&#x7684;</span></span>
+              <span class="morpheme" style="background: rgba(239,68,68,0.10); color: #fca5a5;">&#x5F71;&#x54CD;</span>
+              <span class="text-[10px] text-slate-600 ml-2">12 words</span>
+            </div>
+          </div>
+
+          <!-- English -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#3b82f6;"></div>
+              <span class="text-xs font-semibold text-slate-400">English</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">The</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">research<span style="color:#60a5fa; font-weight:600;">-er-s</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">are</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">study<span style="color:#60a5fa; font-weight:600;">-ing</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">the</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">effect</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">of</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">morpholog<span style="color:#60a5fa; font-weight:600;">-ical</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">inform<span style="color:#60a5fa; font-weight:600;">-ation</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">dens<span style="color:#60a5fa; font-weight:600;">-ity</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">on</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">LLM</span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.12); color: #93c5fd;">train<span style="color:#60a5fa; font-weight:600;">-ing</span></span>
+              <span class="morpheme" style="background: rgba(59,130,246,0.18); color: #93c5fd;">effici<span style="color:#60a5fa; font-weight:600;">-ency</span></span>
+              <span class="text-[10px] text-slate-600 ml-2">11 words &middot; ~18 morphemes</span>
+            </div>
+          </div>
+
+          <!-- German -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#f59e0b;"></div>
+              <span class="text-xs font-semibold text-slate-400">German</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(245,158,11,0.12); color: #fcd34d;">Die</span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.18); color: #fcd34d;">Forsch<span style="color:#f59e0b; font-weight:600;">-er</span></span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.12); color: #fcd34d;">untersuch<span style="color:#f59e0b; font-weight:600;">-en</span></span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.18); color: #fcd34d;">die</span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.12); color: #fcd34d;">Wirkung</span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.18); color: #fcd34d;">morpholog<span style="color:#f59e0b; font-weight:600;">-isch-er</span></span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.12); color: #fcd34d;">Information<span style="color:#f59e0b; font-weight:600;">s-</span><span style="color:#f59e0b; font-weight:600;">dichte</span></span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.18); color: #fcd34d;">auf</span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.12); color: #fcd34d;">die</span>
+              <span class="morpheme" style="background: rgba(245,158,11,0.18); color: #fcd34d;">LLM-Training<span style="color:#f59e0b; font-weight:600;">s-</span><span style="color:#f59e0b; font-weight:600;">effizienz</span></span>
+              <span class="text-[10px] text-slate-600 ml-2">11 words &middot; ~18 morphemes</span>
+            </div>
+          </div>
+
+          <!-- Spanish -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#f97316;"></div>
+              <span class="text-xs font-semibold text-slate-400">Spanish</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">Los</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">investigador<span style="color:#f97316; font-weight:600;">-es</span></span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">est&aacute;n</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">estudi<span style="color:#f97316; font-weight:600;">-ando</span></span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">el</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">efecto</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">de</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">la</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">densidad</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">de</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">informaci&oacute;n</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">morfol&oacute;g<span style="color:#f97316; font-weight:600;">-ic-a</span></span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">en</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">la</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">eficiencia</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">del</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">entrenamient<span style="color:#f97316; font-weight:600;">-o</span></span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.18); color: #fdba74;">de</span>
+              <span class="morpheme" style="background: rgba(249,115,22,0.12); color: #fdba74;">LLM</span>
+              <span class="text-[10px] text-slate-600 ml-2">18 words &middot; ~22 morphemes</span>
+            </div>
+          </div>
+
+          <!-- Hungarian -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#10b981;"></div>
+              <span class="text-xs font-semibold text-slate-400">Hungarian</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">A</span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.18); color: #6ee7b7;">kutat<span style="color:#10b981; font-weight:600;">-&oacute;k</span></span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">vizsg&aacute;l<span style="color:#10b981; font-weight:600;">-j&aacute;k</span></span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.18); color: #6ee7b7;">a</span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">morfol&oacute;giai</span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.18); color: #6ee7b7;">inform&aacute;ci&oacute;<span style="color:#10b981; font-weight:600;">-s&#x0171;r&#x0171;s&eacute;g-nek</span></span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">az</span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.18); color: #6ee7b7;">LLM-k&eacute;pz&eacute;s<span style="color:#10b981; font-weight:600;">-i</span></span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">hat&eacute;konys&aacute;g<span style="color:#10b981; font-weight:600;">-ra</span></span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.18); color: #6ee7b7;">gyakorolt</span>
+              <span class="morpheme" style="background: rgba(16,185,129,0.12); color: #6ee7b7;">hat&aacute;s<span style="color:#10b981; font-weight:600;">-&aacute;-t</span></span>
+              <span class="text-[10px] text-slate-600 ml-2">11 words &middot; ~20 morphemes</span>
+            </div>
+          </div>
+
+          <!-- Turkish -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#e11d48;"></div>
+              <span class="text-xs font-semibold text-slate-400">Turkish</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(225,29,72,0.18); color: #fda4af;">Ara&#x015F;t&#x0131;rmac&#x0131;<span style="color:#e11d48; font-weight:600;">-lar</span></span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.12); color: #fda4af;">morfolojik</span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.18); color: #fda4af;">bilgi</span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.12); color: #fda4af;">yo&#x011F;unlu&#x011F;<span style="color:#e11d48; font-weight:600;">-u-nun</span></span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.18); color: #fda4af;">LLM</span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.12); color: #fda4af;">e&#x011F;itim</span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.18); color: #fda4af;">verimlili&#x011F;<span style="color:#e11d48; font-weight:600;">-i</span></span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.12); color: #fda4af;">&uuml;zerinde<span style="color:#e11d48; font-weight:600;">-ki</span></span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.18); color: #fda4af;">etki<span style="color:#e11d48; font-weight:600;">-si-ni</span></span>
+              <span class="morpheme" style="background: rgba(225,29,72,0.12); color: #fda4af;">incel<span style="color:#e11d48; font-weight:600;">-iyor-lar</span></span>
+              <span class="text-[10px] text-slate-600 ml-2">11 words &middot; ~20 morphemes</span>
+            </div>
+          </div>
+
+          <!-- Arabic -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#8b5cf6;"></div>
+              <span class="text-xs font-semibold text-slate-400">Arabic</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5" dir="rtl">
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;"><span style="color:#8b5cf6; font-weight:600;">&#x064A;</span>&#x062F;&#x0631;&#x0633;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;"><span style="color:#8b5cf6; font-weight:600;">&#x0627;&#x0644;</span>&#x0628;&#x0627;&#x062D;&#x062B;<span style="color:#8b5cf6; font-weight:600;">&#x0648;&#x0646;</span></span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;">&#x062A;&#x0623;&#x062B;&#x064A;&#x0631;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;">&#x0643;&#x062B;&#x0627;&#x0641;<span style="color:#8b5cf6; font-weight:600;">&#x0629;</span></span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;"><span style="color:#8b5cf6; font-weight:600;">&#x0627;&#x0644;</span>&#x0645;&#x0639;&#x0644;&#x0648;&#x0645;&#x0627;&#x062A;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;">&#x0627;&#x0644;&#x0635;&#x0631;&#x0641;<span style="color:#8b5cf6; font-weight:600;">&#x064A;&#x0629;</span></span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;">&#x0639;&#x0644;&#x0649;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;">&#x0643;&#x0641;&#x0627;&#x0621;<span style="color:#8b5cf6; font-weight:600;">&#x0629;</span></span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;">&#x062A;&#x062F;&#x0631;&#x064A;&#x0628;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;">&#x0646;&#x0645;&#x0627;&#x0630;&#x062C;</span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.18); color: #c4b5fd;"><span style="color:#8b5cf6; font-weight:600;">&#x0627;&#x0644;</span>&#x0644;&#x063A;<span style="color:#8b5cf6; font-weight:600;">&#x0629;</span></span>
+              <span class="morpheme" style="background: rgba(139,92,246,0.12); color: #c4b5fd;"><span style="color:#8b5cf6; font-weight:600;">&#x0627;&#x0644;</span>&#x0643;&#x0628;&#x064A;&#x0631;<span style="color:#8b5cf6; font-weight:600;">&#x0629;</span></span>
+            </div>
+            <span class="text-[10px] text-slate-600 ml-2">12 words &middot; root+pattern</span>
+          </div>
+
+          <!-- Swahili -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#06b6d4;"></div>
+              <span class="text-xs font-semibold text-slate-400">Swahili</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;"><span style="color:#06b6d4; font-weight:600;">Wa-</span>tafiti</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;"><span style="color:#06b6d4; font-weight:600;">wa-na-</span>chunguza</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;">athari</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">ya</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;"><span style="color:#06b6d4; font-weight:600;">m</span>songamano</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">wa</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;">taarifa</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">za</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;">mofolojia</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">katika</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;"><span style="color:#06b6d4; font-weight:600;">u</span>fanisi</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">wa</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;"><span style="color:#06b6d4; font-weight:600;">ma</span>funzo</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.12); color: #67e8f9;">ya</span>
+              <span class="morpheme" style="background: rgba(6,182,212,0.18); color: #67e8f9;">LLM</span>
+              <span class="text-[10px] text-slate-600 ml-2">15 words &middot; ~20 morphemes</span>
+            </div>
+          </div>
+
+          <!-- Basque -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 morph-row opacity-0">
+            <div class="flex items-center gap-2 sm:w-32 flex-shrink-0">
+              <div class="w-2 h-2 rounded-full" style="background:#ec4899;"></div>
+              <span class="text-xs font-semibold text-slate-400">Basque</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-0.5">
+              <span class="morpheme" style="background: rgba(236,72,153,0.18); color: #f9a8d4;">Ikertzaile<span style="color:#ec4899; font-weight:600;">-ek</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.12); color: #f9a8d4;">informazio</span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.18); color: #f9a8d4;">morfologiko<span style="color:#ec4899; font-weight:600;">-aren</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.12); color: #f9a8d4;">dentsitate<span style="color:#ec4899; font-weight:600;">-a-ren</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.18); color: #f9a8d4;">eragin<span style="color:#ec4899; font-weight:600;">-a</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.12); color: #f9a8d4;">LLM-en</span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.18); color: #f9a8d4;">entrenamendu<span style="color:#ec4899; font-weight:600;">-aren</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.12); color: #f9a8d4;">eraginkortasun<span style="color:#ec4899; font-weight:600;">-ean</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.18); color: #f9a8d4;">azter<span style="color:#ec4899; font-weight:600;">-tzen</span></span>
+              <span class="morpheme" style="background: rgba(236,72,153,0.12); color: #f9a8d4;"><span style="color:#ec4899; font-weight:600;">d-</span>ute</span>
+              <span class="text-[10px] text-slate-600 ml-2">11 words &middot; ~22 morphemes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-slate-600 mt-3">
+        Highlighted segments show <span class="font-semibold text-slate-500">affixes and inflections</span> &mdash;
+        the more color, the more morphological bundling in each word.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- WHY THIS MATTERS FOR AI -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="why-ai">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Why This Matters for AI</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Standard BPE tokenizers shatter morphologically rich words into meaningless fragments.
+          Morphology-aware tokenization preserves linguistic structure and dramatically reduces token counts.
+        </p>
+      </div>
+
+      <!-- Tokenizer comparison -->
+      <div class="grid md:grid-cols-2 gap-6 mb-14">
+        <!-- BPE side -->
+        <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, rgba(239,68,68,0.05) 0%, rgba(239,68,68,0.01) 100%); border: 1px solid rgba(239,68,68,0.12);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+            <p class="text-xs font-semibold tracking-[0.12em] uppercase text-red-400">BPE Tokenizer</p>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 font-mono">Turkish: "evlerinizden" (from your houses)</p>
+          <div class="flex flex-wrap gap-1 mb-4">
+            <span class="token-box" style="background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2);">ev</span>
+            <span class="token-box" style="background: rgba(239,68,68,0.08); color: #fca5a5; border: 1px solid rgba(239,68,68,0.15);">ler</span>
+            <span class="token-box" style="background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2);">ini</span>
+            <span class="token-box" style="background: rgba(239,68,68,0.08); color: #fca5a5; border: 1px solid rgba(239,68,68,0.15);">z</span>
+            <span class="token-box" style="background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2);">den</span>
+          </div>
+          <p class="text-2xl font-black text-red-400">5 tokens</p>
+          <p class="text-xs text-slate-600">No morphological awareness &mdash; fragments are arbitrary</p>
+        </div>
+
+        <!-- Morph-aware side -->
+        <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.01) 100%); border: 1px solid rgba(16,185,129,0.12);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+            <p class="text-xs font-semibold tracking-[0.12em] uppercase text-emerald-400">Morph-Aware Tokenizer</p>
+          </div>
+          <p class="text-xs text-slate-500 mb-3 font-mono">Turkish: "evlerinizden" (from your houses)</p>
+          <div class="flex flex-wrap gap-1 mb-4">
+            <span class="token-box" style="background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25);">ev</span>
+            <span class="token-box" style="background: rgba(16,185,129,0.10); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.2);">-ler</span>
+            <span class="token-box" style="background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.25);">-iniz</span>
+            <span class="token-box" style="background: rgba(16,185,129,0.10); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.2);">-den</span>
+          </div>
+          <p class="text-2xl font-black text-emerald-400">4 tokens</p>
+          <p class="text-xs text-slate-600">Each token = a real morpheme with meaning</p>
+        </div>
+      </div>
+
+      <!-- Stat callouts -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="stat-callout opacity-0" data-stat>
+          <p class="text-4xl md:text-5xl font-black mb-2" style="color: #e11d48;">56.9%</p>
+          <p class="text-sm font-semibold text-white mb-1">Turkish</p>
+          <p class="text-xs text-slate-500">More efficient with morph-aware tokenization</p>
+        </div>
+        <div class="stat-callout opacity-0" data-stat>
+          <p class="text-4xl md:text-5xl font-black mb-2" style="color: #8b5cf6;">13.9%</p>
+          <p class="text-sm font-semibold text-white mb-1">Arabic</p>
+          <p class="text-xs text-slate-500">More efficient with morph-aware tokenization</p>
+        </div>
+        <div class="stat-callout opacity-0" data-stat>
+          <p class="text-4xl md:text-5xl font-black mb-2" style="color: #3b82f6;">~1%</p>
+          <p class="text-sm font-semibold text-white mb-1">English</p>
+          <p class="text-xs text-slate-500">Minimal gain &mdash; already low complexity</p>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-slate-600 mt-6">
+        Results from mini experiment across 6 models and 3 languages. The more morphological complexity, the greater the efficiency gain.
+      </p>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- LANGUAGE GRID -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="languages">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Explore Each Language</h2>
+        <p class="text-slate-400 max-w-xl mx-auto text-sm md:text-base">
+          Dive into the morphological profile of each language. Click a card to see detailed breakdowns, examples, and AI implications.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <!-- Mandarin -->
+        <a href="zh.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(239,68,68,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #ef4444;">
+          <div class="glow-line" style="--accent: #ef4444;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">&#x4E2D;&#x6587;</p>
+              <p class="text-base font-bold text-white">Mandarin</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(239,68,68,0.15); color: #ef4444;">Isolating</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 12%; background: #ef4444;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~1.0 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">One syllable, one meaning. Minimal inflection makes tokenization straightforward.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- English -->
+        <a href="en.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(59,130,246,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #3b82f6;">
+          <div class="glow-line" style="--accent: #3b82f6;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">English</p>
+              <p class="text-base font-bold text-white">English</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(59,130,246,0.15); color: #3b82f6;">Analytic</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 25%; background: #3b82f6;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~1.5 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Light inflection with auxiliary words. BPE handles it well&hairsp;&mdash;&hairsp;morph gains minimal.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- German -->
+        <a href="de.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(245,158,11,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #f59e0b;">
+          <div class="glow-line" style="--accent: #f59e0b;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">Deutsch</p>
+              <p class="text-base font-bold text-white">German</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(245,158,11,0.15); color: #f59e0b;">Fusional</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 42%; background: #f59e0b;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~2.2 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Compound words and case inflection create moderate morphological density for tokenizers.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Spanish -->
+        <a href="es.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(249,115,22,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #f97316;">
+          <div class="glow-line" style="--accent: #f97316;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">Espa&ntilde;ol</p>
+              <p class="text-base font-bold text-white">Spanish</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(249,115,22,0.15); color: #f97316;">Fusional</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 50%; background: #f97316;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~2.5 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Rich verb conjugation packs tense, mood, and person into single suffixes.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Hungarian -->
+        <a href="hu.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(16,185,129,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #10b981;">
+          <div class="glow-line" style="--accent: #10b981;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">Magyar</p>
+              <p class="text-base font-bold text-white">Hungarian</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(16,185,129,0.15); color: #10b981;">Agglutinative</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 72%; background: #10b981;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~3.5 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Extensive suffixation with vowel harmony. Words can encode entire prepositional phrases.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Turkish -->
+        <a href="tr.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(225,29,72,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #e11d48;">
+          <div class="glow-line" style="--accent: #e11d48;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">T&uuml;rk&ccedil;e</p>
+              <p class="text-base font-bold text-white">Turkish</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(225,29,72,0.15); color: #e11d48;">Agglutinative</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 88%; background: #e11d48;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~4.2 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Highly productive suffixation. A single word can express an entire sentence&hairsp;&mdash;&hairsp;BPE's worst case.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Arabic -->
+        <a href="ar.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(139,92,246,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #8b5cf6;">
+          <div class="glow-line" style="--accent: #8b5cf6;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1" style="font-family: serif;">&#x0639;&#x0631;&#x0628;&#x064A;</p>
+              <p class="text-base font-bold text-white">Arabic</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Templatic</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 65%; background: #8b5cf6;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~3.0 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Consonantal roots interlace with vowel patterns. Morphemes are discontinuous and non-linear.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Swahili -->
+        <a href="sw.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(6,182,212,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #06b6d4;">
+          <div class="glow-line" style="--accent: #06b6d4;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">Kiswahili</p>
+              <p class="text-base font-bold text-white">Swahili</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Classificatory</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 75%; background: #06b6d4;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~3.8 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Noun classes trigger prefix cascades across verbs, adjectives, and determiners.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+        <!-- Basque -->
+        <a href="eu.html" class="lang-card rounded-2xl p-6 block group" data-lang-card
+           style="background: linear-gradient(135deg, rgba(236,72,153,0.04) 0%, rgba(255,255,255,0.02) 100%); --accent: #ec4899;">
+          <div class="glow-line" style="--accent: #ec4899;"></div>
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <p class="text-2xl leading-none mb-1">Euskara</p>
+              <p class="text-base font-bold text-white">Basque</p>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: rgba(236,72,153,0.15); color: #ec4899;">Polypersonal</span>
+          </div>
+          <div class="flex items-center gap-3 mb-3">
+            <div class="complexity-bar flex-1">
+              <div class="complexity-fill" style="width: 90%; background: #ec4899;"></div>
+            </div>
+            <span class="text-[10px] text-slate-500 flex-shrink-0">~4.5 bndl</span>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Auxiliary verbs encode subject, object, and indirect object. Ergative alignment adds further complexity.</p>
+          <div class="mt-4 text-xs font-medium text-slate-600 group-hover:text-slate-400 transition-colors">
+            Explore &rarr;
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- FOOTER -->
+  <!-- ======================================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto text-center">
+      <div class="mb-4">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-slate-600">Morphological Efficiency Project</span>
+      </div>
+      <p class="text-xs text-slate-600">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ======================================== -->
+  <!-- GSAP Animations -->
+  <!-- ======================================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // --- Header entrance ---
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .to('#header-badge', { opacity: 1, y: 0, duration: 0.6, delay: 0.2 })
+      .fromTo('#header-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
+      .fromTo('#header-subtitle', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
+      .fromTo('#header-author', { opacity: 0 }, { opacity: 1, duration: 0.5 }, '-=0.2');
+
+    // --- Spectrum nodes: sequential fade-in ---
+    const spectrumNodes = document.querySelectorAll('[data-spectrum-node]');
+    const spectrumTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#spectrum-bar',
+        start: 'top 80%',
+        once: true,
+      }
+    });
+    spectrumNodes.forEach((node, i) => {
+      spectrumTl.fromTo(node,
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' },
+        i * 0.15
+      );
+    });
+
+    // --- Outlier cards: drop in after spectrum ---
+    const outlierCards = document.querySelectorAll('[data-outlier]');
+    spectrumTl.fromTo(outlierCards,
+      { opacity: 0, y: -30 },
+      { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: 'power2.out' },
+      spectrumNodes.length * 0.15 + 0.3
+    );
+
+    // --- Morpheme rows: stagger on scroll ---
+    const morphRows = document.querySelectorAll('.morph-row');
+    gsap.fromTo(morphRows,
+      { opacity: 0, x: -20 },
+      {
+        opacity: 1, x: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#what-is',
+          start: 'top 70%',
+          once: true,
+        }
+      }
+    );
+
+    // --- Stat callouts: count up + fade in ---
+    const statCards = document.querySelectorAll('[data-stat]');
+    gsap.fromTo(statCards,
+      { opacity: 0, y: 30, scale: 0.95 },
+      {
+        opacity: 1, y: 0, scale: 1,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#why-ai',
+          start: 'top 60%',
+          once: true,
+        }
+      }
+    );
+
+    // --- Language cards: stagger on scroll ---
+    const langCards = document.querySelectorAll('[data-lang-card]');
+    gsap.fromTo(langCards,
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#languages',
+          start: 'top 70%',
+          once: true,
+        }
+      }
+    );
+  </script>
+
+</body>
+</html>

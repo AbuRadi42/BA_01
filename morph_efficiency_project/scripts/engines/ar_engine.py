@@ -375,6 +375,40 @@ class ArabicEngine:
         "ماانفكّ": {"pos": "VERB", "subcat": "KANA", "gloss": "has not ceased (undiacritical)"},
     }
 
+    # Common Arabic loanwords — foreign words adopted into Arabic that should
+    # NOT be analyzed as native root-and-pattern words. Checked in analyze()
+    # before Steps A/B/C. Returns pos=NOM, tags={"origin": "FOREIGN"}.
+    LOANWORDS = {
+        # Technology
+        "تلفزيون", "تليفزيون", "كمبيوتر", "كومبيوتر", "إنترنت", "انترنت",
+        "تكنولوجيا", "تقنولوجيا", "تلفون", "تليفون", "هاتف", "موبايل",
+        "راديو", "فيديو", "سينما", "كاميرا", "ميكروفون", "تلغراف",
+        "تلسكوب", "ميكروسكوب",
+        # Politics/Society
+        "ديموقراطية", "ديمقراطية", "برلمان", "بروتوكول", "دبلوماسية",
+        "أيديولوجية", "إيديولوجية", "ليبرالية", "إمبريالية", "بيروقراطية",
+        "بروباغندا", "استراتيجية",
+        # Finance/Commerce
+        "بنك", "شيك", "بورصة", "بجت", "ميزانية",
+        # Academic/Professional
+        "بروفيسور", "بروفسور", "دكتور", "دكتوراه", "أكاديمية", "جامعة",
+        "فلسفة",
+        # Culture/Daily life
+        "فيلم", "أفلام", "سيناريو", "دراما", "كوميديا", "أوبرا",
+        "بيانو", "جيتار", "موسيقى",
+        "شوكولاتة", "كعك", "بسكويت", "ساندويتش", "بيتزا",
+        "جينز", "بلوزة", "جاكيت",
+        # Transportation
+        "أوتوماتيكي", "أوتوماتيك", "أوتوبيس", "تاكسي", "ميترو", "باص",
+        "ترام", "ليموزين",
+        # Science
+        "أوكسجين", "أكسجين", "هيدروجين", "بروتين", "فيتامين",
+        "كيمياء", "فيزياء",
+        # Other
+        "كاتالوج", "كتالوج", "تليسكوب", "ألبوم", "أرشيف",
+        "ماراثون", "أولمبياد", "إستاد", "ستاد",
+    }
+
     def __init__(self, config_dir: str = "morph_efficiency_project/configs"):
         with open(os.path.join(config_dir, "ar_templates.json"), encoding="utf-8") as f:
             self.templates = json.load(f)
@@ -707,6 +741,43 @@ class ArabicEngine:
         """
         return len(consonants)
 
+    def _check_passive(self, word: str) -> bool:
+        """Check if a diacritized word has passive voice vowel pattern.
+
+        Form I passive (فُعِلَ) has damma (ُ U+064F) on C1 and kasra (ِ U+0650)
+        on C2. Only reliable when diacritics are present.
+        Returns True if passive pattern detected, False otherwise.
+        """
+        _DAMMA = "\u064F"
+        _KASRA = "\u0650"
+        # Find first two consonants and check their following diacritics
+        cons_count = 0
+        c1_has_damma = False
+        c2_has_kasra = False
+        for i, ch in enumerate(word):
+            if ch in self.AR_CONSONANTS:
+                cons_count += 1
+                next_ch = word[i + 1] if i + 1 < len(word) else ""
+                if cons_count == 1 and next_ch == _DAMMA:
+                    c1_has_damma = True
+                elif cons_count == 2 and next_ch == _KASRA:
+                    c2_has_kasra = True
+                    break
+                elif cons_count == 2:
+                    break
+        return c1_has_damma and c2_has_kasra
+
+    def _is_elative_root(self, root: str) -> bool:
+        """Heuristic: return True if root is likely an elative adjective root.
+
+        Elative adjectives (أَفْعَل) are formed from roots that describe
+        qualities/attributes (big, small, good, bad, etc.). This is a
+        conservative fallback — the main check uses the _ELATIVE_ROOTS set.
+        """
+        # If root is in root_set and is 3 consonants, it could be elative.
+        # We return False here to let the _ELATIVE_ROOTS set be the authority.
+        return False
+
     def _step_b(self, stem: str) -> Tuple[str, Dict[str, str]]:
         """
         Match stem against template index by root-slot count.
@@ -752,6 +823,11 @@ class ArabicEngine:
         consonants = self._extract_consonants(stem)
         root_consonants = self._extract_root_consonants(stem)
         n = len(root_consonants)
+
+        # ── Nisba adjective: return immediately after stripping ـيّ ──────────
+        # e.g. عَرَبِيّ → stem=عرب → NISBA; مِصْرِيّ → stem=مصر → NISBA
+        if _nisba_stripped:
+            return "NISBA", {"pos": "ADJ", "role": "NISBA"}
 
         # مُ with damma on the original stem → derived nominal (Form II/III/IV
         # active participle, masdar, or مَفْعُول passive participle).
@@ -894,6 +970,25 @@ class ArabicEngine:
                 and consonants[1] == "ن" and consonants[2] != "ت"):
             return "VERB_AUGMENTED_VII", {"pos": "VERB", "form": "VII"}
 
+        # Elative adjective (أَفْعَل): أ + C1 + C2 + C3 (4 consonants total).
+        # Pattern is identical to Form IV verb, but elatives are adjectives
+        # used for comparison (أَكْبَر = bigger, أَفْضَل = better).
+        # Check against known elative roots BEFORE Form IV to avoid misclassification.
+        _ELATIVE_ROOTS = {
+            "كبر", "صغر", "فضل", "حسن", "سوء", "عظم", "قلل", "كثر",
+            "همم", "جمل", "طول", "قصر", "بعد", "قرب", "علو", "دنو",
+            "ولل", "خرر", "سرع", "بطء", "قدم", "حدث", "سهل", "صعب",
+            "غلو", "رخص", "وسع", "ضيق", "ثقل", "خفف", "عمق", "ضحل",
+            "نظف", "قذر", "حرر", "برد", "شدد", "لين", "صلب", "رطب",
+            "يبس", "غنو", "فقر", "قوو", "ضعف", "ذكو", "غبو", "حلو",
+            "مرر", "خير", "شرر", "نفع", "ضرر", "هون",
+        }
+        if (stripped.startswith("أ") and len(consonants) == 4):
+            _elative_root_candidate = consonants[1:4]
+            # Check if the 3-consonant root (after أ) is a known elative root
+            if _elative_root_candidate in _ELATIVE_ROOTS or _elative_root_candidate in self.root_set and self._is_elative_root(_elative_root_candidate):
+                return "ADJ_ELATIVE", {"pos": "ADJ", "degree": "COMP"}
+
         # Form IV: أَفْعَلَ — أ + root (4 consonants total).
         # Require exactly 4 consonants to avoid misclassifying:
         #   - أجوف Form I verbs like أَكَلَ (root أكل, 3 consonants)
@@ -932,9 +1027,60 @@ class ArabicEngine:
             # Masdar Form II (تَفْعِيل): ت + R1 + long-i + R2 + R3
             # e.g. تَعْلِيم (←علم), تَفْسِير (←فسر), تَكْرِيم (←كرم)
             # Pattern: 5 consonants, ي at position 3 (long-i vowel marker).
-            # Skip=1 (ت is augment), then strip ي at position 2 of post-skip → R1+R2+R3.
+            # This is a MASDAR, NOT a Form V verb — must return MASDAR_FORM_II.
+            # Form V verb (تَفَعَّلَ) has 4 consonants (no internal ي).
             if len(consonants) == 5 and consonants[3] == "ي":
-                return "VERB_AUGMENTED_V_VI", {"pos": "VERB", "form": "V"}
+                return "MASDAR_FORM_II", {"pos": "NOM", "role": "MASDAR", "form": "II"}
+
+        # ── Form II/III disambiguation from Form I ───────────────────────────────
+        # Form III (فَاعَلَ): has long alif (ا) between C1 and C2.
+        # e.g. قَاتَلَ (qatala → Form III), شَارَكَ, سَافَرَ, حَاوَلَ
+        # IMPORTANT: In undiacritized text, Form III (فَاعَلَ) is indistinguishable
+        # from the active participle (فَاعِل) — both have C1+ا+C2+C3 (4 consonants).
+        # So we only classify as Form III when diacritics are present and show
+        # the فَاعَلَ vowel pattern (fatha on C2, not kasra as in فَاعِل).
+        # Known Form III verbs in undiacritized text are handled via a lookup set.
+        _KNOWN_FORM_III = {
+            "قاتل", "شارك", "سافر", "حاول", "ناقش", "بادل", "جاهد",
+            "عاون", "عارض", "راقب", "واصل", "دافع", "سابق", "نادى",
+            "هاجر", "طالع", "عالج", "واجه", "صاحب", "جاور", "ساعد",
+        }
+        _FATHA = "\u064E"
+        if (len(consonants) == 4 and len(root_consonants) == 3
+                and consonants[1] == "ا"
+                and not stripped.startswith("ا")
+                and not stripped.startswith("م")
+                and not stripped.startswith("ت")):
+            # Check if it's a known Form III verb (undiacritized)
+            if stripped in _KNOWN_FORM_III:
+                return "VERB_FORM_III", {"pos": "VERB", "form": "III"}
+            # Check diacritics: Form III has fatha on C2 (فَاعَلَ)
+            # Active participle has kasra on C2 (فَاعِل)
+            # Find C2 and check its following diacritic
+            _cons_count = 0
+            for _i, _ch in enumerate(stem):
+                if _ch in self.AR_CONSONANTS:
+                    _cons_count += 1
+                    if _cons_count == 2 and _i + 1 < len(stem):
+                        if stem[_i + 1] == _FATHA:
+                            return "VERB_FORM_III", {"pos": "VERB", "form": "III"}
+                        break
+                    elif _cons_count == 2:
+                        break
+
+        # Form II (فَعَّلَ): has shadda (ّ) on C2 before diacritics are stripped.
+        # In the original stem, check for shadda on the second consonant.
+        # e.g. عَلَّمَ, دَرَّسَ, فَسَّرَ, نَظَّفَ, كَسَّرَ
+        # Detection: scan original stem for C1 + vowel + C2 + shadda pattern.
+        _SHADDA_CHAR = "\u0651"
+        if _SHADDA_CHAR in stem and len(root_consonants) == 3:
+            # Find shadda position — if it's on the second root consonant, it's Form II
+            _cons_seen = 0
+            for _idx, _ch in enumerate(stem):
+                if _ch in self.AR_CONSONANTS:
+                    _cons_seen += 1
+                    if _cons_seen == 2 and _idx + 1 < len(stem) and stem[_idx + 1] == _SHADDA_CHAR:
+                        return "VERB_FORM_II", {"pos": "VERB", "form": "II"}
 
         # ── Geminate verb with 2-consonant skeleton ─────────────────────────────
         # e.g. ظَلَّ, مَدَّ, شَدَّ — after diacritic stripping the shadda is lost,
@@ -1000,7 +1146,12 @@ class ArabicEngine:
         "MASDAR_FORM_XI":          1,   # اِفْعِيلَال masdar: ا is augment
         "MASDAR_FORM_XII":         1,   # اِفْعِيعَال masdar: ا is augment
         "BROKEN_PLURAL_AF3AL":     1,   # أ + root (أَفْعَال broken plural)
+        "MASDAR_FORM_II":          1,   # تَفْعِيل masdar: ت is augment, root = R1+R2+R3
+        "ADJ_ELATIVE":             1,   # أ + root (أَفْعَل elative adjective)
+        "NISBA":                   0,   # nisba adjective: stem IS the root (ت stripped already)
         "VERB_AUGMENTED":          0,   # handled by direct lookup
+        "VERB_FORM_II":            0,   # Form II فَعَّلَ — root consonants preserved
+        "VERB_FORM_III":           0,   # Form III فَاعَلَ — root consonants preserved (ا stripped by root_consonants)
         "VERB_TRILATERAL_BARE":    0,
         "VERB_TRILATERAL_UNKNOWN": 0,
         "MASDAR":                  0,
@@ -1027,10 +1178,11 @@ class ArabicEngine:
         ("ص", "م"): "و",   # صَامَ → صوم (fasted)
         ("ق", "م"): "و",   # قَامَ → قوم (stood)
         ("ع", "د"): "و",   # عَادَ → عود (returned)
-        ("ج", "ء"): "و",   # جَاءَ → جوء (came) — hamzated
+        # ("ج", "ء"): removed — جَاءَ root is جيء (ya), see ya section below
         ("ك", "ن"): "و",   # كَانَ → كون (was)
         ("ح", "ل"): "و",   # حَالَ → حول (changed)
         ("ز", "ل"): "و",   # زَالَ → زول (ceased)
+        ("ز", "ر"): "و",   # زَارَ → زور (visited)
         ("ط", "ل"): "و",   # طَالَ → طول (was long)
         ("م", "ت"): "و",   # مَاتَ → موت (died)
         ("ف", "ت"): "و",   # فَاتَ → فوت (passed/missed)
@@ -1042,14 +1194,13 @@ class ArabicEngine:
         ("خ", "ف"): "و",   # خَافَ → خوف (feared)
         ("د", "ر"): "و",   # دَارَ → دور (turned/circled) — مُدِير active participle
         ("ج", "ل"): "و",   # جَالَ → جول (roamed)
-        ("د", "ر"): "و",   # دَارَ → دور (turned) — but سَارَ is يا
         # أجوف يا — middle radical is ي
         ("ب", "ع"): "ي",   # بَاعَ → بيع (sold)
         ("س", "ر"): "ي",   # سَارَ → سير (walked)
         ("ط", "ر"): "ي",   # طَارَ → طير (flew)
         ("ز", "د"): "ي",   # زَادَ → زيد (increased)
         ("ع", "ش"): "ي",   # عَاشَ → عيش (lived)
-        ("ج", "ء"): "ي",   # جَاءَ — actually واو; override above if needed
+        ("ج", "ء"): "ي",   # جَاءَ → جيء (came) — middle radical is ي
         ("ن", "ل"): "ي",   # نَالَ → نيل (attained)
         ("ه", "ب"): "ي",   # هَابَ → هيب (feared/respected)
         ("غ", "ب"): "ي",   # غَابَ → غيب (was absent)
@@ -1136,6 +1287,20 @@ class ArabicEngine:
             consonants = consonants[skip:]
         if skip > 0 and len(root_consonants) > skip:
             root_consonants = root_consonants[skip:]
+
+        # ── Form II masdar (تَفْعِيل) special root extraction ─────────────────
+        # After skip ت (skip=1), consonants = R1+ي+R2+R3 (4 chars, ي at position 1).
+        # Root = R1+R2+R3 = consonants[0]+consonants[2]+consonants[3]
+        # e.g. تَعْلِيم: skip ت → علم (3 root cons) — but with ي: عليم (4 cons)
+        # Strip the ي long-vowel marker at position 1 to recover the root.
+        if template_cat == "MASDAR_FORM_II" and len(consonants) == 4 and consonants[1] == "ي":
+            candidate = consonants[0] + consonants[2] + consonants[3]
+            if candidate in self.root_set:
+                return candidate
+            # Also try root_consonants (may already have ي stripped)
+            if len(root_consonants) == 3:
+                if root_consonants in self.root_set:
+                    return root_consonants
 
         # ── Form XII masdar special root extraction ────────────────────────────
         # اِفْعِيعَال: after skip ا, consonants = R1+R2+ي+R2+ا+R3 (6 chars)
@@ -1659,6 +1824,20 @@ class ArabicEngine:
         # Prepositions, conjunctions, particles, etc. are not derived from roots.
         # Check both the raw word and the diacritic-stripped form.
         stripped_word = self._strip_diacritics(word)
+
+        # ── Loanword intercept (before Steps A/B/C) ──────────────────────────
+        # Foreign words are not derived from Arabic roots. Check both the raw
+        # word and the diacritic-stripped form against the LOANWORDS set.
+        if word in self.LOANWORDS or stripped_word in self.LOANWORDS:
+            return TokenInfo(
+                surface=word,
+                clitics={},
+                template="LOANWORD",
+                root=stripped_word,
+                tags={"origin": "FOREIGN"},
+                pos="NOM",
+            )
+
         cc_entry = self.CLOSED_CLASS.get(word) or self.CLOSED_CLASS.get(stripped_word)
         if cc_entry:
             return TokenInfo(
@@ -1680,6 +1859,12 @@ class ArabicEngine:
         tags = {k: v for k, v in tmpl_tags.items() if k != "pos"}
         for pre in clitics.get("pre", []):
             tags.update(pre)
+
+        # ── Passive voice detection from diacritics ─────────────────────────
+        # If the original word has diacritics and shows the passive pattern
+        # (فُعِلَ: damma on C1, kasra on C2), add voice=PASS tag.
+        if pos == "VERB" and self._check_passive(word):
+            tags["voice"] = "PASS"
 
         # ── Circumfix detection: لام التوكيد + نون التوكيد ──────────────────
         # لَـ...نَّ is a circumfix — a discontinuous morpheme that brackets the

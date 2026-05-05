@@ -1,20 +1,7 @@
 """
 test_tr_engine_sentence.py
 --------------------------
-TurkishEngine — sentence-level analysis and structural validation.
-
-Covers:
-  - analyze_sentence() token count and root integrity
-  - Verb token correctly identified in sentence context
-  - Surface form preserved across all tokens
-  - analyze_sentence() return contract (3-tuple: tokens, bool, str)
-  - SOV structure: verb-final token carries tense tag
-  - Converb in sentence context
-  - Negation in sentence context
-
-All expected values verified against actual engine output.
-
-Run: python -m pytest morph_efficiency_project/tests/tr_morph/test_tr_engine_sentence.py -v
+TurkishEngine — sentence-level analysis (updated for fixed engine).
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -57,7 +44,7 @@ def test_token_count(sentence, count):
     assert len(tokens) == count
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 3. ROOT INTEGRITY — every token must have a non-empty root
+# 3. ROOT INTEGRITY
 # ══════════════════════════════════════════════════════════════════════════════
 
 @pytest.mark.parametrize("sentence", [
@@ -73,7 +60,7 @@ def test_all_tokens_have_root(sentence):
     tokens, _, _ = analyze(sentence)
     for tok in tokens:
         assert tok.root is not None
-        assert len(tok.root) > 0, f"Empty root for surface={tok.surface!r}"
+        assert len(tok.root) > 0
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 4. SURFACE PRESERVED
@@ -88,7 +75,7 @@ def test_surface_preserved_three_words():
     assert [t.surface for t in tokens] == ["çocuklar", "okula", "gidiyor"]
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 5. VERB IN CONTEXT — tense tag on the verbal token
+# 5. VERB IN CONTEXT
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_pres_prog_in_context():
@@ -117,7 +104,7 @@ def test_inf_in_context():
 def test_acc_case_in_context():
     tokens, _, _ = analyze("kitabı okudum")
     tok = next(t for t in tokens if t.surface == "kitabı")
-    assert tok.root == "kitab"
+    assert tok.root == "kitap"
     assert tok.tags["case"] == "ACC"
 
 # ══════════════════════════════════════════════════════════════════════════════

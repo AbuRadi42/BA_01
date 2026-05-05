@@ -1,9 +1,7 @@
 """
-test_tr_engine.py
------------------
-Turkish morphology engine smoke tests.
-
-Run: python -m pytest morph_efficiency_project/tests/tr/test_tr_engine.py -v
+test_tr_engine_smoke.py
+-----------------------
+Turkish morphology engine smoke tests (updated for fixed engine).
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -12,22 +10,17 @@ import pytest
 
 engine = TurkishEngine()
 
-# Format: (surface, expected_root, label)
 CASES = [
-    # Nominal suffixes
     ("evler",     "ev",    "plural -ler"),
     ("evde",      "ev",    "locative -de"),
-    ("evden",     "evd",   "ablative -den"),
+    ("evden",     "ev",    "ablative -den"),
     ("evi",       "ev",    "accusative -i"),
     ("eve",       "ev",    "dative -e"),
-    # Possessive
     ("evim",      "ev",    "1sg poss -im"),
-    ("evin",      "ev",    "2sg poss -in"),
-    # Verbal suffixes
+    ("evin",      "ev",    "2sg poss / gen -in"),
     ("gidiyorum", "gid",   "present continuous 1sg"),
-    ("gitti",     "gi",    "past 3sg"),
+    ("gitti",     "git",   "past 3sg"),
     ("gidecek",   "gid",   "future"),
-    # Negation
     ("gitmiyor",  "git",   "negative present"),
     ("gitmedi",   "git",   "negative past"),
 ]
@@ -48,6 +41,6 @@ if __name__ == "__main__":
             passed += 1
         else:
             failed += 1
-            print(f"  FAIL  {surface:<20s}  {label}  →  root={result.root!r} (exp {exp_root!r})")
+            print(f"  FAIL  {surface:<20s}  {label}  ->  root={result.root!r} (exp {exp_root!r})")
     print(f"\n{passed} passed, {failed} failed")
     sys.exit(0 if failed == 0 else 1)

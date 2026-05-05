@@ -1,0 +1,3 @@
+{
+  "_comment": "Intentionally empty. This file is populated at runtime by crossing ar_roots.json against ar_templates.json. The engine computes valid (root, template) pairs dynamically."
+}

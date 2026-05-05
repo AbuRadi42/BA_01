@@ -1,0 +1,497 @@
+[
+  {
+    "affix": "-cion/-sion",
+    "surface_variants": ["-cion", "-sion"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "ACTION_NOUN",
+    "notes": "Nominalizes verbs. -sion after stems ending in -t, -d, -s.",
+    "examples": ["comunicacion <- comunicar", "expresion <- expresar"]
+  },
+  {
+    "affix": "-miento",
+    "surface_variants": ["-miento"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "PROCESS_NOUN",
+    "notes": "Nominalizes verbs into process/result nouns.",
+    "examples": ["conocimiento <- conocer", "pensamiento <- pensar"]
+  },
+  {
+    "affix": "-amiento/-imiento",
+    "surface_variants": ["-amiento", "-imiento"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "PROCESS_NOUN",
+    "notes": "Extended process noun suffix.",
+    "examples": ["estacionamiento <- estacionar", "descubrimiento <- descubrir"]
+  },
+  {
+    "affix": "-idad/-dad",
+    "surface_variants": ["-idad", "-dad"],
+    "type": "SUFFIX",
+    "direction": "ADJ->N",
+    "derives": "QUALITY_NOUN",
+    "notes": "Forms abstract quality nouns from adjectives.",
+    "examples": ["realidad <- real", "bondad <- bueno"]
+  },
+  {
+    "affix": "-ancia/-encia",
+    "surface_variants": ["-ancia", "-encia"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "STATE_QUALITY",
+    "notes": "State or quality derived from verb or adjective.",
+    "examples": ["paciencia <- paciente", "tolerancia <- tolerar"]
+  },
+  {
+    "affix": "-ura",
+    "surface_variants": ["-ura"],
+    "type": "SUFFIX",
+    "direction": "ADJ->N",
+    "derives": "QUALITY_ABSTRACT",
+    "notes": "Abstract quality noun from adjective.",
+    "examples": ["hermosura <- hermoso", "altura <- alto"]
+  },
+  {
+    "affix": "-aje",
+    "surface_variants": ["-aje"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "COLLECTIVE_ACTION",
+    "notes": "Collective or action noun.",
+    "examples": ["aterrizaje <- aterrizar", "reciclaje <- reciclar"]
+  },
+  {
+    "affix": "-eza",
+    "surface_variants": ["-eza"],
+    "type": "SUFFIX",
+    "direction": "ADJ->N",
+    "derives": "QUALITY_ABSTRACT",
+    "notes": "Abstract quality noun from adjective.",
+    "examples": ["belleza <- bello", "tristeza <- triste"]
+  },
+  {
+    "affix": "-azgo",
+    "surface_variants": ["-azgo"],
+    "type": "SUFFIX",
+    "direction": "N->N",
+    "derives": "STATUS_OFFICE",
+    "notes": "Status, office, or relationship.",
+    "examples": ["liderazgo <- lider", "hallazgo <- hallar"]
+  },
+  {
+    "affix": "-dor/-dora",
+    "surface_variants": ["-dor", "-dora"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "AGENT_INSTRUMENT",
+    "notes": "Agent or instrument noun.",
+    "examples": ["trabajador <- trabajar", "computadora <- computar"]
+  },
+  {
+    "affix": "-ero/-era",
+    "surface_variants": ["-ero", "-era"],
+    "type": "SUFFIX",
+    "direction": "N->N",
+    "derives": "AGENT_OCCUPATION",
+    "notes": "Agent or occupation noun.",
+    "examples": ["panadero <- pan", "enfermera <- enfermo"]
+  },
+  {
+    "affix": "-ista",
+    "surface_variants": ["-ista"],
+    "type": "SUFFIX",
+    "direction": "N->N",
+    "derives": "AGENT_IDEOLOGY",
+    "notes": "Agent or adherent of ideology.",
+    "examples": ["pianista <- piano", "socialista <- social"]
+  },
+  {
+    "affix": "-ismo",
+    "surface_variants": ["-ismo"],
+    "type": "SUFFIX",
+    "direction": "N->N",
+    "derives": "IDEOLOGY_SYSTEM",
+    "notes": "Ideology, system, or doctrine.",
+    "examples": ["socialismo <- social", "capitalismo <- capital"]
+  },
+  {
+    "affix": "-anza",
+    "surface_variants": ["-anza"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "STATE_RESULT",
+    "notes": "State or result noun from verb.",
+    "examples": ["esperanza <- esperar", "confianza <- confiar"]
+  },
+  {
+    "affix": "-tud",
+    "surface_variants": ["-tud"],
+    "type": "SUFFIX",
+    "direction": "ADJ->N",
+    "derives": "QUALITY_NOUN",
+    "notes": "Abstract quality noun.",
+    "examples": ["juventud <- joven", "virtud <- virtuoso"]
+  },
+  {
+    "affix": "-ez",
+    "surface_variants": ["-ez"],
+    "type": "SUFFIX",
+    "direction": "ADJ->N",
+    "derives": "QUALITY_NOUN",
+    "notes": "Abstract quality noun from adjective.",
+    "examples": ["vejez <- viejo", "sencillez <- sencillo"]
+  },
+  {
+    "affix": "-ia/-eria",
+    "surface_variants": ["-eria", "-ia"],
+    "type": "SUFFIX",
+    "direction": "N->N",
+    "derives": "PLACE_COLLECTIVE",
+    "notes": "Place or collective noun.",
+    "examples": ["panaderia <- panadero", "libreria <- libro"]
+  },
+  {
+    "affix": "-izar",
+    "surface_variants": ["-izar"],
+    "type": "SUFFIX",
+    "direction": "N->V",
+    "derives": "VERBALIZATION",
+    "notes": "Verbalizing suffix.",
+    "examples": ["nacionalizar <- nacional", "legalizar <- legal"]
+  },
+  {
+    "affix": "-ificar",
+    "surface_variants": ["-ificar"],
+    "type": "SUFFIX",
+    "direction": "N->V",
+    "derives": "VERBALIZATION",
+    "notes": "Verbalizing suffix.",
+    "examples": ["clasificar <- clase", "identificar <- identidad"]
+  },
+  {
+    "affix": "-ear",
+    "surface_variants": ["-ear"],
+    "type": "SUFFIX",
+    "direction": "N->V",
+    "derives": "VERBALIZATION",
+    "notes": "Verbalizing suffix, often colloquial.",
+    "examples": ["googlear <- google", "chatear <- chat"]
+  },
+  {
+    "affix": "-ecer",
+    "surface_variants": ["-ecer"],
+    "type": "SUFFIX",
+    "direction": "ADJ->V",
+    "derives": "INCHOATIVE",
+    "notes": "Inchoative verbalizing suffix.",
+    "examples": ["envejecer <- viejo", "oscurecer <- oscuro"]
+  },
+  {
+    "affix": "-oso/-osa",
+    "surface_variants": ["-oso", "-osa"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "HAVING_QUALITY",
+    "notes": "Full of, having quality of.",
+    "examples": ["peligroso <- peligro", "hermoso <- hermosura"]
+  },
+  {
+    "affix": "-ble",
+    "surface_variants": ["-ble", "-able", "-ible"],
+    "type": "SUFFIX",
+    "direction": "V->ADJ",
+    "derives": "ABILITY",
+    "notes": "Capable of, possible to.",
+    "examples": ["comestible <- comer", "lavable <- lavar"]
+  },
+  {
+    "affix": "-al",
+    "surface_variants": ["-al"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "PERTAINING_TO",
+    "notes": "Pertaining to, relating to.",
+    "examples": ["nacional <- nacion", "cultural <- cultura"]
+  },
+  {
+    "affix": "-ico/-ica",
+    "surface_variants": ["-ico", "-ica"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "PERTAINING_TO",
+    "notes": "Pertaining to (scientific/technical).",
+    "examples": ["historico <- historia", "economico <- economia"]
+  },
+  {
+    "affix": "-ivo/-iva",
+    "surface_variants": ["-ivo", "-iva"],
+    "type": "SUFFIX",
+    "direction": "V->ADJ",
+    "derives": "TENDENCY",
+    "notes": "Tending to, having quality of.",
+    "examples": ["productivo <- producir", "activo <- actuar"]
+  },
+  {
+    "affix": "-ante/-ente/-iente",
+    "surface_variants": ["-ante", "-ente", "-iente"],
+    "type": "SUFFIX",
+    "direction": "V->ADJ",
+    "derives": "AGENT_QUALITY",
+    "notes": "Agent or quality adjective from verb.",
+    "examples": ["estudiante <- estudiar", "diferente <- diferir"]
+  },
+  {
+    "affix": "-ario/-aria",
+    "surface_variants": ["-ario", "-aria"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "RELATIONAL",
+    "notes": "Relational adjective.",
+    "examples": ["universitario <- universidad", "voluntario <- voluntad"]
+  },
+  {
+    "affix": "-mente",
+    "surface_variants": ["-mente"],
+    "type": "SUFFIX",
+    "direction": "ADJ->ADV",
+    "derives": "ADVERBIALIZATION",
+    "notes": "Fully productive adverbialization suffix.",
+    "examples": ["rapidamente <- rapido", "facilmente <- facil"]
+  },
+  {
+    "affix": "-ano/-ana",
+    "surface_variants": ["-ano", "-ana"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "ORIGIN_RELATION",
+    "notes": "Origin or relational adjective.",
+    "examples": ["mexicano <- Mexico", "americano <- America"]
+  },
+  {
+    "affix": "-eno/-ena",
+    "surface_variants": ["-eno", "-ena"],
+    "type": "SUFFIX",
+    "direction": "N->ADJ",
+    "derives": "ORIGIN",
+    "notes": "Origin adjective.",
+    "examples": ["chileno <- Chile"]
+  },
+  {
+    "affix": "-torio/-toria",
+    "surface_variants": ["-torio", "-toria"],
+    "type": "SUFFIX",
+    "direction": "V->ADJ",
+    "derives": "PLACE_PURPOSE",
+    "notes": "Place or purpose adjective/noun.",
+    "examples": ["laboratorio <- laborar", "obligatorio <- obligar"]
+  },
+  {
+    "affix": "-ado/-ada",
+    "surface_variants": ["-ado", "-ada"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "RESULT_STATE",
+    "notes": "Result or state noun (non-participle usage).",
+    "examples": ["helado <- helar", "entrada <- entrar"]
+  },
+  {
+    "affix": "-cion",
+    "surface_variants": ["-cion"],
+    "type": "SUFFIX",
+    "direction": "V->N",
+    "derives": "ACTION_NOUN",
+    "notes": "Variant of -cion/-sion.",
+    "examples": ["educacion <- educar"]
+  },
+  {
+    "affix": "-iza",
+    "surface_variants": ["-iza"],
+    "type": "SUFFIX",
+    "direction": "N->V",
+    "derives": "VERBALIZATION",
+    "notes": "Short form of -izar used in derivation chains.",
+    "examples": ["nacionaliza <- nacional"]
+  },
+  {
+    "affix": "des-",
+    "surface_variants": ["des-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "REVERSAL_NEGATION",
+    "notes": "Reverses or negates the base verb meaning.",
+    "examples": ["deshacer <- hacer", "desaparecer <- aparecer"]
+  },
+  {
+    "affix": "in-/im-",
+    "surface_variants": ["in-", "im-"],
+    "type": "PREFIX",
+    "direction": "ADJ->ADJ",
+    "derives": "NEGATION",
+    "notes": "Negation prefix. im- before b, p, m.",
+    "examples": ["imposible <- posible", "increible <- creible"]
+  },
+  {
+    "affix": "re-",
+    "surface_variants": ["re-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "REPETITION",
+    "notes": "Repetition prefix.",
+    "examples": ["reconstruir <- construir", "rehacer <- hacer"]
+  },
+  {
+    "affix": "pre-",
+    "surface_variants": ["pre-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "TEMPORAL_BEFORE",
+    "notes": "Temporal before prefix.",
+    "examples": ["predecir <- decir", "prever <- ver"]
+  },
+  {
+    "affix": "sobre-",
+    "surface_variants": ["sobre-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "EXCESS_ABOVE",
+    "notes": "Excess or above prefix.",
+    "examples": ["sobrepasar <- pasar", "sobrevivir <- vivir"]
+  },
+  {
+    "affix": "sub-",
+    "surface_variants": ["sub-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "UNDER_BELOW",
+    "notes": "Under or below prefix.",
+    "examples": ["subterraneo <- terraneo", "subsuelo <- suelo"]
+  },
+  {
+    "affix": "anti-",
+    "surface_variants": ["anti-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "OPPOSITION",
+    "notes": "Opposition prefix.",
+    "examples": ["antirrobo <- robo", "anticuerpo <- cuerpo"]
+  },
+  {
+    "affix": "auto-",
+    "surface_variants": ["auto-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "SELF",
+    "notes": "Self prefix.",
+    "examples": ["automovil <- movil", "autoservicio <- servicio"]
+  },
+  {
+    "affix": "contra-",
+    "surface_variants": ["contra-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "COUNTER",
+    "notes": "Counter prefix.",
+    "examples": ["contradecir <- decir", "contraatacar <- atacar"]
+  },
+  {
+    "affix": "inter-",
+    "surface_variants": ["inter-"],
+    "type": "PREFIX",
+    "direction": "ADJ->ADJ",
+    "derives": "BETWEEN",
+    "notes": "Between prefix.",
+    "examples": ["internacional <- nacional", "intercultural <- cultural"]
+  },
+  {
+    "affix": "multi-",
+    "surface_variants": ["multi-"],
+    "type": "PREFIX",
+    "direction": "ADJ->ADJ",
+    "derives": "MANY",
+    "notes": "Many prefix.",
+    "examples": ["multicultural <- cultural", "multicolor <- color"]
+  },
+  {
+    "affix": "super-",
+    "surface_variants": ["super-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "EXCESS",
+    "notes": "Excess prefix.",
+    "examples": ["supermercado <- mercado", "superhombre <- hombre"]
+  },
+  {
+    "affix": "co-",
+    "surface_variants": ["co-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "TOGETHER",
+    "notes": "Together prefix.",
+    "examples": ["coexistir <- existir", "cooperar <- operar"]
+  },
+  {
+    "affix": "trans-/tras-",
+    "surface_variants": ["trans-", "tras-"],
+    "type": "PREFIX",
+    "direction": "V->V",
+    "derives": "ACROSS",
+    "notes": "Across prefix.",
+    "examples": ["trasladar <- ladar", "transportar <- portar"]
+  },
+  {
+    "affix": "extra-",
+    "surface_variants": ["extra-"],
+    "type": "PREFIX",
+    "direction": "ADJ->ADJ",
+    "derives": "BEYOND",
+    "notes": "Beyond prefix.",
+    "examples": ["extraordinario <- ordinario"]
+  },
+  {
+    "affix": "semi-",
+    "surface_variants": ["semi-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "HALF",
+    "notes": "Half prefix.",
+    "examples": ["semicirculo <- circulo"]
+  },
+  {
+    "affix": "pos-/post-",
+    "surface_variants": ["pos-", "post-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "AFTER",
+    "notes": "After prefix.",
+    "examples": ["posguerra <- guerra", "postmoderno <- moderno"]
+  },
+  {
+    "affix": "micro-",
+    "surface_variants": ["micro-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "SMALL",
+    "notes": "Small prefix.",
+    "examples": ["microorganismo <- organismo"]
+  },
+  {
+    "affix": "macro-",
+    "surface_variants": ["macro-"],
+    "type": "PREFIX",
+    "direction": "N->N",
+    "derives": "LARGE",
+    "notes": "Large prefix.",
+    "examples": ["macroeconomia <- economia"]
+  },
+  {
+    "affix": "mono-",
+    "surface_variants": ["mono-"],
+    "type": "PREFIX",
+    "direction": "ADJ->ADJ",
+    "derives": "SINGLE",
+    "notes": "Single prefix.",
+    "examples": ["monolingue <- lingue"]
+  }
+]

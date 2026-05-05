@@ -1,0 +1,56 @@
+{
+  "phase1_N": 2000000.0,
+  "phase1_D": 5000000.0,
+  "alpha_N_scaling_exponent": 0.34,
+  "E_candidates": {
+    "E0": 0.0,
+    "E_chinch": 1.7
+  },
+  "rows": [
+    {
+      "lang": "en",
+      "L_baseline_nats": 5.8029,
+      "L_morph_nats": 5.7922,
+      "delta_L_nats": 0.010699999999999932,
+      "rho": 0.8918537336933644,
+      "H_bits": 1.4344033637722855,
+      "rho_times_H_bits": 1.279277995602634,
+      "delta_N_E0_params": 10846.503725824643,
+      "alpha_E0_params_per_bit": 8478.613532874175,
+      "delta_N_E_chinch_params": 15340.655748516372,
+      "alpha_E_chinch_params_per_bit": 11991.65138558472,
+      "delta_N_Elocal_params": 62941.17647058782,
+      "alpha_Elocal_params_per_bit": 49200.54646991555
+    },
+    {
+      "lang": "ar",
+      "L_baseline_nats": 6.4131,
+      "L_morph_nats": 6.2634,
+      "delta_L_nats": 0.14970000000000017,
+      "rho": 0.5893673920777034,
+      "H_bits": 5.437713361917517,
+      "rho_times_H_bits": 3.2048109429794076,
+      "delta_N_E0_params": 137310.85361122058,
+      "alpha_E0_params_per_bit": 42845.227395400485,
+      "delta_N_E_chinch_params": 186838.43654794482,
+      "alpha_E_chinch_params_per_bit": 58299.36301148774,
+      "delta_N_Elocal_params": 880588.2352941186,
+      "alpha_Elocal_params_per_bit": 274770.72780944285
+    },
+    {
+      "lang": "tr",
+      "L_baseline_nats": 4.1866,
+      "L_morph_nats": 3.3439,
+      "delta_L_nats": 0.8427000000000002,
+      "rho": 0.8457139016100279,
+      "H_bits": 4.969596374203092,
+      "rho_times_H_bits": 4.2028567390543445,
+      "delta_N_E0_params": 1184029.7194691189,
+      "alpha_E0_params_per_bit": 281720.2186471693,
+      "delta_N_E_chinch_params": 1993508.7362380007,
+      "alpha_E_chinch_params_per_bit": 474322.31456134433,
+      "delta_N_Elocal_params": 4957058.823529413,
+      "alpha_Elocal_params_per_bit": 1179449.867388239
+    }
+  ]
+}

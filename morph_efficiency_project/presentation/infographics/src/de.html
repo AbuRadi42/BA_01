@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deutsch &mdash; German Morphology &mdash; Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#f59e0b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+    .accent { color: #f59e0b; }
+    .accent-bg { background: #f59e0b; }
+    .accent-bg-soft { background: rgba(245,158,11,0.12); }
+    .accent-border { border-color: rgba(245,158,11,0.3); }
+    .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+    .tag-pill { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 600; margin: 3px; }
+    .morph-piece { display: inline-flex; align-items: center; padding: 10px 18px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; }
+    .step-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+    .complexity-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .complexity-fill { height: 100%; border-radius: 3px; transition: width 1.5s ease; }
+    .token-box { display: inline-block; padding: 4px 10px; border-radius: 6px; margin: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .workshop { background: linear-gradient(135deg, rgba(245,158,11,0.04) 0%, rgba(245,158,11,0.10) 100%); border: 1px solid rgba(245,158,11,0.2); border-radius: 16px; }
+    .press { background: rgba(245,158,11,0.08); border: 2px solid rgba(245,158,11,0.25); border-radius: 12px; position: relative; overflow: hidden; }
+    .press::before { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background: rgba(245,158,11,0.3); transform: translateX(-50%); }
+    .forge { background: rgba(139,92,246,0.08); border: 2px solid rgba(139,92,246,0.25); border-radius: 12px; }
+    .nav-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin: 0 4px; transition: transform 0.2s; }
+    .nav-dot:hover { transform: scale(1.4); }
+    .slam-left, .slam-right { transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- TOP ACCENT BORDER -->
+  <div class="w-full h-1 accent-bg"></div>
+
+  <!-- ================================ -->
+  <!-- SECTION 1: HEADER -->
+  <!-- ================================ -->
+  <header class="relative pt-16 pb-14 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px]"
+           style="background: radial-gradient(ellipse at center, rgba(245,158,11,0.18) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-3xl mx-auto">
+      <p id="hdr-badge" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase accent mb-5 opacity-0">Morphological Engine Profile</p>
+      <h1 id="hdr-title" class="text-5xl md:text-7xl font-black tracking-tight text-white leading-[1.05] mb-2 opacity-0">Deutsch</h1>
+      <p id="hdr-sub" class="text-xl text-slate-400 mb-4 opacity-0">German</p>
+      <div id="hdr-typo" class="flex items-center justify-center gap-3 mb-6 opacity-0">
+        <span class="text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full accent-bg-soft accent">Irregular Fusional</span>
+      </div>
+      <div id="hdr-meter" class="max-w-md mx-auto opacity-0">
+        <div class="flex justify-between text-[10px] text-slate-500 mb-1">
+          <span>Bundle Complexity</span>
+          <span class="accent font-semibold">~70 / 200 (Basque)</span>
+        </div>
+        <div class="complexity-bar">
+          <div class="complexity-fill accent-bg" id="cx-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================================ -->
+  <!-- SECTION 2: HOW GERMAN BUILDS WORDS -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-build">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Workshop with Compound Press &amp; Case Forge</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">How German Builds Words</p>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">German smashes roots together into compounds, layers on case suffixes, and detaches verb prefixes. The workshop is busy.</p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Compound Press -->
+        <div class="workshop p-8" id="compound-press">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2 font-semibold">Compound Press</p>
+          <p class="text-sm text-slate-400 mb-6">Handschuhe &mdash; "gloves"</p>
+          <div class="press p-6 flex items-center justify-center gap-0 mb-4">
+            <div class="morph-piece slam-left opacity-0" data-slam="left" style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); border-radius: 10px 0 0 10px;">
+              Hand
+            </div>
+            <div class="morph-piece slam-right opacity-0" data-slam="right" style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); border-radius: 0;">
+              Schuh
+            </div>
+            <div class="morph-piece opacity-0" data-slam="suffix" style="background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); border-radius: 0 10px 10px 0;">
+              -e
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <span class="tag-pill accent-bg-soft accent accent-border border">COMPOUND(Hand+Schuh)</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">num=PL</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-4 text-center">Two roots slam together. The plural suffix <span class="font-mono accent">-e</span> clicks on last. Head = Schuh (right-headed).</p>
+        </div>
+
+        <!-- Case Forge -->
+        <div class="workshop p-8" id="case-forge">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2 font-semibold">Case Forge + Compound Split</p>
+          <p class="text-sm text-slate-400 mb-6">Krankenhauses &mdash; "of the hospital" (GEN)</p>
+          <div class="forge p-6 mb-4">
+            <div class="flex items-center justify-center gap-0 flex-wrap">
+              <div class="morph-piece opacity-0" data-forge style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); border-radius: 10px 0 0 10px;">
+                Kranken
+              </div>
+              <div class="morph-piece opacity-0" data-forge style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); border-radius: 0;">
+                Haus
+              </div>
+              <div class="morph-piece opacity-0" data-forge style="background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); border-radius: 0 10px 10px 0;">
+                -es
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">COMPOUND(Kranken+Haus)</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=GEN</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">gender=NEUT</span>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-4 text-center">Compound splitting AND case suffix stripping. The <span class="font-mono" style="color:#a78bfa;">-es</span> fuses genitive case + neuter gender.</p>
+        </div>
+      </div>
+
+      <!-- Separable prefix example -->
+      <div class="workshop p-8 mt-6" id="sep-prefix">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2 font-semibold">Separable Prefix Detection</p>
+        <p class="text-sm text-slate-400 mb-6">aufgemacht &mdash; "opened" (past participle)</p>
+        <div class="flex items-center justify-center gap-2 flex-wrap">
+          <div class="morph-piece opacity-0" data-prefix style="background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);">
+            auf-
+          </div>
+          <div class="morph-piece opacity-0" data-prefix style="background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1);">
+            -ge-
+          </div>
+          <div class="morph-piece opacity-0" data-prefix style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);">
+            mach
+          </div>
+          <div class="morph-piece opacity-0" data-prefix style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">
+            -t
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 justify-center mt-4">
+          <span class="tag-pill accent-bg-soft accent accent-border border">verb_prefix=AUF</span>
+          <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">aspect=PERF</span>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-4 text-center">Separable prefix <span class="font-mono accent">auf-</span> + participial circumfix <span class="font-mono">ge-...-t</span> around root <span class="font-mono" style="color:#60a5fa;">mach</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 2B: INSIDE THE ENGINE -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-engine">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">The Algorithm</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Inside the Engine</p>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">The German engine's unique challenge: compound splitting. Follow the decision path that breaks apart words like Krankenversicherungsbeitrag.</p>
+
+      <!-- ===== PIPELINE FLOWCHART ===== -->
+      <div class="glass rounded-2xl p-8 mb-10" id="de-pipeline">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-6">Full Processing Pipeline</h3>
+
+        <!-- Node: Input -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-sm font-bold text-white" style="background:rgba(245,158,11,0.2); border:2px solid rgba(245,158,11,0.5);">Input word</div>
+          <div class="w-px h-6" style="background:rgba(245,158,11,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Closed-class -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-sm text-center" style="background:rgba(139,92,246,0.15); border:1.5px solid rgba(139,92,246,0.35); color:#a78bfa;">Closed-class lookup (~238 entries)<br><span class="text-[10px] text-slate-500">DET / ADP / PRON / CONJ / AUX / PART</span></div>
+          <div class="flex items-center gap-4 my-2">
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] text-slate-500">Match?</span>
+              <span class="text-xs font-bold" style="color:#34d399;">YES</span>
+              <span class="text-[10px] text-slate-500">&#x2192; Return immediately</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 mb-1">
+            <span class="text-xs font-bold" style="color:#f87171;">NO</span>
+            <span class="text-xs accent">&#x2193;</span>
+          </div>
+        </div>
+
+        <!-- Node: Step A -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-5" style="background:rgba(245,158,11,0.08); border:1.5px solid rgba(245,158,11,0.25);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full accent-bg text-slate-950">Step A</span>
+              <span class="text-sm font-semibold text-white">Inflectional Stripping</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Partizip II: <span class="accent">ge-...-t</span> / <span class="accent">ge-...-en</span> / separable prefix + ge-</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Partizip I: <span class="accent">-end</span></span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Verb conjugation (weak: -e,-st,-t,-en,-t,-en / strong: ~200 irregulars)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Noun: genitive <span class="accent">-s/-es</span>, dative plural <span class="accent">-n</span>, N-Deklination</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Adjective declension (<span class="accent">-er,-e,-es,-en,-em</span>, strong/weak/mixed)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Comparative <span class="accent">-er</span> + possible Umlaut</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x2514;</span><span class="text-slate-300">Superlative <span class="accent">-st/-est</span> + possible Umlaut</span></div>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(245,158,11,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: COMPOUND SPLITTING (highlighted) -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-5 relative" style="background:rgba(245,158,11,0.12); border:2.5px solid rgba(245,158,11,0.5);">
+            <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider accent-bg text-slate-950">The Big Step</div>
+            <div class="flex items-center gap-2 mb-3 mt-1">
+              <span class="text-sm font-bold accent">COMPOUND SPLITTING</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Try split at each position (left to right)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check: is left part a known stem? (~8,000 stems)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check: Fugenelement? (<span class="accent">-s- -n- -en- -er- -e- -es-</span>)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check: is right part a known stem?</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Take split with longest recognized left component</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x2514;</span><span class="text-slate-300">Recurse on both parts (max depth 3)</span></div>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(245,158,11,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Step B -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-5" style="background:rgba(16,185,129,0.08); border:1.5px solid rgba(16,185,129,0.25);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#10b981;color:white;">Step B</span>
+              <span class="text-sm font-semibold text-white">Derivational Detection</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Suffixes: <span style="color:#34d399;">-ung, -heit, -keit, -lich, -isch, -ig, -bar, -los, -sam, -haft, -schaft, -tum, -nis, -er, -in, -chen, -lein</span></span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x2514;</span><span class="text-slate-300">Prefixes: <span style="color:#34d399;">un-, ur-, miss-, Ge-, Haupt-</span></span></div>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(16,185,129,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Step C -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-4" style="background:rgba(139,92,246,0.08); border:1.5px solid rgba(139,92,246,0.25);">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#8b5cf6;color:white;">Step C</span>
+              <span class="text-sm font-semibold text-white">Iterative Deepening + Compound Re-check</span>
+              <span class="text-[10px] text-slate-500 ml-auto">max 4 rounds</span>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(139,92,246,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Output -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-5 py-3 rounded-xl font-mono text-xs font-bold" style="background:rgba(245,158,11,0.2); border:2px solid rgba(245,158,11,0.5); color:#fbbf24;">Output: TokenInfo(root, pos, tags, compound_parts, derived_chain)</div>
+        </div>
+      </div>
+
+      <!-- ===== COMPOUND SPLITTING VISUALIZATION ===== -->
+      <div class="glass rounded-2xl p-8 mb-10" id="de-compound-split">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Compound Splitting Algorithm</h3>
+        <p class="text-lg font-bold text-white mb-2">Splitting <span class="font-mono accent">Krankenversicherungsbeitrag</span></p>
+        <p class="text-xs text-slate-400 mb-6">"health insurance contribution" &mdash; watch it break apart step by step</p>
+
+        <!-- Full word -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-lg font-bold text-white text-center" style="background:rgba(245,158,11,0.1); border:2px solid rgba(245,158,11,0.3);">Krankenversicherungsbeitrag</div>
+          <div class="w-px h-5" style="background:rgba(245,158,11,0.3);"></div>
+          <p class="text-[10px] text-slate-500 mb-2">Try split at position 7</p>
+        </div>
+
+        <!-- First split -->
+        <div class="flex flex-col md:flex-row items-stretch justify-center gap-4 mb-4" data-engine-node>
+          <div class="flex-shrink-0 rounded-xl px-5 py-3 text-center" style="background:rgba(16,185,129,0.12); border:1.5px solid rgba(16,185,129,0.3);">
+            <p class="font-mono font-bold" style="color:#34d399;">Kranken</p>
+            <p class="text-[10px] text-slate-500 mt-1">known stem &#x2713;</p>
+            <p class="text-[10px]" style="color:#34d399;">"sick" (ADJ)</p>
+          </div>
+          <div class="flex items-center justify-center text-slate-600 text-lg">+</div>
+          <div class="flex-1 rounded-xl px-5 py-3 text-center" style="background:rgba(255,255,255,0.04); border:1.5px solid rgba(255,255,255,0.1);">
+            <p class="font-mono font-bold text-slate-300">versicherungsbeitrag</p>
+            <p class="text-[10px] text-slate-500 mt-1">recurse &#x2193;</p>
+          </div>
+        </div>
+
+        <!-- Second split -->
+        <div class="flex flex-col items-center mb-2" data-engine-node>
+          <p class="text-[10px] text-slate-500 mb-2">Recurse on right: try split</p>
+        </div>
+        <div class="flex flex-col md:flex-row items-stretch justify-center gap-3 mb-4 ml-0 md:ml-16" data-engine-node>
+          <div class="rounded-xl px-4 py-3 text-center" style="background:rgba(59,130,246,0.12); border:1.5px solid rgba(59,130,246,0.3);">
+            <p class="font-mono font-bold" style="color:#60a5fa;">Versicherung</p>
+            <p class="text-[10px] text-slate-500 mt-1">known stem &#x2713;</p>
+            <p class="text-[10px]" style="color:#60a5fa;">"insurance" (NOUN)</p>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="rounded-lg px-2 py-1 text-center" style="background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4);">
+              <p class="font-mono text-xs font-bold accent">s</p>
+              <p class="text-[8px] text-slate-500">Fuge</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-center text-slate-600 text-lg">+</div>
+          <div class="rounded-xl px-4 py-3 text-center" style="background:rgba(139,92,246,0.12); border:1.5px solid rgba(139,92,246,0.3);">
+            <p class="font-mono font-bold" style="color:#a78bfa;">Beitrag</p>
+            <p class="text-[10px] text-slate-500 mt-1">known stem &#x2713;</p>
+            <p class="text-[10px]" style="color:#a78bfa;">"contribution" (NOUN, HEAD)</p>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="flex flex-col items-center mt-4" data-engine-node>
+          <div class="w-px h-4" style="background:rgba(245,158,11,0.3);"></div>
+          <p class="text-[10px] text-slate-500 mb-2">Result</p>
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <span class="rounded-lg px-3 py-2 font-mono text-sm font-bold" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); color:#34d399;">Kranken</span>
+            <span class="text-slate-600">+</span>
+            <span class="rounded-lg px-3 py-2 font-mono text-sm font-bold" style="background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); color:#60a5fa;">Versicherung</span>
+            <span class="text-slate-600">+</span>
+            <span class="rounded-lg px-2 py-2 font-mono text-xs font-bold" style="background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); color:#fbbf24;">s</span>
+            <span class="text-slate-600">+</span>
+            <span class="rounded-lg px-3 py-2 font-mono text-sm font-bold" style="background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.3); color:#a78bfa;">Beitrag</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== UMLAUT UN-MUTATION LOGIC ===== -->
+      <div class="glass rounded-2xl p-8" id="de-umlaut">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Umlaut Un-Mutation</h3>
+        <p class="text-lg font-bold text-white mb-2">Reversing Vowel Changes to Find Stems</p>
+        <p class="text-xs text-slate-400 mb-6">When stripping a plural suffix, the engine tries un-umlauting (<span class="font-mono accent">&auml;&#x2192;a &ouml;&#x2192;o &uuml;&#x2192;u</span>) and checks if the result is a known stem.</p>
+
+        <!-- Umlaut example: Vater -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="flex flex-col md:flex-row items-center gap-4 w-full max-w-2xl">
+            <!-- Input -->
+            <div class="rounded-xl px-5 py-4 text-center flex-shrink-0" style="background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.12);">
+              <p class="font-mono text-xl font-bold text-white">V&auml;ter</p>
+              <p class="text-[10px] text-slate-500 mt-1">"fathers" (plural)</p>
+            </div>
+            <!-- Arrow + strip -->
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-slate-500">strip <span class="font-mono accent">-er</span></span>
+              <span class="text-lg accent">&#x2192;</span>
+            </div>
+            <!-- Intermediate -->
+            <div class="rounded-xl px-5 py-4 text-center" style="background:rgba(239,68,68,0.08); border:1.5px solid rgba(239,68,68,0.2);">
+              <p class="font-mono text-xl font-bold" style="color:#f87171;">V&auml;t</p>
+              <p class="text-[10px] text-slate-500 mt-1">not a known stem</p>
+            </div>
+            <!-- Arrow + un-umlaut -->
+            <div class="flex flex-col items-center">
+              <span class="text-xs text-slate-500">un-umlaut <span class="font-mono accent">&auml;&#x2192;a</span></span>
+              <span class="text-lg accent">&#x2192;</span>
+            </div>
+            <!-- Check -->
+            <div class="rounded-xl px-5 py-4 text-center" style="background:rgba(245,158,11,0.08); border:1.5px solid rgba(245,158,11,0.25);">
+              <p class="font-mono text-xl font-bold accent">Vat</p>
+              <p class="text-[10px] text-slate-500 mt-1">check stem...</p>
+            </div>
+            <!-- Arrow + result -->
+            <div class="flex flex-col items-center">
+              <span class="text-lg" style="color:#34d399;">&#x2192;</span>
+            </div>
+            <!-- Final -->
+            <div class="rounded-xl px-5 py-4 text-center" style="background:rgba(16,185,129,0.12); border:2px solid rgba(16,185,129,0.35);">
+              <p class="font-mono text-xl font-bold" style="color:#34d399;">Vater &#x2713;</p>
+              <p class="text-[10px] text-slate-500 mt-1">known stem found!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- More examples -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+          <div class="rounded-xl p-4 text-center" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);" data-engine-node>
+            <p class="font-mono text-sm text-slate-300">M&uuml;tter &#x2192; <span class="accent">Mutter</span></p>
+            <p class="text-[10px] text-slate-500 mt-1">&uuml;&#x2192;u + strip zero-plural</p>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);" data-engine-node>
+            <p class="font-mono text-sm text-slate-300">H&auml;user &#x2192; <span class="accent">Haus</span></p>
+            <p class="text-[10px] text-slate-500 mt-1">&auml;u&#x2192;au + strip -er</p>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);" data-engine-node>
+            <p class="font-mono text-sm text-slate-300">G&auml;ste &#x2192; <span class="accent">Gast</span></p>
+            <p class="text-[10px] text-slate-500 mt-1">&auml;&#x2192;a + strip -e</p>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-xl p-4 text-center" style="background:rgba(245,158,11,0.05); border:1px dashed rgba(245,158,11,0.2);">
+          <p class="text-xs text-slate-400">Umlaut accompanies noun plurals, Konjunktiv II, comparatives, and some derivations. The engine scans right-to-left for the last umlautable vowel, tries un-umlauting, and checks against the ~8,000 stem dictionary.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 3: LIVE DECOMPOSITION -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-decomp">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Step-by-Step</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Live Decomposition</p>
+      <p class="text-slate-400 text-center max-w-lg mx-auto mb-12 text-sm">Watch the engine analyze <span class="font-mono accent">"Krankenhauses"</span> &mdash; compound splitting is the distinctive German step.</p>
+
+      <div class="space-y-6" id="steps-container">
+        <!-- Input -->
+        <div class="step-card text-center" id="step-input">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2 font-semibold">Input</p>
+          <span class="font-mono text-3xl font-bold text-white">Krankenhauses</span>
+          <span class="text-sm text-slate-500 ml-3">"of the hospital"</span>
+        </div>
+
+        <!-- Step A -->
+        <div class="step-card opacity-0" id="step-a">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full accent-bg text-slate-950">Step A</span>
+            <span class="text-sm text-slate-400">Inflectional Stripping</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-lg text-white">Krankenhaus</span>
+            <span class="text-slate-600 text-lg">+</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">-es &rarr; GEN.NEUT</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">Strip genitive suffix <span class="font-mono" style="color:#a78bfa;">-es</span>. Tags: <span class="font-mono" style="color:#a78bfa;">case=GEN, gender=NEUT, num=SG</span>, POS = NOUN</p>
+        </div>
+
+        <!-- Step B: Compound Split -->
+        <div class="step-card opacity-0" id="step-b">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: #10b981; color: white;">Step B</span>
+            <span class="text-sm text-slate-400">Compound Splitting</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-lg" style="color:#f87171;">Kranken</span>
+            <span class="text-slate-600 text-lg">+</span>
+            <span class="font-mono text-lg" style="color:#60a5fa;">Haus</span>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">Kranken (sick, modifier)</span>
+            <span class="tag-pill" style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);">Haus (house, HEAD)</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">Compound split via Fugenelement detection. <span class="font-mono" style="color:#f87171;">Kranken</span> = krank + -en (linking element). Right-headed: <span class="font-mono" style="color:#60a5fa;">Haus</span> determines gender (NEUT) and POS (NOUN).</p>
+        </div>
+
+        <!-- Step C -->
+        <div class="step-card opacity-0" id="step-c">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full accent-bg text-slate-950">Step C</span>
+            <span class="text-sm text-slate-400">Root Extraction</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-2xl font-bold accent">Haus</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ROOT (head)</span>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">prefix = Kranken</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=GEN</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">gender=NEUT</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">num=SG</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">Final root: <span class="font-mono accent font-bold">Haus</span>. Chain: <span class="font-mono accent">COMPOUND(Kranken+Haus)</span>. The compound splitting step is what makes German analysis distinctively complex.</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <button id="replay-btn" class="px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider accent-bg text-slate-950 hover:opacity-80 transition-opacity">Replay Animation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 4: TAG INVENTORY -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-tags">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Tag Inventory</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-3">What the Engine Can Tag</p>
+      <p class="text-center mb-12"><span class="text-4xl font-black accent">~70</span> <span class="text-sm text-slate-400">unique feature bundles</span></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tag-grid">
+        <!-- POS Tags -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Part of Speech</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill accent-bg-soft accent accent-border border">NOUN</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">VERB</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ADJ</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ADV</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">PRON</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">DET</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ADP</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">CONJ</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">PART</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">AUX</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">NUM</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">UNKNOWN</span>
+          </div>
+        </div>
+
+        <!-- Nominal Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Nominal Features</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">num=SG</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">num=PL</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">gender=MASC</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">gender=FEM</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">gender=NEUT</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=NOM</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=ACC</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=DAT</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">case=GEN</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">4 cases &times; 3 genders &times; 2 numbers = 24 theoretical cells, collapsed by syncretism.</p>
+        </div>
+
+        <!-- Verbal Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Verbal Features</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">tense=PRES</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">tense=PAST</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">aspect=PERF</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">aspect=PROG</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">mood=IND</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">mood=SUBJ_I</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">mood=SUBJ_II</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">mood=IMP</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">person=1/2/3</span>
+          </div>
+        </div>
+
+        <!-- Adjective Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Adjective Declension</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">degree=COMP</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">degree=SUPER</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">decl=STRONG</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">decl=WEAK</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">decl=MIXED</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">adj_ambig=YES</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">3 declension types &times; 4 cases &times; 3 genders = 108 theoretical cells. Massive syncretism.</p>
+        </div>
+
+        <!-- Verb Prefixes -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Separable Prefixes</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">AUF</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">AN</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">AB</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">AUS</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">EIN</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">MIT</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">VOR</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">ZU</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">NACH</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">ZUR&Uuml;CK</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">24 separable prefixes + 8 non-separable (be-, ent-, er-, ge-, ver-, zer-, emp-, miss-).</p>
+        </div>
+
+        <!-- Compound & Umlaut -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Compound &amp; Umlaut</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25);">compound_parts</span>
+            <span class="tag-pill" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25);">compound_head</span>
+            <span class="tag-pill" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25);">umlaut=YES</span>
+            <span class="tag-pill" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25);">modal=YES</span>
+            <span class="tag-pill" style="background:rgba(236,72,153,0.12);color:#f472b6;border:1px solid rgba(236,72,153,0.25);">aux=YES</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">~8,000 stems for compound splitting. 7 Fugenelemente (-s-, -es-, -n-, -en-, -er-, -e-, zero).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 5: WHY THIS MATTERS FOR AI -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-ai">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Tokenization Impact</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Why This Matters for AI</p>
+      <p class="text-slate-400 text-center max-w-lg mx-auto mb-12 text-sm">German compounds are where morph-aware tokenization shines. BPE fragments them arbitrarily; morphology splits them at meaningful boundaries.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <!-- BPE -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-ai-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">BPE Tokenization</h3>
+          <p class="font-mono text-sm text-slate-400 mb-3">"Das Krankenhaus ist geschlossen"</p>
+          <div class="flex flex-wrap">
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">Das</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_Krank</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">en</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">haus</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_ist</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_gesch</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">lossen</span>
+          </div>
+          <p class="text-right text-xs text-slate-500 mt-3 font-semibold">7 tokens</p>
+        </div>
+
+        <!-- Morph-aware -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-ai-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider accent mb-4">Morph-Aware Tokenization</h3>
+          <p class="font-mono text-sm text-slate-400 mb-3">"Das Krankenhaus ist geschlossen"</p>
+          <div class="flex flex-wrap">
+            <span class="token-box accent-bg-soft accent">Das [DET.NEUT]</span>
+            <span class="token-box accent-bg-soft accent">Kranken+Haus [NOUN]</span>
+            <span class="token-box accent-bg-soft accent">ist [AUX.3SG]</span>
+            <span class="token-box accent-bg-soft accent">geschlossen [PERF]</span>
+          </div>
+          <p class="text-right text-xs accent mt-3 font-semibold">4 tokens + tags</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-8 text-center opacity-0" data-ai-card>
+        <p class="text-5xl font-black accent mb-2">~12%</p>
+        <p class="text-sm text-slate-400">Expected efficiency gain from morph-aware tokenization</p>
+        <p class="text-xs text-slate-500 mt-2">Compound splitting is the biggest win. BPE fractures compounds at arbitrary byte-pair boundaries; morph-aware splitting preserves semantic component boundaries.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 6: FOOTER -->
+  <!-- ================================ -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto text-center">
+      <p class="text-xs font-bold tracking-[0.15em] uppercase text-slate-600 mb-4">Explore Other Languages</p>
+      <div class="flex items-center justify-center flex-wrap gap-3 mb-6">
+        <a href="index.html" class="text-xs text-slate-500 hover:text-white transition-colors font-medium">Index</a>
+        <span class="text-slate-700">|</span>
+        <a href="zh.html" class="flex items-center gap-1 text-xs text-slate-500 hover:text-white transition-colors"><span class="nav-dot" style="background:#ef4444;"></span> Mandarin</a>
+        <a href="en.html" class="flex items-center gap-1 text-xs text-slate-500 hover:text-white transition-colors"><span class="nav-dot" style="background:#3b82f6;"></span> English</a>
+        <a href="de.html" class="flex items-center gap-1 text-xs accent font-bold"><span class="nav-dot accent-bg"></span> German</a>
+      </div>
+      <p class="text-xs text-slate-600">&copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).</p>
+    </div>
+  </footer>
+
+  <!-- ================================ -->
+  <!-- GSAP ANIMATIONS -->
+  <!-- ================================ -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* Header */
+    const hTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    hTl.fromTo('#hdr-badge', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.2 })
+       .fromTo('#hdr-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.2')
+       .fromTo('#hdr-sub', { opacity: 0 }, { opacity: 1, duration: 0.5 }, '-=0.3')
+       .fromTo('#hdr-typo', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }, '-=0.3')
+       .fromTo('#hdr-meter', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, onComplete: () => { document.getElementById('cx-fill').style.width = '35%'; } }, '-=0.2');
+
+    /* Compound press - slam animation */
+    ScrollTrigger.create({
+      trigger: '#compound-press', start: 'top 75%', once: true,
+      onEnter: () => {
+        const tl = gsap.timeline();
+        tl.fromTo('[data-slam="left"]', { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.5)' })
+          .fromTo('[data-slam="right"]', { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.35')
+          .fromTo('[data-slam="suffix"]', { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power2.out' }, '-=0.1');
+      }
+    });
+
+    /* Case forge pieces */
+    gsap.fromTo('[data-forge]', { opacity: 0, y: 20, scale: 0.9 }, {
+      opacity: 1, y: 0, scale: 1, duration: 0.4, stagger: 0.15, ease: 'back.out(1.3)',
+      scrollTrigger: { trigger: '#case-forge', start: 'top 75%', once: true }
+    });
+
+    /* Separable prefix pieces */
+    gsap.fromTo('[data-prefix]', { opacity: 0, x: -30 }, {
+      opacity: 1, x: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out',
+      scrollTrigger: { trigger: '#sep-prefix', start: 'top 80%', once: true }
+    });
+
+    /* Decomposition steps */
+    function playSteps() {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      gsap.set(['#step-a','#step-b','#step-c'], { opacity: 0, y: 20 });
+      tl.to('#step-a', { opacity: 1, y: 0, duration: 0.6, delay: 0.3 })
+        .to('#step-b', { opacity: 1, y: 0, duration: 0.6 }, '+=0.4')
+        .to('#step-c', { opacity: 1, y: 0, duration: 0.6 }, '+=0.4');
+      return tl;
+    }
+
+    ScrollTrigger.create({
+      trigger: '#sec-decomp', start: 'top 65%', once: true,
+      onEnter: playSteps
+    });
+
+    document.getElementById('replay-btn').addEventListener('click', playSteps);
+
+    /* Tag cards */
+    gsap.fromTo('[data-tag-card]', { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out',
+      scrollTrigger: { trigger: '#sec-tags', start: 'top 70%', once: true }
+    });
+
+    /* AI cards */
+    gsap.fromTo('[data-ai-card]', { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.15, ease: 'power2.out',
+      scrollTrigger: { trigger: '#sec-ai', start: 'top 70%', once: true }
+    });
+
+    /* Engine pipeline nodes - sequential reveal */
+    gsap.fromTo('#de-pipeline [data-engine-node]', { opacity: 0, y: 25 }, {
+      opacity: 1, y: 0, duration: 0.45, stagger: 0.18, ease: 'power2.out',
+      scrollTrigger: { trigger: '#de-pipeline', start: 'top 70%', once: true }
+    });
+
+    /* Compound splitting visualization */
+    gsap.fromTo('#de-compound-split [data-engine-node]', { opacity: 0, y: 20 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.25, ease: 'power2.out',
+      scrollTrigger: { trigger: '#de-compound-split', start: 'top 70%', once: true }
+    });
+
+    /* Umlaut logic */
+    gsap.fromTo('#de-umlaut [data-engine-node]', { opacity: 0, y: 20, scale: 0.95 }, {
+      opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.15, ease: 'power2.out',
+      scrollTrigger: { trigger: '#de-umlaut', start: 'top 75%', once: true }
+    });
+  </script>
+</body>
+</html>

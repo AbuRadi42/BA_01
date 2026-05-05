@@ -70,3 +70,32 @@ Thumbs.db
 *.log
 *.tmp
 *.swp
+
+# LaTeX build artefacts (Tectonic --outdir targets)
+_build*/
+_expose_build*/
+**/_build*/
+**/_expose_build*/
+
+# Mini-experiment large artefacts (corpora, model checkpoints, tokenizer dumps)
+mini_experiment/data/
+mini_experiment/results_ladder/
+mini_experiment/tokenizers/
+
+# Exported HTML reports (generated, not source)
+morph_efficiency_project/Morphological Efficiency in Multilingual Language Models.html
+morph_efficiency_project/Morphological Efficiency in Multilingual Language Models_files/
+
+# Personal academic artefacts (not project IP)
+STS_*Reflection.pdf
+BM_*Reflection.pdf
+SE_*Reflection.pdf
+Capstone\ Exposé.pdf
+
+# Sidequest exposé (canonical copy lives in ~/Downloads)
+thesis_expose_pn1_autoethnography.pdf
+thesis_expose_pn1_autoethnography.tex
+thesis_expose_pn1_autoethnography.md
+
+# Claude Code local data
+.claude/

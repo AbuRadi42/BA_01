@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>English Morphology — Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#3b82f6',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; }
+    .accent { color: #3b82f6; }
+    .accent-bg { background: #3b82f6; }
+    .accent-bg-soft { background: rgba(59,130,246,0.12); }
+    .accent-border { border-color: rgba(59,130,246,0.3); }
+    .glass { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+    .tag-pill { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 600; margin: 3px; }
+    .morph-piece { display: inline-flex; align-items: center; padding: 8px 16px; border-radius: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 600; }
+    .step-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+    .complexity-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .complexity-fill { height: 100%; border-radius: 3px; transition: width 1.5s ease; }
+    .token-box { display: inline-block; padding: 4px 10px; border-radius: 6px; margin: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    .conveyor { background: linear-gradient(90deg, rgba(59,130,246,0.05) 0%, rgba(59,130,246,0.15) 50%, rgba(59,130,246,0.05) 100%); border: 1px dashed rgba(59,130,246,0.25); border-radius: 16px; }
+    .nav-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin: 0 4px; transition: transform 0.2s; }
+    .nav-dot:hover { transform: scale(1.4); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- TOP ACCENT BORDER -->
+  <div class="w-full h-1 accent-bg"></div>
+
+  <!-- ================================ -->
+  <!-- SECTION 1: HEADER -->
+  <!-- ================================ -->
+  <header class="relative pt-16 pb-14 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px]"
+           style="background: radial-gradient(ellipse at center, rgba(59,130,246,0.18) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-3xl mx-auto">
+      <p id="hdr-badge" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase accent mb-5 opacity-0">Morphological Engine Profile</p>
+      <h1 id="hdr-title" class="text-5xl md:text-7xl font-black tracking-tight text-white leading-[1.05] mb-4 opacity-0">English</h1>
+      <div id="hdr-typo" class="flex items-center justify-center gap-3 mb-6 opacity-0">
+        <span class="text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full accent-bg-soft accent">Semi-Fusional Analytic</span>
+      </div>
+      <div id="hdr-meter" class="max-w-md mx-auto opacity-0">
+        <div class="flex justify-between text-[10px] text-slate-500 mb-1">
+          <span>Bundle Complexity</span>
+          <span class="accent font-semibold">~20 / 200 (Basque)</span>
+        </div>
+        <div class="complexity-bar">
+          <div class="complexity-fill accent-bg" id="cx-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================================ -->
+  <!-- SECTION 2: HOW ENGLISH BUILDS WORDS -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-build">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Light Assembly Line</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">How English Builds Words</p>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">English words arrive nearly finished. Most need zero assembly&hairsp;&mdash;&hairsp;at most, a prefix and one or two suffixes click on.</p>
+
+      <!-- Conveyor belt visual -->
+      <div class="conveyor p-8 md:p-12 relative" id="conveyor">
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-6 font-semibold">Conveyor Input</p>
+        <div class="text-center mb-8">
+          <span id="full-word" class="text-3xl md:text-4xl font-black text-white font-mono tracking-wide">unbelievably</span>
+        </div>
+        <div class="flex items-center justify-center mb-4">
+          <svg class="w-6 h-6 text-slate-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+        <p class="text-xs text-slate-500 uppercase tracking-wider mb-6 font-semibold">Separated Parts</p>
+        <div class="flex flex-wrap items-center justify-center gap-3" id="parts-row">
+          <div class="morph-piece opacity-0" data-part style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3);">
+            <span>un-</span><span class="ml-2 text-[10px] text-slate-400">PREFIX</span>
+          </div>
+          <div class="morph-piece opacity-0" data-part style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);">
+            <span>believe</span><span class="ml-2 text-[10px] text-slate-400">ROOT</span>
+          </div>
+          <div class="morph-piece opacity-0" data-part style="background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">
+            <span>-able</span><span class="ml-2 text-[10px] text-slate-400">SUFFIX</span>
+          </div>
+          <div class="morph-piece opacity-0" data-part style="background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3);">
+            <span>-ly</span><span class="ml-2 text-[10px] text-slate-400">SUFFIX</span>
+          </div>
+        </div>
+        <p class="text-center text-xs text-slate-500 mt-8">Most English words are just the root with 0&ndash;2 attachments. The assembly line is short.</p>
+      </div>
+
+      <!-- Comparison callouts -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10">
+        <div class="glass rounded-2xl p-5 text-center opacity-0" data-stat>
+          <p class="text-3xl font-black accent mb-1">10</p>
+          <p class="text-xs text-slate-500">Inflectional rules</p>
+          <p class="text-[10px] text-slate-600 mt-1">-s, -ed, -ing, -er, -est, -ies, -es, &rsquo;s, and 2 irregular lookups</p>
+        </div>
+        <div class="glass rounded-2xl p-5 text-center opacity-0" data-stat>
+          <p class="text-3xl font-black accent mb-1">534</p>
+          <p class="text-xs text-slate-500">Irregular forms</p>
+          <p class="text-[10px] text-slate-600 mt-1">went, children, better &mdash; all bypass rule-based stripping</p>
+        </div>
+        <div class="glass rounded-2xl p-5 text-center opacity-0" data-stat>
+          <p class="text-3xl font-black accent mb-1">80</p>
+          <p class="text-xs text-slate-500">Derivational rules</p>
+          <p class="text-[10px] text-slate-600 mt-1">49 suffixes + 31 prefixes, sorted longest-first for greedy matching</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 2B: INSIDE THE ENGINE -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-engine">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">The Algorithm</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Inside the Engine</p>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">How the English engine processes every word, step by step. Follow the decision path from input to final root.</p>
+
+      <!-- ===== PIPELINE FLOWCHART ===== -->
+      <div class="glass rounded-2xl p-8 mb-10" id="en-pipeline">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-6">Full Processing Pipeline</h3>
+
+        <!-- Node: Input -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-sm font-bold text-white" style="background:rgba(59,130,246,0.2); border:2px solid rgba(59,130,246,0.5);">Input word</div>
+          <div class="w-px h-6" style="background:rgba(59,130,246,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Closed-class -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-sm text-center" style="background:rgba(139,92,246,0.15); border:1.5px solid rgba(139,92,246,0.35); color:#a78bfa;">Closed-class lookup (110 entries)<br><span class="text-[10px] text-slate-500">DET / PREP / PRON / CONJ / AUX</span></div>
+          <div class="flex items-center gap-4 my-2">
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] text-slate-500">Match?</span>
+              <span class="text-xs font-bold" style="color:#34d399;">YES</span>
+              <span class="text-[10px] text-slate-500">&#x2192; Return immediately</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 mb-1">
+            <span class="text-xs font-bold" style="color:#f87171;">NO</span>
+            <span class="text-xs accent">&#x2193;</span>
+          </div>
+        </div>
+
+        <!-- Node: Step A -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-5" style="background:rgba(59,130,246,0.08); border:1.5px solid rgba(59,130,246,0.25);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full accent-bg text-white">Step A</span>
+              <span class="text-sm font-semibold text-white">Inflectional Stripping</span>
+              <span class="text-[10px] text-slate-500 ml-auto">first match wins</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check irregulars table (534 entries) &#x2192; Match? &#x2192; Return root + tags</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check possessive <span class="accent">'s</span></span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-ing</span> (len&gt;5, doubled consonant, silent-e)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-ed</span> (len&gt;4, doubled consonant, silent-e)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-ies</span> &#x2192; <span class="accent">-y</span></span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-es</span> (len&gt;4)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-s</span> (not -ss, len&gt;3)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check <span class="accent">-est</span> (superlative, len&gt;5)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x2514;</span><span class="text-slate-300">Check <span class="accent">-er</span> (comparative, len&gt;4)</span></div>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(59,130,246,0.3);"></div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[10px] text-slate-500">No inflection found &#x2192;</span>
+            <span class="font-mono text-xs" style="color:#f87171;">POS=UNKNOWN</span>
+            <span class="text-xs accent">&#x2193;</span>
+          </div>
+        </div>
+
+        <!-- Node: Step B -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-5" style="background:rgba(16,185,129,0.08); border:1.5px solid rgba(16,185,129,0.25);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#10b981;color:white;">Step B</span>
+              <span class="text-sm font-semibold text-white">Derivational Detection</span>
+              <span class="text-[10px] text-slate-500 ml-auto">only if UNKNOWN</span>
+            </div>
+            <div class="space-y-1.5 text-xs font-mono">
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check compounds (170 entries)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x251C;</span><span class="text-slate-300">Check suffixes (81 variants, longest-first)</span></div>
+              <div class="flex items-start gap-2"><span class="text-slate-600 select-none">&#x2514;</span><span class="text-slate-300">Check prefixes (32 variants)</span></div>
+            </div>
+          </div>
+          <div class="w-px h-4" style="background:rgba(16,185,129,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Step C -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="w-full max-w-2xl rounded-xl p-4" style="background:rgba(245,158,11,0.08); border:1.5px solid rgba(245,158,11,0.25);">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background:#f59e0b;color:white;">Step C</span>
+              <span class="text-sm font-semibold text-white">Iterative Deepening</span>
+              <span class="text-[10px] text-slate-500 ml-auto">max 4 rounds of Step B</span>
+            </div>
+            <p class="text-xs text-slate-400 font-mono">Re-apply Step B until stem stops changing or 4 iterations reached</p>
+          </div>
+          <div class="w-px h-4" style="background:rgba(245,158,11,0.3);"></div>
+          <div class="text-xs accent mb-1">&#x2193;</div>
+        </div>
+
+        <!-- Node: Output -->
+        <div class="flex flex-col items-center" data-engine-node>
+          <div class="px-6 py-3 rounded-xl font-mono text-sm font-bold" style="background:rgba(59,130,246,0.2); border:2px solid rgba(59,130,246,0.5); color:#60a5fa;">Output: TokenInfo(root, pos, tags, derived_chain)</div>
+        </div>
+      </div>
+
+      <!-- ===== -ING STRIPPING DECISION TREE ===== -->
+      <div class="glass rounded-2xl p-8 mb-10" id="en-ing-tree">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Decision Tree</h3>
+        <p class="text-lg font-bold text-white mb-6">How <span class="font-mono accent">-ing</span> Stripping Works</p>
+
+        <div class="flex flex-col items-center" data-engine-node>
+          <!-- Root question -->
+          <div class="px-5 py-3 rounded-xl text-sm text-center font-semibold text-white cursor-pointer" style="background:rgba(59,130,246,0.15); border:1.5px solid rgba(59,130,246,0.35);" onclick="this.parentElement.querySelector('.ing-branches').classList.toggle('hidden')">
+            Word ends in "-ing" AND len &gt; 5?
+            <span class="text-[10px] text-slate-500 block mt-1">click to expand / collapse</span>
+          </div>
+
+          <div class="ing-branches flex flex-col md:flex-row gap-6 mt-4 w-full max-w-3xl">
+            <!-- YES branch -->
+            <div class="flex-1 rounded-xl p-5" style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2);">
+              <p class="text-xs font-bold mb-3" style="color:#34d399;">YES &#x2192; Remove "-ing" &#x2192; stem</p>
+              <div class="space-y-3 text-xs">
+                <!-- Sub-branch: doubled consonant -->
+                <div class="rounded-lg p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+                  <p class="text-slate-300 mb-1">Last 2 chars of stem are same consonant?</p>
+                  <p class="text-slate-500">e.g., "running" &#x2192; "runn"</p>
+                  <p class="mt-1 font-mono" style="color:#34d399;">YES &#x2192; Undouble: "runn" &#x2192; "run"</p>
+                </div>
+                <!-- Sub-branch: silent-e -->
+                <div class="rounded-lg p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+                  <p class="text-slate-300 mb-1">Stem ends in consonant (not vowel)?</p>
+                  <p class="text-slate-500">e.g., "making" &#x2192; "mak"</p>
+                  <p class="mt-1 font-mono" style="color:#34d399;">YES &#x2192; Restore silent-e: "mak" &#x2192; "make"</p>
+                </div>
+                <!-- Sub-branch: otherwise -->
+                <div class="rounded-lg p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+                  <p class="text-slate-300">Otherwise &#x2192; stem is root</p>
+                  <p class="text-slate-500">e.g., "playing" &#x2192; "play"</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- NO branch -->
+            <div class="flex-shrink-0 w-full md:w-48 rounded-xl p-5" style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.2);">
+              <p class="text-xs font-bold mb-2" style="color:#f87171;">NO &#x2192; Skip</p>
+              <p class="text-xs text-slate-500">Word is too short or doesn't end in -ing. Move to next rule.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== GUARD LOGIC: FALSE POSITIVE PREVENTION ===== -->
+      <div class="glass rounded-2xl p-8" id="en-guards">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Guard Logic</h3>
+        <p class="text-lg font-bold text-white mb-2">Why "ring", "king", "thing" Are NOT Stripped</p>
+        <p class="text-xs text-slate-400 mb-6">The <span class="font-mono accent">len &gt; 5</span> guard catches them. Words with 5 or fewer characters that end in "-ing" skip the rule entirely.</p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3" id="guard-grid">
+          <!-- False positives blocked -->
+          <div class="rounded-xl p-4 text-center" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">ring</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#f87171;">&#x2717;</span>
+              <span class="text-[10px]" style="color:#f87171;">len=4</span>
+            </div>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">king</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#f87171;">&#x2717;</span>
+              <span class="text-[10px]" style="color:#f87171;">len=4</span>
+            </div>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">thing</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#f87171;">&#x2717;</span>
+              <span class="text-[10px]" style="color:#f87171;">len=5</span>
+            </div>
+          </div>
+          <!-- Valid strips -->
+          <div class="rounded-xl p-4 text-center" style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">running</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#34d399;">&#x2713;</span>
+              <span class="text-[10px]" style="color:#34d399;">len=7</span>
+            </div>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">making</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#34d399;">&#x2713;</span>
+              <span class="text-[10px]" style="color:#34d399;">len=6</span>
+            </div>
+          </div>
+          <div class="rounded-xl p-4 text-center" style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2);" data-engine-node>
+            <span class="font-mono text-lg font-bold text-white">playing</span>
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <span class="text-lg" style="color:#34d399;">&#x2713;</span>
+              <span class="text-[10px]" style="color:#34d399;">len=7</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-xl p-4 text-center" style="background:rgba(59,130,246,0.06); border:1px dashed rgba(59,130,246,0.2);">
+          <p class="text-xs text-slate-400">The length guard is simple but effective: it prevents the engine from destroying short root words that happen to end in <span class="font-mono accent">-ing</span>. Similar guards protect <span class="font-mono accent">-ed</span> (len&gt;4), <span class="font-mono accent">-s</span> (len&gt;3, not -ss), <span class="font-mono accent">-es</span> (len&gt;4), and <span class="font-mono accent">-est</span> (len&gt;5).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 3: LIVE DECOMPOSITION -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-decomp">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Step-by-Step</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Live Decomposition</p>
+      <p class="text-slate-400 text-center max-w-lg mx-auto mb-12 text-sm">Watch the engine peel apart <span class="font-mono accent">"misunderstanding"</span> layer by layer.</p>
+
+      <div class="space-y-6" id="steps-container">
+        <!-- Input -->
+        <div class="step-card text-center" id="step-input">
+          <p class="text-xs text-slate-500 uppercase tracking-wider mb-2 font-semibold">Input</p>
+          <span class="font-mono text-2xl font-bold text-white">misunderstanding</span>
+        </div>
+
+        <!-- Step A -->
+        <div class="step-card opacity-0" id="step-a">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full accent-bg text-white">Step A</span>
+            <span class="text-sm text-slate-400">Inflectional Stripping</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-lg text-white">misunderstand</span>
+            <span class="text-slate-600 text-lg">+</span>
+            <span class="tag-pill" style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25);">-ing &rarr; PROG</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">Strip <span class="font-mono">-ing</span> suffix. Tags: <span class="font-mono accent">tense=PRES, aspect=PROG</span>, POS = VERB</p>
+        </div>
+
+        <!-- Step B -->
+        <div class="step-card opacity-0" id="step-b">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: #10b981; color: white;">Step B</span>
+            <span class="text-sm text-slate-400">Derivational Detection</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-lg text-white">understand</span>
+            <span class="text-slate-600 text-lg">+</span>
+            <span class="tag-pill" style="background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.25);">mis- &rarr; PRE_mis</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">Strip <span class="font-mono">mis-</span> prefix. Chain: <span class="font-mono" style="color: #f87171;">mis&rarr;WRONG_BAD</span></p>
+        </div>
+
+        <!-- Step C -->
+        <div class="step-card opacity-0" id="step-c">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style="background: #f59e0b; color: white;">Step C</span>
+            <span class="text-sm text-slate-400">Root Extraction</span>
+          </div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="font-mono text-2xl font-bold accent">understand</span>
+            <span class="tag-pill" style="background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25);">ROOT</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">No further stripping possible. Final root: <span class="font-mono accent font-bold">understand</span></p>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <button id="replay-btn" class="px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider accent-bg text-white hover:opacity-80 transition-opacity">Replay Animation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 4: TAG INVENTORY -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-tags">
+    <div class="max-w-5xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Tag Inventory</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-3">What the Engine Can Tag</p>
+      <p class="text-center mb-12"><span class="text-4xl font-black accent">~20</span> <span class="text-sm text-slate-400">unique feature bundles</span></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="tag-grid">
+        <!-- POS Tags -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Part of Speech</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill accent-bg-soft accent accent-border border">NOUN</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">VERB</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ADJ</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">ADV</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">DET</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">PREP</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">PRON</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">CONJ</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">AUX</span>
+            <span class="tag-pill accent-bg-soft accent accent-border border">UNKNOWN</span>
+          </div>
+        </div>
+
+        <!-- Nominal Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Nominal Features</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">num=PL</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">poss=YES</span>
+            <span class="tag-pill" style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.25);">ambig_3sg=YES</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">English nouns: singular vs plural, possessive. No case, no gender (except pronouns).</p>
+        </div>
+
+        <!-- Verbal Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Verbal Features</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">tense=PAST</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">tense=PRES</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">aspect=PROG</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">aspect=PERF</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">voice=PASS</span>
+            <span class="tag-pill" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">person=3</span>
+          </div>
+        </div>
+
+        <!-- Adjective Features -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Adjective / Degree</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">degree=COMP</span>
+            <span class="tag-pill" style="background:rgba(245,158,11,0.12);color:#fbbf24;border:1px solid rgba(245,158,11,0.25);">degree=SUPER</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">Only two degree distinctions. Irregular forms (better, best) handled via lookup.</p>
+        </div>
+
+        <!-- Closed-Class -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Closed-Class Flags</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">modal=YES</span>
+            <span class="tag-pill" style="background:rgba(139,92,246,0.12);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);">phrasal_verb_base=YES</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">110 closed-class words intercepted before analysis. 463 phrasal verbs indexed.</p>
+        </div>
+
+        <!-- Derivational -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-tag-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Derivational Affixes</h3>
+          <div class="flex flex-wrap">
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">49 suffix rules</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">31 prefix rules</span>
+            <span class="tag-pill" style="background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.25);">170 compounds</span>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-3">-tion, -ness, -able, un-, re-, dis- and more. Compounds are right-headed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 5: WHY THIS MATTERS FOR AI -->
+  <!-- ================================ -->
+  <section class="px-6 py-20" id="sec-ai">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2 text-center">Tokenization Impact</h2>
+      <p class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Why This Matters for AI</p>
+      <p class="text-slate-400 text-center max-w-lg mx-auto mb-12 text-sm">English is already close to BPE&rsquo;s sweet spot. Morph-aware tokenization yields only minor savings.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <!-- BPE -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-ai-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">BPE Tokenization</h3>
+          <p class="font-mono text-sm text-slate-400 mb-3">"The runners were quickly misunderstanding"</p>
+          <div class="flex flex-wrap">
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">The</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_run</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">ners</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_were</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_quickly</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">_mis</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">under</span>
+            <span class="token-box" style="background:rgba(255,255,255,0.06); color:#94a3b8;">standing</span>
+          </div>
+          <p class="text-right text-xs text-slate-500 mt-3 font-semibold">8 tokens</p>
+        </div>
+
+        <!-- Morph-aware -->
+        <div class="glass rounded-2xl p-6 opacity-0" data-ai-card>
+          <h3 class="text-xs font-bold uppercase tracking-wider accent mb-4">Morph-Aware Tokenization</h3>
+          <p class="font-mono text-sm text-slate-400 mb-3">"The runners were quickly misunderstanding"</p>
+          <div class="flex flex-wrap">
+            <span class="token-box accent-bg-soft accent">The</span>
+            <span class="token-box accent-bg-soft accent">run +PL</span>
+            <span class="token-box accent-bg-soft accent">were</span>
+            <span class="token-box accent-bg-soft accent">quick +ly</span>
+            <span class="token-box accent-bg-soft accent">mis- understand +PROG</span>
+          </div>
+          <p class="text-right text-xs accent mt-3 font-semibold">5 tokens + tags</p>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-8 text-center opacity-0" data-ai-card>
+        <p class="text-5xl font-black accent mb-2">~3%</p>
+        <p class="text-sm text-slate-400">Expected efficiency gain from morph-aware tokenization</p>
+        <p class="text-xs text-slate-500 mt-2">English is the low-end baseline. Its shallow morphology leaves little room for compression.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================ -->
+  <!-- SECTION 6: FOOTER -->
+  <!-- ================================ -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto text-center">
+      <p class="text-xs font-bold tracking-[0.15em] uppercase text-slate-600 mb-4">Explore Other Languages</p>
+      <div class="flex items-center justify-center flex-wrap gap-3 mb-6">
+        <a href="index.html" class="text-xs text-slate-500 hover:text-white transition-colors font-medium">Index</a>
+        <span class="text-slate-700">|</span>
+        <a href="zh.html" class="flex items-center gap-1 text-xs text-slate-500 hover:text-white transition-colors"><span class="nav-dot" style="background:#ef4444;"></span> Mandarin</a>
+        <a href="en.html" class="flex items-center gap-1 text-xs accent font-bold"><span class="nav-dot accent-bg"></span> English</a>
+        <a href="de.html" class="flex items-center gap-1 text-xs text-slate-500 hover:text-white transition-colors"><span class="nav-dot" style="background:#f59e0b;"></span> German</a>
+      </div>
+      <p class="text-xs text-slate-600">&copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).</p>
+    </div>
+  </footer>
+
+  <!-- ================================ -->
+  <!-- GSAP ANIMATIONS -->
+  <!-- ================================ -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* Header */
+    const hTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    hTl.fromTo('#hdr-badge', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, delay: 0.2 })
+       .fromTo('#hdr-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.7 }, '-=0.2')
+       .fromTo('#hdr-typo', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }, '-=0.3')
+       .fromTo('#hdr-meter', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, onComplete: () => { document.getElementById('cx-fill').style.width = '10%'; } }, '-=0.2');
+
+    /* Conveyor parts */
+    gsap.fromTo('[data-part]', { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.18, ease: 'back.out(1.7)',
+      scrollTrigger: { trigger: '#conveyor', start: 'top 75%', once: true }
+    });
+
+    /* Stat callouts */
+    gsap.fromTo('[data-stat]', { opacity: 0, y: 20, scale: 0.95 }, {
+      opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12, ease: 'power2.out',
+      scrollTrigger: { trigger: '[data-stat]', start: 'top 80%', once: true }
+    });
+
+    /* Decomposition steps */
+    function playSteps() {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      gsap.set(['#step-a','#step-b','#step-c'], { opacity: 0, y: 20 });
+      tl.to('#step-a', { opacity: 1, y: 0, duration: 0.6, delay: 0.3 })
+        .to('#step-b', { opacity: 1, y: 0, duration: 0.6 }, '+=0.4')
+        .to('#step-c', { opacity: 1, y: 0, duration: 0.6 }, '+=0.4');
+      return tl;
+    }
+
+    ScrollTrigger.create({
+      trigger: '#sec-decomp', start: 'top 65%', once: true,
+      onEnter: playSteps
+    });
+
+    document.getElementById('replay-btn').addEventListener('click', playSteps);
+
+    /* Tag cards */
+    gsap.fromTo('[data-tag-card]', { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out',
+      scrollTrigger: { trigger: '#sec-tags', start: 'top 70%', once: true }
+    });
+
+    /* AI cards */
+    gsap.fromTo('[data-ai-card]', { opacity: 0, y: 30 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.15, ease: 'power2.out',
+      scrollTrigger: { trigger: '#sec-ai', start: 'top 70%', once: true }
+    });
+
+    /* Engine pipeline nodes - sequential reveal */
+    gsap.fromTo('#en-pipeline [data-engine-node]', { opacity: 0, y: 25 }, {
+      opacity: 1, y: 0, duration: 0.45, stagger: 0.18, ease: 'power2.out',
+      scrollTrigger: { trigger: '#en-pipeline', start: 'top 70%', once: true }
+    });
+
+    /* -ing decision tree */
+    gsap.fromTo('#en-ing-tree [data-engine-node]', { opacity: 0, y: 20 }, {
+      opacity: 1, y: 0, duration: 0.5, stagger: 0.12, ease: 'power2.out',
+      scrollTrigger: { trigger: '#en-ing-tree', start: 'top 75%', once: true }
+    });
+
+    /* Guard logic grid */
+    gsap.fromTo('#guard-grid [data-engine-node]', { opacity: 0, scale: 0.85 }, {
+      opacity: 1, scale: 1, duration: 0.35, stagger: 0.1, ease: 'back.out(1.4)',
+      scrollTrigger: { trigger: '#en-guards', start: 'top 75%', once: true }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "buckets": {
+    "SEEN_PAIR": {
+      "baseline": 7.371592652615422,
+      "morph_tier1": 7.986917686367082,
+      "morph_tier2": 8.008084774255634,
+      "delta_L_tier1_vs_baseline": -0.6153250337516605,
+      "delta_L_tier2_vs_baseline": -0.6364921216402122,
+      "delta_L_tier2_vs_tier1": -0.021167087888551706,
+      "n_sampled": 2000,
+      "n_population": 216602
+    },
+    "HELD_OUT": {
+      "baseline": 7.024372802136645,
+      "morph_tier1": 1.2551524127381615,
+      "morph_tier2": 1.258482745383633,
+      "delta_L_tier1_vs_baseline": 5.769220389398483,
+      "delta_L_tier2_vs_baseline": 5.765890056753012,
+      "delta_L_tier2_vs_tier1": -0.0033303326454714455,
+      "n_sampled": 2000,
+      "n_population": 4747
+    },
+    "NOVEL_ATOM": {
+      "baseline": 6.781650470837695,
+      "morph_tier1": 1.9197147149910991,
+      "morph_tier2": 1.912356388086322,
+      "delta_L_tier1_vs_baseline": 4.861935755846596,
+      "delta_L_tier2_vs_baseline": 4.869294082751373,
+      "delta_L_tier2_vs_tier1": 0.007358326904777224,
+      "n_sampled": 2000,
+      "n_population": 13705
+    }
+  },
+  "sample_size_per_bucket": 2000,
+  "random_seed": 42
+}

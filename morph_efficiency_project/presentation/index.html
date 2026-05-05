@@ -212,9 +212,12 @@
     <h1 class="text-5xl font-bold leading-tight mb-6">
       Morphological Efficiency<br/>in Multilingual Language Models
     </h1>
-    <p class="text-slate-400 text-xl max-w-2xl mb-8">
+    <p class="text-slate-400 text-xl max-w-2xl mb-3">
       Does teaching a model the grammar of its language — before it sees any data —
       reduce how much it needs to learn?
+    </p>
+    <p class="text-slate-500 text-base max-w-2xl mb-8 italic">
+      And if it does — can we predict how much, for any language, from its grammar alone?
     </p>
     <div class="flex flex-wrap gap-3 mb-10">
       <span class="pill" style="background:#1e2d1e;color:#4ade80">Mini experiment — EN / AR / TR complete</span>
@@ -236,8 +239,9 @@
         <p class="text-slate-200 text-lg leading-relaxed">
           A language model given explicit morphological structure at the token level will learn
           more efficiently — reaching the same perplexity with fewer training tokens — than one
-          using standard BPE subword tokenization.
+          using standard BPE subword tokenization. The richer the grammar, the larger the gain.
         </p>
+        <p class="text-slate-500 text-xs mt-3 italic">If the prediction holds, the size of the gain should be a function of measurable grammar features — opening the door to a formula that estimates compute savings from typology alone.</p>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div class="card">
@@ -797,6 +801,43 @@
   </div>
 </section>
 
+<!-- SLIDE 4b — Predictions vs Outcome / Formula Hypothesis -->
+<section class="slide" id="slide-4b">
+  <div class="max-w-6xl w-full">
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">The bigger picture</p>
+    <h2 class="text-3xl font-bold mb-2">Two Questions, Not One</h2>
+    <p class="text-slate-400 mb-6 text-sm">The mini experiment was designed to answer one question — and quietly opened a second.</p>
+
+    <div class="grid grid-cols-2 gap-5 mb-5 fade-in">
+      <div class="card" style="border-color:#3d3d3d">
+        <p class="text-xs uppercase tracking-wider font-semibold mb-2" style="color:#4ade80">Question 1 — answered</p>
+        <p class="text-slate-200 text-base mb-2">Does grammar-aware tokenization make a measurable difference?</p>
+        <p class="text-slate-400 text-sm"><span class="font-semibold text-slate-200">Yes.</span> The effect is real, it is language-specific, and the ordering matches the prediction. The hypothesis is supported.</p>
+      </div>
+      <div class="card" style="border-color:#7a1a16">
+        <p class="text-xs uppercase tracking-wider font-semibold mb-2" style="color:#e63329">Question 2 — opened</p>
+        <p class="text-slate-200 text-base mb-2">Can we <em>predict</em> the size of the gain from a language's grammar alone?</p>
+        <p class="text-slate-400 text-sm">If yes, there is a formula — a function of bundle count, regularity, and a few other structural factors — that maps any grammar to its expected efficiency gain.</p>
+      </div>
+    </div>
+
+    <div class="card fade-in">
+      <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Predicted ordering vs measured outcome</p>
+      <table>
+        <thead><tr><th>Language</th><th>Bundles</th><th>Type</th><th>Predicted rank</th><th>Measured PPL gain</th><th>Match?</th></tr></thead>
+        <tbody>
+          <tr><td>English</td><td>23</td><td>Analytic</td><td>weakest</td><td>~1%</td><td style="color:#4ade80">✓</td></tr>
+          <tr><td>Arabic</td><td>270</td><td>Templatic</td><td>middle</td><td>14%</td><td style="color:#4ade80">✓</td></tr>
+          <tr><td>Turkish</td><td>63</td><td>Agglutinative</td><td>strongest</td><td>57%</td><td style="color:#4ade80">✓</td></tr>
+        </tbody>
+      </table>
+      <p class="text-slate-400 text-xs mt-3">The ranking is exact — but the magnitudes are not proportional to bundle count alone. Turkish has fewer bundles than Arabic, yet a far larger gain. <span class="text-slate-200">That asymmetry is the clue.</span> Bundle count is one factor; <em>regularity</em> (clean agglutinative stacking vs noisy templatic morphology) appears to be another. A real formula needs at least both.</p>
+    </div>
+
+    <p class="text-slate-500 text-xs mt-4 text-center italic">If such a formula exists, it would let us estimate the training-cost benefit of grammar-aware tokenization for any language — before spending a single GPU-hour.</p>
+  </div>
+</section>
+
 <!-- SLIDE 5 — Full Experiment: Setup -->
 <section class="slide" id="slide-5">
   <div class="max-w-6xl w-full">
@@ -873,19 +914,14 @@
         <p class="text-slate-300 text-sm mb-2">Both models converged at roughly the same rate. The learning curves run nearly parallel — the grammar hint did not give English a meaningful head start, consistent with the mini experiment result.</p>
         <p class="text-slate-500 text-xs">This is expected for English. The language is simple enough that standard tokenization already captures most of the structure.</p>
       </div>
-      <div class="card">
-        <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 3 — How much meaning per token?</p>
-        <div class="flex justify-around mb-2">
-          <div class="text-center">
-            <div class="stat-num" style="color:#394195">1.0×</div>
-            <div class="stat-label">Standard model</div>
-          </div>
-          <div class="text-center">
-            <div class="stat-num" style="color:#a74d79">4.91×</div>
-            <div class="stat-label">Grammar-aware model</div>
-          </div>
+      <div class="card" style="border-color:#7a1a16;background:linear-gradient(135deg,#1a0a0a,#141414);">
+        <p class="text-xs uppercase tracking-wider mb-1" style="color:#e63329">Metric 3 — Information density per token</p>
+        <p class="text-slate-400 text-xs mb-2">The headline number — and the one the vocabulary cap cannot distort.</p>
+        <div class="text-center my-3">
+          <div style="font-size:5.5rem;font-weight:800;line-height:0.9;color:#e63329;letter-spacing:-0.04em;">4.91×</div>
+          <div class="text-slate-300 text-sm mt-2">more meaning per token than the standard tokenizer</div>
         </div>
-        <p class="text-slate-500 text-xs">Each token in the grammar-aware model carries nearly 5 times more grammatical information. Instead of a raw word fragment, each token encodes the word's root plus its grammatical role.</p>
+        <p class="text-slate-500 text-xs">Each grammar-aware token encodes a root plus a full grammatical bundle — versus a raw byte-pair fragment with no structural signal. This holds regardless of perplexity, regardless of unknown rate, regardless of vocabulary cap.</p>
       </div>
       <div class="card">
         <p class="text-xs text-slate-500 uppercase tracking-wider mb-2">Metric 4 — Did it learn grammar correctly?</p>
@@ -965,6 +1001,58 @@
         <p class="text-slate-300 text-sm">AR and TR baseline models trained to completion (76,293 steps each). Evaluation queued but credits ran out before results were confirmed. AR/TR morph training never started.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- SLIDE 9a — Next Step: 9-Engine Expansion -->
+<section class="slide" id="slide-next">
+  <div class="max-w-6xl w-full">
+    <p class="text-xs text-red-400 uppercase tracking-wider font-semibold mb-1">What's next</p>
+    <h2 class="text-3xl font-bold mb-2">From 3 Languages to 9 — Hunting the Formula</h2>
+    <p class="text-slate-400 mb-6 text-sm">Three points define a line. To find the function that maps grammar to efficiency, we need more languages — spanning the full morphological spectrum.</p>
+
+    <div class="card mb-4 fade-in">
+      <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Already built — 9 grammar engines, 5,079 tests passing</p>
+      <div class="grid grid-cols-3 gap-3 text-sm">
+        <div style="border-left:3px solid #6b6b6b;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Isolating</p>
+          <p class="text-slate-500 text-xs">Mandarin — control</p>
+        </div>
+        <div style="border-left:3px solid #394195;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Analytic</p>
+          <p class="text-slate-500 text-xs">English</p>
+        </div>
+        <div style="border-left:3px solid #769bb9;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Fusional</p>
+          <p class="text-slate-500 text-xs">Spanish, German</p>
+        </div>
+        <div style="border-left:3px solid #df3e29;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Agglutinative</p>
+          <p class="text-slate-500 text-xs">Turkish, Hungarian</p>
+        </div>
+        <div style="border-left:3px solid #59a150;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Templatic</p>
+          <p class="text-slate-500 text-xs">Arabic</p>
+        </div>
+        <div style="border-left:3px solid #a74d79;padding-left:0.7rem;">
+          <p class="text-slate-200 font-semibold">Outliers</p>
+          <p class="text-slate-500 text-xs">Swahili (classificatory), Basque (polypersonal)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 fade-in">
+      <div class="card">
+        <p class="text-xs text-red-400 uppercase tracking-wider mb-2">Phase 3 — the next experiment</p>
+        <p class="text-slate-300 text-sm">18 mini models — 9 baseline + 9 grammar-aware — same architecture, same budget, only the grammar engine changes. 9 data points across the morphological spectrum, ready to fit a curve.</p>
+      </div>
+      <div class="card" style="border-color:#7a1a16">
+        <p class="text-xs uppercase tracking-wider mb-2" style="color:#e63329">The goal beyond the data</p>
+        <p class="text-slate-300 text-sm">Find the function: <code style="background:#1a1a1a;padding:2px 6px;border-radius:4px;">gain = f(bundles, regularity, ...)</code>. If it exists, any language's expected efficiency gain becomes predictable — before training begins. That is the contribution this project is reaching for.</p>
+      </div>
+    </div>
+
+    <p class="text-slate-500 text-xs mt-4 text-center italic">The infrastructure exists. The engines exist. The tests pass. The next experiment is ready to run.</p>
   </div>
 </section>
 
