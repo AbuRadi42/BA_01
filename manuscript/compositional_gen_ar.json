@@ -1,0 +1,255 @@
+{
+  "train_words": 200000,
+  "test_words": 235054,
+  "unique_train_pairs": 17804,
+  "unique_train_roots": 12070,
+  "unique_train_templates": 27,
+  "test_bucket_counts": {
+    "SEEN_PAIR": 216602,
+    "HELD_OUT": 4747,
+    "NOVEL_ATOM": 13705
+  },
+  "top_10_roots_by_frequency": [
+    [
+      "في",
+      7727
+    ],
+    [
+      "من",
+      5992
+    ],
+    [
+      "على",
+      2671
+    ],
+    [
+      "إلى",
+      2031
+    ],
+    [
+      "عيم",
+      1475
+    ],
+    [
+      "تي",
+      1336
+    ],
+    [
+      "علم",
+      1323
+    ],
+    [
+      "دول",
+      1224
+    ],
+    [
+      "جمع",
+      1161
+    ],
+    [
+      "عدد",
+      1146
+    ]
+  ],
+  "top_10_templates_by_frequency": [
+    [
+      "VERB_TRILATERAL_BARE",
+      58022
+    ],
+    [
+      "VERB_AUGMENTED",
+      29339
+    ],
+    [
+      "CLOSED_CLASS",
+      28892
+    ],
+    [
+      "NOM_DERIVED",
+      19268
+    ],
+    [
+      "VERB_TRILATERAL_UNKNOWN",
+      17583
+    ],
+    [
+      "NOUN_DIPTOTE",
+      7280
+    ],
+    [
+      "VERB_WEAK_MITHAL",
+      7171
+    ],
+    [
+      "VERB_DOUBLED",
+      5510
+    ],
+    [
+      "VERB_AUGMENTED_VIII",
+      5383
+    ],
+    [
+      "VERB_AUGMENTED_V_VI",
+      4619
+    ]
+  ],
+  "bucket_examples": {
+    "SEEN_PAIR": [
+      {
+        "word": "بقي",
+        "root": "بقي",
+        "template": "VERB_TRILATERAL_BARE"
+      },
+      {
+        "word": "في",
+        "root": "في",
+        "template": "CLOSED_CLASS"
+      },
+      {
+        "word": "منصب",
+        "root": "نصب",
+        "template": "NOM_DERIVED"
+      },
+      {
+        "word": "قيادة",
+        "root": "قود",
+        "template": "VERB_TRILATERAL_BARE"
+      },
+      {
+        "word": "الجيش",
+        "root": "جيش",
+        "template": "VERB_TRILATERAL_BARE"
+      },
+      {
+        "word": "العربي",
+        "root": "عرب",
+        "template": "VERB_AUGMENTED"
+      },
+      {
+        "word": "الأردني",
+        "root": "ردن",
+        "template": "VERB_AUGMENTED_IV"
+      },
+      {
+        "word": "حتى",
+        "root": "حتى",
+        "template": "CLOSED_CLASS"
+      },
+      {
+        "word": "2",
+        "root": "2",
+        "template": "NOUN_DIPTOTE"
+      },
+      {
+        "word": "مارس",
+        "root": "ارس",
+        "template": "NOM_DERIVED"
+      }
+    ],
+    "HELD_OUT": [
+      {
+        "word": "أعفاه",
+        "root": "عفو",
+        "template": "BROKEN_PLURAL_AF3AL"
+      },
+      {
+        "word": "الأحرار",
+        "root": "حرر",
+        "template": "BROKEN_PLURAL_AF3AL"
+      },
+      {
+        "word": "الأحرار",
+        "root": "حرر",
+        "template": "BROKEN_PLURAL_AF3AL"
+      },
+      {
+        "word": "معفى",
+        "root": "عفو",
+        "template": "NOM_DERIVED"
+      },
+      {
+        "word": "توفيت",
+        "root": "وفي",
+        "template": "MASDAR_FORM_II"
+      },
+      {
+        "word": "توفيت",
+        "root": "وفي",
+        "template": "MASDAR_FORM_II"
+      },
+      {
+        "word": "يفسره",
+        "root": "فسر",
+        "template": "VERB_AUGMENTED"
+      },
+      {
+        "word": "إصراره",
+        "root": "ءصر",
+        "template": "VERB_TRILATERAL_UNKNOWN"
+      },
+      {
+        "word": "وإضعاف",
+        "root": "ضعف",
+        "template": "MASDAR_FORM_IV"
+      },
+      {
+        "word": "لانكشير",
+        "root": "كشر",
+        "template": "VERB_AUGMENTED_VII"
+      }
+    ],
+    "NOVEL_ATOM": [
+      {
+        "word": "تحسنها",
+        "root": "تحسنها",
+        "template": "VERB_TRILATERAL_UNKNOWN"
+      },
+      {
+        "word": "1956,",
+        "root": "1956,",
+        "template": "NOUN_DIPTOTE"
+      },
+      {
+        "word": "الفرسان،",
+        "root": "فرسن",
+        "template": "VERB_AUGMENTED"
+      },
+      {
+        "word": "تأبينه",
+        "root": "تءبينه",
+        "template": "VERB_TRILATERAL_UNKNOWN"
+      },
+      {
+        "word": "فوربز",
+        "root": "ربز",
+        "template": "VERB_TRILATERAL_BARE"
+      },
+      {
+        "word": "2005,",
+        "root": "2005,",
+        "template": "NOUN_DIPTOTE"
+      },
+      {
+        "word": "دهس",
+        "root": "دهس",
+        "template": "VERB_TRILATERAL_BARE"
+      },
+      {
+        "word": "بسوء",
+        "root": "بسء",
+        "template": "VERB_AUGMENTED"
+      },
+      {
+        "word": "لخسارة",
+        "root": "لخسار",
+        "template": "VERB_AUGMENTED"
+      },
+      {
+        "word": "(بالصينية",
+        "root": "بلص",
+        "template": "VERB_TRILATERAL_UNKNOWN"
+      }
+    ]
+  },
+  "note_loss_attribution": "Per-model loss attribution is a follow-up pass that reloads each trained Arabic checkpoint (baseline and morph at each rung) and scores only tokens belonging to each bucket. This script records bucket definitions and example words; the model-loading pass will overwrite this field with per-bucket, per-model loss figures."
+}

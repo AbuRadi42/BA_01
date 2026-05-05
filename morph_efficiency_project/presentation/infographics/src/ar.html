@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arabic Morphology &mdash; Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            arabic: ['Noto Sans Arabic', 'sans-serif'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#8b5cf6',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .ar-text {
+      font-family: 'Noto Sans Arabic', sans-serif;
+      direction: rtl;
+      unicode-bidi: bidi-override;
+    }
+    .ar-inline {
+      font-family: 'Noto Sans Arabic', sans-serif;
+      direction: rtl;
+    }
+    .section-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd);
+      border-radius: 1px; margin: 0 auto;
+    }
+    .morpheme-badge {
+      display: inline-block; padding: 4px 10px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; margin: 2px;
+    }
+    .glow-violet { box-shadow: 0 0 30px rgba(139,92,246,0.3); }
+    .stat-callout {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 28px 24px; text-align: center;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes pulse-glow { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.6)} }
+    @keyframes orbit { 0%{transform:rotate(0deg) translateX(110px) rotate(0deg)} 100%{transform:rotate(360deg) translateX(110px) rotate(-360deg)} }
+    @keyframes orbit2 { 0%{transform:rotate(120deg) translateX(130px) rotate(-120deg)} 100%{transform:rotate(480deg) translateX(130px) rotate(-480deg)} }
+    @keyframes orbit3 { 0%{transform:rotate(240deg) translateX(150px) rotate(-240deg)} 100%{transform:rotate(600deg) translateX(150px) rotate(-600deg)} }
+    @keyframes draw-line { 0%{stroke-dashoffset:300} 100%{stroke-dashoffset:0} }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .star-pulse { animation: pulse-glow 3s ease-in-out infinite; }
+    .orbit-1 { animation: orbit 12s linear infinite; }
+    .orbit-2 { animation: orbit2 15s linear infinite; }
+    .orbit-3 { animation: orbit3 18s linear infinite; }
+    .constellation-line { stroke-dasharray: 300; animation: draw-line 2s ease forwards; }
+    .tag-grid-cell {
+      width: 6px; height: 6px; border-radius: 1px; display: inline-block;
+      background: rgba(139,92,246,0.25); transition: all 0.3s ease;
+    }
+    .tag-grid-cell.active { background: #8b5cf6; box-shadow: 0 0 4px rgba(139,92,246,0.5); }
+    .decomp-step {
+      background: linear-gradient(135deg, rgba(139,92,246,0.06) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(139,92,246,0.15); border-radius: 16px; padding: 24px;
+    }
+    .token-box {
+      display: inline-block; padding: 4px 8px; border-radius: 6px; margin: 2px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    }
+
+    /* === Inside the Engine === */
+    .engine-node {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.18);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .engine-node-accent {
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.35);
+      color: #a78bfa;
+    }
+    .engine-arrow-down {
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+      margin: 4px 0; color: rgba(139,92,246,0.4); font-size: 0.85rem; line-height: 1;
+    }
+    .engine-arrow-down .arrow-line {
+      width: 1px; height: 14px; background: rgba(139,92,246,0.25);
+    }
+    .engine-branch {
+      border-left: 2px solid rgba(139,92,246,0.15);
+      padding-left: 16px; margin-left: 12px; margin-top: 6px;
+    }
+    .engine-branch-item {
+      position: relative; padding: 5px 0; font-size: 0.72rem; color: #94a3b8;
+    }
+    .engine-branch-item::before {
+      content: ''; position: absolute; left: -16px; top: 14px;
+      width: 12px; height: 1px; background: rgba(139,92,246,0.2);
+    }
+    .glass {
+      background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+    }
+    .accent { color: #a78bfa; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    /* WHILE loop circular */
+    .loop-ring {
+      border: 2px dashed rgba(139,92,246,0.3);
+      border-radius: 50%; position: relative;
+    }
+    .loop-step {
+      position: absolute; background: rgba(139,92,246,0.1);
+      border: 1px solid rgba(139,92,246,0.25); border-radius: 8px;
+      padding: 6px 10px; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
+      color: #c4b5fd; white-space: nowrap;
+    }
+    @keyframes spin-slow { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    .loop-spinner { animation: spin-slow 20s linear infinite; }
+    .form-card {
+      background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.15);
+      border-radius: 10px; padding: 10px 14px; transition: all 0.3s ease;
+    }
+    .form-card:hover { border-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.1); }
+    .weak-root-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px;
+      background: rgba(139,92,246,0.04); border: 1px solid rgba(139,92,246,0.1);
+      font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ======================================== -->
+  <!-- SECTION 1: HEADER -->
+  <!-- ======================================== -->
+  <header class="relative pt-16 pb-12 md:pt-24 md:pb-16 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
+           style="background: radial-gradient(ellipse at center, rgba(139,92,246,0.2) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a href="index.html" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-violet-400 mb-6 hover:text-violet-300 transition-colors">&larr; All Languages</a>
+      <h1 id="header-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.08] mb-4 opacity-0">
+        <span class="ar-inline text-violet-300" dir="rtl" style="font-size:0.85em;">&#x0627;&#x0644;&#x0639;&#x0631;&#x0628;&#x064A;&#x0629;</span>
+        <span class="text-slate-500 mx-3">&mdash;</span>
+        Arabic
+      </h1>
+      <div class="flex items-center justify-center gap-3 mb-6 opacity-0" id="header-badges">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Templatic</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background: rgba(251,191,36,0.15); color: #fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex items-center justify-center gap-4 opacity-0" id="header-meter">
+        <span class="text-sm text-slate-400">Complexity</span>
+        <div class="w-48 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
+          <div class="h-full rounded-full" style="background: linear-gradient(90deg, #8b5cf6, #a78bfa); width: 65%;"></div>
+        </div>
+        <span class="text-sm font-mono text-violet-300">~270 bundles</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2: HOW ARABIC BUILDS WORDS -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="how-it-works">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-16">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">How Arabic Builds Words</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm md:text-base">
+          Arabic uses a <strong class="text-violet-300">root-and-pattern</strong> system unlike anything on the isolating&ndash;agglutinative spectrum. Three consonant &ldquo;stars&rdquo; form a semantic constellation, and different vowel patterns weave between them to produce entirely different words.
+        </p>
+      </div>
+
+      <!-- Root Constellation Visualization -->
+      <div class="relative mx-auto mb-20" style="max-width: 700px;">
+        <div class="text-center mb-8">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-2">The Root Constellation</p>
+          <p class="text-sm text-slate-400">Three consonants. Infinite possibilities.</p>
+        </div>
+
+        <!-- SVG constellation -->
+        <div class="relative mx-auto" style="width: 360px; height: 360px;">
+          <svg viewBox="0 0 360 360" class="absolute inset-0 w-full h-full" style="z-index:1;">
+            <!-- constellation lines -->
+            <line x1="180" y1="60" x2="80" y2="280" stroke="rgba(139,92,246,0.3)" stroke-width="1.5" class="constellation-line" />
+            <line x1="80" y1="280" x2="280" y2="280" stroke="rgba(139,92,246,0.3)" stroke-width="1.5" class="constellation-line" style="animation-delay:0.5s" />
+            <line x1="280" y1="280" x2="180" y2="60" stroke="rgba(139,92,246,0.3)" stroke-width="1.5" class="constellation-line" style="animation-delay:1s" />
+          </svg>
+
+          <!-- Root consonant stars -->
+          <div class="absolute flex items-center justify-center star-pulse" style="top:30px;left:50%;transform:translateX(-50%);width:70px;height:70px;border-radius:50%;background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;">
+            <span class="ar-inline text-3xl text-violet-300 font-bold" dir="rtl">&#x0643;</span>
+          </div>
+          <div class="absolute flex items-center justify-center star-pulse" style="bottom:40px;left:30px;width:70px;height:70px;border-radius:50%;background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;animation-delay:1s;">
+            <span class="ar-inline text-3xl text-violet-300 font-bold" dir="rtl">&#x062A;</span>
+          </div>
+          <div class="absolute flex items-center justify-center star-pulse" style="bottom:40px;right:30px;width:70px;height:70px;border-radius:50%;background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;animation-delay:2s;">
+            <span class="ar-inline text-3xl text-violet-300 font-bold" dir="rtl">&#x0628;</span>
+          </div>
+
+          <!-- Center label -->
+          <div class="absolute flex flex-col items-center justify-center" style="top:50%;left:50%;transform:translate(-50%,-50%);">
+            <span class="font-mono text-sm text-violet-400">k - t - b</span>
+            <span class="text-xs text-slate-500 mt-1">&ldquo;writing&rdquo;</span>
+          </div>
+
+          <!-- Orbiting proclitics -->
+          <div class="absolute orbit-1" style="top:50%;left:50%;width:0;height:0;">
+            <span class="absolute morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;transform:translate(-50%,-50%);white-space:nowrap;" dir="rtl"><span class="ar-inline">&#x0648;&#x064E;</span> wa</span>
+          </div>
+          <div class="absolute orbit-2" style="top:50%;left:50%;width:0;height:0;">
+            <span class="absolute morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;transform:translate(-50%,-50%);white-space:nowrap;" dir="rtl"><span class="ar-inline">&#x0628;&#x0650;</span> bi</span>
+          </div>
+          <div class="absolute orbit-3" style="top:50%;left:50%;width:0;height:0;">
+            <span class="absolute morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;transform:translate(-50%,-50%);white-space:nowrap;" dir="rtl"><span class="ar-inline">&#x0627;&#x0644;</span> al</span>
+          </div>
+        </div>
+
+        <!-- Derived words from the root -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-10" id="derived-words">
+          <div class="text-center p-3 rounded-xl opacity-0" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);" data-derived>
+            <p class="ar-inline text-xl text-violet-200 mb-1" dir="rtl">&#x0643;&#x064E;&#x062A;&#x064E;&#x0628;&#x064E;</p>
+            <p class="font-mono text-[10px] text-violet-400">kataba</p>
+            <p class="text-[10px] text-slate-500">he wrote</p>
+          </div>
+          <div class="text-center p-3 rounded-xl opacity-0" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);" data-derived>
+            <p class="ar-inline text-xl text-violet-200 mb-1" dir="rtl">&#x0643;&#x0650;&#x062A;&#x064E;&#x0627;&#x0628;</p>
+            <p class="font-mono text-[10px] text-violet-400">kitab</p>
+            <p class="text-[10px] text-slate-500">book</p>
+          </div>
+          <div class="text-center p-3 rounded-xl opacity-0" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);" data-derived>
+            <p class="ar-inline text-xl text-violet-200 mb-1" dir="rtl">&#x0643;&#x064E;&#x0627;&#x062A;&#x0650;&#x0628;</p>
+            <p class="font-mono text-[10px] text-violet-400">kaatib</p>
+            <p class="text-[10px] text-slate-500">writer</p>
+          </div>
+          <div class="text-center p-3 rounded-xl opacity-0" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);" data-derived>
+            <p class="ar-inline text-xl text-violet-200 mb-1" dir="rtl">&#x0645;&#x064E;&#x0643;&#x0652;&#x062A;&#x064F;&#x0648;&#x0628;</p>
+            <p class="font-mono text-[10px] text-violet-400">maktub</p>
+            <p class="text-[10px] text-slate-500">written</p>
+          </div>
+          <div class="text-center p-3 rounded-xl opacity-0" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);" data-derived>
+            <p class="ar-inline text-xl text-violet-200 mb-1" dir="rtl">&#x0645;&#x064E;&#x0643;&#x0652;&#x062A;&#x064E;&#x0628;&#x064E;&#x0629;</p>
+            <p class="font-mono text-[10px] text-violet-400">maktaba</p>
+            <p class="text-[10px] text-slate-500">library</p>
+          </div>
+        </div>
+
+        <!-- Clitic wrapping demo -->
+        <div class="mt-12 text-center">
+          <p class="text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 mb-4">Proclitics Orbit the Core</p>
+          <div class="inline-block p-6 rounded-2xl" style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);">
+            <div dir="rtl" class="ar-inline text-3xl md:text-4xl text-white mb-3 tracking-wide">
+              &#x0648;&#x064E;&#x0628;&#x0650;&#x0627;&#x0644;&#x0652;&#x0643;&#x0650;&#x062A;&#x064E;&#x0627;&#x0628;&#x0650;
+            </div>
+            <p class="font-mono text-sm text-violet-300 mb-2">wa-bi-al-kitab-i</p>
+            <div class="flex flex-wrap justify-center gap-1 mt-3">
+              <span class="morpheme-badge" style="background:rgba(251,191,36,0.2);color:#fde68a;">wa = and</span>
+              <span class="morpheme-badge" style="background:rgba(52,211,153,0.2);color:#6ee7b7;">bi = with</span>
+              <span class="morpheme-badge" style="background:rgba(96,165,250,0.2);color:#93c5fd;">al = the</span>
+              <span class="morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;">kitab = book</span>
+              <span class="morpheme-badge" style="background:rgba(244,114,182,0.2);color:#f9a8d4;">-i = gen.</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-3">&ldquo;and with the book&rdquo; &mdash; five morphemes, one orthographic word</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pattern templates -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+        <div class="rounded-2xl p-6" style="background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.1);">
+          <h3 class="text-sm font-bold text-violet-300 mb-4">Verb Forms (Awzaan)</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">I</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0641;&#x064E;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">fa'ala &mdash; base trilateral</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">II</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0641;&#x064E;&#x0639;&#x0651;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">fa''ala &mdash; intensive/causative</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">III</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0641;&#x064E;&#x0627;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">faa'ala &mdash; reciprocal</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">IV</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0623;&#x064E;&#x0641;&#x0652;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">af'ala &mdash; causative</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">V</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x062A;&#x064E;&#x0641;&#x064E;&#x0639;&#x0651;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">tafa''ala &mdash; reflexive of II</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">VII</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0627;&#x0650;&#x0646;&#x0652;&#x0641;&#x064E;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">infa'ala &mdash; passive/reflexive</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">VIII</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0627;&#x0650;&#x0641;&#x0652;&#x062A;&#x064E;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">ifta'ala &mdash; middle voice</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-500 w-12">X</span>
+              <span class="ar-inline text-sm text-slate-300" dir="rtl">&#x0627;&#x0650;&#x0633;&#x0652;&#x062A;&#x064E;&#x0641;&#x0652;&#x0639;&#x064E;&#x0644;&#x064E;</span>
+              <span class="text-xs text-slate-500 flex-1">istaf'ala &mdash; requestative</span>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-2xl p-6" style="background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.1);">
+          <h3 class="text-sm font-bold text-violet-300 mb-4">Broken Plurals (Non-Concatenative)</h3>
+          <p class="text-xs text-slate-400 mb-4">Unlike agglutinative languages, Arabic forms plurals by <em>rearranging the vowel pattern</em> around the same root consonants:</p>
+          <div class="space-y-3">
+            <div class="flex items-center gap-4">
+              <div class="text-center">
+                <span class="ar-inline text-lg text-slate-300" dir="rtl">&#x0643;&#x0650;&#x062A;&#x064E;&#x0627;&#x0628;</span>
+                <p class="text-[10px] text-slate-500">kitaab (book)</p>
+              </div>
+              <span class="text-violet-400">&rarr;</span>
+              <div class="text-center">
+                <span class="ar-inline text-lg text-violet-300" dir="rtl">&#x0643;&#x064F;&#x062A;&#x064F;&#x0628;</span>
+                <p class="text-[10px] text-slate-500">kutub (books)</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="text-center">
+                <span class="ar-inline text-lg text-slate-300" dir="rtl">&#x0642;&#x064E;&#x0644;&#x064E;&#x0645;</span>
+                <p class="text-[10px] text-slate-500">qalam (pen)</p>
+              </div>
+              <span class="text-violet-400">&rarr;</span>
+              <div class="text-center">
+                <span class="ar-inline text-lg text-violet-300" dir="rtl">&#x0623;&#x064E;&#x0642;&#x0652;&#x0644;&#x064E;&#x0627;&#x0645;</span>
+                <p class="text-[10px] text-slate-500">aqlaam (pens)</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="text-center">
+                <span class="ar-inline text-lg text-slate-300" dir="rtl">&#x0631;&#x064E;&#x062C;&#x064F;&#x0644;</span>
+                <p class="text-[10px] text-slate-500">rajul (man)</p>
+              </div>
+              <span class="text-violet-400">&rarr;</span>
+              <div class="text-center">
+                <span class="ar-inline text-lg text-violet-300" dir="rtl">&#x0631;&#x0650;&#x062C;&#x064E;&#x0627;&#x0644;</span>
+                <p class="text-[10px] text-slate-500">rijaal (men)</p>
+              </div>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-600 mt-4">No suffix was added. The internal vowel melody changed. This is non-concatenative morphology.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 2.5: INSIDE THE ENGINE -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="inside-engine">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-4xl font-bold text-white text-center mb-4">Inside the Engine</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        The Arabic engine is the most complex at <strong class="text-violet-300">1,900+ lines</strong>. Root-and-pattern morphology requires a pipeline unlike any language on the isolating&ndash;agglutinative spectrum.
+      </p>
+
+      <!-- ── 1. Pipeline Flowchart ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="ar-pipeline">
+        <h3 class="text-lg font-bold text-white mb-6 text-center">Analysis Pipeline</h3>
+        <div class="flex flex-col items-center gap-0">
+
+          <!-- Input -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-xs" id="ar-pipe-0" style="opacity:0;">
+            Input word
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Loanword -->
+          <div class="engine-node text-center w-full max-w-md" id="ar-pipe-1" style="opacity:0;">
+            <span class="accent font-semibold">Loanword check</span> <span class="text-slate-500">(77 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return <span class="text-violet-400">NOM + origin=FOREIGN</span></div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Closed-class -->
+          <div class="engine-node text-center w-full max-w-md" id="ar-pipe-2" style="opacity:0;">
+            <span class="accent font-semibold">Closed-class lookup</span> <span class="text-slate-500">(172 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return <span class="text-violet-400">PART + subcat</span></div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Passive voice -->
+          <div class="engine-node text-center w-full max-w-md" id="ar-pipe-3" style="opacity:0;">
+            <span class="accent font-semibold">Passive voice check</span>
+            <div class="text-[11px] text-slate-500 mt-1">If diacritics present, check <span class="ar-inline text-violet-300" dir="rtl">&#x0641;&#x064F;&#x0639;&#x0650;&#x0644;&#x064E;</span> pattern</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Step A: Clitic Stripping -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="ar-pipe-4" style="opacity:0; border: 2px solid rgba(139,92,246,0.2); background: rgba(139,92,246,0.03);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase accent mb-4">Step A: Clitic Stripping</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="rounded-lg p-3" style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.12);">
+                <div class="text-xs font-bold text-violet-300 mb-2">WHILE loop: 35 Proclitics</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>Compound clusters first (<span class="ar-inline text-violet-300" dir="rtl">&#x0648;&#x064E;&#x0628;&#x0650;&#x0627;&#x0644;&#x0640;</span>)</div>
+                  <div>Single diacritical (<span class="ar-inline text-violet-300" dir="rtl">&#x0648;&#x064E;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0641;&#x064E;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0628;&#x0650;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0644;&#x0650;</span>)</div>
+                  <div>Single undiacritical (<span class="ar-inline text-violet-300" dir="rtl">&#x0648;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0641;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0628;</span>, <span class="ar-inline text-violet-300" dir="rtl">&#x0644;</span>)</div>
+                  <div class="text-[10px] text-yellow-500 mt-1">GUARD: stem must keep &ge;3 consonants</div>
+                  <div class="text-[10px] text-yellow-500">GUARD: <span class="ar-inline" dir="rtl">&#x0627;&#x0644;&#x0640;</span> blocks further 1-char strips</div>
+                  <div class="text-emerald-400 mt-1">Match &rarr; tag proclitic, restart loop</div>
+                </div>
+              </div>
+              <div class="rounded-lg p-3" style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.12);">
+                <div class="text-xs font-bold text-violet-300 mb-2">37 Enclitics (ONE match)</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>Longest-first, single match only</div>
+                  <div class="text-[10px] text-yellow-500 mt-1">GUARD: stem &ge;3 consonants (&ge;4 for 1-char)</div>
+                  <div class="text-emerald-400 mt-1">Match &rarr; tag enclitic, break</div>
+                </div>
+                <div class="text-xs font-bold text-violet-300 mt-3 mb-2">Imperfect prefix &amp; Circumfix</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div><span class="ar-inline text-violet-300" dir="rtl">&#x064A;&#x064E;</span> stripping (3MSG marker)</div>
+                  <div><span class="ar-inline text-violet-300" dir="rtl">&#x0644;&#x064E;</span>...<span class="ar-inline text-violet-300" dir="rtl">&#x0646;&#x064E;&#x0651;</span> &rarr; assertion=SWORN</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Step B: Template Matching -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="ar-pipe-5" style="opacity:0; border: 2px solid rgba(139,92,246,0.2); background: rgba(139,92,246,0.03);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase accent mb-4">Step B: Template Matching</div>
+            <div class="text-[11px] text-slate-400 font-mono space-y-1">
+              <div>Extract consonant skeleton &rarr; count &rarr; lookup template index</div>
+              <div>Check Forms X, VIII, VII, IX/XI, IV, V/VI, II, III in priority order</div>
+              <div class="text-[10px] text-yellow-500 mt-1">Form IV vs Elative: check <span class="accent">_ELATIVE_ROOTS</span> (54 entries)</div>
+              <div>Nisba check (<span class="ar-inline text-violet-300" dir="rtl">&#x0640;&#x064A;&#x0651;</span> suffix) &rarr; ADJ + NISBA</div>
+              <div>Default: n=3 &rarr; VERB_TRILATERAL_BARE / NOM_DERIVED</div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Step C: Root Extraction -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="ar-pipe-6" style="opacity:0; border: 2px solid rgba(139,92,246,0.2); background: rgba(139,92,246,0.03);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase accent mb-4">Step C: Root Extraction</div>
+            <div class="text-[11px] text-slate-400 font-mono space-y-1">
+              <div>Skip augment prefix &rarr; extract consonant skeleton</div>
+              <div>Check against <span class="accent">7,142 roots</span></div>
+              <div>Weak root resolution: Ajwaf, Naqis, Mithal, Geminate, Hamzated</div>
+              <div>Quadriliteral: direct 4-consonant lookup</div>
+              <div>Fallback: return raw consonant skeleton</div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Output -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-lg" id="ar-pipe-7" style="opacity:0;">
+            <span class="mono text-sm">TokenInfo(root, pos, tags, clitics, template)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 2. WHILE Loop Visualized ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="ar-while-loop">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">The WHILE Loop: Proclitic Stripping</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The engine strips proclitics in a loop. After each match it <strong class="text-violet-300">restarts</strong>, trying all candidates again on the shortened stem. This is unique to Arabic.
+        </p>
+
+        <div class="max-w-2xl mx-auto space-y-4">
+          <!-- Input word -->
+          <div class="text-center mb-6">
+            <span class="ar-inline text-3xl text-white font-bold" dir="rtl">&#x0648;&#x0628;&#x0627;&#x0644;&#x0645;&#x062F;&#x0631;&#x0633;&#x0629;</span>
+            <p class="font-mono text-sm text-slate-400 mt-1">wbAlmdrsp ("and with the school")</p>
+          </div>
+
+          <!-- Pass 1 -->
+          <div class="rounded-xl p-4" id="ar-loop-1" style="opacity:0; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15);">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Pass 1</span>
+              <span class="text-[11px] text-slate-400">Try compound proclitics (longest-first)</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap font-mono text-sm">
+              <span class="text-slate-500 line-through">"&#x0648;&#x0628;&#x0627;&#x0644;&#x0641;"</span>
+              <span class="text-emerald-400">"&#x0648;&#x0628;&#x0627;&#x0644;" &rarr; MATCH!</span>
+            </div>
+            <div class="mt-2 flex flex-wrap gap-2 text-[11px]">
+              <span class="morpheme-badge" style="background:rgba(139,92,246,0.2); color:#c4b5fd;">conj=W</span>
+              <span class="morpheme-badge" style="background:rgba(139,92,246,0.2); color:#c4b5fd;">prep=B</span>
+              <span class="morpheme-badge" style="background:rgba(139,92,246,0.2); color:#c4b5fd;">def=DEF</span>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-500">Remaining: <span class="font-mono text-white ar-inline" dir="rtl">&#x0645;&#x062F;&#x0631;&#x0633;&#x0629;</span> (madrasa) &mdash; 4 consonants &ge; 3 &check;</div>
+            <div class="text-[11px] text-violet-400 mt-1 font-semibold">&#x21bb; Restart WHILE loop</div>
+          </div>
+
+          <!-- Pass 2 -->
+          <div class="rounded-xl p-4" id="ar-loop-2" style="opacity:0; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15);">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Pass 2</span>
+              <span class="text-[11px] text-slate-400">Try all proclitics again on shortened stem</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap font-mono text-sm">
+              <span class="text-slate-500">No more matches on <span class="ar-inline" dir="rtl">&#x0645;&#x062F;&#x0631;&#x0633;&#x0629;</span></span>
+            </div>
+            <div class="text-[11px] text-emerald-400 mt-2 font-semibold">Exit WHILE &mdash; proceed to enclitics</div>
+          </div>
+
+          <!-- Enclitic check -->
+          <div class="rounded-xl p-4" id="ar-loop-3" style="opacity:0; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15);">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-bold text-orange-400 px-2 py-0.5 rounded" style="background:rgba(251,146,60,0.15);">Enclitics</span>
+              <span class="text-[11px] text-slate-400">Check <span class="ar-inline" dir="rtl">&#x0629;</span> (ta marbuta)</span>
+            </div>
+            <div class="text-[11px] text-slate-500">Not an enclitic &mdash; handled in template matching as FEM marker</div>
+            <div class="text-[11px] text-emerald-400 mt-1 font-semibold">Stem = <span class="font-mono ar-inline text-white" dir="rtl">&#x0645;&#x062F;&#x0631;&#x0633;&#x0629;</span> &rarr; proceed to template matching</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 3. Template Matching Decision Tree ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="ar-template-tree">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Template Matching Decision Tree</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The engine detects verb forms by consonant count and prefix/infix patterns. The Form IV vs Elative ambiguity is the trickiest branch.
+        </p>
+
+        <div class="flex flex-col items-center gap-0" id="ar-tree-nodes">
+          <div class="engine-node engine-node-accent text-center w-full max-w-sm" id="ar-tree-0" style="opacity:0;">
+            Extract consonant skeleton &rarr; count
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full max-w-3xl" id="ar-tree-forms" style="opacity:0;">
+            <!-- Form X -->
+            <div class="form-card">
+              <div class="text-xs font-bold text-violet-300 mb-1">Form X</div>
+              <div class="text-[10px] text-slate-400 font-mono"><span class="ar-inline" dir="rtl">&#x0627;&#x0633;&#x062A;</span>- prefix, &ge;6 consonants</div>
+              <div class="text-[10px] text-slate-500 mt-1">e.g. <span class="ar-inline text-violet-200" dir="rtl">&#x0627;&#x0633;&#x062A;&#x0639;&#x0645;&#x0644;</span></div>
+            </div>
+            <!-- Form VIII -->
+            <div class="form-card">
+              <div class="text-xs font-bold text-violet-300 mb-1">Form VIII</div>
+              <div class="text-[10px] text-slate-400 font-mono"><span class="ar-inline" dir="rtl">&#x0640;&#x062A;&#x0640;</span> infix at pos 2 + 3 assimilation subtypes</div>
+              <div class="text-[10px] text-slate-500 mt-1">e.g. <span class="ar-inline text-violet-200" dir="rtl">&#x0627;&#x0646;&#x062A;&#x0642;&#x0644;</span></div>
+            </div>
+            <!-- Form VII -->
+            <div class="form-card">
+              <div class="text-xs font-bold text-violet-300 mb-1">Form VII</div>
+              <div class="text-[10px] text-slate-400 font-mono"><span class="ar-inline" dir="rtl">&#x0627;&#x0646;</span>- prefix</div>
+              <div class="text-[10px] text-slate-500 mt-1">e.g. <span class="ar-inline text-violet-200" dir="rtl">&#x0627;&#x0646;&#x0643;&#x0633;&#x0631;</span></div>
+            </div>
+            <!-- Form IV vs Elative -->
+            <div class="form-card" style="border-color:rgba(251,191,36,0.3); background:rgba(251,191,36,0.06);">
+              <div class="text-xs font-bold text-yellow-300 mb-1">Form IV vs Elative</div>
+              <div class="text-[10px] text-slate-400 font-mono"><span class="ar-inline" dir="rtl">&#x0623;</span>- prefix &rarr; is root in <span class="text-yellow-400">_ELATIVE_ROOTS</span> (54)?</div>
+              <div class="text-[10px] text-yellow-500 mt-1">YES &rarr; ADJ_ELATIVE &nbsp;|&nbsp; NO &rarr; VERB_IV</div>
+            </div>
+            <!-- Form V/VI -->
+            <div class="form-card">
+              <div class="text-xs font-bold text-violet-300 mb-1">Form V / VI</div>
+              <div class="text-[10px] text-slate-400 font-mono"><span class="ar-inline" dir="rtl">&#x062A;</span>- prefix</div>
+              <div class="text-[10px] text-slate-500 mt-1">e.g. <span class="ar-inline text-violet-200" dir="rtl">&#x062A;&#x0639;&#x0644;&#x0651;&#x0645;</span></div>
+            </div>
+            <!-- Form II -->
+            <div class="form-card">
+              <div class="text-xs font-bold text-violet-300 mb-1">Form II</div>
+              <div class="text-[10px] text-slate-400 font-mono">Shadda on C2</div>
+              <div class="text-[10px] text-slate-500 mt-1">e.g. <span class="ar-inline text-violet-200" dir="rtl">&#x0639;&#x064E;&#x0644;&#x0651;&#x064E;&#x0645;&#x064E;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 4. Weak Root Resolution ── -->
+      <div class="glass p-8 md:p-12" id="ar-weak-roots">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Weak Root Resolution</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          When the consonant skeleton has only 2 consonants, a &ldquo;weak&rdquo; letter (<span class="ar-inline text-violet-300" dir="rtl">&#x0648;</span> or <span class="ar-inline text-violet-300" dir="rtl">&#x064A;</span>) was lost. The engine tries inserting it at each position and checks disambiguation lexicons.
+        </p>
+
+        <div class="space-y-3 max-w-xl mx-auto" id="ar-weak-steps">
+          <div class="weak-root-row" id="ar-weak-0" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-20 shrink-0">skeleton</span>
+            <span class="text-white font-bold">q - l</span>
+            <span class="text-xs text-slate-500">(2 consonants &mdash; one is missing)</span>
+          </div>
+
+          <div class="weak-root-row" id="ar-weak-1" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-20 shrink-0">Ajwaf</span>
+            <span class="text-violet-300 font-bold">q - <span class="text-yellow-300">w</span> - l</span>
+            <span class="text-xs text-slate-500">insert <span class="ar-inline" dir="rtl">&#x0648;</span> between C1-C3 &rarr; check <span class="accent">_AJWAF_FRAME</span></span>
+          </div>
+
+          <div class="weak-root-row" id="ar-weak-2" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-20 shrink-0">or</span>
+            <span class="text-violet-300 font-bold">q - <span class="text-cyan-300">y</span> - l</span>
+            <span class="text-xs text-slate-500">insert <span class="ar-inline" dir="rtl">&#x064A;</span> between C1-C3 &rarr; check <span class="accent">_AJWAF_FRAME</span></span>
+          </div>
+
+          <div class="weak-root-row" id="ar-weak-3" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-20 shrink-0">resolve</span>
+            <span class="text-emerald-400 font-bold">q - w - l &check;</span>
+            <span class="text-xs text-slate-500">&rarr; root <span class="ar-inline text-violet-300" dir="rtl">&#x0642;&#x0648;&#x0644;</span> (say/speak) confirmed by lexicon</span>
+          </div>
+
+          <div class="text-center mt-4" id="ar-weak-4" style="opacity:0;">
+            <p class="text-[11px] text-slate-600">Same process applies to <span class="accent">Naqis</span> (append), <span class="accent">Mithal</span> (prepend), <span class="accent">Geminate</span> (double), and <span class="accent">Hamzated</span> (normalize <span class="ar-inline" dir="rtl">&#x0621;</span>).</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 3: LIVE DECOMPOSITION -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="decomposition">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Live Decomposition</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Watch how the engine peels apart a single Arabic word containing <strong class="text-violet-300">seven morphemes</strong>.
+        </p>
+      </div>
+
+      <!-- The word -->
+      <div class="text-center mb-10">
+        <div class="ar-inline text-4xl md:text-6xl text-white mb-3 tracking-wider" dir="rtl" id="decomp-word">
+          &#x0648;&#x064E;&#x0633;&#x064E;&#x064A;&#x064E;&#x0643;&#x0652;&#x062A;&#x064F;&#x0628;&#x064F;&#x0648;&#x0646;&#x064E;&#x0647;&#x064E;&#x0627;
+        </div>
+        <p class="font-mono text-sm text-violet-300 mb-1">wa-sa-yaktubuna-ha</p>
+        <p class="text-sm text-slate-400">&ldquo;and they will write it (feminine)&rdquo;</p>
+      </div>
+
+      <!-- Step A: Clitic Stripping -->
+      <div class="space-y-6" id="decomp-steps">
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Step A</span>
+            <span class="text-sm font-semibold text-white">Clitic Stripping</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="p-3 rounded-lg" style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="ar-inline text-lg" dir="rtl">&#x0648;&#x064E;</span>
+                <span class="text-xs text-amber-300">wa</span>
+              </div>
+              <span class="text-[10px] text-slate-500">CONJ: &ldquo;and&rdquo;</span>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="ar-inline text-lg" dir="rtl">&#x0633;&#x064E;</span>
+                <span class="text-xs text-emerald-300">sa</span>
+              </div>
+              <span class="text-[10px] text-slate-500">FUT: &ldquo;will&rdquo;</span>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(244,114,182,0.08);border:1px solid rgba(244,114,182,0.2);">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="ar-inline text-lg" dir="rtl">&#x0647;&#x064E;&#x0627;</span>
+                <span class="text-xs text-pink-300">-ha</span>
+              </div>
+              <span class="text-[10px] text-slate-500">ENCL: &ldquo;her/it&rdquo; (3FSG)</span>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="ar-inline text-lg" dir="rtl">&#x0648;&#x0646;&#x064E;</span>
+                <span class="text-xs text-blue-300">-una</span>
+              </div>
+              <span class="text-[10px] text-slate-500">AGR: 3MPL indicative</span>
+            </div>
+          </div>
+          <div class="mt-4 text-center">
+            <span class="text-xs text-slate-500">Remaining stem:</span>
+            <span class="ar-inline text-lg text-violet-200 ml-2" dir="rtl">&#x064A;&#x064E;&#x0643;&#x0652;&#x062A;&#x064F;&#x0628;&#x064F;</span>
+            <span class="font-mono text-xs text-violet-400 ml-1">yaktubu</span>
+          </div>
+        </div>
+
+        <!-- Step B: Template Matching -->
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Step B</span>
+            <span class="text-sm font-semibold text-white">Template Matching</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="p-3 rounded-lg" style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);">
+              <p class="text-xs text-slate-400 mb-1">Pattern match</p>
+              <div class="flex items-center gap-2">
+                <span class="ar-inline text-lg text-violet-300" dir="rtl">&#x064A;&#x064E;&#x0641;&#x0652;&#x0639;&#x064F;&#x0644;&#x064F;</span>
+                <span class="font-mono text-xs text-violet-400">yaf'ulu</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1">Imperfect Form I (3MSG prefix)</p>
+            </div>
+            <div class="p-3 rounded-lg" style="background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);">
+              <p class="text-xs text-slate-400 mb-1">Prefix stripped</p>
+              <div class="flex items-center gap-2">
+                <span class="ar-inline text-lg text-blue-300" dir="rtl">&#x064A;&#x064E;</span>
+                <span class="font-mono text-xs text-blue-400">ya-</span>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1">3M imperfect prefix</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step C: Root Extraction -->
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Step C</span>
+            <span class="text-sm font-semibold text-white">Root Extraction</span>
+          </div>
+          <div class="flex items-center gap-4 flex-wrap">
+            <div class="p-4 rounded-lg glow-violet" style="background:rgba(139,92,246,0.12);border:2px solid #8b5cf6;">
+              <p class="text-xs text-slate-400 mb-1">Extracted Root</p>
+              <div class="flex items-center gap-3">
+                <span class="ar-inline text-3xl text-white font-bold" dir="rtl">&#x0643; &#x062A; &#x0628;</span>
+                <span class="font-mono text-lg text-violet-300">k-t-b</span>
+              </div>
+              <p class="text-sm text-slate-400 mt-1">&ldquo;write&rdquo;</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tag cascade -->
+        <div class="decomp-step opacity-0" data-decomp>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs font-bold text-violet-400 px-2 py-0.5 rounded" style="background:rgba(139,92,246,0.15);">Result</span>
+            <span class="text-sm font-semibold text-white">Complete Tag Set</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;">root=ktb</span>
+            <span class="morpheme-badge" style="background:rgba(96,165,250,0.2);color:#93c5fd;">pos=VERB</span>
+            <span class="morpheme-badge" style="background:rgba(52,211,153,0.2);color:#6ee7b7;">tense=FUT</span>
+            <span class="morpheme-badge" style="background:rgba(251,191,36,0.2);color:#fde68a;">conj=AND</span>
+            <span class="morpheme-badge" style="background:rgba(244,114,182,0.2);color:#f9a8d4;">obj=3FSG</span>
+            <span class="morpheme-badge" style="background:rgba(96,165,250,0.2);color:#93c5fd;">subj=3MPL</span>
+            <span class="morpheme-badge" style="background:rgba(139,92,246,0.2);color:#c4b5fd;">form=I</span>
+            <span class="morpheme-badge" style="background:rgba(52,211,153,0.2);color:#6ee7b7;">aspect=IMPF</span>
+            <span class="morpheme-badge" style="background:rgba(251,191,36,0.2);color:#fde68a;">mood=IND</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-3">9 grammatical tags from a single orthographic word. A BPE tokenizer sees opaque subword chunks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 4: TAG INVENTORY -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="tag-inventory">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">The Tag Inventory</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          <strong class="text-violet-300">~270 unique bundles</strong> &mdash; dominated by verb form &times; weak root types. Each dot represents a distinct morphological bundle the engine can assign.
+        </p>
+      </div>
+
+      <!-- Visual grid -->
+      <div class="rounded-2xl p-8 mb-8" style="background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.1);" id="tag-grid-container">
+        <div class="flex flex-wrap gap-[3px] justify-center" id="tag-grid">
+          <!-- 270 dots rendered by JS -->
+        </div>
+        <div class="mt-6 flex flex-wrap justify-center gap-4 text-[10px]">
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#8b5cf6;"></div><span class="text-slate-400">Verb Forms (138)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#a78bfa;"></div><span class="text-slate-400">Nominal Patterns (62)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#c4b5fd;"></div><span class="text-slate-400">Clitics (42)</span></div>
+          <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-sm" style="background:#7c3aed;"></div><span class="text-slate-400">Weak Roots (28)</span></div>
+        </div>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-violet-300 mb-1">10+</p>
+          <p class="text-xs text-slate-500">Verb Forms (I&ndash;X)</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-violet-300 mb-1">348</p>
+          <p class="text-xs text-slate-500">Templates in Index</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-violet-300 mb-1">172</p>
+          <p class="text-xs text-slate-500">Closed-Class Entries</p>
+        </div>
+        <div class="stat-callout">
+          <p class="text-3xl font-black text-violet-300 mb-1">77</p>
+          <p class="text-xs text-slate-500">Loanword Intercepts</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 5: WHY THIS MATTERS FOR AI -->
+  <!-- ======================================== -->
+  <section class="px-6 py-20 md:py-28" id="ai-impact">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <div class="text-center mb-14">
+        <h2 class="text-2xl md:text-4xl font-bold text-white mb-4">Why This Matters for AI</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+          Arabic&rsquo;s non-concatenative morphology is invisible to BPE. A morph-aware tokenizer exposes the root structure.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <!-- BPE -->
+        <div class="rounded-2xl p-6" style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#ef4444;"></div>
+            <span class="text-sm font-bold text-red-300">BPE Tokenization</span>
+          </div>
+          <div dir="rtl" class="ar-inline text-lg text-slate-300 mb-3">&#x0648;&#x064E;&#x0633;&#x064E;&#x064A;&#x064E;&#x0643;&#x0652;&#x062A;&#x064F;&#x0628;&#x064F;&#x0648;&#x0646;&#x064E;&#x0647;&#x064E;&#x0627;</div>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">&#x0648;&#x0633;&#x064A;</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.10);color:#fca5a5;">&#x0643;&#x062A;&#x0628;</span>
+            <span class="token-box" style="background:rgba(239,68,68,0.15);color:#fca5a5;">&#x0648;&#x0646;&#x0647;&#x0627;</span>
+          </div>
+          <p class="text-xs text-slate-500">3 opaque chunks. Root k-t-b is buried. Future marker, conjunction, and object pronoun are invisible.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-red-400">3</span>
+            <span class="text-xs text-slate-500">tokens, 0 linguistic features exposed</span>
+          </div>
+        </div>
+
+        <!-- Morph-aware -->
+        <div class="rounded-2xl p-6" style="background:rgba(139,92,246,0.04);border:1px solid rgba(139,92,246,0.1);">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2.5 h-2.5 rounded-full" style="background:#8b5cf6;"></div>
+            <span class="text-sm font-bold text-violet-300">Morph-Aware Tokenization</span>
+          </div>
+          <div dir="rtl" class="ar-inline text-lg text-slate-300 mb-3">&#x0648;&#x064E;&#x0633;&#x064E;&#x064A;&#x064E;&#x0643;&#x0652;&#x062A;&#x064F;&#x0628;&#x064F;&#x0648;&#x0646;&#x064E;&#x0647;&#x064E;&#x0627;</div>
+          <div class="flex flex-wrap gap-1 mb-3">
+            <span class="token-box" style="background:rgba(251,191,36,0.15);color:#fde68a;">CONJ.and</span>
+            <span class="token-box" style="background:rgba(52,211,153,0.15);color:#6ee7b7;">FUT</span>
+            <span class="token-box" style="background:rgba(139,92,246,0.15);color:#c4b5fd;">ktb.IMPF.I</span>
+            <span class="token-box" style="background:rgba(96,165,250,0.15);color:#93c5fd;">3MPL</span>
+            <span class="token-box" style="background:rgba(244,114,182,0.15);color:#f9a8d4;">OBJ.3FSG</span>
+          </div>
+          <p class="text-xs text-slate-500">5 meaningful units. Every morpheme is explicit. The root k-t-b connects this to every other &ldquo;writing&rdquo; word.</p>
+          <div class="mt-3 flex items-center gap-2">
+            <span class="text-2xl font-black text-violet-400">9</span>
+            <span class="text-xs text-slate-500">tags recovered from one word</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Improvement metric -->
+      <div class="rounded-2xl p-8 text-center glow-violet" style="background:linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(139,92,246,0.02) 100%);border:1px solid rgba(139,92,246,0.2);">
+        <p class="text-5xl md:text-7xl font-black text-violet-300 mb-2">13.9%</p>
+        <p class="text-sm text-slate-400 mb-1">measured efficiency improvement (mini experiment)</p>
+        <p class="text-xs text-slate-500">Predicted to be higher at scale &mdash; Arabic&rsquo;s non-concatenative patterns create exponentially more unique word forms than BPE can handle efficiently.</p>
+        <div class="mt-6 flex items-center justify-center gap-4">
+          <div class="text-center">
+            <p class="text-lg font-bold text-red-400">BPE</p>
+            <p class="text-xs text-slate-500">Splits roots randomly</p>
+          </div>
+          <div class="text-2xl text-slate-600">vs</div>
+          <div class="text-center">
+            <p class="text-lg font-bold text-violet-400">Morph</p>
+            <p class="text-xs text-slate-500">Preserves root + pattern</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================== -->
+  <!-- SECTION 6: FOOTER -->
+  <!-- ======================================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-center gap-2 mb-6">
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">Templatic</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full" style="background:rgba(251,191,36,0.15);color:#fbbf24;">OUTLIER</span>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4 mb-6 text-xs">
+        <a href="index.html" class="text-slate-500 hover:text-violet-400 transition-colors">Overview</a>
+        <a href="zh.html" class="text-slate-500 hover:text-violet-400 transition-colors">Mandarin</a>
+        <a href="en.html" class="text-slate-500 hover:text-violet-400 transition-colors">English</a>
+        <a href="de.html" class="text-slate-500 hover:text-violet-400 transition-colors">German</a>
+        <a href="es.html" class="text-slate-500 hover:text-violet-400 transition-colors">Spanish</a>
+        <a href="hu.html" class="text-slate-500 hover:text-violet-400 transition-colors">Hungarian</a>
+        <a href="tr.html" class="text-slate-500 hover:text-violet-400 transition-colors">Turkish</a>
+        <a href="ar.html" class="text-violet-400 font-semibold">Arabic</a>
+        <a href="sw.html" class="text-slate-500 hover:text-violet-400 transition-colors">Swahili</a>
+        <a href="eu.html" class="text-slate-500 hover:text-violet-400 transition-colors">Basque</a>
+      </div>
+      <p class="text-xs text-slate-600 text-center">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ======================================== -->
+  <!-- GSAP + Tag Grid -->
+  <!-- ======================================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Header entrance
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .fromTo('#header-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
+      .fromTo('#header-badges', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
+      .fromTo('#header-meter', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+
+    // Derived words stagger
+    gsap.fromTo('[data-derived]',
+      { opacity: 0, y: 20, scale: 0.9 },
+      {
+        opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12,
+        ease: 'back.out(1.7)',
+        scrollTrigger: { trigger: '#derived-words', start: 'top 80%', once: true }
+      }
+    );
+
+    // Decomposition steps
+    gsap.fromTo('[data-decomp]',
+      { opacity: 0, x: -30 },
+      {
+        opacity: 1, x: 0, duration: 0.6, stagger: 0.3,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: '#decomp-steps', start: 'top 70%', once: true }
+      }
+    );
+
+    // --- Inside the Engine: Pipeline ---
+    ScrollTrigger.create({
+      trigger: '#ar-pipeline',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const pTl = gsap.timeline();
+        for (let i = 0; i <= 7; i++) {
+          pTl.fromTo('#ar-pipe-' + i, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i === 0 ? '+=0.1' : '+=0.2');
+        }
+      }
+    });
+
+    // --- Inside the Engine: WHILE loop ---
+    ScrollTrigger.create({
+      trigger: '#ar-while-loop',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const lTl = gsap.timeline();
+        lTl
+          .fromTo('#ar-loop-1', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6 }, '+=0.3')
+          .fromTo('#ar-loop-2', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6 }, '+=0.4')
+          .fromTo('#ar-loop-3', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6 }, '+=0.4');
+      }
+    });
+
+    // --- Inside the Engine: Template tree ---
+    ScrollTrigger.create({
+      trigger: '#ar-template-tree',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const tTl = gsap.timeline();
+        tTl
+          .fromTo('#ar-tree-0', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }, '+=0.2')
+          .fromTo('#ar-tree-forms', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, '+=0.3');
+      }
+    });
+
+    // --- Inside the Engine: Weak roots ---
+    ScrollTrigger.create({
+      trigger: '#ar-weak-roots',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const wTl = gsap.timeline();
+        for (let i = 0; i <= 4; i++) {
+          wTl.fromTo('#ar-weak-' + i, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.45 }, i === 0 ? '+=0.2' : '+=0.3');
+        }
+      }
+    });
+
+    // Tag grid
+    (function() {
+      const grid = document.getElementById('tag-grid');
+      const colors = ['#8b5cf6','#a78bfa','#c4b5fd','#7c3aed'];
+      const counts = [138, 62, 42, 28]; // total = 270
+      let cells = [];
+      counts.forEach((count, ci) => {
+        for (let i = 0; i < count; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'tag-grid-cell';
+          cell.style.background = 'rgba(139,92,246,0.1)';
+          cell.dataset.targetColor = colors[ci];
+          grid.appendChild(cell);
+          cells.push(cell);
+        }
+      });
+
+      ScrollTrigger.create({
+        trigger: '#tag-grid-container',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+          cells.forEach((cell, i) => {
+            setTimeout(() => {
+              cell.style.background = cell.dataset.targetColor;
+              cell.style.boxShadow = '0 0 4px ' + cell.dataset.targetColor + '66';
+            }, i * 8);
+          });
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

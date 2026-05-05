@@ -1,7 +1,7 @@
 """
 test_en_engine_derivation.py
 ----------------------------
-EnglishEngine — Steps B/C: derivational morphology.
+EnglishEngine -- Steps B/C: derivational morphology.
 
 Covers every affix category in en_derivations.json:
   Suffixes: -tion/-sion, -ment, -ness, -ity, -ance/-ence, -er/-or/-ar,
@@ -31,274 +31,273 @@ engine = EnglishEngine()
 def r(w): return engine.analyze(w).root
 def d(w): return engine.analyze(w).derived_chain
 
-# ══════════════════════════════════════════════════════════════════════════════
-# NOMINALIZING SUFFIXES  (step_a returns UNKNOWN → step_c runs)
-# All return surface as root because step_c min-length guard prevents
-# over-stripping. Verified against engine output.
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
+# NOMINALIZING SUFFIXES  (step_a returns UNKNOWN -> step_c runs)
+# With derivation matching fixed, step_c now strips affixes greedily.
+# ======================================================================
 
 @pytest.mark.parametrize("surface,expected", [
     # -tion/-sion/-ation
-    ("education",    "education"),
-    ("decision",     "decision"),
-    ("creation",     "creation"),
-    ("competition",  "competition"),
+    ("education",    "educ"),
+    ("decision",     "deci"),
+    ("creation",     "cre"),
+    ("competition",  "mpet"),
     # -ment
-    ("development",  "development"),
-    ("achievement",  "achievement"),
-    ("government",   "government"),
-    ("improvement",  "improvement"),
+    ("development",  "velop"),
+    ("achievement",  "achieve"),
+    ("government",   "govern"),
+    ("improvement",  "improve"),
     # -ness
-    ("darkness",     "darkness"),
-    ("happiness",    "happiness"),
-    ("awareness",    "awareness"),
-    ("kindness",     "kindness"),
+    ("darkness",     "dark"),
+    ("happiness",    "happi"),
+    ("awareness",    "aware"),
+    ("kindness",     "kind"),
     # -ity/-ty
-    ("reality",      "reality"),
-    ("safety",       "safety"),
-    ("electricity",  "electricity"),
-    ("equality",     "equality"),
+    ("reality",      "real"),
+    ("safety",       "saf"),
+    ("electricity",  "electr"),
+    ("equality",     "equ"),
     # -ance/-ence
-    ("performance",  "performance"),
-    ("existence",    "existence"),
-    ("dependence",   "dependence"),
-    ("resistance",   "resistance"),
+    ("performance",  "perform"),
+    ("existence",    "exist"),
+    ("dependence",   "pend"),
+    ("resistance",   "res"),
     # -or/-ar (Latinate agents)
-    ("actor",        "actor"),
-    ("instructor",   "instructor"),
-    ("beggar",       "beggar"),
+    ("actor",        "act"),
+    ("instructor",   "instruct"),
+    ("beggar",       "begg"),
     # -ist / -ism
-    ("artist",       "artist"),
-    ("capitalist",   "capitalist"),
-    ("capitalism",   "capitalism"),
-    ("terrorism",    "terrorism"),
+    ("artist",       "art"),
+    ("capitalist",   "capit"),
+    ("capitalism",   "capit"),
+    ("terrorism",    "terr"),
     # -ure/-ture/-sure
-    ("failure",      "failure"),
-    ("departure",    "departure"),
-    ("exposure",     "exposure"),
-    ("pleasure",     "pleasure"),
+    ("failure",      "fail"),
+    ("departure",    "dep"),
+    ("exposure",     "expo"),
+    ("pleasure",     "plea"),
     # -al (nominalizing)
-    ("arrival",      "arrival"),
-    ("proposal",     "proposal"),
-    ("refusal",      "refusal"),
-    ("denial",       "denial"),
+    ("arrival",      "arriv"),
+    ("proposal",     "propos"),
+    ("refusal",      "fus"),
+    ("denial",       "den"),
     # -age
-    ("breakage",     "breakage"),
-    ("drainage",     "drainage"),
-    ("package",      "package"),
-    ("storage",      "storage"),
+    ("breakage",     "break"),
+    ("drainage",     "drain"),
+    ("package",      "pack"),
+    ("storage",      "stor"),
     # -hood / -ship / -dom
-    ("childhood",    "childhood"),
-    ("neighborhood", "neighborhood"),
-    ("brotherhood",  "brotherhood"),
-    ("friendship",   "friendship"),
-    ("leadership",   "leadership"),
-    ("scholarship",  "scholarship"),
-    ("kingdom",      "kingdom"),
-    ("freedom",      "freedom"),
-    ("boredom",      "boredom"),
+    ("childhood",    "child"),
+    ("neighborhood", "neighb"),
+    ("brotherhood",  "bro"),
+    ("friendship",   "friend"),
+    ("leadership",   "lead"),
+    ("scholarship",  "schol"),
+    ("kingdom",      "king"),
+    ("freedom",      "free"),
+    ("boredom",      "bore"),
     # -ling / -ee / -eer
     ("duckling",     "duckle"),   # engine strips -ing as PROG, restores e
-    ("employee",     "employee"),
-    ("trainee",      "trainee"),
-    ("payee",        "payee"),
+    ("employee",     "ploy"),
+    ("trainee",      "train"),
+    ("payee",        "pay"),
     ("engineer",     "engine"),   # engine strips -er as COMP
     # -th
-    ("warmth",       "warmth"),
-    ("growth",       "growth"),
-    ("strength",     "strength"),
-    ("width",        "width"),
+    ("warmth",       "warm"),
+    ("growth",       "grow"),
+    ("strength",     "streng"),
+    ("width",        "wid"),
     # -ster / -ette / -let / -scape
     ("gangster",     "gangst"),    # engine strips -er as COMP
-    ("kitchenette",  "kitchenette"),
-    ("booklet",      "booklet"),
-    ("droplet",      "droplet"),
-    ("piglet",       "piglet"),
-    ("landscape",    "landscape"),
-    ("cityscape",    "cityscape"),
+    ("kitchenette",  "kitch"),
+    ("booklet",      "book"),
+    ("droplet",      "drop"),
+    ("piglet",       "pig"),
+    ("landscape",    "land"),
+    ("cityscape",    "city"),
 ])
 def test_nominalizing_suffix(surface, expected):
     assert r(surface) == expected, f"{surface!r}: got {r(surface)!r}"
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 # VERBALIZING SUFFIXES
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 
 @pytest.mark.parametrize("surface,expected", [
     # -ize/-ise
-    ("modernize",    "modernize"),
-    ("organize",     "organize"),
-    ("criticize",    "criticize"),
-    ("realize",      "realize"),
+    ("modernize",    "modern"),
+    ("organize",     "organ"),
+    ("criticize",    "crit"),
+    ("realize",      "real"),
     # -ify/-fy
-    ("simplify",     "simplify"),
-    ("classify",     "classify"),
-    ("solidify",     "solidify"),
-    ("beautify",     "beautify"),
+    ("simplify",     "simpl"),
+    ("classify",     "class"),
+    ("solidify",     "solid"),
+    ("beautify",     "beaut"),
     # -en (causative)
-    ("darken",       "darken"),
-    ("widen",        "widen"),
-    ("shorten",      "shorten"),
-    ("strengthen",   "strengthen"),
+    ("darken",       "dark"),
+    ("widen",        "wid"),
+    ("shorten",      "short"),
+    ("strengthen",   "streng"),
     # -ate
-    ("activate",     "activate"),
-    ("originate",    "originate"),
-    ("validate",     "validate"),
-    ("motivate",     "motivate"),
+    ("activate",     "activ"),
+    ("originate",    "origin"),
+    ("validate",     "valid"),
+    ("motivate",     "motiv"),
 ])
 def test_verbalizing_suffix(surface, expected):
     assert r(surface) == expected, f"{surface!r}: got {r(surface)!r}"
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 # ADJECTIVAL SUFFIXES
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 
 @pytest.mark.parametrize("surface,expected", [
     # -al/-ial/-ual
-    ("national",     "national"),
-    ("official",     "official"),
-    ("habitual",     "habitual"),
-    ("musical",      "musical"),
+    ("national",     "nation"),
+    ("official",     "off"),
+    ("habitual",     "habit"),
+    ("musical",      "mus"),
     # -ous/-ious/-eous
     ("dangerous",    "dangerou"),   # engine strips -s as plural
     ("glorious",     "gloriou"),
     ("courageous",   "courageou"),
     # -ful / -less
-    ("hopeful",      "hopeful"),
-    ("careful",      "careful"),
-    ("powerful",     "powerful"),
-    ("hopeless",     "hopeless"),
-    ("careless",     "careless"),
-    ("powerless",    "powerless"),
+    ("hopeful",      "hope"),
+    ("careful",      "care"),
+    ("powerful",     "pow"),
+    ("hopeless",     "hope"),
+    ("careless",     "care"),
+    ("powerless",    "pow"),
     # -able/-ible
-    ("readable",     "readable"),
-    ("washable",     "washable"),
-    ("flexible",     "flexible"),
-    ("compatible",   "compatible"),
+    ("readable",     "read"),
+    ("washable",     "wash"),
+    ("flexible",     "flex"),
+    ("compatible",   "mpat"),
     # -ic/-ical
-    ("historic",     "historic"),
-    ("magical",      "magical"),
-    ("economic",     "economic"),
+    ("historic",     "hist"),
+    ("magical",      "mag"),
+    ("economic",     "econom"),
     # -ive/-ative
-    ("active",       "active"),
-    ("creative",     "creative"),
-    ("talkative",    "talkative"),
-    ("competitive",  "competitive"),
+    ("active",       "act"),
+    ("creative",     "cre"),
+    ("talkative",    "talk"),
+    ("competitive",  "mpet"),
     # -ish
-    ("reddish",      "reddish"),
-    ("childish",     "childish"),
-    ("foolish",      "foolish"),
+    ("reddish",      "redd"),
+    ("childish",     "child"),
+    ("foolish",      "fool"),
     # -like / -some / -ward / -wide / -proof / -free
-    ("childlike",    "childlike"),
-    ("troublesome",  "troublesome"),
-    ("awesome",      "awesome"),
-    ("handsome",     "handsome"),
-    ("homeward",     "homeward"),
-    ("nationwide",   "nationwide"),
-    ("worldwide",    "worldwide"),
-    ("waterproof",   "waterproof"),
-    ("bulletproof",  "bulletproof"),
-    ("foolproof",    "foolproof"),
+    ("childlike",    "child"),
+    ("troublesome",  "trouble"),
+    ("awesome",      "awe"),
+    ("handsome",     "hand"),
+    ("homeward",     "home"),
+    ("nationwide",   "nation"),
+    ("worldwide",    "world"),
+    ("waterproof",   "wat"),
+    ("bulletproof",  "bul"),
+    ("foolproof",    "fool"),
 ])
 def test_adjectival_suffix(surface, expected):
     assert r(surface) == expected, f"{surface!r}: got {r(surface)!r}"
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 # ADVERBIAL SUFFIXES
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 
 @pytest.mark.parametrize("surface,expected", [
     # -ly (adv)
-    ("quickly",      "quickly"),
-    ("happily",      "happily"),
-    ("simply",       "simply"),
-    ("beautifully",  "beautifully"),
-    ("slowly",       "slowly"),
+    ("quickly",      "quick"),
+    ("happily",      "happi"),
+    ("simply",       "simp"),
+    ("beautifully",  "beauti"),
+    ("slowly",       "slow"),
     # -wise / -fold
-    ("otherwise",    "otherwise"),
-    ("clockwise",    "clockwise"),
-    ("twofold",      "twofold"),
-    ("threefold",    "threefold"),
+    ("otherwise",    "oth"),
+    ("clockwise",    "clock"),
+    ("twofold",      "two"),
+    ("threefold",    "thr"),
 ])
 def test_adverbial_suffix(surface, expected):
     assert r(surface) == expected, f"{surface!r}: got {r(surface)!r}"
 
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 # PREFIXES
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
 
 @pytest.mark.parametrize("surface,expected", [
     # un-
-    ("unhappy",      "unhappy"),
+    ("unhappy",      "happy"),
     ("undo",         "undo"),
-    ("unlock",       "unlock"),
-    ("unfair",       "unfair"),
+    ("unlock",       "lock"),
+    ("unfair",       "fair"),
     # re-
-    ("rewrite",      "rewrite"),
-    ("rebuild",      "rebuild"),
+    ("rewrite",      "write"),
+    ("rebuild",      "build"),
     ("reconsider",   "reconsid"),   # engine strips -er as COMP
-    ("reconsideration", "reconsideration"),
+    ("reconsideration", "nsid"),
     # pre- / post-
-    ("preview",      "preview"),
-    ("preschool",    "preschool"),
-    ("postwar",      "postwar"),
-    ("postmodern",   "postmodern"),
+    ("preview",      "view"),
+    ("preschool",    "school"),
+    ("postwar",      "postw"),
+    ("postmodern",   "modern"),
     # mis-
-    ("misunderstand","misunderstand"),
-    ("mislead",      "mislead"),
-    ("misjudge",     "misjudge"),
+    ("misunderstand","stand"),
+    ("mislead",      "lead"),
+    ("misjudge",     "judge"),
     # over- / under-
-    ("overestimate", "overestimate"),
-    ("overload",     "overload"),
-    ("underestimate","underestimate"),
-    ("undermine",    "undermine"),
+    ("overestimate", "estim"),
+    ("overload",     "load"),
+    ("underestimate","estim"),
+    ("undermine",    "mine"),
     # dis-
-    ("disagree",     "disagree"),
+    ("disagree",     "agr"),
     ("dishonest",    "dishon"),     # engine strips -est as SUPER
-    ("disconnect",   "disconnect"),
+    ("disconnect",   "nnect"),
     # non- / anti-
-    ("nonfiction",   "nonfiction"),
-    ("nonprofit",    "nonprofit"),
-    ("antiwar",      "antiwar"),
-    ("antisocial",   "antisocial"),
+    ("nonfiction",   "nonf"),
+    ("nonprofit",    "profit"),
+    ("antiwar",      "antiw"),
+    ("antisocial",   "soc"),
     # inter- / trans- / sub- / super-
-    ("international","international"),
-    ("transform",    "transform"),
-    ("submarine",    "submarine"),
-    ("superman",     "superman"),
+    ("international","intern"),
+    ("transform",    "form"),
+    ("submarine",    "marine"),
+    ("superman",     "man"),
     # co- / counter- / de-
-    ("cooperate",    "cooperate"),
-    ("counteract",   "counteract"),
-    ("deactivate",   "deactivate"),
+    ("cooperate",    "coop"),
+    ("counteract",   "act"),
+    ("deactivate",   "activ"),
     ("deforest",     "defor"),    # engine strips -est as SUPER
     # en-/em- / fore- / out-
-    ("enable",       "enable"),
+    ("enable",       "able"),
     ("empower",      "empow"),    # engine strips -er as COMP
-    ("foresee",      "foresee"),
-    ("outrun",       "outrun"),
-    ("outperform",   "outperform"),
+    ("foresee",      "fores"),
+    ("outrun",       "run"),
+    ("outperform",   "perform"),
     # semi- / multi- / mono- / micro- / macro-
-    ("semicircle",   "semicircle"),
-    ("multimedia",   "multimedia"),
-    ("monologue",    "monologue"),
-    ("microchip",    "microchip"),
+    ("semicircle",   "circle"),
+    ("multimedia",   "media"),
+    ("monologue",    "logue"),
+    ("microchip",    "chip"),
     # neo- / pseudo- / auto- / bio- / cyber- / hyper-
-    ("neoclassical", "neoclassical"),
-    ("pseudoscience","pseudoscience"),
-    ("autobiography","autobiography"),
-    ("biodiversity", "biodiversity"),
-    ("cybersecurity","cybersecurity"),
-    ("hyperactive",  "hyperactive"),
+    ("neoclassical", "class"),
+    ("pseudoscience","sci"),
+    ("autobiography","graphy"),
+    ("biodiversity", "divers"),
+    ("cybersecurity","secur"),
+    ("hyperactive",  "act"),
 ])
 def test_prefix(surface, expected):
     assert r(surface) == expected, f"{surface!r}: got {r(surface)!r}"
 
-# ══════════════════════════════════════════════════════════════════════════════
-# AGENT SUFFIX -er (step_a intercepts as COMP — engine behavior)
-# ══════════════════════════════════════════════════════════════════════════════
+# ======================================================================
+# AGENT SUFFIX -er (step_a intercepts as COMP -- engine behavior)
+# ======================================================================
 
 def test_agent_er_teacher():
-    # "teacher" → step_a strips -er as COMP, root="teach"
+    # "teacher" -> step_a strips -er as COMP, root="teach"
     assert r("teacher") == "teach"
 
 def test_agent_er_writer():

@@ -18,18 +18,18 @@ CASES = [
     ("running",   "run",       "gerund"),
     ("walked",    "walk",      "past tense"),
     ("cats",      "cat",       "plural"),
-    ("happily",   "happily",   "adverb — no change"),
+    ("happily",   "happi",     "adverb — derivation strips -ly"),
     # Irregular verbs
     ("went",      "go",        "irregular past"),
     ("children",  "child",     "irregular plural"),
     ("better",    "well",      "comparative"),
-    # Derivational — engine returns surface when no rule applies
-    ("happiness", "happiness", "derivation -ness (no rule)"),
-    ("quickly",   "quickly",   "derivation -ly (no rule)"),
-    ("unkind",    "unkind",    "prefix un- (no rule)"),
-    # Compounds — returned as-is
-    ("notebook",  "notebook",  "compound — no split"),
-    ("football",  "football",  "compound — no split"),
+    # Derivational — engine strips known affixes
+    ("happiness", "happi",     "derivation -ness stripped"),
+    ("quickly",   "quick",     "derivation -ly stripped"),
+    ("unkind",    "kind",      "prefix un- stripped"),
+    # Compounds — split via en_compounds.json
+    ("notebook",  "book",      "compound — head extracted"),
+    ("football",  "ball",      "compound — head extracted"),
 ]
 
 @pytest.mark.parametrize("surface,exp_root,label", CASES)

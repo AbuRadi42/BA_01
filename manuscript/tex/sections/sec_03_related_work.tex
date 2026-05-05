@@ -1,0 +1,37 @@
+\section{Related Work}
+\label{sec:related}
+
+The framework developed in \S\ref{sec:framework} sits at a junction of five literatures. Each contributes an input or a constraint; none individually asks the question the paper poses.
+
+\subsection{Morphological typology}
+\label{sec:related-typology}
+
+The typological classification of languages by the way they organise grammatical information on word forms is a century-old project. \citet{greenberg1960} introduced a family of quantitative indices, most prominently the \textbf{Index of Synthesis} (morphemes per word, corpus-averaged) and the \textbf{Index of Agglutination} (ratio of agglutinative to fusional morpheme boundaries), that placed analytic, agglutinative, and fusional languages on continuous rather than categorical scales. \citet{comrie1989} and \citet{haspelmath2010} extend the typological framework with richer treatments of inflection, derivation, and the interaction of morphological and syntactic systems. These works describe how much grammatical information languages encode, and how they encode it. They do not, in general, ask what consequences the encoding has for computational models of the language.
+
+The Structural Synthesis Ceiling introduced in \S\ref{sec:framework-ssc} stands explicitly in this lineage. It differs from Greenberg's Index of Synthesis in being a structural upper bound rather than a corpus average: the maximum grammatical information a word form can express in principle, rather than the empirical mean of what it does express in a given sample. We need this distinction because the framework's prediction target is the capacity a tokenizer can \emph{pre-encode}, bounded by what the morphology permits rather than by what a particular text realises.
+
+\subsection{Morphology-aware tokenization in NLP}
+\label{sec:related-tokenization}
+
+Byte-pair encoding and its variants \citep{sennrich2016, kudo2018} have become the default tokenization approach in large language modelling because of their simplicity, robustness, and lack of linguistic commitment. This last property is also their limitation: BPE fragments are the outputs of a statistical compression algorithm, and morphemes (the units of grammatical meaning) appear in the resulting vocabulary only coincidentally.
+
+A recurring strand of work in multilingual NLP has attempted to align tokenization more closely with morphology, particularly for agglutinative and templatic languages where BPE's statistical segmentation performs poorly relative to morphological analysis. Representative examples include compositional morphology-aware input representations for Turkish neural machine translation \citep{ataman2018} and evidence that unigram-LM tokenization recovers subword units aligning more closely with morpheme boundaries than BPE across typologically diverse languages \citep{bostrom2020}. These works demonstrate that morphology-aware tokenization can improve intrinsic metrics (perplexity, vocabulary coverage) and some extrinsic tasks for specific languages. Their framing, however, is almost uniformly empirical: \emph{does this tokenizer work better for this language on this task?} The framework of \S\ref{sec:framework} asks a structurally different question, \emph{how much grammatical information does this language permit a tokenizer to pre-encode, and what does that imply for the parameter count a transformer requires?}, and answers it with inputs computable without reference to any training run.
+
+\subsection{Transformer scaling laws}
+\label{sec:related-scaling}
+
+\citet{kaplan2020} characterised the relationship between transformer test loss and parameter count, training tokens, and compute as a set of power laws with specific empirical exponents. \citet{hoffmann2022}, best known for the Chinchilla compute-optimal result, refined the relationship into the form $\mathcal{L}(N, D) = E + A \cdot N^{-\alpha_N} + B \cdot D^{-\alpha_D}$ and identified the compute-optimal token-to-parameter ratio of approximately twenty. More recent work has extended these laws into the capacity-per-parameter regime; \citet{allenzhu2024}, in a study of transformer knowledge-storage ceilings, report a bits-per-parameter saturation coefficient of approximately two across architectures and training configurations. Equation~\ref{eq:Cexplicit} of \S\ref{sec:framework} uses this coefficient as its working value of $\kappa$.
+
+This literature is the source of the quantitative machinery that \S\ref{sec:results} applies to convert observed test-loss reductions into implied parameter rebates. It is also the source of Interpretation~B in \S\ref{sec:results-interpretations}: the scaling laws are fit on predominantly English corpora, and their applicability to morphologically distant languages is an open question. The framework's empirical result, that a single $\alpha$ fails to fit three languages under these laws, is directly germane to that question.
+
+\subsection{Emergence and capability-scale curves}
+\label{sec:related-emergence}
+
+The question of how capabilities appear as transformers scale is actively contested. \citet{wei2022} reported that certain abilities (chain-of-thought reasoning, in particular) emerge sharply at parameter counts above specific thresholds, typically in the $10^{10}$ to $10^{11}$ range for English models. \citet{schaeffer2023} responded that much of what is reported as emergence is a measurement artefact of discontinuous scoring metrics (exact-match, thresholded accuracy); under continuous metrics, capability-vs-scale curves are typically smooth and sigmoidal. The framework of \S\ref{sec:framework} is neutral between these readings. Equation~\ref{eq:curveshift} predicts a left-shift of the capability-vs-scale curve under morphology-aligned tokenization; whether the curve itself is sharp or smooth does not affect the prediction's form.
+
+\subsection{Green AI, linguistic equity, and edge ML}
+\label{sec:related-economics}
+
+A fifth literature frames ML cost as an economic, environmental, and equity concern rather than a purely technical one. \citet{strubell2019} quantified the energy and carbon cost of training large language models; \citet{schwartz2020} proposed Green~AI as a research orientation that treats efficiency as a first-order goal rather than an afterthought. \citet{bender2021}, in the Stochastic Parrots paper, raised concerns about the linguistic scope of the models the field is building, noting that the cost and data requirements of the dominant paradigm systematically disadvantage languages outside the high-resource English-centric mainstream. \citet{ahia2023} quantified the per-language compute gap in multilingual NLP directly.
+
+The framework of \S\ref{sec:framework} contributes to these concerns a specific quantitative channel through which language structure enters cost accounting. Whether morphologically rich languages are \emph{more} expensive to model (the common assumption, derived from lower data availability and higher surface diversity) or \emph{less} expensive (the Interpretation-A reading of \S\ref{sec:results-interpretations}, derived from their higher $\rho \cdot H$) is a question the framework makes tractable. The answer bears directly on how research compute, data collection, and model-sharing agreements should be allocated across the world's languages.

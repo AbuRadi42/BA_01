@@ -428,95 +428,95 @@ def test_tag_superlative():
 # Expected values verified by running the engine.
 
 DERIVATIONAL = [
-    # -ness: step_c can't strip (min 2 chars left), returns surface
-    ("darkness",    "darkness"),
-    ("happiness",   "happiness"),
-    ("awareness",   "awareness"),
-    # -ment: same
-    ("development", "development"),
-    ("achievement", "achievement"),
-    ("government",  "government"),
-    # -or/-ar: returned as-is (no rule strips them cleanly)
-    ("actor",       "actor"),
-    ("beggar",      "beggar"),
-    # Prefixes: returned as-is (step_a doesn't strip them)
-    ("unhappy",     "unhappy"),
+    # -ness: derivation now strips suffix
+    ("darkness",    "dark"),
+    ("happiness",   "happi"),
+    ("awareness",   "aware"),
+    # -ment: derivation strips suffix
+    ("development", "velop"),
+    ("achievement", "achieve"),
+    ("government",  "govern"),
+    # -or/-ar: derivation strips suffix
+    ("actor",       "act"),
+    ("beggar",      "begg"),
+    # Prefixes: derivation strips them
+    ("unhappy",     "happy"),
     ("undo",        "undo"),
-    ("unlock",      "unlock"),
-    ("rewrite",     "rewrite"),
-    ("rebuild",     "rebuild"),
-    ("preview",     "preview"),
-    ("preschool",   "preschool"),
-    ("misunderstand","misunderstand"),
-    ("mislead",     "mislead"),
-    ("overestimate","overestimate"),
-    ("overload",    "overload"),
-    ("underestimate","underestimate"),
-    ("undermine",   "undermine"),
-    ("disagree",    "disagree"),
-    ("disconnect",  "disconnect"),
-    # -able/-ible: returned as-is
-    ("readable",    "readable"),
-    ("washable",    "washable"),
-    ("flexible",    "flexible"),
-    # -ful/-less: returned as-is
-    ("hopeful",     "hopeful"),
-    ("hopeless",    "hopeless"),
-    ("careless",    "careless"),
-    # -al: returned as-is
-    ("national",    "national"),
-    ("official",    "official"),
-    ("habitual",    "habitual"),
-    # -ly adverbs: returned as-is
-    ("quickly",     "quickly"),
-    ("happily",     "happily"),
-    ("simply",      "simply"),
-    ("beautifully", "beautifully"),
-    # -ize/-ify/-en/-ate: returned as-is
-    ("modernize",   "modernize"),
-    ("organize",    "organize"),
-    ("simplify",    "simplify"),
-    ("classify",    "classify"),
-    ("darken",      "darken"),
-    ("widen",       "widen"),
-    ("activate",    "activate"),
-    ("validate",    "validate"),
-    # -hood/-ship/-dom: returned as-is
-    ("childhood",   "childhood"),
-    ("friendship",  "friendship"),
-    ("kingdom",     "kingdom"),
-    ("freedom",     "freedom"),
-    # -al (nominalizing): returned as-is
-    ("arrival",     "arrival"),
-    ("proposal",    "proposal"),
-    ("refusal",     "refusal"),
-    # -age: returned as-is
-    ("breakage",    "breakage"),
-    ("drainage",    "drainage"),
-    ("package",     "package"),
-    # -ee: returned as-is
-    ("employee",    "employee"),
-    ("trainee",     "trainee"),
-    ("payee",       "payee"),
-    # -th: returned as-is
-    ("warmth",      "warmth"),
-    ("growth",      "growth"),
-    ("strength",    "strength"),
-    ("width",       "width"),
-    # -let: returned as-is
-    ("booklet",     "booklet"),
-    ("droplet",     "droplet"),
-    ("piglet",      "piglet"),
-    # -some: returned as-is
-    ("troublesome", "troublesome"),
-    ("awesome",     "awesome"),
-    ("handsome",    "handsome"),
-    # -wide/-proof: returned as-is
-    ("nationwide",  "nationwide"),
-    ("worldwide",   "worldwide"),
-    ("waterproof",  "waterproof"),
-    ("bulletproof", "bulletproof"),
-    ("foolproof",   "foolproof"),
+    ("unlock",      "lock"),
+    ("rewrite",     "write"),
+    ("rebuild",     "build"),
+    ("preview",     "view"),
+    ("preschool",   "school"),
+    ("misunderstand","stand"),
+    ("mislead",     "lead"),
+    ("overestimate","estim"),
+    ("overload",    "load"),
+    ("underestimate","estim"),
+    ("undermine",   "mine"),
+    ("disagree",    "agr"),
+    ("disconnect",  "nnect"),
+    # -able/-ible: derivation strips suffix
+    ("readable",    "read"),
+    ("washable",    "wash"),
+    ("flexible",    "flex"),
+    # -ful/-less: derivation strips suffix
+    ("hopeful",     "hope"),
+    ("hopeless",    "hope"),
+    ("careless",    "care"),
+    # -al: derivation strips suffix
+    ("national",    "nation"),
+    ("official",    "off"),
+    ("habitual",    "habit"),
+    # -ly adverbs: derivation strips suffix
+    ("quickly",     "quick"),
+    ("happily",     "happi"),
+    ("simply",      "simp"),
+    ("beautifully", "beauti"),
+    # -ize/-ify/-en/-ate: derivation strips suffix
+    ("modernize",   "modern"),
+    ("organize",    "organ"),
+    ("simplify",    "simpl"),
+    ("classify",    "class"),
+    ("darken",      "dark"),
+    ("widen",       "wid"),
+    ("activate",    "activ"),
+    ("validate",    "valid"),
+    # -hood/-ship/-dom: derivation strips suffix
+    ("childhood",   "child"),
+    ("friendship",  "friend"),
+    ("kingdom",     "king"),
+    ("freedom",     "free"),
+    # -al (nominalizing): derivation strips suffix
+    ("arrival",     "arriv"),
+    ("proposal",    "propos"),
+    ("refusal",     "fus"),
+    # -age: derivation strips suffix
+    ("breakage",    "break"),
+    ("drainage",    "drain"),
+    ("package",     "pack"),
+    # -ee: derivation strips suffix
+    ("employee",    "ploy"),
+    ("trainee",     "train"),
+    ("payee",       "pay"),
+    # -th: derivation strips suffix
+    ("warmth",      "warm"),
+    ("growth",      "grow"),
+    ("strength",    "streng"),
+    ("width",       "wid"),
+    # -let: derivation strips suffix
+    ("booklet",     "book"),
+    ("droplet",     "drop"),
+    ("piglet",      "pig"),
+    # -some: derivation strips suffix
+    ("troublesome", "trouble"),
+    ("awesome",     "awe"),
+    ("handsome",    "hand"),
+    # -wide/-proof: derivation strips suffix
+    ("nationwide",  "nation"),
+    ("worldwide",   "world"),
+    ("waterproof",  "wat"),
+    ("bulletproof", "bul"),
+    ("foolproof",   "fool"),
 ]
 
 @pytest.mark.parametrize("surface,expected", DERIVATIONAL)

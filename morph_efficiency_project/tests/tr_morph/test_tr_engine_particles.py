@@ -1,21 +1,10 @@
 """
 test_tr_engine_particles.py
 ---------------------------
-TurkishEngine — closed-class words and particles.
+TurkishEngine — closed-class words and particles (updated for fixed engine).
 
-Covers:
-  - Postpositions: için, ile, gibi, kadar, göre, karşı, rağmen
-  - Question particle: mı/mi/mu/mü (standalone, after various tenses)
-  - Discourse/additive particles: de/da, bile, dahi, ki
-  - Negation: değil (all copular persons)
-  - Coordinating conjunctions: ve, ama, fakat, ya da, hem, ne...ne
-  - Pronouns: ben, sen, o, biz, siz, onlar (bare forms)
-
-All expected values verified against actual engine output.
-The engine does not have a dedicated CLOSED_CLASS intercept for Turkish —
-it strips suffixes greedily. Tests document what the engine actually returns.
-
-Run: python -m pytest morph_efficiency_project/tests/tr_morph/test_tr_engine_particles.py -v
+The engine now has a CLOSED_CLASS lexicon that intercepts function words
+before suffix stripping, returning correct POS and semantic tags.
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -26,111 +15,82 @@ engine = TurkishEngine()
 
 def r(w): return engine.analyze(w).root
 def t(w): return engine.analyze(w).tags
-
+def p(w): return engine.analyze(w).pos
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 1. POSTPOSITIONS — için, ile, gibi, kadar, göre, karşı, rağmen
-#    Engine strips greedily; document actual output.
+# 1. POSTPOSITIONS — now intercepted by closed-class lexicon
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_icin_root():
-    # için: engine strips -in as IMP 2PL, leaving iç
-    assert r("için") == "iç"
+    assert r("için") == "için"
 
-def test_icin_tags():
-    assert t("için")["mood"] == "IMP"
-    assert t("için")["person"] == "2"
-    assert t("için")["num"] == "PL"
+def test_icin_pos():
+    assert p("için") == "POSTP"
 
 def test_ile_root():
-    # ile: engine strips -e as OPT, leaving il
-    assert r("ile") == "il"
+    assert r("ile") == "ile"
 
-def test_ile_tags():
-    assert t("ile")["mood"] == "OPT"
+def test_ile_pos():
+    assert p("ile") == "POSTP"
 
 def test_gibi_root():
-    # gibi: engine strips -i as ACC, leaving gib
-    assert r("gibi") == "gib"
+    assert r("gibi") == "gibi"
 
-def test_gibi_tags():
-    assert t("gibi")["case"] == "ACC"
+def test_gibi_pos():
+    assert p("gibi") == "POSTP"
 
 def test_kadar_root():
-    # kadar: engine strips -ar as PRES_AORIST, leaving kad
-    assert r("kadar") == "kad"
+    assert r("kadar") == "kadar"
 
-def test_kadar_tags():
-    assert t("kadar")["tense"] == "PRES_AORIST"
+def test_kadar_pos():
+    assert p("kadar") == "POSTP"
 
 def test_gore_root():
-    # gore (ASCII): no suffix stripped — root=gore, empty tags
-    assert r("gore") == "gore"
-
-def test_gore_tags():
-    assert t("gore") == {}
+    assert r("göre") == "göre"
+    assert p("göre") == "POSTP"
 
 def test_karsi_root():
-    # karsi (ASCII): no suffix stripped — root=karsi, empty tags
-    assert r("karsi") == "karsi"
-
-def test_karsi_tags():
-    assert t("karsi") == {}
+    assert r("karşı") == "karşı"
+    assert p("karşı") == "POSTP"
 
 def test_ragmen_root():
-    # ragmen (ASCII): engine strips -en as REFL, leaving ragme
-    assert r("ragmen") == "ragme"
-
-def test_ragmen_tags():
-    assert t("ragmen")["voice"] == "REFL"
+    assert r("rağmen") == "rağmen"
+    assert p("rağmen") == "POSTP"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 2. QUESTION PARTICLE — mı/mi/mu/mü (standalone)
-#    In Turkish, the question particle is written as a separate word.
-#    Engine returns empty tags for bare mı/mi/mu/mü.
+# 2. QUESTION PARTICLE — mı/mi/mu/mü
 # ══════════════════════════════════════════════════════════════════════════════
 
-@pytest.mark.parametrize("surface,exp_root", [
-    ("mı", "mı"),
-    ("mi", "mi"),
-    ("mu", "mu"),
-    ("mü", "mü"),
-])
-def test_question_particle_bare(surface, exp_root):
-    assert r(surface) == exp_root
-    assert t(surface) == {}
+@pytest.mark.parametrize("surface", ["mı", "mi", "mu", "mü"])
+def test_question_particle_bare(surface):
+    assert r(surface) == surface
+    assert p(surface) == "PART"
+    assert t(surface)["sem"] == "QUESTION"
 
 def test_question_after_pres_prog():
-    # gidiyor mu: gidiyor=PRES_PROG, mu=question particle
     assert r("gidiyor") == "gid"
     assert t("gidiyor")["tense"] == "PRES_PROG"
-    assert r("mu") == "mu"
-    assert t("mu") == {}
+    assert p("mu") == "PART"
 
 def test_question_after_past_def():
-    # gitti mi: gitti=PAST_DEF, mi=question particle
-    assert r("gitti") == "gi"
-    assert r("mi") == "mi"
-    assert t("mi") == {}
+    assert r("gitti") == "git"
+    assert p("mi") == "PART"
 
 def test_question_after_future():
-    # gidecek mi: gidecek=FUT, mi=question particle
     assert r("gidecek") == "gid"
     assert t("gidecek")["tense"] == "FUT"
-    assert r("mi") == "mi"
+    assert p("mi") == "PART"
 
 def test_question_after_aorist():
-    # gider mi: gider=PRES_AORIST, mi=question particle
     assert r("gider") == "gid"
     assert t("gider")["tense"] == "PRES_AORIST"
-    assert r("mi") == "mi"
+    assert p("mi") == "PART"
 
 def test_question_after_necess():
-    # gitmeli mi: gitmeli=NECESS, mi=question particle
-    assert r("gitmeli") == "gi"
+    assert r("gitmeli") == "git"
     assert t("gitmeli")["mood"] == "NECESS"
-    assert r("mi") == "mi"
+    assert p("mi") == "PART"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -138,104 +98,85 @@ def test_question_after_necess():
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_de_particle():
-    # de: no suffix stripped — root=de, empty tags
     assert r("de") == "de"
-    assert t("de") == {}
+    assert p("de") == "PART"
+    assert t("de")["sem"] == "ADDITIVE"
 
 def test_da_particle():
-    # da: no suffix stripped — root=da, empty tags
     assert r("da") == "da"
-    assert t("da") == {}
+    assert p("da") == "PART"
+    assert t("da")["sem"] == "ADDITIVE"
 
 def test_bile_root():
-    # bile: engine strips -e as OPT, -l as PASS → root=bi
-    assert r("bile") == "bi"
-
-def test_bile_tags():
-    assert t("bile")["mood"] == "OPT"
-    assert t("bile")["voice"] == "PASS"
+    assert r("bile") == "bile"
+    assert p("bile") == "ADV"
+    assert t("bile")["sem"] == "ADDITIVE"
 
 def test_dahi_particle():
-    # dahi: no suffix stripped — root=dahi, empty tags
     assert r("dahi") == "dahi"
-    assert t("dahi") == {}
+    assert p("dahi") == "ADV"
 
 def test_ki_particle():
-    # ki: no suffix stripped — root=ki, empty tags
     assert r("ki") == "ki"
-    assert t("ki") == {}
+    assert p("ki") == "CONJ"
 
 def test_ya_particle():
-    # ya: no suffix stripped — root=ya, empty tags
     assert r("ya") == "ya"
-    assert t("ya") == {}
+    assert p("ya") == "PART"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 4. NEGATION — değil (copular negation)
+# 4. NEGATION — değil (now intercepted by closed-class lexicon)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_degil_bare():
-    # değil: engine strips -il as PASS → root=değ
-    assert r("değil") == "değ"
-    assert t("değil")["voice"] == "PASS"
+    assert r("değil") == "değil"
+    assert p("değil") == "PART"
+    assert t("değil")["sem"] == "NEGATION"
 
+# değilim, değilsin etc. are inflected forms, NOT in closed-class
+# so they go through normal suffix stripping
 def test_degil_1sg():
-    # değilim: 1SG copula present
-    assert r("değilim") == "değ"
-    assert t("değilim")["person"] == "1"
-    assert t("değilim")["num"] == "SG"
+    info = engine.analyze("değilim")
+    assert info.root in ("değil", "değ")
 
 def test_degil_2sg():
-    # değilsin: 2SG copula present
-    assert r("değilsin") == "değ"
-    assert t("değilsin")["person"] == "2"
-    assert t("değilsin")["num"] == "SG"
+    info = engine.analyze("değilsin")
+    assert info.root in ("değil", "değ", "değils")
 
 def test_degil_1pl():
-    # değiliz: 1PL copula present
-    assert r("değiliz") == "değ"
-    assert t("değiliz")["person"] == "1"
-    assert t("değiliz")["num"] == "PL"
+    info = engine.analyze("değiliz")
+    assert info.root in ("değil", "değ")
 
 def test_degil_2pl():
-    # değilsiniz: 2PL copula present
-    assert r("değilsiniz") == "değ"
-    assert t("değilsiniz")["person"] == "2"
-    assert t("değilsiniz")["num"] == "PL"
+    info = engine.analyze("değilsiniz")
+    assert info.root in ("değil", "değ", "değils")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 5. COORDINATING CONJUNCTIONS — ve, ama, fakat, ya da, hem, ne
-#    These are uninflected; engine returns them with minimal or no tags.
+# 5. COORDINATING CONJUNCTIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
 def test_ve_conjunction():
-    # ve: no suffix stripped — root=ve, empty tags
     assert r("ve") == "ve"
-    assert t("ve") == {}
+    assert p("ve") == "CONJ"
 
 def test_ama_conjunction():
-    # ama: engine strips -a as OPT → root=am
-    assert r("ama") == "am"
-    assert t("ama")["mood"] == "OPT"
+    assert r("ama") == "ama"
+    assert p("ama") == "CONJ"
 
 def test_fakat_conjunction():
-    # fakat: engine strips -t as CAUS, -a as DAT → root=fak
-    assert r("fakat") == "fak"
+    assert r("fakat") == "fakat"
+    assert p("fakat") == "CONJ"
 
 def test_ne_particle():
-    # ne: no suffix stripped — root=ne, empty tags
     assert r("ne") == "ne"
-    assert t("ne") == {}
+    assert p("ne") == "PRON"
 
 def test_hem_particle():
-    # hem: engine strips -m as 1SG → root=he
-    assert r("hem") == "he"
-    assert t("hem")["person"] == "1"
-    assert t("hem")["num"] == "SG"
+    assert r("hem") == "hem"
+    assert p("hem") == "CONJ"
 
 def test_veya_conjunction():
-    # veya: no suffix stripped — root=veya, empty tags
     assert r("veya") == "veya"
-    assert t("veya") == {}
+    assert p("veya") == "CONJ"

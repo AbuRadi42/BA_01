@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spanish Morphology - Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#f97316',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .accent { color: #f97316; }
+    .accent-bg { background: #f97316; }
+    .accent-border { border-color: #f97316; }
+    .accent-glow { box-shadow: 0 0 30px rgba(249,115,22,0.15); }
+    .glass {
+      background: linear-gradient(135deg, rgba(249,115,22,0.04) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(249,115,22,0.1);
+      border-radius: 16px;
+    }
+    .glass-neutral {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+    }
+    .morph-piece {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .morph-piece:hover { transform: translateY(-2px); }
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .complexity-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .complexity-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f97316, #fb923c);
+    }
+    .section-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #f97316, #fb923c);
+      border-radius: 1px;
+      margin: 0 auto;
+    }
+    /* Conjugation Wheel */
+    .wheel-container {
+      position: relative;
+      width: 420px;
+      height: 420px;
+      margin: 0 auto;
+    }
+    .wheel-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(249,115,22,0.15);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .wheel-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    .ring-item {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+    /* Decomposition step */
+    .decomp-step {
+      transition: all 0.4s ease;
+    }
+    .decomp-arrow {
+      width: 40px;
+      height: 2px;
+      background: rgba(249,115,22,0.3);
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 8px;
+    }
+    .decomp-arrow::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: -4px;
+      border: 5px solid transparent;
+      border-left: 6px solid rgba(249,115,22,0.5);
+    }
+    .tag-grid-item {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      border: 1px solid rgba(249,115,22,0.12);
+      background: rgba(249,115,22,0.04);
+      transition: all 0.3s ease;
+    }
+    .tag-grid-item:hover {
+      border-color: rgba(249,115,22,0.4);
+      background: rgba(249,115,22,0.1);
+      transform: scale(1.05);
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes spin-slow {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(249,115,22,0.1); }
+      50% { box-shadow: 0 0 40px rgba(249,115,22,0.25); }
+    }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+
+    /* === Inside the Engine === */
+    .engine-node {
+      background: rgba(249,115,22,0.06);
+      border: 1px solid rgba(249,115,22,0.18);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      position: relative;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .engine-node.highlight {
+      border-color: rgba(249,115,22,0.6);
+      box-shadow: 0 0 18px rgba(249,115,22,0.12);
+    }
+    .engine-node-accent {
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.35);
+      color: #fb923c;
+    }
+    .engine-arrow-down {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 4px 0;
+      color: rgba(249,115,22,0.4);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    .engine-arrow-down .arrow-line {
+      width: 1px;
+      height: 14px;
+      background: rgba(249,115,22,0.25);
+    }
+    .engine-branch {
+      border-left: 2px solid rgba(249,115,22,0.15);
+      padding-left: 16px;
+      margin-left: 12px;
+      margin-top: 6px;
+    }
+    .engine-branch-item {
+      position: relative;
+      padding: 5px 0;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+    .engine-branch-item::before {
+      content: '';
+      position: absolute;
+      left: -16px;
+      top: 14px;
+      width: 12px;
+      height: 1px;
+      background: rgba(249,115,22,0.2);
+    }
+    .engine-match { color: #22c55e; }
+    .engine-reject { color: #ef4444; opacity: 0.5; }
+    .engine-detail-toggle {
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: rgba(249,115,22,0.7);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(249,115,22,0.15);
+      background: rgba(249,115,22,0.04);
+      transition: all 0.2s ease;
+    }
+    .engine-detail-toggle:hover {
+      border-color: rgba(249,115,22,0.35);
+      background: rgba(249,115,22,0.08);
+    }
+    .engine-detail-toggle .arrow-icon { transition: transform 0.3s ease; }
+    .engine-detail-toggle.open .arrow-icon { transform: rotate(90deg); }
+    .engine-collapsible {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .engine-collapsible.open { max-height: 2000px; }
+    .suffix-table-cell {
+      padding: 6px 10px;
+      border: 1px solid rgba(249,115,22,0.1);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .suffix-table-header {
+      background: rgba(249,115,22,0.08);
+      color: #fb923c;
+      font-weight: 600;
+    }
+    .clitic-layer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.4s ease;
+    }
+    .clitic-layer.active-layer {
+      border-color: rgba(249,115,22,0.4);
+      background: rgba(249,115,22,0.06);
+    }
+    .clitic-peel {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="relative pt-16 pb-14 md:pt-24 md:pb-20 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
+           style="background: radial-gradient(ellipse at center, rgba(249,115,22,0.18) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a href="index.html" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-orange-400/60 mb-6 hover:text-orange-400 transition-colors">&larr; All Languages</a>
+      <p id="h-badge" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-orange-400 mb-4 opacity-0">Regular Fusional</p>
+      <h1 id="h-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05] mb-2 opacity-0">
+        Espa&ntilde;ol
+      </h1>
+      <p id="h-sub" class="text-xl md:text-2xl text-orange-300/70 font-light mb-6 opacity-0">Spanish</p>
+      <p id="h-desc" class="text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8 opacity-0">
+        A Romance language where tense, mood, person, and number fuse into single verb endings &mdash; making each suffix a compressed bundle of grammatical information.
+      </p>
+      <!-- Complexity Meter -->
+      <div id="h-meter" class="max-w-xs mx-auto opacity-0">
+        <div class="flex justify-between text-xs text-slate-500 mb-1">
+          <span>Bundle Complexity</span>
+          <span class="mono accent">~107 bundles</span>
+        </div>
+        <div class="complexity-bar">
+          <div class="complexity-fill" id="complexity-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+          <span>English ~20</span>
+          <span>Max ~200</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== SECTION 2: HOW SPANISH BUILDS WORDS ===================== -->
+  <section class="px-6 py-20 md:py-28" id="how-builds">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">How Spanish Builds Words</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Spanish packs multiple grammatical features into single fused suffixes. A verb ending like <span class="mono accent">-amos</span> simultaneously encodes person, number, tense, and mood.
+      </p>
+
+      <!-- Conjugation Wheel -->
+      <div class="glass p-8 md:p-12 mb-12" id="wheel-section">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">The Conjugation Wheel</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          A verb root sits at the center. Tense/mood orbits around it, and person/number orbits further out. Watch how the suffix snaps into place.
+        </p>
+
+        <div class="wheel-container mx-auto" id="conj-wheel">
+          <!-- Center: root -->
+          <div class="wheel-center">
+            <div id="wheel-root" class="morph-piece text-lg" style="background: rgba(249,115,22,0.2); color: #fb923c; border: 2px solid #f97316; animation: pulse-glow 3s ease-in-out infinite;">
+              habl-
+            </div>
+          </div>
+
+          <!-- Inner ring: Tense/Mood -->
+          <div class="wheel-ring" style="width: 220px; height: 220px;" id="inner-ring">
+            <div class="ring-item mono text-orange-300/70" style="top: 8%; left: 50%;" data-tense>Presente</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 25%; left: 92%;" data-tense>Pret&eacute;rito</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 60%; left: 95%;" data-tense>Imperfecto</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 88%; left: 65%;" data-tense>Futuro</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 88%; left: 35%;" data-tense>Subjuntivo</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 60%; left: 5%;" data-tense>Condicional</div>
+            <div class="ring-item mono text-orange-300/70" style="top: 25%; left: 8%;" data-tense>Imperativo</div>
+          </div>
+
+          <!-- Outer ring: Person/Number -->
+          <div class="wheel-ring" style="width: 380px; height: 380px;" id="outer-ring">
+            <div class="ring-item text-slate-500" style="top: 3%; left: 50%;">1SG <span class="text-slate-600">yo</span></div>
+            <div class="ring-item text-slate-500" style="top: 15%; left: 88%;">2SG <span class="text-slate-600">t&uacute;</span></div>
+            <div class="ring-item text-slate-500" style="top: 45%; left: 98%;">3SG <span class="text-slate-600">&eacute;l</span></div>
+            <div class="ring-item text-slate-500" style="top: 75%; left: 85%;">1PL <span class="text-slate-600">nos.</span></div>
+            <div class="ring-item text-slate-500" style="top: 90%; left: 50%;">2PL <span class="text-slate-600">vos.</span></div>
+            <div class="ring-item text-slate-500" style="top: 75%; left: 15%;">3PL <span class="text-slate-600">ellos</span></div>
+          </div>
+        </div>
+
+        <!-- Result display -->
+        <div class="text-center mt-8" id="wheel-result">
+          <div class="inline-flex items-center gap-1 flex-wrap justify-center">
+            <span class="morph-piece text-lg" style="background: rgba(249,115,22,0.2); color: #fb923c; border: 2px solid #f97316;" id="result-root">habl</span>
+            <span class="text-2xl text-orange-400/30 mx-1">+</span>
+            <span class="morph-piece text-lg" id="result-suffix" style="background: rgba(249,115,22,0.1); color: #f97316; border: 2px dashed rgba(249,115,22,0.4); opacity: 0;">-amos</span>
+            <span class="text-2xl text-orange-400/30 mx-1" id="result-eq" style="opacity: 0;">=</span>
+            <span class="morph-piece text-lg" id="result-word" style="background: rgba(249,115,22,0.25); color: #fff; border: 2px solid #f97316; opacity: 0;">hablamos</span>
+          </div>
+          <div class="mt-3 flex justify-center gap-2 flex-wrap" id="result-tags" style="opacity: 0;">
+            <span class="tag-badge" style="background: rgba(249,115,22,0.15); color: #fb923c;">PRES</span>
+            <span class="tag-badge" style="background: rgba(249,115,22,0.15); color: #fb923c;">IND</span>
+            <span class="tag-badge" style="background: rgba(249,115,22,0.15); color: #fb923c;">1PL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clitic Attachment -->
+      <div class="glass p-8 md:p-10" id="clitic-section">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Clitic Stacking</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Object pronouns fuse onto verb forms, packing even more information into a single word.
+        </p>
+        <div class="flex justify-center items-center gap-2 flex-wrap" id="clitic-demo">
+          <div class="text-center">
+            <div class="morph-piece" style="background: rgba(249,115,22,0.2); color: #fb923c;" id="cl-1">d&iacute;</div>
+            <div class="text-[10px] text-slate-500 mt-1">IMP.2SG</div>
+            <div class="text-[10px] text-slate-600">decir</div>
+          </div>
+          <span class="text-xl text-orange-400/20">+</span>
+          <div class="text-center" id="cl-2" style="opacity: 0;">
+            <div class="morph-piece" style="background: rgba(139,92,246,0.15); color: #a78bfa;">ga</div>
+            <div class="text-[10px] text-slate-500 mt-1">SUBJ.3SG</div>
+          </div>
+          <span class="text-xl text-orange-400/20" id="cl-plus2" style="opacity: 0;">+</span>
+          <div class="text-center" id="cl-3" style="opacity: 0;">
+            <div class="morph-piece" style="background: rgba(59,130,246,0.15); color: #60a5fa;">me</div>
+            <div class="text-[10px] text-slate-500 mt-1">DAT.1SG</div>
+          </div>
+          <span class="text-xl text-orange-400/20" id="cl-plus3" style="opacity: 0;">+</span>
+          <div class="text-center" id="cl-4" style="opacity: 0;">
+            <div class="morph-piece" style="background: rgba(16,185,129,0.15); color: #34d399;">lo</div>
+            <div class="text-[10px] text-slate-500 mt-1">ACC.3SG</div>
+          </div>
+          <span class="text-2xl text-orange-400/30 mx-2" id="cl-eq" style="opacity: 0;">=</span>
+          <div class="text-center" id="cl-result" style="opacity: 0;">
+            <div class="morph-piece text-lg" style="background: rgba(249,115,22,0.25); color: #fff; border: 2px solid #f97316;">d&iacute;gamelo</div>
+            <div class="text-[10px] text-slate-500 mt-1">&ldquo;tell it to me&rdquo;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2.5: INSIDE THE ENGINE ===================== -->
+  <section class="px-6 py-20 md:py-28" id="inside-engine">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Inside the Engine</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        How the Spanish morphological engine processes a word step by step &mdash; from closed-class lookup through inflectional stripping to derivational analysis.
+      </p>
+
+      <!-- ── Pipeline Flowchart ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="es-pipeline">
+        <h3 class="text-lg font-bold text-white mb-6 text-center">Analysis Pipeline</h3>
+        <div class="flex flex-col items-center gap-0">
+
+          <!-- Node: Input -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-xs" id="es-pipe-0" style="opacity:0;">
+            Input word
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Node: Closed-class -->
+          <div class="engine-node text-center w-full max-w-md" id="es-pipe-1" style="opacity:0;">
+            <span class="accent font-semibold">Closed-class lookup</span> <span class="text-slate-500">(~165 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return <span class="text-orange-300">DET / PREP / PRON / CONJ</span></div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Node: Step A -->
+          <div class="engine-node w-full max-w-2xl" id="es-pipe-2" style="opacity:0;">
+            <div class="font-semibold accent mb-2">Step A: Inflectional Stripping</div>
+            <div class="engine-branch">
+              <div class="engine-branch-item">
+                <span class="text-white">Irregular verb table</span> <span class="text-slate-500">(~400 lemmas, ~2500 forms)</span>
+                <div class="text-[11px] text-slate-600 ml-4">Match? &rarr; Return root + tense/mood/person tags</div>
+              </div>
+              <div class="engine-branch-item">
+                <span class="text-white">Regular verb conjugation</span> <span class="text-slate-500">(-ar / -er / -ir)</span>
+                <div class="text-[11px] text-slate-600 ml-4">Try longest suffix first &bull; 14 paradigms &times; 6 persons = 84 patterns</div>
+                <div class="text-[11px] text-slate-600 ml-4">Suffix &rarr; person, num, tense, mood tags &bull; Strip suffix &rarr; stem &rarr; +infinitive ending</div>
+              </div>
+              <div class="engine-branch-item">
+                <span class="text-white">Clitic stripping</span> <span class="text-slate-500">(on infinitives/gerunds/imperatives)</span>
+                <div class="text-[11px] text-slate-600 ml-4">1-3 enclitics: me, te, le, lo, la, nos, os, les, los, las, se</div>
+                <div class="text-[11px] text-slate-600 ml-4">Strip outermost first, stack tags, restore accent if needed</div>
+              </div>
+              <div class="engine-branch-item">
+                <span class="text-white">Noun gender/number</span>
+                <span class="text-slate-500 text-[11px] ml-2">-o/-a (gender) &bull; -s/-es/-ces (plural)</span>
+              </div>
+              <div class="engine-branch-item">
+                <span class="text-white">Adjective agreement</span>
+                <span class="text-slate-500 text-[11px] ml-2">mirrors noun (4-form or 2-form)</span>
+              </div>
+              <div class="engine-branch-item">
+                <span class="text-white">Comparative</span>
+                <span class="text-slate-500 text-[11px] ml-2">mejor, peor, mayor, menor (irregular lookup)</span>
+              </div>
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Node: Step B -->
+          <div class="engine-node text-center w-full max-w-md" id="es-pipe-3" style="opacity:0;">
+            <span class="accent font-semibold">Step B: Derivational</span> <span class="text-slate-500">(~55 rules: suffixes + prefixes)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Node: Step C -->
+          <div class="engine-node text-center w-full max-w-md" id="es-pipe-4" style="opacity:0;">
+            <span class="accent font-semibold">Step C: Iterative deepening</span> <span class="text-slate-500">(max 4 rounds)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Node: Output -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-lg" id="es-pipe-5" style="opacity:0;">
+            <span class="mono text-sm">TokenInfo(root, pos, tags, clitics, derived_chain)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Conjugation Matching Algorithm ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="es-conj-algo">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Suffix Ordering Problem</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Why does the engine try <span class="mono accent">-aron</span> before <span class="mono accent">-o</span>? Because greedy shortest-first matching would misparse every preterite plural. The engine uses <em>longest suffix first</em>.
+        </p>
+
+        <!-- 14 paradigm table toggle -->
+        <div class="text-center mb-6">
+          <button class="engine-detail-toggle" onclick="this.classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+            <span class="arrow-icon">&#9654;</span> Show 14 tense paradigms
+          </button>
+          <div class="engine-collapsible mt-4">
+            <div class="overflow-x-auto">
+              <table class="mx-auto border-collapse">
+                <thead>
+                  <tr>
+                    <th class="suffix-table-cell suffix-table-header">Paradigm</th>
+                    <th class="suffix-table-cell suffix-table-header">1SG</th>
+                    <th class="suffix-table-cell suffix-table-header">2SG</th>
+                    <th class="suffix-table-cell suffix-table-header">3SG</th>
+                    <th class="suffix-table-cell suffix-table-header">1PL</th>
+                    <th class="suffix-table-cell suffix-table-header">2PL</th>
+                    <th class="suffix-table-cell suffix-table-header">3PL</th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-400">
+                  <tr><td class="suffix-table-cell text-orange-300">PRES.IND</td><td class="suffix-table-cell">-o</td><td class="suffix-table-cell">-as</td><td class="suffix-table-cell">-a</td><td class="suffix-table-cell">-amos</td><td class="suffix-table-cell">-&aacute;is</td><td class="suffix-table-cell">-an</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">PRET.IND</td><td class="suffix-table-cell">-&eacute;</td><td class="suffix-table-cell">-aste</td><td class="suffix-table-cell">-&oacute;</td><td class="suffix-table-cell">-amos</td><td class="suffix-table-cell">-asteis</td><td class="suffix-table-cell text-white font-bold" style="background:rgba(249,115,22,0.15);">-aron</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">IMPERF.IND</td><td class="suffix-table-cell">-aba</td><td class="suffix-table-cell">-abas</td><td class="suffix-table-cell">-aba</td><td class="suffix-table-cell">-&aacute;bamos</td><td class="suffix-table-cell">-abais</td><td class="suffix-table-cell">-aban</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">FUT</td><td class="suffix-table-cell">-ar&eacute;</td><td class="suffix-table-cell">-ar&aacute;s</td><td class="suffix-table-cell">-ar&aacute;</td><td class="suffix-table-cell">-aremos</td><td class="suffix-table-cell">-ar&eacute;is</td><td class="suffix-table-cell">-ar&aacute;n</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">COND</td><td class="suffix-table-cell">-ar&iacute;a</td><td class="suffix-table-cell">-ar&iacute;as</td><td class="suffix-table-cell">-ar&iacute;a</td><td class="suffix-table-cell">-ar&iacute;amos</td><td class="suffix-table-cell">-ar&iacute;ais</td><td class="suffix-table-cell">-ar&iacute;an</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">PRES.SUBJ</td><td class="suffix-table-cell">-e</td><td class="suffix-table-cell">-es</td><td class="suffix-table-cell">-e</td><td class="suffix-table-cell">-emos</td><td class="suffix-table-cell">-&eacute;is</td><td class="suffix-table-cell">-en</td></tr>
+                  <tr><td class="suffix-table-cell text-orange-300">IMPERF.SUBJ</td><td class="suffix-table-cell">-ara</td><td class="suffix-table-cell">-aras</td><td class="suffix-table-cell">-ara</td><td class="suffix-table-cell">-&aacute;ramos</td><td class="suffix-table-cell">-arais</td><td class="suffix-table-cell">-aran</td></tr>
+                </tbody>
+              </table>
+              <p class="text-[10px] text-slate-600 text-center mt-2">Showing 7 of 14 paradigms for -ar verbs. -er/-ir have parallel tables.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Three examples -->
+        <div class="space-y-4 max-w-xl mx-auto" id="es-suffix-examples">
+          <!-- Example 1 -->
+          <div class="flex items-center gap-3 flex-wrap" id="es-ex-1" style="opacity:0;">
+            <div class="mono text-sm text-white font-bold px-3 py-2 rounded-lg" style="background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.25);">hablaron</div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">try</span> <span class="mono accent font-semibold">-aron</span> <span class="text-slate-500">(PAST.3PL)</span> <span class="engine-match">&#10003;</span>
+            </div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">stem</span> <span class="mono text-white">"habl"</span> <span class="text-slate-600">&rarr;</span> <span class="mono accent">"hablar"</span>
+            </div>
+          </div>
+          <!-- Example 2 -->
+          <div class="flex items-center gap-3 flex-wrap" id="es-ex-2" style="opacity:0;">
+            <div class="mono text-sm text-white font-bold px-3 py-2 rounded-lg" style="background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.25);">habl&oacute;</div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">try</span> <span class="mono accent font-semibold">-&oacute;</span> <span class="text-slate-500">(PAST.3SG)</span> <span class="engine-match">&#10003;</span>
+            </div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">stem</span> <span class="mono text-white">"habl"</span> <span class="text-slate-600">&rarr;</span> <span class="mono accent">"hablar"</span>
+            </div>
+          </div>
+          <!-- Example 3 -->
+          <div class="flex items-center gap-3 flex-wrap" id="es-ex-3" style="opacity:0;">
+            <div class="mono text-sm text-white font-bold px-3 py-2 rounded-lg" style="background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.25);">hablo</div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">try</span> <span class="mono accent font-semibold">-o</span> <span class="text-slate-500">(PRES.1SG)</span> <span class="engine-match">&#10003;</span>
+            </div>
+            <span class="text-slate-600">&rarr;</span>
+            <div class="text-xs">
+              <span class="text-slate-500">stem</span> <span class="mono text-white">"habl"</span> <span class="text-slate-600">&rarr;</span> <span class="mono accent">"hablar"</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-600 text-center mt-6 max-w-md mx-auto">
+          If <span class="mono">-o</span> were tried first, <span class="mono text-white">hablaron</span> would wrongly parse as stem <span class="mono text-red-400">"hablar&oacute;n"</span> &mdash; a non-existent root.
+        </p>
+      </div>
+
+      <!-- ── Clitic Stacking Diagram ── -->
+      <div class="glass p-8 md:p-12" id="es-clitic-algo">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Clitic Unstacking</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The engine peels clitics from right to left, reconstructing the verb form underneath. Each layer reveals a pronoun clitic and its grammatical role.
+        </p>
+
+        <div class="space-y-3 max-w-lg mx-auto" id="es-clitic-layers">
+          <!-- Layer 0: surface -->
+          <div class="clitic-layer" id="es-cl-0" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">surface</span>
+            <span class="mono text-white font-bold text-sm">d&iacute;gaselo</span>
+          </div>
+          <!-- Layer 1: strip -lo -->
+          <div class="clitic-layer" id="es-cl-1" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">strip -lo</span>
+            <span class="mono text-white text-sm">d&iacute;gase</span>
+            <span class="text-slate-600">+</span>
+            <span class="clitic-peel" style="background:rgba(16,185,129,0.15); color:#34d399;">-lo</span>
+            <span class="tag-badge" style="background:rgba(16,185,129,0.12); color:#34d399;">ACC.3SG</span>
+          </div>
+          <!-- Layer 2: strip -se -->
+          <div class="clitic-layer" id="es-cl-2" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">strip -se</span>
+            <span class="mono text-white text-sm">d&iacute;ga</span>
+            <span class="text-slate-600">+</span>
+            <span class="clitic-peel" style="background:rgba(59,130,246,0.15); color:#60a5fa;">-se</span>
+            <span class="tag-badge" style="background:rgba(59,130,246,0.12); color:#60a5fa;">DAT.3SG</span>
+          </div>
+          <!-- Layer 3: stem analysis -->
+          <div class="clitic-layer" id="es-cl-3" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">analyze</span>
+            <span class="mono text-sm" style="color:#fb923c;">d&iacute;ga</span>
+            <span class="text-slate-600">&rarr;</span>
+            <span class="text-xs text-slate-400">SUBJ.PRES.3SG of</span>
+            <span class="mono font-bold accent">decir</span>
+          </div>
+          <!-- Layer 4: final output -->
+          <div class="clitic-layer active-layer" id="es-cl-4" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">output</span>
+            <span class="mono text-xs text-orange-200">root=<span class="accent">decir</span> &nbsp;mood=SUBJ &nbsp;clitics=[DAT.3SG, ACC.3SG]</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: LIVE DECOMPOSITION ===================== -->
+  <section class="px-6 py-20 md:py-28" id="decomposition">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Live Decomposition</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Watch the engine strip a complex verb form layer by layer, recovering the root and every grammatical feature.
+      </p>
+
+      <div class="glass p-8 md:p-12" id="decomp-container">
+        <div class="text-center mb-10">
+          <span class="mono text-2xl md:text-3xl text-white font-bold" id="decomp-word">dij&eacute;ramos</span>
+          <p class="text-xs text-slate-500 mt-2">&ldquo;that we said&rdquo; &mdash; imperfect subjunctive, 1st person plural</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="space-y-6 max-w-3xl mx-auto">
+          <!-- Step A: Strip suffix -->
+          <div class="glass-neutral p-6 decomp-step" id="ds-1" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(249,115,22,0.2); color: #f97316;">Step A</span>
+              <span class="text-xs text-slate-400">Strip fusional suffix</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">dij&eacute;ramos</span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-400">strip</span>
+              <span class="morph-piece" style="background: rgba(249,115,22,0.12); color: #fb923c;">-&eacute;ramos</span>
+              <span class="text-xs text-slate-500">(SUBJ.IMPERF.1PL)</span>
+            </div>
+            <div class="mt-3 flex gap-2 flex-wrap">
+              <span class="tag-badge" style="background: rgba(239,68,68,0.12); color: #f87171;">tense=PAST_IMPERF</span>
+              <span class="tag-badge" style="background: rgba(139,92,246,0.12); color: #a78bfa;">mood=SUBJ</span>
+              <span class="tag-badge" style="background: rgba(59,130,246,0.12); color: #60a5fa;">person=1</span>
+              <span class="tag-badge" style="background: rgba(16,185,129,0.12); color: #34d399;">num=PL</span>
+              <span class="tag-badge" style="background: rgba(245,158,11,0.12); color: #fbbf24;">subj_form=RA</span>
+            </div>
+          </div>
+
+          <!-- Step: Irregular lookup -->
+          <div class="glass-neutral p-6 decomp-step" id="ds-2" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(249,115,22,0.2); color: #f97316;">Irregular</span>
+              <span class="text-xs text-slate-400">Stem change lookup</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">dij-</span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-400">irregular stem of</span>
+              <span class="morph-piece" style="background: rgba(249,115,22,0.2); color: #fff; border: 1px solid #f97316;">decir</span>
+              <span class="text-xs text-slate-500">&ldquo;to say&rdquo;</span>
+            </div>
+            <div class="mt-3 text-xs text-slate-500">
+              Preterite stem <span class="mono text-orange-300">dij-</span> is stored in <span class="mono text-slate-400">es_irregulars.json</span> (suppletive root: dec- &rarr; dij-)
+            </div>
+          </div>
+
+          <!-- Final result -->
+          <div class="glass-neutral p-6 decomp-step" id="ds-3" style="opacity: 0; border-color: rgba(249,115,22,0.3);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(249,115,22,0.3); color: #f97316;">Result</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap mb-4">
+              <span class="text-xs text-slate-400">Root:</span>
+              <span class="mono text-lg text-white font-bold">decir</span>
+              <span class="text-xs text-slate-500">(to say)</span>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <span class="tag-badge" style="background: rgba(249,115,22,0.15); color: #fb923c;">VERB</span>
+              <span class="tag-badge" style="background: rgba(239,68,68,0.12); color: #f87171;">PAST_IMPERF</span>
+              <span class="tag-badge" style="background: rgba(139,92,246,0.12); color: #a78bfa;">SUBJ</span>
+              <span class="tag-badge" style="background: rgba(59,130,246,0.12); color: #60a5fa;">1PL</span>
+              <span class="tag-badge" style="background: rgba(245,158,11,0.12); color: #fbbf24;">RA form</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conjugation table highlight -->
+        <div class="mt-10" id="conj-table-wrap" style="opacity: 0;">
+          <h4 class="text-sm font-semibold text-slate-400 text-center mb-4">Imperfect Subjunctive (-ra) &mdash; <span class="mono accent">decir</span></h4>
+          <div class="overflow-x-auto">
+            <table class="w-full max-w-xl mx-auto text-xs mono">
+              <thead>
+                <tr class="text-slate-500">
+                  <th class="py-2 px-3 text-left">Person</th>
+                  <th class="py-2 px-3">-er/-ir (-ra)</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-400">
+                <tr><td class="py-1.5 px-3">1SG</td><td class="py-1.5 px-3 text-center">dijera</td></tr>
+                <tr><td class="py-1.5 px-3">2SG</td><td class="py-1.5 px-3 text-center">dijeras</td></tr>
+                <tr><td class="py-1.5 px-3">3SG</td><td class="py-1.5 px-3 text-center">dijera</td></tr>
+                <tr class="rounded" style="background: rgba(249,115,22,0.1);">
+                  <td class="py-1.5 px-3 text-orange-300 font-bold">1PL</td>
+                  <td class="py-1.5 px-3 text-center text-orange-300 font-bold">dij&eacute;ramos</td>
+                </tr>
+                <tr><td class="py-1.5 px-3">2PL</td><td class="py-1.5 px-3 text-center">dijerais</td></tr>
+                <tr><td class="py-1.5 px-3">3PL</td><td class="py-1.5 px-3 text-center">dijeran</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4: TAG INVENTORY ===================== -->
+  <section class="px-6 py-20 md:py-28" id="tag-inventory">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">The Tag Inventory</h2>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">
+        Every grammatical feature the engine can assign. Spanish has moderate density &mdash; denser than English, lighter than Turkish.
+      </p>
+
+      <!-- Verbal Features -->
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-orange-400 uppercase tracking-wider mb-4">Verbal Features</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="tag-grid-verb">
+          <div class="tag-grid-item">tense=PRES</div>
+          <div class="tag-grid-item">tense=PAST_SIMPLE</div>
+          <div class="tag-grid-item">tense=PAST_IMPERF</div>
+          <div class="tag-grid-item">tense=FUT</div>
+          <div class="tag-grid-item">tense=COND</div>
+          <div class="tag-grid-item">mood=IND</div>
+          <div class="tag-grid-item">mood=SUBJ</div>
+          <div class="tag-grid-item">mood=IMP</div>
+          <div class="tag-grid-item">person=1</div>
+          <div class="tag-grid-item">person=2</div>
+          <div class="tag-grid-item">person=3</div>
+          <div class="tag-grid-item">num=SG</div>
+          <div class="tag-grid-item">num=PL</div>
+          <div class="tag-grid-item">aspect=PERF</div>
+          <div class="tag-grid-item">aspect=PROG</div>
+          <div class="tag-grid-item">form=INF</div>
+          <div class="tag-grid-item">form=GER</div>
+          <div class="tag-grid-item">form=PTCP</div>
+          <div class="tag-grid-item">subj_form=RA</div>
+          <div class="tag-grid-item">subj_form=SE</div>
+          <div class="tag-grid-item">formality=FORMAL</div>
+          <div class="tag-grid-item">clitic_obj=SE</div>
+          <div class="tag-grid-item">clitic_obj=ME</div>
+          <div class="tag-grid-item">clitic_obj=LO</div>
+        </div>
+      </div>
+
+      <!-- Nominal Features -->
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-orange-400 uppercase tracking-wider mb-4">Nominal Features</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="tag-grid-nom">
+          <div class="tag-grid-item">gender=MASC</div>
+          <div class="tag-grid-item">gender=FEM</div>
+          <div class="tag-grid-item">gender=NEUT</div>
+          <div class="tag-grid-item">num=SG</div>
+          <div class="tag-grid-item">num=PL</div>
+          <div class="tag-grid-item">degree=COMP</div>
+          <div class="tag-grid-item">degree=SUPER</div>
+          <div class="tag-grid-item">invariant=YES</div>
+          <div class="tag-grid-item">contraction=YES</div>
+        </div>
+      </div>
+
+      <!-- Closed-class -->
+      <div>
+        <h3 class="text-sm font-semibold text-orange-400 uppercase tracking-wider mb-4">Closed-Class Subcategories</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="tag-grid-closed">
+          <div class="tag-grid-item">subcat=COORD</div>
+          <div class="tag-grid-item">subcat=SUBORD</div>
+          <div class="tag-grid-item">subcat=CLITIC</div>
+          <div class="tag-grid-item">subcat=DEM</div>
+          <div class="tag-grid-item">subcat=INDEF</div>
+          <div class="tag-grid-item">subcat=REL</div>
+          <div class="tag-grid-item">subcat=INTERR</div>
+          <div class="tag-grid-item">subcat=PREP_PRON</div>
+          <div class="tag-grid-item">distance=PROX</div>
+          <div class="tag-grid-item">distance=MED</div>
+          <div class="tag-grid-item">distance=DIST</div>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <span class="mono text-sm accent">~107 unique feature bundles</span>
+        <span class="text-xs text-slate-500 ml-2">across 12 POS categories</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 5: WHY THIS MATTERS FOR AI ===================== -->
+  <section class="px-6 py-20 md:py-28" id="why-ai">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Why This Matters for AI</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        BPE tokenizers split Spanish words at arbitrary byte boundaries, destroying morphological structure. Morph-aware tokenization preserves it.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-10">
+        <!-- BPE -->
+        <div class="glass-neutral p-8">
+          <h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-4">BPE Tokenization</h3>
+          <div class="mono text-sm mb-4">
+            <span class="text-slate-300">dij&eacute;ramos</span>
+          </div>
+          <div class="flex gap-1 flex-wrap mb-4">
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">dij</span>
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">&eacute;r</span>
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">amos</span>
+          </div>
+          <p class="text-xs text-slate-500">3 tokens. No grammatical boundaries preserved. The irregular stem <span class="mono">dij-</span> is split from its morphological context.</p>
+        </div>
+
+        <!-- Morph-aware -->
+        <div class="glass p-8" style="border-color: rgba(249,115,22,0.25);">
+          <h3 class="text-sm font-semibold text-orange-400 uppercase tracking-wider mb-4">Morph-Aware Tokenization</h3>
+          <div class="mono text-sm mb-4">
+            <span class="text-slate-300">dij&eacute;ramos</span>
+          </div>
+          <div class="flex gap-1 flex-wrap mb-4">
+            <span class="morph-piece text-xs" style="background: rgba(249,115,22,0.15); color: #fb923c;">dij-</span>
+            <span class="morph-piece text-xs" style="background: rgba(139,92,246,0.12); color: #a78bfa;">-&eacute;ramos</span>
+          </div>
+          <p class="text-xs text-slate-500">2 tokens. Clean split at the morpheme boundary. The model sees <span class="mono text-orange-300">stem</span> + <span class="mono text-purple-300">SUBJ.IMPERF.1PL</span>.</p>
+        </div>
+      </div>
+
+      <!-- Prediction -->
+      <div class="glass p-8 text-center">
+        <div class="text-4xl md:text-5xl font-black accent mb-2" id="improvement-num">~20-30%</div>
+        <p class="text-sm text-slate-400 mb-4">Predicted alignment improvement for Spanish</p>
+        <p class="text-xs text-slate-500 max-w-lg mx-auto">
+          Spanish&rsquo;s fusional morphology means each suffix carries multiple features. BPE often splits these fused endings incorrectly. Morph-aware tokenization is expected to deliver moderate but meaningful gains &mdash; less dramatic than Turkish (56.9%) because Spanish has fewer suffix slots, but significantly more than English where BPE already performs well.
+        </p>
+        <div class="mt-6 flex justify-center gap-8 text-xs">
+          <div>
+            <div class="text-slate-500">English</div>
+            <div class="mono text-slate-400 font-bold">~5%</div>
+          </div>
+          <div>
+            <div class="accent font-semibold">Spanish</div>
+            <div class="mono accent font-bold">~20-30%</div>
+          </div>
+          <div>
+            <div class="text-slate-500">Turkish</div>
+            <div class="mono text-slate-400 font-bold">56.9%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-slate-600">Morphological Efficiency Project</span>
+        <nav class="flex gap-4 text-xs">
+          <a href="index.html" class="text-slate-500 hover:text-white transition-colors">Overview</a>
+          <a href="es.html" class="text-orange-400 font-semibold">Espa&ntilde;ol</a>
+          <a href="hu.html" class="text-slate-500 hover:text-white transition-colors">Magyar</a>
+          <a href="tr.html" class="text-slate-500 hover:text-white transition-colors">T&uuml;rk&ccedil;e</a>
+        </nav>
+      </div>
+      <p class="text-xs text-slate-600 text-center">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================== GSAP ANIMATIONS ===================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // --- Header entrance ---
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .to('#h-badge', { opacity: 1, duration: 0.5, delay: 0.3 })
+      .fromTo('#h-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
+      .fromTo('#h-sub', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.4')
+      .fromTo('#h-desc', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
+      .fromTo('#h-meter', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+
+    // Animate complexity bar fill
+    headerTl.to('#complexity-bar-fill', { width: '53%', duration: 1.2, ease: 'power2.out' }, '-=0.4');
+
+    // --- Wheel animation ---
+    ScrollTrigger.create({
+      trigger: '#wheel-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const wheelTl = gsap.timeline();
+        // Highlight the selected tense/person
+        wheelTl
+          .to('[data-tense]', { color: 'rgba(249,115,22,0.3)', duration: 0.3 })
+          .to('[data-tense]:nth-child(2)', { color: '#f97316', scale: 1.2, fontWeight: 700, duration: 0.5 }, '+=0.3')
+          .to('#result-suffix', { opacity: 1, x: 0, duration: 0.6, ease: 'back.out(1.7)' }, '+=0.4')
+          .to('#result-eq', { opacity: 1, duration: 0.3 })
+          .to('#result-word', { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.1')
+          .to('#result-tags', { opacity: 1, y: 0, duration: 0.4 });
+      }
+    });
+
+    // --- Clitic animation ---
+    ScrollTrigger.create({
+      trigger: '#clitic-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const clTl = gsap.timeline();
+        clTl
+          .fromTo('#cl-2', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.7)' }, '+=0.5')
+          .to('#cl-plus2', { opacity: 1, duration: 0.2 }, '-=0.3')
+          .fromTo('#cl-3', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.7)' }, '+=0.2')
+          .to('#cl-plus3', { opacity: 1, duration: 0.2 }, '-=0.3')
+          .fromTo('#cl-4', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.7)' }, '+=0.2')
+          .to('#cl-eq', { opacity: 1, duration: 0.3 }, '+=0.3')
+          .fromTo('#cl-result', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' });
+      }
+    });
+
+    // --- Decomposition steps ---
+    ScrollTrigger.create({
+      trigger: '#decomp-container',
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        const dTl = gsap.timeline();
+        dTl
+          .fromTo('#ds-1', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, '+=0.3')
+          .fromTo('#ds-2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, '+=0.4')
+          .fromTo('#ds-3', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 }, '+=0.4')
+          .to('#conj-table-wrap', { opacity: 1, duration: 0.6 }, '+=0.3');
+      }
+    });
+
+    // --- Tag grid stagger ---
+    ['#tag-grid-verb', '#tag-grid-nom', '#tag-grid-closed'].forEach(sel => {
+      gsap.fromTo(sel + ' .tag-grid-item',
+        { opacity: 0, scale: 0.8 },
+        {
+          opacity: 1, scale: 1,
+          duration: 0.3,
+          stagger: 0.03,
+          ease: 'back.out(1.7)',
+          scrollTrigger: { trigger: sel, start: 'top 80%', once: true }
+        }
+      );
+    });
+
+    // --- Inside the Engine: Pipeline ---
+    ScrollTrigger.create({
+      trigger: '#es-pipeline',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const pTl = gsap.timeline();
+        for (let i = 0; i <= 5; i++) {
+          pTl.fromTo('#es-pipe-' + i, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i === 0 ? '+=0.1' : '+=0.25');
+        }
+      }
+    });
+
+    // --- Inside the Engine: Suffix examples ---
+    ScrollTrigger.create({
+      trigger: '#es-conj-algo',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const eTl = gsap.timeline();
+        eTl
+          .fromTo('#es-ex-1', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.3')
+          .fromTo('#es-ex-2', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.2')
+          .fromTo('#es-ex-3', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5 }, '+=0.2');
+      }
+    });
+
+    // --- Inside the Engine: Clitic layers ---
+    ScrollTrigger.create({
+      trigger: '#es-clitic-algo',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const cTl = gsap.timeline();
+        for (let i = 0; i <= 4; i++) {
+          cTl.fromTo('#es-cl-' + i, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.45 }, i === 0 ? '+=0.2' : '+=0.35');
+        }
+      }
+    });
+
+    // --- AI section ---
+    gsap.fromTo('#improvement-num',
+      { opacity: 0, scale: 0.8 },
+      {
+        opacity: 1, scale: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+        scrollTrigger: { trigger: '#why-ai', start: 'top 60%', once: true }
+      }
+    );
+  </script>
+</body>
+</html>

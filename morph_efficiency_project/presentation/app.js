@@ -794,6 +794,24 @@ async function init() {
     });
   }
 
+  // Presenter keys: B = blackout, H = hide chrome (nav dots + logos + fs btn)
+  let blackoutEl = null;
+  document.addEventListener("keydown", e => {
+    if (e.key === "b" || e.key === "B") {
+      if (blackoutEl) { blackoutEl.remove(); blackoutEl = null; return; }
+      blackoutEl = document.createElement("div");
+      blackoutEl.style.cssText = "position:fixed;inset:0;background:#000;z-index:9999;";
+      document.body.appendChild(blackoutEl);
+    }
+    if (e.key === "h" || e.key === "H") {
+      const ids = ["nav-dots", "uni-logo", "bme-icon", "btn-fullscreen"];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = (el.style.display === "none") ? "" : "none";
+      });
+    }
+  });
+
   // Arrow key slide navigation
   const scroller = document.getElementById("slides-container");
   const slideEls = () => [...document.querySelectorAll(".slide")];

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hungarian Morphology - Morphological Efficiency in AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            slate: { 950: '#0f172a', 900: '#1e293b', 800: '#1e293b' },
+            accent: '#10b981',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .accent { color: #10b981; }
+    .glass {
+      background: linear-gradient(135deg, rgba(16,185,129,0.04) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(16,185,129,0.1);
+      border-radius: 16px;
+    }
+    .glass-neutral {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+    }
+    .morph-piece {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .morph-piece:hover { transform: translateY(-2px); }
+    .tag-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .complexity-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .complexity-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    .section-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      border-radius: 1px;
+      margin: 0 auto;
+    }
+    /* Train */
+    .train-track {
+      position: relative;
+      height: 4px;
+      background: rgba(16,185,129,0.15);
+      border-radius: 2px;
+      margin: 40px 0;
+    }
+    .train-track::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0; right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(16,185,129,0.08) 20px, rgba(16,185,129,0.08) 22px);
+    }
+    .train-car {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .train-car:hover { transform: translateY(-4px); }
+    .train-connector {
+      width: 16px;
+      height: 4px;
+      background: rgba(16,185,129,0.3);
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 -2px;
+      border-radius: 2px;
+    }
+    .back-vowel { background: rgba(249,115,22,0.12); color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+    .front-vowel { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+    .neutral-car { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+    .tag-grid-item {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+      border: 1px solid rgba(16,185,129,0.12);
+      background: rgba(16,185,129,0.04);
+      transition: all 0.3s ease;
+    }
+    .tag-grid-item:hover {
+      border-color: rgba(16,185,129,0.4);
+      background: rgba(16,185,129,0.1);
+      transform: scale(1.05);
+    }
+    .decomp-arrow {
+      width: 40px; height: 2px;
+      background: rgba(16,185,129,0.3);
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 8px;
+    }
+    .decomp-arrow::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -4px;
+      border: 5px solid transparent;
+      border-left: 6px solid rgba(16,185,129,0.5);
+    }
+    /* Parallel tracks */
+    .dual-track {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .track-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
+    }
+    @keyframes pulse-glow-green {
+      0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.1); }
+      50% { box-shadow: 0 0 40px rgba(16,185,129,0.25); }
+    }
+
+    /* === Inside the Engine === */
+    .engine-node {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.18);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .engine-node.highlight {
+      border-color: rgba(16,185,129,0.6);
+      box-shadow: 0 0 18px rgba(16,185,129,0.12);
+    }
+    .engine-node-accent {
+      background: rgba(16,185,129,0.12);
+      border: 1px solid rgba(16,185,129,0.35);
+      color: #34d399;
+    }
+    .engine-arrow-down {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 4px 0;
+      color: rgba(16,185,129,0.4);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    .engine-arrow-down .arrow-line {
+      width: 1px;
+      height: 14px;
+      background: rgba(16,185,129,0.25);
+    }
+    .engine-branch {
+      border-left: 2px solid rgba(16,185,129,0.15);
+      padding-left: 16px;
+      margin-left: 12px;
+      margin-top: 6px;
+    }
+    .engine-branch-item {
+      position: relative;
+      padding: 5px 0;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+    .engine-branch-item::before {
+      content: '';
+      position: absolute;
+      left: -16px;
+      top: 14px;
+      width: 12px;
+      height: 1px;
+      background: rgba(16,185,129,0.2);
+    }
+    .engine-match { color: #22c55e; }
+    .engine-reject { color: #ef4444; opacity: 0.5; }
+    .engine-detail-toggle {
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: rgba(16,185,129,0.7);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(16,185,129,0.15);
+      background: rgba(16,185,129,0.04);
+      transition: all 0.2s ease;
+    }
+    .engine-detail-toggle:hover {
+      border-color: rgba(16,185,129,0.35);
+      background: rgba(16,185,129,0.08);
+    }
+    .engine-detail-toggle .arrow-icon { transition: transform 0.3s ease; }
+    .engine-detail-toggle.open .arrow-icon { transform: rotate(90deg); }
+    .engine-collapsible {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+    .engine-collapsible.open { max-height: 2000px; }
+    .pass-box {
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+    }
+    .pass-box-1 {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .pass-box-2 {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.2);
+    }
+    .suffix-table-cell {
+      padding: 6px 10px;
+      border: 1px solid rgba(16,185,129,0.1);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-align: center;
+    }
+    .suffix-table-header {
+      background: rgba(16,185,129,0.08);
+      color: #34d399;
+      font-weight: 600;
+    }
+    .harmony-tree-node {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+    }
+    .assimilation-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.4s ease;
+    }
+    .assimilation-step.active-step {
+      border-color: rgba(16,185,129,0.4);
+      background: rgba(16,185,129,0.06);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="relative pt-16 pb-14 md:pt-24 md:pb-20 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px]"
+           style="background: radial-gradient(ellipse at center, rgba(16,185,129,0.18) 0%, transparent 70%);"></div>
+    </div>
+    <div class="relative z-10 max-w-4xl mx-auto">
+      <a href="index.html" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400/60 mb-6 hover:text-emerald-400 transition-colors">&larr; All Languages</a>
+      <p id="h-badge" class="inline-block text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-4 opacity-0">Agglutinative-Fusional Hybrid</p>
+      <h1 id="h-title" class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05] mb-2 opacity-0">
+        Magyar
+      </h1>
+      <p id="h-sub" class="text-xl md:text-2xl text-emerald-300/70 font-light mb-6 opacity-0">Hungarian</p>
+      <p id="h-desc" class="text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8 opacity-0">
+        A Uralic language with 18 grammatical cases, vowel harmony, and a unique definite/indefinite verb conjugation split &mdash; each word is a precisely structured chain of suffixes.
+      </p>
+      <!-- Complexity Meter -->
+      <div id="h-meter" class="max-w-xs mx-auto opacity-0">
+        <div class="flex justify-between text-xs text-slate-500 mb-1">
+          <span>Bundle Complexity</span>
+          <span class="mono accent">~120 bundles</span>
+        </div>
+        <div class="complexity-bar">
+          <div class="complexity-fill" id="complexity-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+          <span>English ~20</span>
+          <span>Max ~200</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== SECTION 2: HOW HUNGARIAN BUILDS WORDS ===================== -->
+  <section class="px-6 py-20 md:py-28" id="how-builds">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">How Hungarian Builds Words</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Suffixes couple onto stems like carriages on a train. Vowel harmony colors each piece &mdash; back vowels in warm tones, front vowels in cool tones.
+      </p>
+
+      <!-- Suffix Train -->
+      <div class="glass p-8 md:p-12 mb-12" id="train-section">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">The Suffix Train</h3>
+        <p class="text-xs text-slate-400 text-center mb-4 max-w-lg mx-auto">
+          <span class="mono text-white">h&aacute;zaimban</span> = &ldquo;in my houses&rdquo; &mdash; watch the carriages couple one by one.
+        </p>
+
+        <!-- Harmony legend -->
+        <div class="flex justify-center gap-6 text-[10px] mb-8">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded" style="background: rgba(249,115,22,0.3); border: 1px solid #f97316;"></span>
+            <span class="text-slate-400">Back vowel (a, &aacute;, o, u)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded" style="background: rgba(59,130,246,0.3); border: 1px solid #3b82f6;"></span>
+            <span class="text-slate-400">Front vowel (e, &eacute;, i, &ouml;, &uuml;)</span>
+          </div>
+        </div>
+
+        <!-- Train display -->
+        <div class="flex justify-center items-end gap-0 flex-wrap" id="train-cars">
+          <div class="text-center" id="tc-engine">
+            <div class="train-car back-vowel text-lg" style="animation: pulse-glow-green 3s ease-in-out infinite;">
+              h&aacute;z
+            </div>
+            <div class="text-[10px] text-slate-500 mt-2">house</div>
+            <div class="text-[10px] text-slate-600">ROOT</div>
+          </div>
+
+          <div class="train-connector" id="tc-conn-1" style="opacity: 0;"></div>
+
+          <div class="text-center" id="tc-1" style="opacity: 0;">
+            <div class="train-car back-vowel text-sm">-a-</div>
+            <div class="text-[10px] text-slate-500 mt-2">linking</div>
+            <div class="text-[10px] text-slate-600">LINK.V</div>
+          </div>
+
+          <div class="train-connector" id="tc-conn-2" style="opacity: 0;"></div>
+
+          <div class="text-center" id="tc-2" style="opacity: 0;">
+            <div class="train-car front-vowel text-sm">-i-</div>
+            <div class="text-[10px] text-slate-500 mt-2">plural</div>
+            <div class="text-[10px] text-slate-600">PL.POSS</div>
+          </div>
+
+          <div class="train-connector" id="tc-conn-3" style="opacity: 0;"></div>
+
+          <div class="text-center" id="tc-3" style="opacity: 0;">
+            <div class="train-car neutral-car text-sm">-m</div>
+            <div class="text-[10px] text-slate-500 mt-2">my</div>
+            <div class="text-[10px] text-slate-600">POSS.1SG</div>
+          </div>
+
+          <div class="train-connector" id="tc-conn-4" style="opacity: 0;"></div>
+
+          <div class="text-center" id="tc-4" style="opacity: 0;">
+            <div class="train-car back-vowel text-sm">-ban</div>
+            <div class="text-[10px] text-slate-500 mt-2">in</div>
+            <div class="text-[10px] text-slate-600">INESS</div>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="text-center mt-8" id="train-result" style="opacity: 0;">
+          <div class="morph-piece text-lg" style="background: rgba(16,185,129,0.2); color: #fff; border: 2px solid #10b981;">
+            h&aacute;zaimban
+          </div>
+          <p class="text-xs text-slate-500 mt-2">&ldquo;in my houses&rdquo;</p>
+          <div class="mt-2 flex justify-center gap-1 flex-wrap">
+            <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss=1SG</span>
+            <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss_num=PL</span>
+            <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">case=INESS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEF vs INDEF tracks -->
+      <div class="glass p-8 md:p-10" id="def-indef-section">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Definite vs. Indefinite Split</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          Every Hungarian verb has two complete paradigms. The suffix alone tells the engine whether the object is definite or indefinite.
+        </p>
+        <div class="dual-track max-w-md mx-auto">
+          <div class="track-line" id="track-def" style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15); opacity: 0;">
+            <span class="tag-badge" style="background: rgba(16,185,129,0.2); color: #34d399;">DEF</span>
+            <div class="flex items-center gap-1">
+              <span class="morph-piece text-sm neutral-car">olvas</span>
+              <span class="morph-piece text-sm" style="background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.4);">-om</span>
+            </div>
+            <span class="text-xs text-slate-400 ml-auto">&ldquo;I read it&rdquo;</span>
+          </div>
+          <div class="track-line" id="track-indef" style="background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.15); opacity: 0;">
+            <span class="tag-badge" style="background: rgba(139,92,246,0.2); color: #a78bfa;">INDEF</span>
+            <div class="flex items-center gap-1">
+              <span class="morph-piece text-sm" style="background: rgba(139,92,246,0.08); color: #c4b5fd;">olvas</span>
+              <span class="morph-piece text-sm" style="background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.4);">-ok</span>
+            </div>
+            <span class="text-xs text-slate-400 ml-auto">&ldquo;I read (sth.)&rdquo;</span>
+          </div>
+        </div>
+        <div class="text-center mt-6 text-xs text-slate-500" id="def-explain" style="opacity: 0;">
+          Same root, same tense, same person &mdash; but <span class="mono text-emerald-300">-om</span> vs <span class="mono text-purple-300">-ok</span> encodes object definiteness. <br/>
+          This fusional slot (person + number + definiteness) is Hungarian&rsquo;s most distinctive feature.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2.5: INSIDE THE ENGINE ===================== -->
+  <section class="px-6 py-20 md:py-28" id="inside-engine">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Inside the Engine</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        How the Hungarian morphological engine resolves ambiguity with a two-pass architecture, vowel harmony validation, and consonant assimilation reversal.
+      </p>
+
+      <!-- ── Pipeline Flowchart with Two-Pass ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="hu-pipeline">
+        <h3 class="text-lg font-bold text-white mb-6 text-center">Two-Pass Analysis Pipeline</h3>
+        <div class="flex flex-col items-center gap-0">
+
+          <!-- Input -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-xs" id="hu-pipe-0" style="opacity:0;">
+            Input word
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Closed-class -->
+          <div class="engine-node text-center w-full max-w-md" id="hu-pipe-1" style="opacity:0;">
+            <span class="accent font-semibold">Closed-class lookup</span> <span class="text-slate-500">(~142 entries)</span>
+            <div class="text-[11px] text-slate-500 mt-1">Match? &rarr; Return immediately</div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span> <span class="text-[10px] text-slate-600 ml-1">No match</span></div>
+
+          <!-- Two-pass box -->
+          <div class="w-full max-w-3xl rounded-xl p-4 md:p-6 mb-2" id="hu-pipe-2" style="opacity:0; border: 2px solid rgba(16,185,129,0.2); background: rgba(16,185,129,0.03);">
+            <div class="text-center text-xs font-bold tracking-[0.15em] uppercase accent mb-4">Two-Pass Analysis</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Pass 1 -->
+              <div class="pass-box pass-box-1">
+                <div class="text-xs font-bold text-emerald-300 mb-3">Pass 1: Full Slot Stripping</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>TENSE/MOOD &rarr; strip</div>
+                  <div>PERSON_DEF &rarr; strip</div>
+                  <div>CASE &rarr; strip</div>
+                  <div>POSS &rarr; strip</div>
+                  <div>NUM &rarr; strip</div>
+                  <div class="text-[10px] text-slate-600 mt-2">(verbal slots processed first)</div>
+                </div>
+              </div>
+              <!-- Pass 2 -->
+              <div class="pass-box pass-box-2">
+                <div class="text-xs font-bold text-purple-300 mb-3">Pass 2: Nominal-Only</div>
+                <div class="space-y-1 text-[11px] text-slate-400 font-mono">
+                  <div>CASE &rarr; strip</div>
+                  <div>POSS &rarr; strip</div>
+                  <div>NUM &rarr; strip</div>
+                  <div class="text-[10px] text-slate-600 mt-2">(nominal slots only)</div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4 text-[11px] text-slate-500">
+              Compare: which pass has more plausible stem?<br/>
+              <span class="text-emerald-400">Pass 1 has clear verbal markers?</span> &rarr; Use Pass 1<br/>
+              <span class="text-purple-400">Otherwise</span> &rarr; Prefer Pass 2 (nominal)
+            </div>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Step B -->
+          <div class="engine-node text-center w-full max-w-md" id="hu-pipe-3" style="opacity:0;">
+            <span class="accent font-semibold">Step B: Derivational</span> <span class="text-slate-500">(~50 rules)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Step C -->
+          <div class="engine-node text-center w-full max-w-md" id="hu-pipe-4" style="opacity:0;">
+            <span class="accent font-semibold">Step C: Iterative</span> <span class="text-slate-500">(max 3 rounds)</span>
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div><span>&#9660;</span></div>
+
+          <!-- Output -->
+          <div class="engine-node engine-node-accent text-center w-full max-w-lg" id="hu-pipe-5" style="opacity:0;">
+            <span class="mono text-sm">TokenInfo(root, pos, tags)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 18-Case Vowel Harmony Decision Tree ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="hu-harmony-tree">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">18-Case Suffix Selection</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The engine picks the correct case suffix variant by checking the stem&rsquo;s last vowel for backness and rounding.
+        </p>
+
+        <div class="flex flex-col items-center gap-0" id="hu-tree-nodes">
+          <!-- Root question -->
+          <div class="harmony-tree-node w-full max-w-sm" id="hu-ht-0" style="opacity:0; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#34d399;">
+            Last vowel of stem?
+          </div>
+          <div class="engine-arrow-down"><div class="arrow-line"></div></div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl">
+            <!-- Back branch -->
+            <div id="hu-ht-1" style="opacity:0;">
+              <div class="harmony-tree-node mb-3" style="background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.3); color:#fb923c;">
+                Back (a, &aacute;, o, &oacute;, u, &uacute;)
+              </div>
+              <div class="space-y-1 text-[11px] pl-4" style="border-left:2px solid rgba(249,115,22,0.2);">
+                <div class="text-slate-400"><span class="mono text-orange-300">-ban</span> INESS</div>
+                <div class="text-slate-400"><span class="mono text-orange-300">-b&oacute;l</span> ELAT</div>
+                <div class="text-slate-400"><span class="mono text-orange-300">-ra</span> SUBLAT</div>
+                <div class="text-slate-400"><span class="mono text-orange-300">-n&aacute;l</span> ADESS</div>
+                <div class="text-slate-400"><span class="mono text-orange-300">-t&oacute;l</span> ABLAT</div>
+                <div class="text-slate-400"><span class="mono text-orange-300">-hoz</span> ALLAT</div>
+              </div>
+            </div>
+            <!-- Front branch -->
+            <div id="hu-ht-2" style="opacity:0;">
+              <div class="harmony-tree-node mb-3" style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.3); color:#60a5fa;">
+                Front
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <!-- Unrounded -->
+                <div>
+                  <div class="text-[10px] text-blue-300 font-semibold mb-2 text-center">Unrounded (e, &eacute;, i, &iacute;)</div>
+                  <div class="space-y-1 text-[11px] pl-3" style="border-left:2px solid rgba(59,130,246,0.2);">
+                    <div class="text-slate-400"><span class="mono text-blue-300">-ben</span> INESS</div>
+                    <div class="text-slate-400"><span class="mono text-blue-300">-b&#337;l</span> ELAT</div>
+                    <div class="text-slate-400"><span class="mono text-blue-300">-re</span> SUBLAT</div>
+                    <div class="text-slate-400"><span class="mono text-blue-300">-n&eacute;l</span> ADESS</div>
+                    <div class="text-slate-400"><span class="mono text-blue-300">-t&#337;l</span> ABLAT</div>
+                    <div class="text-slate-400"><span class="mono text-blue-300">-hez</span> ALLAT</div>
+                  </div>
+                </div>
+                <!-- Rounded -->
+                <div>
+                  <div class="text-[10px] text-purple-300 font-semibold mb-2 text-center">Rounded (&ouml;, &#337;, &uuml;, &#369;)</div>
+                  <div class="space-y-1 text-[11px] pl-3" style="border-left:2px solid rgba(139,92,246,0.2);">
+                    <div class="text-slate-400"><span class="mono text-purple-300">-ben</span> INESS</div>
+                    <div class="text-slate-400"><span class="mono text-purple-300">-b&#337;l</span> ELAT</div>
+                    <div class="text-slate-400"><span class="mono text-purple-300">-re</span> SUBLAT</div>
+                    <div class="text-slate-400"><span class="mono text-purple-300">-n&eacute;l</span> ADESS</div>
+                    <div class="text-slate-400"><span class="mono text-purple-300">-t&#337;l</span> ABLAT</div>
+                    <div class="text-slate-400"><span class="mono text-purple-300">-h&ouml;z</span> <span class="accent text-[10px]">3-way</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DEF/INDEF Conjugation Decision ── -->
+      <div class="glass p-8 md:p-12 mb-12" id="hu-def-decision">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">DEF/INDEF Conjugation Decision</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The engine must decide which paradigm a verb form belongs to. Some suffixes are unique identifiers; others are ambiguous.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto" id="hu-def-cols">
+          <!-- DEF column -->
+          <div id="hu-def-col" style="opacity:0;">
+            <div class="text-center mb-3">
+              <span class="tag-badge" style="background:rgba(16,185,129,0.2); color:#34d399; font-size:0.75rem;">DEFINITE</span>
+            </div>
+            <div class="space-y-2">
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-om <span class="text-slate-500 text-[10px]">1SG</span></div>
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-od <span class="text-slate-500 text-[10px]">2SG</span></div>
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-ja <span class="text-slate-500 text-[10px]">3SG</span></div>
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-juk <span class="text-slate-500 text-[10px]">1PL</span></div>
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-j&aacute;tok <span class="text-slate-500 text-[10px]">2PL</span></div>
+              <div class="suffix-table-cell text-emerald-300" style="background:rgba(16,185,129,0.06);">-j&aacute;k <span class="text-slate-500 text-[10px]">3PL</span></div>
+            </div>
+            <div class="text-[10px] text-slate-600 text-center mt-2">Unique: -om, -od, -ja, -juk, -j&aacute;tok, -j&aacute;k</div>
+          </div>
+          <!-- INDEF column -->
+          <div id="hu-indef-col" style="opacity:0;">
+            <div class="text-center mb-3">
+              <span class="tag-badge" style="background:rgba(139,92,246,0.2); color:#a78bfa; font-size:0.75rem;">INDEFINITE</span>
+            </div>
+            <div class="space-y-2">
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-ok <span class="text-slate-500 text-[10px]">1SG</span></div>
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-sz / -ol <span class="text-slate-500 text-[10px]">2SG</span></div>
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-&empty; <span class="text-slate-500 text-[10px]">3SG</span></div>
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-unk <span class="text-slate-500 text-[10px]">1PL</span></div>
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-tok <span class="text-slate-500 text-[10px]">2PL</span></div>
+              <div class="suffix-table-cell text-purple-300" style="background:rgba(139,92,246,0.06);">-nak <span class="text-slate-500 text-[10px]">3PL</span></div>
+            </div>
+            <div class="text-[10px] text-slate-600 text-center mt-2">Unique: -ok, -sz, -&empty;, -unk, -tok, -nak</div>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-600 text-center mt-6">
+          The engine attempts both paradigms and selects the one that yields a valid stem. Most suffix pairs are unambiguous.
+        </p>
+      </div>
+
+      <!-- ── Consonant Assimilation ── -->
+      <div class="glass p-8 md:p-12" id="hu-assimilation">
+        <h3 class="text-lg font-bold text-white mb-2 text-center">Consonant Assimilation Reversal</h3>
+        <p class="text-xs text-slate-400 text-center mb-8 max-w-lg mx-auto">
+          The instrumental suffix <span class="mono accent">-val/-vel</span> causes the <em>v</em> to assimilate to the stem&rsquo;s final consonant. The engine must reverse this to recover the stem.
+        </p>
+
+        <div class="space-y-3 max-w-lg mx-auto" id="hu-assim-steps">
+          <div class="assimilation-step" id="hu-as-0" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">surface</span>
+            <span class="mono text-white font-bold text-sm">h&aacute;zzal</span>
+            <span class="text-xs text-slate-500">&ldquo;with a house&rdquo;</span>
+          </div>
+          <div class="assimilation-step" id="hu-as-1" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">detect</span>
+            <span class="mono text-sm text-white">h&aacute;z</span><span class="mono text-sm text-emerald-300">zal</span>
+            <span class="text-xs text-slate-500">&rarr; doubled consonant <span class="mono accent">zz</span> at suffix boundary</span>
+          </div>
+          <div class="assimilation-step" id="hu-as-2" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">reverse</span>
+            <span class="mono text-sm text-white">h&aacute;z</span>
+            <span class="text-slate-600">+</span>
+            <span class="mono text-sm text-emerald-300">-val</span>
+            <span class="text-xs text-slate-500">&rarr; <span class="mono">v &rarr; z</span> (assimilated)</span>
+          </div>
+          <div class="assimilation-step active-step" id="hu-as-3" style="opacity:0;">
+            <span class="text-[10px] text-slate-600 w-16 shrink-0">output</span>
+            <span class="mono text-xs text-emerald-200">root=<span class="accent">h&aacute;z</span> &nbsp;case=INSTRUMENTAL</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3: LIVE DECOMPOSITION ===================== -->
+  <section class="px-6 py-20 md:py-28" id="decomposition">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Live Decomposition</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Watch the engine peel suffixes from the outside in, validating vowel harmony at each step.
+      </p>
+
+      <div class="glass p-8 md:p-12" id="decomp-container">
+        <div class="text-center mb-10">
+          <span class="mono text-2xl md:text-3xl text-white font-bold" id="decomp-word">h&aacute;zaimban</span>
+          <p class="text-xs text-slate-500 mt-2">&ldquo;in my houses&rdquo; &mdash; 5 morphemes in one word</p>
+        </div>
+
+        <div class="space-y-6 max-w-3xl mx-auto">
+          <!-- Step 1: Strip -ban -->
+          <div class="glass-neutral p-6" id="ds-1" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.2); color: #10b981;">Step 1</span>
+              <span class="text-xs text-slate-400">Strip case suffix (Slot 4)</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">h&aacute;zaim<span class="text-emerald-400">ban</span></span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-300">h&aacute;zaim</span>
+              <span class="text-lg text-emerald-400/30">+</span>
+              <span class="morph-piece text-sm back-vowel">-ban</span>
+            </div>
+            <div class="mt-3 flex gap-2 flex-wrap items-center">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">case=INESS</span>
+              <span class="text-[10px] text-slate-600 ml-2">Harmony check: &ldquo;&aacute;&rdquo; is back &rarr; <span class="mono text-orange-300">-ban</span> (back) passes</span>
+            </div>
+          </div>
+
+          <!-- Step 2: Strip -m -->
+          <div class="glass-neutral p-6" id="ds-2" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.2); color: #10b981;">Step 2</span>
+              <span class="text-xs text-slate-400">Strip possessive (Slot 3)</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">h&aacute;zai<span class="text-emerald-400">m</span></span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-300">h&aacute;zai</span>
+              <span class="text-lg text-emerald-400/30">+</span>
+              <span class="morph-piece text-sm neutral-car">-m</span>
+            </div>
+            <div class="mt-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss=1SG</span>
+            </div>
+          </div>
+
+          <!-- Step 3: Strip -i- -->
+          <div class="glass-neutral p-6" id="ds-3" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.2); color: #10b981;">Step 3</span>
+              <span class="text-xs text-slate-400">Strip plural-possessed marker (Slot 3)</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">h&aacute;za<span class="text-emerald-400">i</span></span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-300">h&aacute;za</span>
+              <span class="text-lg text-emerald-400/30">+</span>
+              <span class="morph-piece text-sm front-vowel">-i-</span>
+            </div>
+            <div class="mt-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss_num=PL</span>
+            </div>
+          </div>
+
+          <!-- Step 4: Strip -a- -->
+          <div class="glass-neutral p-6" id="ds-4" style="opacity: 0;">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.2); color: #10b981;">Step 4</span>
+              <span class="text-xs text-slate-400">Strip linking vowel</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono text-white">h&aacute;z<span class="text-emerald-400">a</span></span>
+              <span class="decomp-arrow"></span>
+              <span class="mono text-slate-300">h&aacute;z</span>
+              <span class="text-lg text-emerald-400/30">+</span>
+              <span class="morph-piece text-sm back-vowel">-a-</span>
+            </div>
+            <div class="mt-3 text-[10px] text-slate-500">
+              Linking vowel selected by back-vowel harmony of stem &ldquo;h&aacute;z&rdquo;
+            </div>
+          </div>
+
+          <!-- Final result -->
+          <div class="glass-neutral p-6" id="ds-5" style="opacity: 0; border-color: rgba(16,185,129,0.3);">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.3); color: #10b981;">Root</span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap mb-4">
+              <span class="mono text-lg text-white font-bold">h&aacute;z</span>
+              <span class="text-xs text-slate-500">(house)</span>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">NOUN</span>
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss=1SG</span>
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">poss_num=PL</span>
+              <span class="tag-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">case=INESS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Harmony validation box -->
+        <div class="mt-10 glass-neutral p-6 max-w-xl mx-auto" id="harmony-box" style="opacity: 0;">
+          <h4 class="text-sm font-semibold text-emerald-400 mb-3">Vowel Harmony Validation</h4>
+          <div class="text-xs text-slate-400 space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="mono text-orange-300">h&aacute;z</span>
+              <span class="text-slate-600">&rarr;</span>
+              <span>Last harmonic vowel: <span class="mono text-orange-300">&aacute;</span> (back)</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-slate-500">Case suffix:</span>
+              <span class="mono text-orange-300">-ban</span>
+              <span class="text-emerald-400">&check;</span>
+              <span>back vowel &ldquo;a&rdquo; matches</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-slate-500">Not:</span>
+              <span class="mono text-blue-300 line-through">-ben</span>
+              <span class="text-red-400">&cross;</span>
+              <span>front vowel &ldquo;e&rdquo; would violate harmony</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4: TAG INVENTORY ===================== -->
+  <section class="px-6 py-20 md:py-28" id="tag-inventory">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">The Tag Inventory</h2>
+      <p class="text-slate-400 text-center max-w-xl mx-auto mb-12 text-sm">
+        Hungarian&rsquo;s tag space is dense. 18 cases alone multiply with possessive and number markers to create hundreds of theoretical bundles.
+      </p>
+
+      <!-- Nominal Features -->
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Nominal Features (18 Cases)</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-2" id="tag-grid-cases">
+          <div class="tag-grid-item">case=NOM</div>
+          <div class="tag-grid-item">case=ACC</div>
+          <div class="tag-grid-item">case=DAT</div>
+          <div class="tag-grid-item">case=INS</div>
+          <div class="tag-grid-item">case=CAUSAL</div>
+          <div class="tag-grid-item">case=TRANSL</div>
+          <div class="tag-grid-item">case=FORMAL</div>
+          <div class="tag-grid-item">case=DISTRIB</div>
+          <div class="tag-grid-item">case=TERMIN</div>
+          <div class="tag-grid-item">case=INESS</div>
+          <div class="tag-grid-item">case=ELAT</div>
+          <div class="tag-grid-item">case=ILLAT</div>
+          <div class="tag-grid-item">case=SUPER</div>
+          <div class="tag-grid-item">case=DELAT</div>
+          <div class="tag-grid-item">case=SUBLAT</div>
+          <div class="tag-grid-item">case=ADESS</div>
+          <div class="tag-grid-item">case=ABLAT</div>
+          <div class="tag-grid-item">case=ALLAT</div>
+        </div>
+      </div>
+
+      <!-- Possessive -->
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Possessive &amp; Number</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2" id="tag-grid-poss">
+          <div class="tag-grid-item">poss=1SG</div>
+          <div class="tag-grid-item">poss=2SG</div>
+          <div class="tag-grid-item">poss=3SG</div>
+          <div class="tag-grid-item">poss=1PL</div>
+          <div class="tag-grid-item">poss=2PL</div>
+          <div class="tag-grid-item">poss=3PL</div>
+          <div class="tag-grid-item">poss_num=PL</div>
+          <div class="tag-grid-item">num=SG</div>
+          <div class="tag-grid-item">num=PL</div>
+        </div>
+      </div>
+
+      <!-- Verbal Features -->
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Verbal Features</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="tag-grid-verb">
+          <div class="tag-grid-item">tense=PRES</div>
+          <div class="tag-grid-item">tense=PAST</div>
+          <div class="tag-grid-item">tense=COND</div>
+          <div class="tag-grid-item">mood=IND</div>
+          <div class="tag-grid-item">mood=SUBJ</div>
+          <div class="tag-grid-item">def=DEF</div>
+          <div class="tag-grid-item">def=INDEF</div>
+          <div class="tag-grid-item">def=2OBJ</div>
+          <div class="tag-grid-item">def=AMBIG</div>
+          <div class="tag-grid-item">person=1</div>
+          <div class="tag-grid-item">person=2</div>
+          <div class="tag-grid-item">person=3</div>
+          <div class="tag-grid-item">degree=COMP</div>
+          <div class="tag-grid-item">degree=SUPER</div>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <span class="mono text-sm accent">~120 unique feature bundles</span>
+        <span class="text-xs text-slate-500 ml-2">(80-100 nominal + 52 verbal)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 5: WHY THIS MATTERS FOR AI ===================== -->
+  <section class="px-6 py-20 md:py-28" id="why-ai">
+    <div class="max-w-5xl mx-auto">
+      <div class="section-divider mb-10"></div>
+      <h2 class="text-2xl md:text-3xl font-bold text-white text-center mb-4">Why This Matters for AI</h2>
+      <p class="text-slate-400 text-center max-w-2xl mx-auto mb-16 text-sm md:text-base">
+        Hungarian&rsquo;s agglutinative structure makes it a strong candidate for morph-aware tokenization &mdash; each suffix boundary is a meaningful split point that BPE misses.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-10">
+        <!-- BPE -->
+        <div class="glass-neutral p-8">
+          <h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-4">BPE Tokenization</h3>
+          <div class="mono text-sm mb-4">
+            <span class="text-slate-300">h&aacute;zaimban</span>
+          </div>
+          <div class="flex gap-1 flex-wrap mb-4">
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">h&aacute;z</span>
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">aim</span>
+            <span class="morph-piece text-xs" style="background: rgba(239,68,68,0.12); color: #f87171;">ban</span>
+          </div>
+          <p class="text-xs text-slate-500">3 tokens. The possessive <span class="mono">-m</span> gets merged with the plural marker <span class="mono">-i-</span>, destroying both morpheme boundaries.</p>
+        </div>
+
+        <!-- Morph-aware -->
+        <div class="glass p-8" style="border-color: rgba(16,185,129,0.25);">
+          <h3 class="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Morph-Aware Tokenization</h3>
+          <div class="mono text-sm mb-4">
+            <span class="text-slate-300">h&aacute;zaimban</span>
+          </div>
+          <div class="flex gap-1 flex-wrap mb-4">
+            <span class="morph-piece text-xs" style="background: rgba(16,185,129,0.15); color: #34d399;">h&aacute;z</span>
+            <span class="morph-piece text-xs" style="background: rgba(249,115,22,0.12); color: #fb923c;">-a-</span>
+            <span class="morph-piece text-xs" style="background: rgba(59,130,246,0.12); color: #60a5fa;">-i-</span>
+            <span class="morph-piece text-xs" style="background: rgba(139,92,246,0.12); color: #a78bfa;">-m</span>
+            <span class="morph-piece text-xs" style="background: rgba(16,185,129,0.15); color: #34d399;">-ban</span>
+          </div>
+          <p class="text-xs text-slate-500">5 tokens &mdash; each is a meaningful morpheme. The model sees <span class="mono text-emerald-300">root</span> + <span class="mono text-orange-300">link</span> + <span class="mono text-blue-300">PL</span> + <span class="mono text-purple-300">POSS</span> + <span class="mono text-emerald-300">CASE</span>.</p>
+        </div>
+      </div>
+
+      <!-- Prediction -->
+      <div class="glass p-8 text-center">
+        <div class="text-4xl md:text-5xl font-black accent mb-2" id="improvement-num">~35-45%</div>
+        <p class="text-sm text-slate-400 mb-4">Predicted alignment improvement for Hungarian</p>
+        <p class="text-xs text-slate-500 max-w-lg mx-auto">
+          Hungarian&rsquo;s agglutinative suffix chains are highly decomposable, similar to Turkish. With 18 cases, 6 possessive forms, and a DEF/INDEF verbal split, BPE consistently misaligns morpheme boundaries. Morph-aware tokenization should yield strong improvements, likely comparable to Turkish&rsquo;s measured 56.9% gain.
+        </p>
+        <div class="mt-6 flex justify-center gap-8 text-xs">
+          <div>
+            <div class="text-slate-500">English</div>
+            <div class="mono text-slate-400 font-bold">~5%</div>
+          </div>
+          <div>
+            <div class="text-slate-500">Spanish</div>
+            <div class="mono text-slate-400 font-bold">~20-30%</div>
+          </div>
+          <div>
+            <div class="accent font-semibold">Hungarian</div>
+            <div class="mono accent font-bold">~35-45%</div>
+          </div>
+          <div>
+            <div class="text-slate-500">Turkish</div>
+            <div class="mono text-slate-400 font-bold">56.9%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="px-6 py-12 border-t border-white/5">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+        <span class="text-xs font-bold tracking-[0.2em] uppercase text-slate-600">Morphological Efficiency Project</span>
+        <nav class="flex gap-4 text-xs">
+          <a href="index.html" class="text-slate-500 hover:text-white transition-colors">Overview</a>
+          <a href="es.html" class="text-slate-500 hover:text-white transition-colors">Espa&ntilde;ol</a>
+          <a href="hu.html" class="text-emerald-400 font-semibold">Magyar</a>
+          <a href="tr.html" class="text-slate-500 hover:text-white transition-colors">T&uuml;rk&ccedil;e</a>
+        </nav>
+      </div>
+      <p class="text-xs text-slate-600 text-center">
+        &copy; 2026 Sameh AbuRadi. All rights reserved. Patent pending (DE).
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===================== GSAP ANIMATIONS ===================== -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // --- Header ---
+    const headerTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    headerTl
+      .to('#h-badge', { opacity: 1, duration: 0.5, delay: 0.3 })
+      .fromTo('#h-title', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
+      .fromTo('#h-sub', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.4')
+      .fromTo('#h-desc', { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.3')
+      .fromTo('#h-meter', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 }, '-=0.2');
+    headerTl.to('#complexity-bar-fill', { width: '60%', duration: 1.2, ease: 'power2.out' }, '-=0.4');
+
+    // --- Train coupling animation ---
+    ScrollTrigger.create({
+      trigger: '#train-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const tTl = gsap.timeline();
+        const cars = ['#tc-conn-1', '#tc-1', '#tc-conn-2', '#tc-2', '#tc-conn-3', '#tc-3', '#tc-conn-4', '#tc-4'];
+        cars.forEach((sel, i) => {
+          tTl.fromTo(sel, { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.5, ease: 'back.out(1.7)' }, 0.4 + i * 0.35);
+        });
+        tTl.fromTo('#train-result', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '+=0.5');
+      }
+    });
+
+    // --- DEF/INDEF tracks ---
+    ScrollTrigger.create({
+      trigger: '#def-indef-section',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const dTl = gsap.timeline();
+        dTl
+          .fromTo('#track-def', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' })
+          .fromTo('#track-indef', { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+          .to('#def-explain', { opacity: 1, duration: 0.5 }, '+=0.3');
+      }
+    });
+
+    // --- Decomposition steps ---
+    ScrollTrigger.create({
+      trigger: '#decomp-container',
+      start: 'top 60%',
+      once: true,
+      onEnter: () => {
+        const dTl = gsap.timeline();
+        for (let i = 1; i <= 5; i++) {
+          dTl.fromTo('#ds-' + i, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5 }, i === 1 ? '+=0.2' : '+=0.3');
+        }
+        dTl.to('#harmony-box', { opacity: 1, duration: 0.5 }, '+=0.3');
+      }
+    });
+
+    // --- Tag grids ---
+    ['#tag-grid-cases', '#tag-grid-poss', '#tag-grid-verb'].forEach(sel => {
+      gsap.fromTo(sel + ' .tag-grid-item',
+        { opacity: 0, scale: 0.8 },
+        {
+          opacity: 1, scale: 1,
+          duration: 0.25,
+          stagger: 0.025,
+          ease: 'back.out(1.7)',
+          scrollTrigger: { trigger: sel, start: 'top 80%', once: true }
+        }
+      );
+    });
+
+    // --- Inside the Engine: Pipeline ---
+    ScrollTrigger.create({
+      trigger: '#hu-pipeline',
+      start: 'top 70%',
+      once: true,
+      onEnter: () => {
+        const pTl = gsap.timeline();
+        for (let i = 0; i <= 5; i++) {
+          pTl.fromTo('#hu-pipe-' + i, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, i === 0 ? '+=0.1' : '+=0.25');
+        }
+      }
+    });
+
+    // --- Inside the Engine: Harmony tree ---
+    ScrollTrigger.create({
+      trigger: '#hu-harmony-tree',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const hTl = gsap.timeline();
+        hTl
+          .fromTo('#hu-ht-0', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5 }, '+=0.2')
+          .fromTo('#hu-ht-1', { opacity: 0, x: -25 }, { opacity: 1, x: 0, duration: 0.6 }, '+=0.3')
+          .fromTo('#hu-ht-2', { opacity: 0, x: 25 }, { opacity: 1, x: 0, duration: 0.6 }, '-=0.4');
+      }
+    });
+
+    // --- Inside the Engine: DEF/INDEF columns ---
+    ScrollTrigger.create({
+      trigger: '#hu-def-decision',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const dTl = gsap.timeline();
+        dTl
+          .fromTo('#hu-def-col', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6 }, '+=0.2')
+          .fromTo('#hu-indef-col', { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.6 }, '-=0.3');
+      }
+    });
+
+    // --- Inside the Engine: Assimilation ---
+    ScrollTrigger.create({
+      trigger: '#hu-assimilation',
+      start: 'top 65%',
+      once: true,
+      onEnter: () => {
+        const aTl = gsap.timeline();
+        for (let i = 0; i <= 3; i++) {
+          aTl.fromTo('#hu-as-' + i, { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.45 }, i === 0 ? '+=0.2' : '+=0.3');
+        }
+      }
+    });
+
+    // --- AI section ---
+    gsap.fromTo('#improvement-num',
+      { opacity: 0, scale: 0.8 },
+      {
+        opacity: 1, scale: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)',
+        scrollTrigger: { trigger: '#why-ai', start: 'top 60%', once: true }
+      }
+    );
+  </script>
+</body>
+</html>
