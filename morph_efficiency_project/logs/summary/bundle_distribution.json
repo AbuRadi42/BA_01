@@ -1,0 +1,138 @@
+{
+  "zh": {
+    "n_sentences": 20000,
+    "n_tokens": 3114411,
+    "n_unique_bundles": 136,
+    "zipf_alpha": 2.036,
+    "top5": [
+      {
+        "bundle": "NOUN",
+        "count": 1874773,
+        "share": 0.602
+      },
+      {
+        "bundle": "UNKNOWN",
+        "count": 350192,
+        "share": 0.1124
+      },
+      {
+        "bundle": "PUNCT",
+        "count": 298699,
+        "share": 0.0959
+      },
+      {
+        "bundle": "PART[particle_type=STRUCTURAL,role=ATTR]",
+        "count": 73886,
+        "share": 0.0237
+      },
+      {
+        "bundle": "VERB",
+        "count": 71688,
+        "share": 0.023
+      }
+    ],
+    "verdict": "unhealthy: single bundle dominates (60.2% of mass)"
+  },
+  "en": {
+    "n_sentences": 20000,
+    "n_tokens": 985492,
+    "n_unique_bundles": 29,
+    "zipf_alpha": 2.575,
+    "top5": [
+      {
+        "bundle": "UNKNOWN",
+        "count": 365843,
+        "share": 0.3712
+      },
+      {
+        "bundle": "PREP",
+        "count": 135115,
+        "share": 0.1371
+      },
+      {
+        "bundle": "DET",
+        "count": 93141,
+        "share": 0.0945
+      },
+      {
+        "bundle": "NOUN[num=PL]",
+        "count": 59876,
+        "share": 0.0608
+      },
+      {
+        "bundle": "ADJ",
+        "count": 53923,
+        "share": 0.0547
+      }
+    ],
+    "verdict": "steep: heavy head, thin tail (alpha=2.58)"
+  },
+  "tr": {
+    "n_sentences": 20000,
+    "n_tokens": 573281,
+    "n_unique_bundles": 447,
+    "zipf_alpha": 2.71,
+    "top5": [
+      {
+        "bundle": "UNKNOWN",
+        "count": 127042,
+        "share": 0.2216
+      },
+      {
+        "bundle": "PROPN",
+        "count": 74759,
+        "share": 0.1304
+      },
+      {
+        "bundle": "NOUN[case=ACC]",
+        "count": 38472,
+        "share": 0.0671
+      },
+      {
+        "bundle": "NOUN[case=DAT]",
+        "count": 28070,
+        "share": 0.049
+      },
+      {
+        "bundle": "VERB[aspect=HAB,num=SG,person=3,tense=PRES_AORIST]",
+        "count": 20816,
+        "share": 0.0363
+      }
+    ],
+    "verdict": "steep: heavy head, thin tail (alpha=2.71)"
+  },
+  "ar": {
+    "n_sentences": 20000,
+    "n_tokens": 901068,
+    "n_unique_bundles": 1147,
+    "zipf_alpha": 2.404,
+    "top5": [
+      {
+        "bundle": "VERB[form=I,gender=M,person=3,semantic_role=ACTION_TRANSITIVE,tense=PAST,voice=ACT]",
+        "count": 113842,
+        "share": 0.1263
+      },
+      {
+        "bundle": "VERB[form=XII,gender=M,person=3,semantic_role=INTENSIVE_QUALITY,tense=PAST,voice=ACT]",
+        "count": 59809,
+        "share": 0.0664
+      },
+      {
+        "bundle": "NOM[def=DEF,gender=M,num=SG,semantic_role=ACTION_TRANSITIVE]",
+        "count": 48768,
+        "share": 0.0541
+      },
+      {
+        "bundle": "NOM[gender=M,num=SG]",
+        "count": 40375,
+        "share": 0.0448
+      },
+      {
+        "bundle": "NOM[diptote=YES,gender=M,num=SG,semantic_role=NOUN]",
+        "count": 34940,
+        "share": 0.0388
+      }
+    ],
+    "verdict": "steep: heavy head, thin tail (alpha=2.40)"
+  }
+}

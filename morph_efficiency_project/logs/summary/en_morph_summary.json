@@ -1,0 +1,40 @@
+{
+  "language": "en",
+  "splits": [
+    {
+      "language": "en",
+      "split": "train",
+      "total_sentences": 73980938,
+      "valid_sentences": 71225050,
+      "total_tokens": 2500000002,
+      "foreign_tokens": 8360,
+      "foreign_rate": 0.0,
+      "vocab_size": 26268382,
+      "feature_bundles": 18
+    },
+    {
+      "language": "en",
+      "split": "val",
+      "total_sentences": 1848009,
+      "valid_sentences": 1778928,
+      "total_tokens": 62438495,
+      "foreign_tokens": 201,
+      "foreign_rate": 0.0,
+      "vocab_size": 26676313,
+      "feature_bundles": 18
+    },
+    {
+      "language": "en",
+      "split": "test",
+      "total_sentences": 1849912,
+      "valid_sentences": 1781179,
+      "total_tokens": 62505826,
+      "foreign_tokens": 217,
+      "foreign_rate": 0.0,
+      "vocab_size": 27079783,
+      "feature_bundles": 18
+    }
+  ],
+  "final_vocab_size": 27079783,
+  "final_feature_bundles": 18
+}

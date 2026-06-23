@@ -39,8 +39,8 @@ def test_pres_prog_yap():
     assert t("yapıyor")["tense"] == "PRES_PROG"
 
 def test_pres_prog_oku():
-    # okuyor: stem-final vowel drops, -uyor suffix
-    assert r("okuyor") == "ok"
+    # Reconciled with comprehensive: okuyor keeps vowel-final stem 'oku'.
+    assert r("okuyor") == "oku"
     assert t("okuyor")["tense"] == "PRES_PROG"
 
 # ══════════════════════════════════════════════════════════════════════════════

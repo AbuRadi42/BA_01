@@ -307,7 +307,166 @@ def tokenize_morph(lang: str) -> dict:
 
 # ── Step 4: Model (same architecture as full experiment, just smaller) ─────────
 
+# Multi-stream architecture (Tier 1 #2 + Tier 2 #5 of AWS-readiness roadmap).
+# A "stream" is an input channel of integer IDs (e.g. surface tokens, morph
+# feature bundles, Arabic roots, awzan, radicals). Each stream owns its own
+# nn.Embedding; per-token vectors are SUMMED at the input layer. The first
+# stream is treated as the "primary" stream: its vocab size is the output
+# vocab (head dimension) and its embedding is tied to the head weight.
+
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any
+
+@dataclass
+class StreamConfig:
+    name: str
+    vocab_size: int
+    per_stream_dim: int  # must equal model_dim for sum-at-input policy
+
+
+def _build_minigpt_classes(model_dim: int, n_layer: int, n_head: int,
+                           ffn_dim: int, seq_len: int, dropout: float):
+    """Factory returning (CausalSA, Block, MiniGPT) bound to torch.
+
+    Kept lazy so importing this module does not require torch.
+    """
+    import torch
+    import torch.nn as nn
+
+    C = model_dim
+    T = seq_len
+
+    class CausalSA(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.n_head = n_head
+            self.hd = C // self.n_head
+            self.qkv = nn.Linear(C, 3 * C, bias=False)
+            self.proj = nn.Linear(C, C, bias=False)
+            self.drop = nn.Dropout(dropout)
+            self.register_buffer("mask", torch.tril(torch.ones(T, T)).view(1, 1, T, T))
+        def forward(self, x):
+            B, t, _ = x.shape
+            q, k, v = self.qkv(x).split(C, dim=2)
+            q = q.view(B, t, self.n_head, self.hd).transpose(1, 2)
+            k = k.view(B, t, self.n_head, self.hd).transpose(1, 2)
+            v = v.view(B, t, self.n_head, self.hd).transpose(1, 2)
+            if hasattr(torch.nn.functional, "scaled_dot_product_attention"):
+                y = torch.nn.functional.scaled_dot_product_attention(q, k, v, is_causal=True)
+            else:
+                att = (q @ k.transpose(-2, -1)) * (self.hd ** -0.5)
+                att = att.masked_fill(self.mask[:, :, :t, :t] == 0, float("-inf"))
+                att = torch.softmax(att, -1)
+                y = att @ v
+            y = y.transpose(1, 2).contiguous().view(B, t, C)
+            return self.drop(self.proj(y))
+
+    class Block(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.ln1 = nn.LayerNorm(C); self.attn = CausalSA()
+            self.ln2 = nn.LayerNorm(C)
+            self.ffn = nn.Sequential(nn.Linear(C, ffn_dim), nn.GELU(),
+                                     nn.Linear(ffn_dim, C), nn.Dropout(dropout))
+        def forward(self, x):
+            x = x + self.attn(self.ln1(x))
+            x = x + self.ffn(self.ln2(x))
+            return x
+
+    class MiniGPT(nn.Module):
+        """Multi-stream causal LM.
+
+        stream_configs[0] is the primary stream (head is tied to its embedding,
+        and target IDs are predicted in its vocabulary).
+        """
+        def __init__(self, stream_configs: List[StreamConfig]):
+            super().__init__()
+            if not stream_configs:
+                raise ValueError("Need at least one stream")
+            for sc in stream_configs:
+                if sc.per_stream_dim != C:
+                    raise ValueError(
+                        f"Stream {sc.name}: per_stream_dim={sc.per_stream_dim} "
+                        f"must equal model_dim={C} (sum-at-input policy)")
+            self.stream_configs = list(stream_configs)
+            self.stream_emb = nn.ModuleDict({
+                sc.name: nn.Embedding(sc.vocab_size, sc.per_stream_dim)
+                for sc in stream_configs
+            })
+            self.pos_emb = nn.Embedding(T, C)
+            self.drop = nn.Dropout(dropout)
+            self.blocks = nn.ModuleList([Block() for _ in range(n_layer)])
+            self.ln_f = nn.LayerNorm(C)
+            primary = stream_configs[0]
+            self.head = nn.Linear(C, primary.vocab_size, bias=False)
+            self.head.weight = self.stream_emb[primary.name].weight
+            self.apply(self._init)
+
+        def _init(self, m):
+            if isinstance(m, (nn.Linear, nn.Embedding)):
+                nn.init.normal_(m.weight, 0.0, 0.02)
+                if hasattr(m, "bias") and m.bias is not None:
+                    nn.init.zeros_(m.bias)
+
+        def forward(self, stream_ids: Dict[str, "torch.Tensor"],
+                    targets: Optional["torch.Tensor"] = None):
+            primary_name = self.stream_configs[0].name
+            idx = stream_ids[primary_name]
+            B, t = idx.shape
+            pos = torch.arange(t, device=idx.device).unsqueeze(0)
+            x = self.stream_emb[primary_name](idx) + self.pos_emb(pos)
+            for sc in self.stream_configs[1:]:
+                x = x + self.stream_emb[sc.name](stream_ids[sc.name])
+            x = self.drop(x)
+            for blk in self.blocks:
+                x = blk(x)
+            x = self.ln_f(x)
+            logits = self.head(x)
+            loss = None
+            if targets is not None:
+                loss = nn.functional.cross_entropy(
+                    logits.view(-1, logits.size(-1)),
+                    targets.view(-1), ignore_index=0)
+            return logits, loss
+
+        def parameter_breakdown(self) -> Dict[str, Any]:
+            """Returns embedding-params per stream, transformer-block-params,
+            and head-params (head is weight-tied to primary embedding, so it
+            contributes 0 *additional* parameters).
+            """
+            emb = {sc.name: self.stream_emb[sc.name].weight.numel()
+                   for sc in self.stream_configs}
+            pos = self.pos_emb.weight.numel()
+            block_params = sum(p.numel() for blk in self.blocks
+                               for p in blk.parameters())
+            ln_f = sum(p.numel() for p in self.ln_f.parameters())
+            primary = self.stream_configs[0].name
+            head_extra = self.head.weight.numel() - self.stream_emb[primary].weight.numel()
+            total = sum(p.numel() for p in self.parameters())
+            return {
+                "embeddings_per_stream": emb,
+                "embeddings_total": sum(emb.values()),
+                "pos_embedding": pos,
+                "transformer_blocks": block_params,
+                "final_layernorm": ln_f,
+                "head_extra": head_extra,  # 0 because head is tied to primary
+                "total": total,
+            }
+
+    return CausalSA, Block, MiniGPT
+
+
+def make_minigpt(stream_configs: List[StreamConfig],
+                 model_dim: int = 128, n_layer: int = 4, n_head: int = 4,
+                 ffn_dim: int = 512, seq_len: int = 128, dropout: float = 0.0):
+    """Public constructor. Returns an instantiated MiniGPT."""
+    _, _, MiniGPT = _build_minigpt_classes(model_dim, n_layer, n_head,
+                                            ffn_dim, seq_len, dropout)
+    return MiniGPT(stream_configs)
+
+
 def build_model(vocab_size: int, n_feat_bundles: int, morph_mode: bool):
+    """Legacy entrypoint preserving the original 1- or 2-stream API."""
     import torch
     import torch.nn as nn
 

@@ -1,8 +1,0 @@
-[
-  {"name": "CAUS", "surface": ["-ish-", "-esh-", "-iz-", "-ez-"], "tags": {"voice": "CAUS"}, "order": 1},
-  {"name": "APPL", "surface": ["-i-", "-e-", "-li-", "-le-"], "tags": {"valence": "APPL"}, "order": 2},
-  {"name": "PASS", "surface": ["-w-"], "tags": {"voice": "PASS"}, "order": 3},
-  {"name": "RECIP", "surface": ["-an-"], "tags": {"voice": "RECIP"}, "order": 4},
-  {"name": "STAT", "surface": ["-ik-", "-ek-"], "tags": {"valence": "STAT"}, "order": 5},
-  {"name": "REV", "surface": ["-u-", "-o-"], "tags": {"valence": "REV"}, "order": 6}
-]
