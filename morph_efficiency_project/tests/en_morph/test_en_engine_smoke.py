@@ -18,13 +18,13 @@ CASES = [
     ("running",   "run",       "gerund"),
     ("walked",    "walk",      "past tense"),
     ("cats",      "cat",       "plural"),
-    ("happily",   "happi",     "adverb — derivation strips -ly"),
+    ("happily", "happy",     "adverb — derivation strips -ly"),
     # Irregular verbs
     ("went",      "go",        "irregular past"),
     ("children",  "child",     "irregular plural"),
-    ("better",    "well",      "comparative"),
+    ("better", "good",      "comparative"),
     # Derivational — engine strips known affixes
-    ("happiness", "happi",     "derivation -ness stripped"),
+    ("happiness", "happy",     "derivation -ness stripped"),
     ("quickly",   "quick",     "derivation -ly stripped"),
     ("unkind",    "kind",      "prefix un- stripped"),
     # Compounds — split via en_compounds.json

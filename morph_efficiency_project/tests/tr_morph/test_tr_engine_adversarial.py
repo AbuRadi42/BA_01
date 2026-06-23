@@ -97,7 +97,7 @@ def test_gen(surface, exp_root):
 
 # -- INSTRUMENTAL --
 @pytest.mark.parametrize("surface,exp_root", [
-    ("evle", "ev"), ("arabayla", "arabay"),
+    ("evle", "ev"), ("arabayla", "araba"),
 ])
 def test_ins(surface, exp_root):
     assert r(surface) == exp_root

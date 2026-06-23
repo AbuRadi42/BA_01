@@ -1,0 +1,50 @@
+{
+  "job_name": "morph-phase1-ar-morph",
+  "tag": "phase1-ar-morph",
+  "lang": "ar",
+  "regime": "morph",
+  "region": "us-east-1",
+  "instance_type": "ml.g5.xlarge",
+  "instance_count": 1,
+  "framework": "pytorch",
+  "framework_version": "2.3.0",
+  "py_version": "py310",
+  "role_arn": null,
+  "entry_point": "train_model.py",
+  "source_dir_s3": "s3://morph-efficiency-default/source/phase1-ar-morph/source.tar.gz",
+  "input_data_s3": "s3://morph-efficiency-default/data/ar_morph/",
+  "output_s3": "s3://morph-efficiency-default/runs/phase1-ar-morph/",
+  "checkpoint_s3": "s3://morph-efficiency-default/checkpoints/phase1-ar-morph/",
+  "max_run_seconds": 14400,
+  "hyperparameters": {
+    "lang": "ar",
+    "regime": "morph",
+    "model-dim": 128,
+    "layers": 4,
+    "max-tokens": 5000000,
+    "batch-size": 32,
+    "seq-len": 128,
+    "eval-every": 1000,
+    "save-every": 5000,
+    "log-every": 50,
+    "output-dir": "/opt/ml/model"
+  },
+  "cost_estimate": {
+    "instance": "ml.g5.xlarge",
+    "known": true,
+    "on_demand_usd_per_hour": 1.408,
+    "estimated_hours": 2.5,
+    "estimated_usd_low": 2.82,
+    "estimated_usd_high": 5.28
+  },
+  "iam_requirements": [
+    "sagemaker:CreateTrainingJob",
+    "sagemaker:DescribeTrainingJob",
+    "s3:GetObject",
+    "s3:PutObject",
+    "s3:ListBucket",
+    "logs:CreateLogStream",
+    "logs:PutLogEvents",
+    "ecr:GetAuthorizationToken"
+  ]
+}

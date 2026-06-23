@@ -42,11 +42,19 @@ morph_efficiency_project/tokenizers/**/*.bin
 morph_efficiency_project/logs/evaluation/*.json
 morph_efficiency_project/logs/training/*.json
 morph_efficiency_project/logs/training/*.jsonl
-morph_efficiency_project/logs/summary/*.json
-morph_efficiency_project/logs/summary/*.csv
-morph_efficiency_project/logs/summary/*.png
 morph_efficiency_project/logs/summary/conclusion.md
 morph_efficiency_project/logs/logs
+# (Audit reports, bundle distribution plots, and bundle_space.json in
+# logs/summary/ are kept; they are paper-grade artefacts, not per-run output.)
+
+# Manuscript build outputs (Tectonic temp dirs)
+manuscript/tex/_build*/
+
+# Mini-experiment derived artefacts (rebuildable via tokenize_for_training.py)
+mini_experiment/data/*.npy
+mini_experiment/data/*.txt
+mini_experiment/data/download_log.jsonl
+mini_experiment/tokenizers/tokenizers/
 morph_efficiency_project/tokenizers/tokenizers
 
 # Local backups

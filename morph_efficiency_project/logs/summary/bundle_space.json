@@ -1,0 +1,12 @@
+{
+  "tr": {
+    "possible": 4382,
+    "validated": 4382,
+    "observed": 329,
+    "observed_validated": 327,
+    "sentences_scanned": 2000,
+    "tokens_scanned": 86418,
+    "sentence_cap": 2000,
+    "elapsed_seconds": 2294.2
+  }
+}

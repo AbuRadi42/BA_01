@@ -35,7 +35,16 @@
 % When compiled under the Cambridge template, verify the correct package
 % name and font configuration for polyglossia or arabtex.
 \usepackage{fontspec}        % requires XeLaTeX or LuaLaTeX
+\usepackage{polyglossia}     % bidirectional script support (loads bidi)
+\setdefaultlanguage{english}
+\setotherlanguage{arabic}
 \newfontfamily\arabicfont[Script=Arabic]{Amiri}   % fallback if Amiri unavailable
+% CJK script support for the Mandarin case study and §4 architecture examples.
+\newfontfamily\cjkfont{SimSun}[Script=CJK]
+% Convenience macros that combine the font switch with the script direction:
+% Arabic flows right-to-left; CJK keeps its natural left-to-right.
+\newcommand{\ar}[1]{\textarabic{\arabicfont #1}}
+\newcommand{\zh}[1]{{\cjkfont #1}}
 % -----------------------------------------------------------------------
 
 \setlength{\parskip}{4pt}
@@ -48,7 +57,7 @@
 % Title and authors
 \title{%
 Morphology-Aware Tokenization as a Capacity Lever: \\
-Rethinking Scaling Laws for Morphologically Rich Languages
+A Cross-Linguistic Framework for Parameter-Efficient Language Models
 }
 
 \author{%
@@ -57,7 +66,7 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 \textit{Supervised by Fabian Geier}
 }
 
-\date{Draft of \today}
+\date{\today}
 
 \begin{document}
 \maketitle

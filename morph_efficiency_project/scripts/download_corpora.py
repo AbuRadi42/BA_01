@@ -37,11 +37,6 @@ DATA_DIR = ROOT / "mini_experiment" / "data"
 LOG_FILE = DATA_DIR / "download_log.jsonl"
 
 SOURCES = {
-    "de": ("wikimedia/wikipedia", "20231101.de"),
-    "es": ("wikimedia/wikipedia", "20231101.es"),
-    "hu": ("wikimedia/wikipedia", "20231101.hu"),
-    "sw": ("wikimedia/wikipedia", "20231101.sw"),
-    "eu": ("wikimedia/wikipedia", "20231101.eu"),
     "zh": ("wikimedia/wikipedia", "20231101.zh"),
 }
 

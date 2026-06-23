@@ -1,0 +1,7 @@
+model,language,regime,test_ppl,val_ppl,test_loss,tokens_per_unit,agreement_acc,bundle_acc,nats_per_morpheme,train_tokens,train_time_hr
+en_baseline,en,baseline,39.4202,39.4141,3.6743,1.0,None,None,3.6743,2496921600,5.11
+en_morph,en,morph,55.4652,55.486,4.0158,4.9094,1.0,1.0,19.7149,2496921600,5.67
+ar_baseline,ar,baseline,,,,,,,,,
+ar_morph,ar,morph,,,,,,,,,
+tr_baseline,tr,baseline,,,,,,,,,
+tr_morph,tr,morph,,,,,,,,,

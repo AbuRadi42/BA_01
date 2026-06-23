@@ -174,9 +174,9 @@ def test_irreg_nouns(surface, expected):
     ("taking",    "take",  "silent-e take"),
     ("giving",    "give",  "silent-e give"),
     # Plain
-    ("walking",   "walke", "plain walk"),
-    ("talking",   "talke", "plain talk"),
-    ("reading",   "reade", "plain read"),
+    ("walking", "walk", "plain walk"),
+    ("talking", "talk", "plain talk"),
+    ("reading", "read", "plain read"),
 ])
 def test_ing(surface, expected, label):
     assert r(surface) == expected, f"[{label}] got {r(surface)!r}"
@@ -274,4 +274,4 @@ def test_no_strip_her():
     assert r("her") == "her"     # -er but len <= 4
 
 def test_irreg_best():
-    assert r("best") == "well"   # irregular lookup, not -est strip
+    assert r("best") == "good"   # engine override: best -> good ADJ SUPER

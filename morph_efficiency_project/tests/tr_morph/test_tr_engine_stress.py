@@ -38,7 +38,8 @@ def test_acc_kol():
     assert tags("kolu")["case"] == "ACC"
 
 def test_acc_araba_y_buffer():
-    assert r("arabayı") == "arabay"
+    # Reconciled with comprehensive: y-buffer is part of suffix.
+    assert r("arabayı") == "araba"
     assert tags("arabayı")["case"] == "ACC"
 
 def test_acc_evleri_pl():
@@ -59,7 +60,8 @@ def test_dat_koy():
     assert tags("köye")["case"] == "DAT"
 
 def test_dat_araba_y_buffer():
-    assert r("arabaya") == "arabay"
+    # Reconciled with comprehensive: y-buffer is part of suffix.
+    assert r("arabaya") == "araba"
     assert tags("arabaya")["case"] == "DAT"
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -139,8 +141,9 @@ def test_poss_3sg_ev():
     assert tags("evi")["case"] == "ACC"
 
 def test_poss_3sg_araba_after_vowel():
-    assert r("arabası") == "arabas"
-    assert tags("arabası")["case"] == "ACC"
+    # Reconciled with comprehensive: s-buffer POSS_3SG, root is clean stem.
+    assert r("arabası") == "araba"
+    assert tags("arabası")["poss"] == "3SG"
 
 def test_poss_1pl_ev():
     assert r("evimiz") == "ev"

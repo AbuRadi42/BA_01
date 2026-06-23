@@ -1,8 +1,0 @@
-{
-  "kula": {"root": "la", "pos": "VERB", "tags": {"note": "monosyllabic_eat"}},
-  "nywa": {"root": "nywa", "pos": "VERB", "tags": {"note": "monosyllabic_drink"}},
-  "kuja": {"root": "ja", "pos": "VERB", "tags": {"note": "monosyllabic_come"}},
-  "kufa": {"root": "fa", "pos": "VERB", "tags": {"note": "monosyllabic_die"}},
-  "kwenda": {"root": "enda", "pos": "VERB", "tags": {"note": "monosyllabic_go"}},
-  "kuwa": {"root": "wa", "pos": "VERB", "tags": {"note": "monosyllabic_be"}}
-}

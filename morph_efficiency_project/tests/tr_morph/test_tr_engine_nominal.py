@@ -53,7 +53,8 @@ def test_acc_consonant_final(surface, exp_root):
     assert t(surface)["case"] == "ACC"
 
 def test_acc_y_buffer():
-    assert r("arabayı") == "arabay"
+    # Reconciled with comprehensive: y-buffer is part of suffix, root is clean.
+    assert r("arabayı") == "araba"
     assert t("arabayı")["case"] == "ACC"
 
 def test_acc_stacked_pl():
@@ -74,7 +75,8 @@ def test_dat_front(surface, exp_root):
     assert t(surface)["case"] == "DAT"
 
 def test_dat_y_buffer():
-    assert r("arabaya") == "arabay"
+    # Reconciled with comprehensive: y-buffer is part of suffix.
+    assert r("arabaya") == "araba"
     assert t("arabaya")["case"] == "DAT"
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -140,7 +142,8 @@ def test_ins_evle():
     assert t("evle")["case"] == "INS"
 
 def test_ins_arabayla():
-    assert r("arabayla") == "arabay"
+    # Reconciled with comprehensive: y-buffer is part of suffix.
+    assert r("arabayla") == "araba"
     assert t("arabayla")["case"] == "INS"
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -189,8 +192,9 @@ def test_poss_3sg_ev():
     assert t("evi")["case"] == "ACC"
 
 def test_poss_3sg_araba_after_vowel():
-    assert r("arabası") == "arabas"
-    assert t("arabası")["case"] == "ACC"
+    # Reconciled with comprehensive: s-buffer POSS_3SG, root is clean stem.
+    assert r("arabası") == "araba"
+    assert t("arabası")["poss"] == "3SG"
 
 def test_poss_3sg_kol():
     assert r("kolu") == "kol"
