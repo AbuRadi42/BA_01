@@ -94,10 +94,10 @@ def test_irregular_plural(surface, exp_root):
 # ══════════════════════════════════════════════════════════════════════════════
 
 @pytest.mark.parametrize("surface,exp_root,exp_degree", [
-    ("better", "well",  "COMP"),
-    ("best",   "well",  "SUPER"),
-    ("worse",  "badly", "COMP"),
-    ("worst",  "badly", "SUPER"),
+    ("better", "good",  "COMP"),
+    ("best", "good",  "SUPER"),
+    ("worse", "bad", "COMP"),
+    ("worst", "bad", "SUPER"),
 ])
 def test_irregular_comparative(surface, exp_root, exp_degree):
     assert r(surface) == exp_root
@@ -173,10 +173,10 @@ def test_plural_s(surface, exp_root):
 @pytest.mark.parametrize("surface,exp_root,exp_degree", [
     ("quicker",   "quick",  "COMP"),
     ("quickest",  "quick",  "SUPER"),
-    ("happier",   "happi",  "COMP"),   # engine: happi (y→i not restored)
-    ("happiest",  "happi",  "SUPER"),
-    ("larger",    "larg",   "COMP"),
-    ("largest",   "larg",   "SUPER"),
+    ("happier", "happy",  "COMP"),
+    ("happiest", "happy",  "SUPER"),
+    ("larger", "large",   "COMP"),
+    ("largest", "large",   "SUPER"),
 ])
 def test_comparative_superlative(surface, exp_root, exp_degree):
     assert r(surface) == exp_root
@@ -220,19 +220,19 @@ def test_ss_not_stripped(surface):
 # ══════════════════════════════════════════════════════════════════════════════
 
 @pytest.mark.parametrize("surface,exp_pos", [
-    ("teacher",   "ADJ"),   # engine: -er as COMP → ADJ
-    ("runner",    "ADJ"),   # engine: -er as COMP → ADJ
-    ("writer",    "ADJ"),   # engine: -er as COMP → ADJ
+    ("teacher",   "NOUN"),
+    ("runner",    "NOUN"),
+    ("writer",    "NOUN"),
 ])
 def test_agent_noun_er(surface, exp_pos):
-    # Engine treats -er as comparative suffix (Step A), not agentive
+    # Engine treats agent -er as derivational NOUN suffix.
     assert p(surface) == exp_pos
 
 @pytest.mark.parametrize("surface,exp_root", [
     ("running",  "run"),
     ("writing",  "write"),
-    ("teaching", "teache"),  # engine: e-restoration artifact
-    ("catching", "catche"),  # engine: e-restoration artifact
+    ("teaching", "teach"),  # engine: e-restoration artifact
+    ("catching", "catch"),  # engine: e-restoration artifact
 ])
 def test_progressive_roots(surface, exp_root):
     assert r(surface) == exp_root

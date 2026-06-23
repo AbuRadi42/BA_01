@@ -103,16 +103,16 @@ def test_prep_ba():
     assert r.tags["construction"] == "BA"
 
 
-# ── Content words default to UNKNOWN ─────────────────────────────────────────
+# ── Content words resolved by open-class fallback (comprehensive spec) ───────
 
 def test_content_word_unknown():
     r = engine.analyze("电脑")
-    assert r.pos == "UNKNOWN"
+    assert r.pos == "NOUN"
     assert r.tags == {}
 
 def test_content_word_verb_unknown():
     r = engine.analyze("学习")
-    assert r.pos == "UNKNOWN"
+    assert r.pos == "VERB"
 
 
 # ── Sentence analysis ────────────────────────────────────────────────────────

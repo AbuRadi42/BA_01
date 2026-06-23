@@ -37,17 +37,11 @@ sys.path.insert(0, str(ROOT))
 from morph_efficiency_project.scripts.engines.en_engine import EnglishEngine
 from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine
 from morph_efficiency_project.scripts.engines.tr_engine import TurkishEngine
-from morph_efficiency_project.scripts.engines.de_engine import GermanEngine
-from morph_efficiency_project.scripts.engines.es_engine import SpanishEngine
-from morph_efficiency_project.scripts.engines.hu_engine import HungarianEngine
-from morph_efficiency_project.scripts.engines.sw_engine import SwahiliEngine
-from morph_efficiency_project.scripts.engines.eu_engine import BasqueEngine
 from morph_efficiency_project.scripts.engines.zh_engine import MandarinEngine
 
 ENGINES = {
     "en": EnglishEngine, "ar": ArabicEngine, "tr": TurkishEngine,
-    "de": GermanEngine, "es": SpanishEngine, "hu": HungarianEngine,
-    "sw": SwahiliEngine, "eu": BasqueEngine, "zh": MandarinEngine,
+    "zh": MandarinEngine,
 }
 
 DATA_DIR = ROOT / "mini_experiment" / "data"

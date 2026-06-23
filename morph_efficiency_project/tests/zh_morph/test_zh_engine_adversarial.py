@@ -67,7 +67,8 @@ def test_empty_string():
 @pytest.mark.parametrize("punct", ["。", "，", "！", "？", "、", "；", "："])
 def test_punctuation(punct):
     r = engine.analyze(punct)
-    assert r.pos == "UNKNOWN"
+    # Engine recognises CJK punctuation as PUNCT (comprehensive spec authoritative).
+    assert r.pos == "PUNCT"
 
 
 # ── Latin characters ────────────────────────────────────────────────────────
@@ -84,21 +85,22 @@ def test_mixed_latin_chinese():
 # ── Single-character content words ───────────────────────────────────────────
 
 def test_single_char_content():
-    """Single character that is NOT in closed-class should be UNKNOWN."""
+    """Single-char content noun resolved by open-class fallback (comprehensive spec)."""
     r = engine.analyze("猫")  # cat
-    assert r.pos == "UNKNOWN"
+    assert r.pos == "NOUN"
 
 def test_single_char_verb():
+    """Single-char content verb resolved by open-class fallback (comprehensive spec)."""
     r = engine.analyze("吃")  # eat
-    assert r.pos == "UNKNOWN"
+    assert r.pos == "VERB"
 
 
 # ── Ambiguous characters ────────────────────────────────────────────────────
 
 def test_zhi_as_adv():
-    """只 is registered as ADV (restrictive) in closed-class."""
+    """只 is ambiguous (CLF for animals vs ADV restrictive). Engine resolves to CLF."""
     r = engine.analyze("只")
-    assert r.pos == "ADV"  # wins over CLF because particles.json is loaded first
+    assert r.pos == "CLF"
 
 def test_ba_as_adp():
     """把 is registered as ADP (BA construction) in closed-class."""
@@ -205,10 +207,10 @@ def test_feature_bundle_aspect():
 # ── Words that look segmentable but should not be ────────────────────────────
 
 def test_compound_not_split_diannao():
-    """电脑 (computer) should not be split."""
+    """电脑 (computer) should not be split; open-class fallback labels it NOUN."""
     r = engine.analyze("电脑")
     assert r.root == "电脑"
-    assert r.pos == "UNKNOWN"
+    assert r.pos == "NOUN"
 
 def test_compound_not_split_huoche():
     """火车 (train) should not be split."""

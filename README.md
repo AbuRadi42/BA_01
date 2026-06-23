@@ -1,556 +1,541 @@
-# Morphological Efficiency in Multilingual Language Models
-**Author:** Sameh AbuRadi
-**Governed by:** `experimental_contract.md`
-**Status:** Pre-training — pipeline complete, engines tested, ready for Vast.ai
+# Morphology-Aware Tokenization as a Capacity Lever
 
----
+**A Cross-Linguistic Framework for Parameter-Efficient Language Models**
 
-## What This Project Is
-
-This project trains and evaluates six language models across three languages — English, Arabic, and Turkish. For each language there are two models: a classically trained baseline and a grammar-aware morphology-informed variant. The experiment tests one question:
-
-> If you teach a model the grammatical structure of its language before it sees any training data, does it learn faster and more efficiently?
-
-Every model shares the same architecture (125M parameters), the same raw training data (2.5 billion tokens), and the same training budget. The only thing that differs is how the text is prepared before the model sees it. The baseline models receive statistically tokenized text with no linguistic knowledge. The morph models receive text that has been analyzed word-by-word through a grammar engine — every word decomposed into its root, its morphological template, and its grammatical tags — before training begins.
-
-The experiment is governed by a frozen scientific contract (`experimental_contract.md`) that was written before any implementation began. Results are reported as-found.
-
----
-
-## The Six Models
-
-| Model | Language | Type | What it knows before training |
-|---|---|---|---|
-| en_base | English | Baseline | Nothing — pure BPE frequency statistics |
-| en_morph | English | Grammar-aware | Inflectional + derivational morphology |
-| ar_base | Arabic | Baseline | Nothing — pure BPE frequency statistics |
-| ar_morph | Arabic | Grammar-aware | Root-and-pattern system (النحو والصرف) |
-| tr_base | Turkish | Baseline | Nothing — pure BPE frequency statistics |
-| tr_morph | Turkish | Grammar-aware | Suffix slot order + vowel harmony (Dilbilgisi) |
-
----
-
-## The Five Evaluation Metrics
-
-These are the five quantitative measures used to compare baseline vs. morph models. Each one captures a different dimension of what "learning efficiently" means.
-
-
-### Metric 1 — Perplexity (eval_lm.py)
-
-Perplexity measures how surprised the model is by text it has never seen. Formally it is the exponentiated average negative log-likelihood per token: `PPL = exp(mean(-log P(token_i | context)))`. A model with perplexity 50 is, on average, as uncertain as if it had to choose uniformly among 50 equally likely next tokens. Lower is better.
-
-Perplexity is the primary language modeling metric. It is computed on the held-out test split after training is complete. Both baseline and morph models are evaluated on the same test sentences.
-
-What it tells us: does the morph model assign higher probability to correct continuations? If the morph model has lower perplexity at the same training budget, it has learned a better probability distribution over the language — it has internalized the structure of the language more efficiently.
-
-The comparison is always within-language (en_base vs. en_morph, ar_base vs. ar_morph, tr_base vs. tr_morph). Cross-language perplexity comparisons are not meaningful because the vocabularies and token distributions are different.
-
-Logged to: `logs/training/{lang}_{regime}_timeseries.jsonl` (per step) and `logs/evaluation/{lang}_{regime}_lm_metrics.json` (final).
-
----
-
-### Metric 2 — Tokens Per Meaning Unit (eval_morphology.py)
-
-This metric measures how efficiently the tokenizer encodes meaning. It asks: how many tokens does it take to represent one unit of meaning?
-
-For baseline models, a "meaning unit" is approximated as a lemma (the dictionary base form of a word). For morph models, a meaning unit is a (root, template) pair — the canonical morphological representation of the word.
-
-The metric is computed as: `TPMU = total_tokens_in_corpus / total_meaning_units_in_corpus`.
-
-A lower TPMU means the tokenizer is more compact — it encodes the same amount of meaning in fewer tokens. This matters because the model's context window is fixed at 1024 tokens. A tokenizer that uses fewer tokens per meaning unit fits more meaning into each context window, which means the model can attend to longer-range dependencies and learn from more context per training step.
-
-For morphologically rich languages like Arabic and Turkish, this metric is expected to show the largest difference. Arabic BPE tokenizers frequently split a single word into 4–6 subword pieces, each carrying a fragment of meaning. The morph tokenizer represents the same word as 1–3 structured tokens (root + template + clitics), each carrying a complete unit of meaning.
-
-Logged to: `logs/evaluation/{lang}_{regime}_morphology_metrics.json`.
-
----
-
-### Metric 3 — Morphological Agreement Accuracy (eval_morphology.py)
-
-This metric measures whether the model has learned the grammatical agreement rules of the language — the rules that require words in a sentence to match each other in gender, number, case, person, and tense.
-
-The evaluation works by presenting the model with sentence contexts that require a specific grammatically agreeing continuation, and measuring how often the model assigns higher probability to the grammatically correct continuation than to an incorrect one.
-
-Examples of what is tested:
-
-- Arabic: does the model prefer a verb that agrees in gender and number with its subject? (الطالبة كتبَت vs. الطالبة كتبَ — the feminine subject requires the feminine verb form)
-- Turkish: does the model prefer a suffix chain that respects vowel harmony? (evlerde vs. evlarda — the front-vowel stem requires the front-vowel locative suffix)
-- English: does the model prefer the correct past tense form? (she went vs. she goed)
-
-Agreement accuracy is reported as a percentage: what fraction of the test pairs does the model get right?
-
-This metric directly tests whether the grammar prior has been internalized. A morph model that has been trained with explicit grammatical tags should show higher agreement accuracy than a baseline model that had to infer agreement rules from raw statistics alone.
-
-Logged to: `logs/evaluation/{lang}_{regime}_morphology_metrics.json`.
-
----
-
-### Metric 4 — Learning Efficiency / Steps to Threshold (eval_lm.py + compute_metrics.py)
-
-This metric measures how quickly the model reaches a target performance level. It asks: how many training steps (or tokens) does it take to reach a perplexity of X?
-
-The threshold X is set per language based on a reasonable target for a 125M model trained on 2.5B tokens. The exact threshold is determined after the first baseline run and then held fixed for the comparison.
-
-Learning efficiency is computed from the training time-series logs. Every 100 training steps, the current loss and perplexity are logged. The step at which the model first crosses below the threshold perplexity is the "steps to threshold" value.
-
-If the morph model reaches the threshold in fewer steps than the baseline, it has learned more efficiently — the grammar prior gave it a head start. This is the most direct test of the core research claim.
-
-The metric is also visualized as a learning curve: perplexity vs. tokens processed, with both baseline and morph plotted on the same axes. The area between the two curves (if the morph curve is consistently lower) quantifies the total efficiency gain over the full training run.
-
-Logged to: `logs/training/{lang}_{regime}_timeseries.jsonl` (raw) and `logs/summary/learning_efficiency.json` (aggregated).
-
----
-
-### Metric 5 — Downstream Task Performance (eval_downstream.py)
-
-This metric measures whether the representations learned by the model are useful for real tasks beyond language modeling. It uses a frozen model + linear probe evaluation: the model's weights are frozen after training, a single linear layer is trained on top of the model's hidden states, and the linear probe's accuracy on a downstream task is reported.
-
-Two downstream tasks are evaluated:
-
-**Text classification:** given a sentence, predict its category (topic, sentiment, or domain). The model's hidden states at the final token position are used as the sentence representation. The linear probe is trained on a small labeled dataset (1000–5000 examples) and evaluated on a held-out test set.
-
-**Morphological probing:** given a word in context, predict its morphological category (e.g., is this verb past tense or present tense? is this noun singular or plural?). This directly tests whether the model's internal representations encode morphological information — even for the baseline model, which was not explicitly trained with morphological labels.
-
-The downstream task evaluation answers a different question than perplexity: not "does the model predict text well" but "does the model understand the language well enough to be useful for something." A model with lower perplexity does not always have better downstream task performance — the two can diverge. Reporting both gives a more complete picture.
-
-FLOPs (floating point operations) are also logged during this evaluation to enable a compute-efficiency comparison: downstream accuracy per unit of compute.
-
-Logged to: `logs/evaluation/{lang}_{regime}_downstream_metrics.json`.
-
----
-
-## Model Architecture
-
-All six models share the same architecture. The only structural difference between baseline and morph models is the addition of a second embedding table in the morph models.
-
-| Parameter | Value |
+| | |
 |---|---|
-| Architecture | Decoder-only GPT-style transformer |
-| Parameters | ~125M |
-| Layers | 12 |
-| Hidden size | 768 |
-| Attention heads | 12 |
-| FFN dimension | 3072 |
-| Context length | 1024 tokens |
-| Precision | bfloat16 |
-| Training tokens | 2.5B (Chinchilla-optimal for 125M params) |
-
-The original plan called for 425M parameters. This was downgraded to 125M due to compute budget constraints. See `feasibility.md §11` for the full technical record. The scientific comparison is not affected by the scale reduction.
-
-**Baseline models** have one embedding table: `token_embedding[token_id]`.
-
-**Morph models** have two embedding tables. The input to the first transformer layer is:
-```
-x = token_embedding[root_template_id] + feature_embedding[grammatical_bundle_id]
-```
-
-The model receives both the semantic identity of the word (what root and template it is) and its grammatical role (what tense, person, number, etc.) as a combined signal from the very first layer. The feature embedding table is the only architectural addition — everything else is identical.
-
+| **Author** | Sameh AbuRadi — CODE University of Applied Sciences, Berlin |
+| **Supervisor** | Fabian Geier |
+| **Target venue** | *Natural Language Processing* (Cambridge University Press) |
+| **Compute** | Donated AWS credits ($24,000) from Deniz Sertkan — funds both phases below |
+| **Status** | Architecture complete; tokenisation complete on all four languages; AWS deployment is yours to authorise |
+| **Phase 2** | Eight-cell proof-of-concept sweep (4 languages × 2 regimes at 30M parameters). Budget ≈ $3-5k. Cambridge submission. |
+| **Phase 3** | Native Turkish reasoning-capable small language model, built with the technique Phase 2 proves. Budget ≈ $15-20k. The bulk of the credits goes here. |
+| **Governance** | Pre-registered scientific contract at `experimental_contract.md`, frozen before implementation |
 
 ---
 
-## The Full Pipeline — Step by Step
+## The question this project asks
 
-### Stage 0 — Grammar Engine (already complete)
+Big language models like ChatGPT or Gemma need enormous brains to learn how a language works. They have to figure out, from billions of examples, that *cats* is the plural of *cat*, that Arabic verbs come from three-letter roots, that Turkish stacks suffixes in a strict order, that Chinese characters carry their semantics in their radicals. They burn megawatts of electricity to reconstruct grammatical knowledge that human linguists have already written down in textbooks.
 
-Before any data is downloaded, the grammar engines are built and tested. These are the algorithmic analyzers that will process every word in the corpus for the morph models. They live in `scripts/engines/` and are tested by 2150 pytest tests (0 failures).
+This project asks one question:
 
-The three engines share a common three-step structure:
+> If we give the model the grammar of the language *before* training begins, encoded as structured input streams that sit alongside the surface text, does it need a smaller brain to reach the same capability?
 
-```
-Word
- │
- ▼
-Step A: Clitic / Affix Stripping + Surface Tagging
-         Detach grammatical particles attached to the word surface.
-         Tag the remaining base form with grammatical properties.
- │
- ▼
-Step B: Template / Pattern Detection
-         Match the base form against the known morphological template
-         inventory for that language.
- │
- ▼
-Step C: Root / Stem Extraction
-         Extract the root or stem using the identified template.
- │
- ▼
-TokenInfo(surface, clitics, template, root, tags, pos)
-```
+If the answer is yes, then small grammar-aware models could fit on smartphones, and languages currently under-served by the major foundation models (Arabic, Turkish, the Semitic family, the Turkic family, the languages of South and East Asia) would become much cheaper to model well.
 
-The output for each word is a `TokenInfo` object — a fully tagged representation that becomes the input to the morph model's tokenizer.
+We test this on four languages chosen for their typological diversity:
 
----
-
-### Stage 1 — Download Corpora (download_data.py)
-
-**Script:** `scripts/download_data.py --language all`
-
-Downloads text from HuggingFace datasets in streaming mode (no full corpus loaded into RAM) and writes train/val/test splits for each language.
-
-Sources:
-- English: Wikipedia EN + OPUS books + CC-100 EN
-- Arabic: Wikipedia AR + OPUS AR + CC-100 AR
-- Turkish: Wikipedia TR + OPUS TR + CC-100 TR
-
-Split targets per language:
-- Train: ~2.5B whitespace tokens
-- Validation: ~62.5M tokens
-- Test: ~62.5M tokens
-
-The split is assigned probabilistically per sentence using a fixed random seed per language (EN=42, AR=43, TR=44). This ensures the baseline and morph models for the same language see exactly the same sentences in the same splits — the only difference is how those sentences are processed.
-
-Outputs:
-```
-data/raw/en/train.txt   data/raw/en/val.txt   data/raw/en/test.txt
-data/raw/ar/train.txt   data/raw/ar/val.txt   data/raw/ar/test.txt
-data/raw/tr/train.txt   data/raw/tr/val.txt   data/raw/tr/test.txt
-```
-
-Token counts are logged to `logs/evaluation/{lang}_baseline_token_stats.json`.
-
----
-
-### Stage 2 — Baseline Preprocessing (preprocess_baseline.py)
-
-**Script:** `scripts/preprocess_baseline.py --language all`
-
-Produces the tokenized data for the three baseline models (en_base, ar_base, tr_base).
-
-**Step 2a — Train SentencePiece BPE tokenizer**
-
-For each language, a BPE (Byte Pair Encoding) tokenizer is trained on up to 10M sentences sampled from the training corpus. BPE starts with individual characters and iteratively merges the most frequent adjacent pairs until the vocabulary reaches 32,000 tokens.
-
-The tokenizer has zero linguistic knowledge. It does not know what a verb is, what a root is, or that "running" and "run" are related. It learns purely from which character sequences appear together frequently. The result is a vocabulary of 32,000 statistical subword pieces.
-
-Configuration: vocab_size=32000, character_coverage=0.9995, model_type=bpe, BOS/EOS/PAD/UNK special tokens.
-
-Saved to: `tokenizers/{lang}_base/{lang}_base.model`
-
-**Step 2b — Tokenize all splits**
-
-Every sentence in train/val/test is encoded as a sequence of integer token IDs using the trained tokenizer. BOS (token 2) is prepended and EOS (token 3) is appended to each sentence. The full sequence is saved as a NumPy int32 array.
-
-Outputs:
-```
-data/processed/en/baseline/train_tokens.npy
-data/processed/en/baseline/val_tokens.npy
-data/processed/en/baseline/test_tokens.npy
-(same for ar and tr)
-```
-
----
-
-### Stage 3 — Morph Preprocessing (preprocess_morph.py)
-
-**Script:** `scripts/preprocess_morph.py --language all`
-
-Produces the tokenized data for the three morph models (en_morph, ar_morph, tr_morph). This is where the grammar engines run over the full corpus.
-
-For each word in each sentence, the grammar engine produces a `TokenInfo` object. The `MorphVocab` registry converts this into two integer IDs:
-- `token_id` — identifies the word's root+POS (e.g., `كتب.VERB`)
-- `bundle_id` — identifies the grammatical tag bundle (e.g., `pos=VERB|tense=PAST|person=3|num=PL|gender=M|voice=ACT`)
-
-Both sequences are saved as NumPy int32 arrays. The morph model's training loop loads both and adds the two embeddings together as its input.
-
-After processing all splits, the vocabulary is saved:
-- `tokenizers/{lang}_morph/vocab.json` — maps token strings to IDs
-- `tokenizers/{lang}_morph/feature_bundles.json` — maps bundle strings to IDs
-
-Outputs:
-```
-data/processed/en/morph/train_tokens.npy      data/processed/en/morph/train_feature_ids.npy
-data/processed/en/morph/val_tokens.npy        data/processed/en/morph/val_feature_ids.npy
-data/processed/en/morph/test_tokens.npy       data/processed/en/morph/test_feature_ids.npy
-(same for ar and tr)
-```
-
-Stats per split (foreign rate, vocab size, feature bundle count) are logged to `logs/evaluation/{lang}_morph_{split}_stats.json`.
-
----
-
-### Stage 3 Detail — The Arabic Grammar Engine (ar_engine.py)
-
-Arabic is a root-and-pattern (templatic) language. Every Arabic word is built from a triconsonantal or quadriconsonantal root (جذر) combined with a vowel pattern (وزن). The root carries the core semantic field; the pattern carries the grammatical function. The engine implements النحو والصرف — the formal Arabic grammatical sciences — algorithmically.
-
-**Pre-computed vocabulary space:** Before touching the corpus, the engine crosses 7,142 roots (sourced from the Doha Historical Dictionary of Arabic, معجم الدوحة التاريخي للغة العربية) against the full وزن template inventory. For each (root, template) pair, it applies the root consonants to the template's ف-ع-ل skeleton and checks phonological validity. The result is a grammar-defined closed vocabulary stored in `configs/ar_vocab_space.json`.
-
-**Closed-class particle lookup:** Before any morphological analysis, the engine checks the word against a lookup table of ~120 Arabic function words and frozen expressions (prepositions, conjunctions, negation particles, interrogatives, discourse particles, vocatives, interjections, oaths, response particles). If found, the word is immediately tagged as `PART` with its subcategory and the root-and-pattern pipeline is skipped. This prevents particles like على (two consonants, no matching template) from being misclassified as verbs.
-
-**Step A — Clitic stripping:** Arabic words frequently have grammatical particles glued onto them. The engine strips these in a loop, one at a time, until no more remain.
-
-Proclitics (front): conjunctions وَ/فَ, prepositions بِ/لِ/كَ, definite article الـ, future marker سَـ, emphasis particle لَـ, interrogative أَ, oath prefix تَ, and all compound clusters of the above (وَبِالـ، فَلِلـ etc.), in both diacritical and undiacritical forms.
-
-Enclitics (back): all object/possessive pronoun suffixes (3rd, 2nd, 1st person, all numbers and genders), dual noun endings, feminine plural endings, 2nd person verb agreement suffixes, and energetic nun (نون التوكيد).
-
-Consonant-count guards prevent the engine from eating root consonants:
-- Conjunctions (و، ف): require 3+ consonants remaining after stripping
-- Prepositions and tense markers (ب، ل، ك، س): require 4+ consonants remaining (these can be root-initial)
-- After الـ is stripped, no further single-character proclitic stripping is attempted (prevents الكتاب → كتاب → تاب)
-- Form VIII / الـ ambiguity guard: before stripping الـ, the engine checks whether the word matches the Form VIII اِفْتَعَلَ signature (prevents اِلْتَقَى from being misread as الـ + تقى)
-- Enclitic ي guard: only stripped when 5+ consonants remain (prevents eating root-final ي from يَرْمِي)
-- Enclitic كَ/كِ guard: requires 4+ consonants remaining (prevents eating root-final ك from شَارَكَ)
-- Enclitic نِي/نِ guard: requires 3+ consonants remaining (prevents eating root-final ن from يَبْنِي)
-- Masculine sound plural guard (ـون/ـين): requires 3+ consonants remaining
-- Nisba suffix stripping (ـيّ): detected by ي + shadda at word end; stripped before template matching
-
-Special construction — لام التوكيد + نون التوكيد: this is a circumfix (الإحاطة) — a discontinuous morpheme where لَـ at the front and ـنَّ/ـنْ at the back bracket the verb together to form the sworn-assertion construction (جواب القسم المؤكد بالنون). Example: لَيَكْتُبَنَّ = "he will most certainly write, I swear it." The engine strips both halves independently then detects the co-occurrence and reunites them as a single `circumfix=LAM_NUN, assertion=SWORN` tag.
-
-Imperfect prefix يَ: after clitic stripping, if the stem starts with يَ (diacritical) or bare ي (unvoweled) and 3+ consonants remain after removing it, the imperfect 3rd-person masculine prefix is stripped.
-
-**Step B — Template matching:** The stripped base form is matched against the Arabic pattern inventory. The engine runs pre-index checks for augmented verb forms and derived nominals before consulting the template index. Each check has a precise consonant-count condition:
-
-| Prefix marker | Condition | Form detected |
+| Language | Morphological type | Why it's here |
 |---|---|---|
-| مُسْت | any | Form X active participle (NOM_DERIVED_X) |
-| اِسْت | 5+ chars remaining | Form X verb (اِسْتَفْعَلَ) |
-| اِ + any + ت at position 2 | 4+ consonants | Form VIII (اِفْتَعَلَ) |
-| اِنْ + consonants[2] ≠ ت | 5+ consonants | Form VII (اِنْفَعَلَ) |
-| إ + 5 consonants + ا at position 3 | exactly 5 | إفعال masdar (Form IV masdar) |
-| أ | exactly 4 consonants | Form IV (أَفْعَلَ) |
-| أ + ا at position 3 | exactly 5 | Broken plural أَفْعَال |
-| ت | exactly 4 consonants, no internal ا | Form V (تَفَعَّلَ) |
-| ت | 5 consonants, root_consonants==4 | Form VI (تَفَاعَلَ) |
-| ت | 5 consonants, ي at position 3 | Masdar Form II (تَفْعِيل) |
-| اِ + geminate final | 4 consonants (voweled) or 5 (unvoweled) | Form IX (اِفْعَلَّ) |
-| مُ (damma) | any | Derived nominal (NOM_DERIVED) |
-| مَ (fatha) | 4+ consonants | Derived nominal (مَفْعُول / place noun) |
+| Mandarin (ZH) | Isolating, with radical-semantic structure | Tests the framework's lower bound: a language with almost no inflectional morphology, but a non-concatenative semantic axis (the Kangxi radical inventory) that is the structural analog of Arabic's wazn system |
+| English (EN) | Analytic | The control: morphology is sparse, framework predicts the smallest rebate |
+| Turkish (TR) | Agglutinative | The framework's predicted strongest case: high grammatical information per word, surface-recoverable |
+| Arabic (AR) | Templatic (root-and-pattern) | The decomposition case: grammatical and semantic information sit on three orthogonal axes (surface affixation, root identity, wazn semantic role) |
 
-**Step C — Root extraction:** Once the template is identified, the engine extracts the root by mapping the word's consonants back onto the template's ف-ع-ل positions. Augment prefix consonants are skipped (skip counts: Form X = 3, Form VIII = 1, Form VII = 2, Form V/VI = 1, Form IV = 1, NOM_DERIVED = 1, NOM_DERIVED_X = 3).
-
-Form VIII specifically: after skipping the initial اِ, the infixed ت is searched dynamically at positions 1 or 2 of the remaining consonants. Three assimilation variants are handled: root-initial و/ي/ء (doubled ت, recovery by prepending و/ي/ء), emphatic R1 (ت absorbed into emphatic, no removal needed), and emphatic R1 + geminate (emphatic substitute at position 1 is removed).
-
-Phonological normalizations applied before root lookup:
-- Hamza normalization: all hamza variants (أ، إ، آ، ؤ، ئ) normalized to bare ء
-- ناقص (final weak radical): final ا or ى substituted with و then ي; disambiguation lexicon keyed by (R1, R2) frame resolves ambiguous pairs
-- أجوف (middle weak radical): disambiguation lexicon keyed by (R1, R3) frame determines whether middle radical is و or ي
-- مثال (initial و-drop): if 2 consonants remain after augment skipping, و is prepended as a candidate
-- مضعّف (geminate): if 2 consonants remain, final consonant is doubled as a candidate
-- Long-vowel ا in patterns (فَاعِل, فِعَالَة etc.): internal ا stripped before lookup
-- مَفْعُول / فُعُولَة / فَعِيلَة patterns: internal و or ي at position 2 stripped before lookup
-- Diminutive pattern (فُعَيْعِل): ي at position 2 stripped to recover quadriliteral root
-
-Form VII ن removal uses a context-sensitive rule: for 3-consonant post-skip stems, ن is only stripped if the 2-char remainder is a known ناقص frame in the disambiguation lexicon; for 4+ consonant post-skip stems, ن is always stripped.
-
-The extracted root is validated against `configs/ar_roots.json`. If found → confirmed. If not → flagged as `UNVERIFIED_ROOT` and logged.
-
+For each language we will train two small transformers: one classical (BPE baseline), one grammar-aware (multi-stream input). Same architecture, same data, same training budget. The only difference is what the tokeniser exposes.
 
 ---
 
-### Stage 3 Detail — The English Grammar Engine (en_engine.py)
+## What has been built so far
 
-English is an analytic language with shallow inflectional morphology but a rich derivational system. The engine is grounded in Quirk et al. (1985) and Huddleston & Pullum (2002).
+The repository contains everything needed to deploy the experiment to AWS, except the actual cloud credentials and the act of pressing *deploy*. The pieces, end to end:
 
-**Step A — Inflectional stripping:** The engine first checks the word against `configs/en_irregulars.json` — a lookup table of all irregular English forms (went→go, mice→mouse, better→good, been→be, children→child, etc.). Irregular forms cannot be handled by pattern matching and must be resolved by lookup.
+1. **Four grammar engines**, one per language, that decompose each word into its grammatical pieces. Total 4,283 unit tests covering inflection, derivation, prefixation, irregulars, vowel harmony, clitic stacking, broken plurals, weak roots, masdars, awzān, radicals, and the edge cases that surface only on real Wikipedia text.
 
-If the word is not irregular, pattern-based stripping is applied:
+2. **A sentence-grammar layer** per language that resolves part-of-speech ambiguities using the full sentence window, and validates the sentence against the language's allowed structural templates (الجملة الفعلية and الجملة الاسمية for Arabic, fiil-sonda SOV for Turkish, the 把/被 constructions for Mandarin, SVO for English).
 
-| Pattern | Signal | Example |
-|---|---|---|
-| -ing | Progressive verb | running → run, tense=PRES, aspect=PROG |
-| -ed | Past tense / past participle | walked → walk, tense=PAST |
-| -s / -es | Plural noun or 3sg verb | cats → cat, num=PL |
-| -ies | Plural of -y words | cities → city, num=PL |
-| 's | Possessive | cat's → cat, poss=YES |
-| -er | Comparative | faster → fast, degree=COMP |
-| -est | Superlative | fastest → fast, degree=SUPER |
+3. **A tokeniser pipeline** that turns raw Wikipedia text into the integer streams the model consumes. Two regimes per language: the BPE baseline (one stream) and the grammar-aware variant (two streams for ZH/EN/TR, four for AR).
 
-Spelling rules are applied in reverse: double-consonant restoration (running → run, not runn), silent-e restoration (making → make, not mak).
+4. **A multi-stream transformer architecture** (`MiniGPT`) that supports 1, 2, or 4 input embedding streams summed at the input layer, with a parameter-matched comparison protocol so reviewers cannot dismiss the rebate as a parameter-count artefact.
 
-Tags assigned: pos (NOUN/VERB/ADJ/ADV/DET/PRON/PREP/CONJ/PART), num (SG/PL), tense (PAST/PRES), aspect (PERF/PROG), voice (ACT/PASS), degree (COMP/SUPER), poss (YES).
+5. **A trainer** with cosine learning-rate schedule, checkpointing, eval logging, and resume support, verified end-to-end on a local CPU smoke run (50,000 tokens, 27 seconds wall-clock, loss decreased monotonically from 9.31 to 6.95).
 
-**Step B — Derivational detection:** After inflectional stripping, the engine checks whether the remaining stem has a derivational affix using `configs/en_derivations.json`. The engine strips one derivational layer at a time and records the chain.
+6. **An AWS SageMaker launcher** that emits the estimator configuration, the submission script, and the IAM requirements per training run, and can deploy directly via `boto3` when given AWS credentials.
 
-Examples of derivational patterns handled:
-- Verb → Noun: -tion/-sion/-ation (education), -ment (development), -ure (failure), -er/-or (teacher)
-- Adj → Noun: -ness (darkness), -ity (reality), -ism (capitalism)
-- Noun/Adj → Verb: -ize/-ise (modernize), -ify (simplify), -en (darken)
-- Noun → Adj: -ful (hopeful), -less (hopeless), -able/-ible (readable), -ous (dangerous), -al (national), -ic (historic)
-- Prefixes: un- (negation/reversal), re- (repetition), dis- (negation), over- (excess), pre- (before), mis- (wrongly)
+7. **A 60-page manuscript** drafted, polished for linguist-readability, with all four languages' case studies, the architecture documented, every Arabic word vocalised with tashkil, properly bidirectional Arabic rendering, the four-language scope reflected throughout, and a fresh PDF at `manuscript/tex/_build/main.pdf`.
 
-Example chain: "modernization" → strip -ation → "modernize" (V→N recorded) → strip -ize → "modern" (N/ADJ→V recorded) → root: "modern", derived_chain: ["-ation→ACTION_NOUN", "-ize→VERBALIZE"]
+8. **Bundle distribution analysis** with per-language Zipf plots and a combined cross-lingual figure, documenting the structural shape of each language's feature-bundle space at full corpus scale.
 
-Phrasal verbs (`configs/en_phrasal_verbs.json`) and compound words (`configs/en_compounds.json`) are handled via lookup before the stripping pipeline, since their semantics are not compositional (give up ≠ give + up).
-
-**Step C — Root identification:** Whatever remains after stripping up to four derivational layers is the root/stem — the core semantic unit.
+The only thing still pending is one local dress-rehearsal smoke run, and the AWS deployment itself.
 
 ---
 
-### Stage 3 Detail — The Turkish Grammar Engine (tr_engine.py)
+## The framework, in plain terms
 
-Turkish is an agglutinative language. Words are built by stacking suffixes onto a stem in a strict, predictable order defined by Dilbilgisi (Turkish grammar). A single Turkish word can encode what English expresses in a full clause. The engine implements the canonical Dilbilgisi suffix slot order algorithmically.
+Every word in a language carries *grammatical information*. The English *researchers* carries: *this is a noun, it is plural*. The Turkish *evlerinizden* carries: *this is a noun, it is plural, it belongs to you (plural), it is in the ablative case*. The Arabic اسْتَخْدَمَ (*istakhdama*, "he used") carries: *this is a verb, it is in Form X, it is past, active voice, third-person masculine singular, with the semantic role of seeking or requesting*.
 
-**Pre-computed vocabulary space:** The engine builds a theoretical map from the Turkish suffix inventory (`configs/tr_suffixes.json`) and derivational suffix inventory (`configs/tr_derivations.json`). Each suffix entry records its logical name, surface variants (vowel harmony forms), slot position, and grammatical tags.
+We can count the number of distinct grammatical-information packets a language's word forms can express. Call this set `B(L)`. Its size, the **Structural Synthesis Ceiling**, is a property of the language's grammar that we can compute from the grammar engines alone, before any model trains.
 
-**Vowel harmony:** Turkish suffixes change their vowels to match the vowels in the stem. Two harmony dimensions operate simultaneously:
-- Back/front harmony: back vowels (a, ı, o, u) in stem → suffix takes back variant; front vowels (e, i, ö, ü) → front variant
-- Rounding harmony: rounded vowels (o, u, ö, ü) → high vowel in suffix becomes rounded; unrounded → unrounded
+Two quantities follow:
 
-The same suffix has multiple surface forms: plural is -lar after back vowels, -ler after front vowels. The engine validates that each stripped suffix's surface form is consistent with the vowel harmony of the remaining stem.
+- `H(L)`, the **grammatical Shannon entropy** of word forms in `L`. How much information, on average, does a word in this language carry in its grammar? English: 1.43 bits. Mandarin: small. Turkish: 4.97 bits. Arabic: 5.44 bits.
 
-**Step A — Suffix stripping (outermost-first):** Suffixes are stripped from right to left, following the reverse of the canonical Dilbilgisi slot order. Each stripped suffix is normalized to its logical form and its grammatical function is recorded as a tag.
+- `ρ(L)`, the **structural recoverability coefficient**. How much of `H(L)` can a surface-only parser recover, just by looking at the word? English: 0.89 (almost everything is on the surface). Turkish: 0.85 (slot-stacked affixes are visible). Arabic: 0.59 (the non-concatenative root-and-pattern fusion hides about 40% of the information behind the consonantal skeleton).
 
-Canonical slot order for nominal words: `STEM → [DERIV] → [NUM] → [POSS] → [CASE]`
-Canonical slot order for verbal words: `STEM → [DERIV] → [VOICE] → [NEG] → [TENSE] → [MOOD] → [PERSON+NUM]`
+The product `ρ(L) · H(L)` is the **effective grammatical information density**: how much grammatical information a tokeniser can pre-encode for the language. English: 1.28 bits. Mandarin: small. Arabic: 3.20 bits. Turkish: 4.20 bits.
 
-Tags assigned: pos (NOUN/VERB/ADJ/ADV/POSTP), num (SG/PL), poss (1SG/2SG/3SG/1PL/2PL/3PL), case (NOM/ACC/DAT/LOC/ABL/GEN/INS), voice (PASS/CAUS/RECIP/REFL), polarity (NEG), tense (PAST_DEF/PAST_NARR/PRES_PROG/PRES_AORIST/FUT), mood (COND/OPT/IMP/NECESS/INF), person (1/2/3), modality (ABIL), epist (INFER), q (YES_NO).
+The framework's central prediction is:
 
-The two past tense values are linguistically significant: PAST_DEF (-dı, witnessed past — "I saw it happen") vs. PAST_NARR (-mış, narrative/reported past — "I heard it happened"). This evidential distinction is grammatically encoded in Turkish and is preserved as a tag.
+> The parameter rebate that morphology-aware tokenisation delivers over a BPE baseline is monotonically ordered by `ρ(L) · H(L)`. Higher `ρ · H` languages get larger savings.
 
-**Step B — Dilbilgisi slot order validation and derivational detection:** After stripping, the engine validates that the suffix sequence respects the canonical slot order. Violations are flagged as `MALFORMED` and logged. Derivational suffixes (those that change the word's category or create a new word) are identified and recorded in the derivation chain.
+Phase 1 (a six-model preliminary experiment at 2-million-parameter scale on three languages) confirmed the ranking: English smallest rebate, Arabic in the middle, Turkish largest. The magnitudes did not behave as a single linear function; they implied a per-bit coefficient that varied by 40-fold across the three languages. We named this empirical pattern the **Agglutinative Compounding Effect** and identified two readings that Phase 1 evidence cannot distinguish:
 
-Derivational suffixes handled: -lık/-lik (noun/adj → abstract noun: iyi → iyilik), -cı/-ci (noun → agent noun: araba → arabacı), -lı/-li (noun → adjective: su → sulu), -sız/-siz (noun → privative adj: su → susuz), -laş (noun/adj → verb: modern → modernleşmek), -ış/-iş (verb → action noun: gel → geliş), and others from `configs/tr_derivations.json`.
+- **Interpretation A**: the rebate is genuinely super-linear in `ρ · H`. Languages at the high-recoverability pole get disproportionately large savings.
+- **Interpretation B**: the rebate is linear, but the Hoffmann scaling-law derivative used to convert observed test-loss reductions into implied parameter rebates is unreliable in the Chinchilla-suboptimal regime Phase 1 occupied.
 
-**Step C — Stem identification, valency, and compound detection:** After all suffix layers are stripped, the remaining stem is looked up in the Zeyrek stem lexicon (queried at runtime via `analyzer.lexicon`). Verbal stems are checked for valency (transitive/intransitive). Compound stems (başbakan = baş + bakan) are detected and both component stems are recorded.
+Phase 2 — the experiment this repository is now ready to deploy — is designed to discriminate between these interpretations by training at properly-trained Chinchilla-optimal scales across all four languages.
 
----
+Phase 2 also tests a second prediction added during the project's development. Arabic's morphology stores information on three orthogonal axes:
 
-### Stage 4 — Training (train_lm.py)
+- **Surface-recoverable**: what `ρ(L)` captures, accessible to any surface-only parser
+- **Lexicon-recoverable**: the root identity, accessible only when the parser knows the root inventory
+- **Semantic-class-recoverable**: the wazn semantic role (185 classes), accessible only when the parser knows the templatic pattern's semantic function
 
-**Script:** `scripts/train_lm.py --language {en|ar|tr} --regime {baseline|morph}`
-
-Trains one model. Run six times total (or split across two Vast.ai instances for parallel training).
-
-The training loop:
-1. Loads the processed token arrays from `data/processed/{lang}/{regime}/`
-2. For morph regime, also loads the feature ID arrays
-3. Instantiates the GPT model (125M params)
-4. Trains with AdamW optimizer, cosine LR schedule with 2000-step warmup, gradient clipping at 1.0
-5. Every 100 steps: logs loss, perplexity, tokens processed, wall time, GPU memory, LR to `logs/training/{lang}_{regime}_timeseries.jsonl`
-6. Every 1000 steps: saves a checkpoint to `models/{lang}_{regime}/ckpt_step{N}.pt` (keeps last 3)
-
-Resume from checkpoint: add `--resume` flag. The script finds the latest checkpoint automatically.
-
-Throughput estimate on A100 80GB: ~80,000–100,000 tokens/sec. At 2.5B tokens per model: ~7–9 GPU hours per model, ~42–54 GPU hours total for all six.
+The **Templatic Lexical Surplus** is the framework's name for the rebate that the second and third axes contribute beyond the first. A preliminary two-tier Arabic experiment in Phase 1 measured the root-axis surplus at +0.082, +0.077, and +0.058 nats across three rungs of a scale ladder, persistent even where the first-tier rebate inverted at higher scales. Phase 2 will measure the wazn-semantic-axis contribution on top of that, completing the three-way decomposition.
 
 ---
 
-### Stage 5 — Evaluation
+## The four grammar engines
 
-**eval_lm.py** — computes final perplexity on val and test splits for each model.
-```bash
-python scripts/eval_lm.py --language all --regime all
-```
-Outputs: `logs/evaluation/{lang}_{regime}_lm_metrics.json`
+Each engine is a substantial piece of work. Together they encode the grammatical regularities of four typologically distant languages as Python.
 
-**eval_morphology.py** — computes tokens-per-meaning-unit, morphological agreement accuracy, lemma+bundle accuracy, nats per morpheme.
-```bash
-python scripts/eval_morphology.py --language all --regime all
-```
-Outputs: `logs/evaluation/{lang}_{regime}_morphology_metrics.json`
+### Mandarin (ZH)
 
-**eval_downstream.py** — frozen model + linear probe on text classification and morphological probing tasks. Also logs FLOPs.
-```bash
-python scripts/eval_downstream.py --language all --regime all
-```
-Outputs: `logs/evaluation/{lang}_{regime}_downstream_metrics.json`
+`morph_efficiency_project/scripts/engines/zh_engine.py`
 
----
+Per character, the engine returns the character itself, its Kangxi radical (one of 214), and a semantic class derived from the radical (e.g. 子 → HUMAN_RELATION, 木 → TREE_WOOD, 水 → WATER_LIQUID). A bigram disambiguation pass resolves the polysemous closed-class words: 只 between a numeral and a noun is a classifier, but between a subject and a verb it is an adverb; 把 in a 我把书读完了 frame is the ADP that introduces a BA-construction, but in 一把刀 it is itself a classifier.
 
-### Stage 6 — Aggregation and Presentation
+The engine also classifies words by part of speech (NOUN, VERB, ADV, PRON, PART, ADP, CLF, AUX, NUM, DET, CONJ, PUNCT, PROPN, FOREIGN), with an open-class fallback that handles content words the closed-class lexicon does not list.
 
-**compute_metrics.py** — reads all evaluation logs, computes summary tables, learning efficiency comparisons, and writes `logs/summary/conclusion.md`.
-```bash
-python scripts/compute_metrics.py
-```
+### English (EN)
 
-Open `presentation/index.html` in a browser to view the full slide presentation. It loads the JSON logs directly and renders all charts and comparisons. No server required.
+`morph_efficiency_project/scripts/engines/en_engine.py`
 
----
+A recursive multi-pass decomposer. Three passes per word:
 
-## Quick Start
+- **Inflection peel**: -s, -ed, -ing, -er, -est, possessive 's
+- **Derivational suffix peel**: -er (agent), -ing (gerund), -ness, -ment, -ity, -ation, -ize, -ist, -ism, -able, -ful, -less, -ous, -ish, -al, -hood, -ship, -ic, and others
+- **Derivational prefix peel**: re-, un-, dis-, mis-, pre-, post-, anti-, sub-, super-, non-, in-/im-/il-/ir-, de-, en-/em-, over-, under-, out-, fore-, mid-, semi-, multi-, mega-
 
-Install dependencies:
-```bash
-pip install torch sentencepiece datasets numpy matplotlib
-```
+With guards that prevent over-stripping. `NO_MENT_STRIP` protects Latin-fused words like *experiment*, *document*, *segment*, *garment*, *cement*, *moment* from losing their final syllable. `NO_PREFIX_PEEL_BASES` protects *comment*, *instrument*, *refer*, *commit*, and other words whose initial syllable looks like a productive prefix but is not. The agent-vs-comparative `-er` disambiguation checks whether the bare stem is a known adjective: *taller* → adjective comparative, *writer* → noun agent.
 
-Run the pipeline in order (all commands from workspace root):
-```bash
-# 1. Download corpora (~hours on Vast.ai)
-python morph_efficiency_project/scripts/download_data.py --language all
+Irregular forms (*went* → *go*, *children* → *child*, *was* → *be*, *better* → *good*) are resolved through a lookup table. POS is preserved through each derivation step: `-ness` → NOUN, `-ize` → VERB, `-ly` → ADV, `-able` → ADJ.
 
-# 2. Baseline tokenization
-python morph_efficiency_project/scripts/preprocess_baseline.py --language all
+### Turkish (TR)
 
-# 3. Morph preprocessing (grammar engines over full corpus)
-python morph_efficiency_project/scripts/preprocess_morph.py --language all
+`morph_efficiency_project/scripts/engines/tr_engine.py`
 
-# 4. Train all six models (sequential; add --resume to continue from checkpoint)
-python morph_efficiency_project/scripts/train_lm.py --language en --regime baseline
-python morph_efficiency_project/scripts/train_lm.py --language en --regime morph
-python morph_efficiency_project/scripts/train_lm.py --language ar --regime baseline
-python morph_efficiency_project/scripts/train_lm.py --language ar --regime morph
-python morph_efficiency_project/scripts/train_lm.py --language tr --regime baseline
-python morph_efficiency_project/scripts/train_lm.py --language tr --regime morph
+A holistic decomposer that, for each word, enumerates candidate analyses in parallel across six branches (nominal-decomp, verbal-decomp, derivation pre-pass, copular, progressive vowel-collapse, `-ki` relational adjective) and picks the highest-scoring one using deterministic tie-breaks.
 
-# 5. Evaluate
-python morph_efficiency_project/scripts/eval_lm.py --language all --regime all
-python morph_efficiency_project/scripts/eval_morphology.py --language all --regime all
-python morph_efficiency_project/scripts/eval_downstream.py --language all --regime all
+The nominal slot stack is `root → DERIV → NUM → POSS → CASE`, enforced strictly. The verbal stack is `root → DERIV → VOICE → NEG → TENSE → MOOD → PERSON_NUM`. Vowel harmony is normalised so `-den` and `-dan` both emit `case=ABL`. Buffer consonants (the `y` between vowel-final stems and vowel-initial suffixes, the `n` in 3SG-poss izafet constructions, the `s` in vowel-final possessive forms) are properly handled rather than left in the stem.
 
-# 6. Aggregate
-python morph_efficiency_project/scripts/compute_metrics.py
-```
+Capitalised Turkish words that do not match a productive inflection are recognised as proper nouns: *Ahmet*, *İstanbul*, *Türkiye* → POS = PROPN with empty tag bundle, rather than the bogus VERB analyses earlier versions of the engine produced.
 
-Smoke test the pipeline locally (no GPU, no full corpus, synthetic data):
-```bash
-python morph_efficiency_project/scripts/_smoke_pipeline.py --lang all
-```
+The engine also resolves the genuinely ambiguous surface forms with neighbour context: *evin* before a noun-with-POSS suffix is genitive (an izafet construction), but sentence-final or before a verb it is a 2SG-possessive subject.
 
-Run the grammar engine tests:
-```bash
-python -m pytest morph_efficiency_project/tests/ -q
-# Expected: 2150 passed, 2 skipped, 0 failed
-```
+### Arabic (AR)
+
+`morph_efficiency_project/scripts/engines/ar_engine.py`
+
+The largest engine, ~1,900 lines. Four steps per word:
+
+- **Step A: clitic stripping**. Proclitics (the conjunctions و and ف, the prepositions ب, ل, ك, the definite article ال, the future marker سـ, the emphasis لـ, the interrogative أ) and enclitics (object pronouns, dual and feminine plural endings, second-person verb agreement, the energetic nun) are recognised as separate tag values. The circumfix لَـ ... ـنَّ is reunited as a single SWORN_ASSERTION feature after both halves have been stripped independently.
+
+- **Step B: template matching**. The consonantal skeleton of the stem is matched against 348 awzān in `configs/ar_templates.json`. Output is a templatic category (FORM_VII_PASSIVE_INTRANS, NOM_DERIVED, MASDAR_FORM_X, and so on).
+
+- **Step B′: wazn-class lookup**. Each matched template is annotated with its `semantic_role` value from the templates configuration. There are 185 distinct semantic roles spanning verbal-form classes (FORM_I_BARE through FORM_XII_INTENSIVE_HABITUAL), derived nominal classes (اسْم الْفَاعِل, اسْم الْمَفْعُول, اسْم الْآلَة, اسْم الزَّمَان وَالْمَكَان, the masdar inventory, الصِّفَة الْمُشَبَّهَة, صِيغَة الْمُبَالَغَة, النِّسْبَة, اسْم التَّفْضِيل), broken-plural classes, and a long tail of weakness-specific variants that distinguish ناقص from أجوف from مثال from مهموز from مضعّف instances of the same logical pattern. This is what makes the wazn-class stream possible.
+
+- **Step C: root extraction**. The consonant skeleton is matched against 7,142 roots in `configs/ar_roots.json`, with weak-root resolution that prepends و for مثال roots, substitutes the right middle radical for أجوف, restores the final radical for ناقص, geminates for مضعّف, and normalises hamza variants (أ، إ، آ، ؤ، ئ) to ء.
+
+The engine emits all four pieces as separate input streams: the surface, the feature bundle, the root, and the wazn class. Sentence-level guards then enforce the rules of النحو والصرف: that the حروف الناسخة (إنّ, أنّ, كأنّ, لكنّ, ليت, لعلّ) assign the accusative case to المبتدأ; that the أفعال الناسخة (كان, أصبح, ليس, etc.) assign nominative to اسمها and accusative to خبرها; that الإضافة requires the مضاف to be indefinite and the مضاف إليه to be definite-genitive; that الحال is نكرة منصوبة.
 
 ---
 
-## Directory Structure
+## The sentence-grammar layer
 
+A late addition to the architecture. Each grammar engine analyses words one at a time and proposes part-of-speech assignments based on the word's own morphology. But some ambiguities can only be resolved by looking at neighbouring words. *Run* in English is a noun or a verb depending on what precedes and what follows. *Evin* in Turkish is a genitive or a possessive depending on what comes next. *把* in Mandarin is a classifier or an ADP depending on whether a verb follows. *مَدْرَسَة* in Arabic is a place noun or a feminine teacher noun depending on context.
+
+The sentence-grammar layer lives at `morph_efficiency_project/scripts/engines/grammar/`. It contains:
+
+- A shared `common.py` with sentence-segmentation helpers (handles `.`, `!`, `?`, `;`, `؟`, `؛`, Chinese `。！？；…`, common abbreviations like *Dr.*, *vb.*, *yy.*)
+- `en_grammar.py`, `ar_grammar.py`, `tr_grammar.py`, `zh_grammar.py`, each exposing three functions:
+  - `split_into_sentences(text)`: segment the input on punctuation
+  - `disambiguate_pos(tokens)`: walk the sentence, use neighbour context to resolve POS ambiguities the morphology alone could not settle
+  - `validate_sentence(tokens)`: check the token sequence against the language's allowed structural templates, return (True, "ok") or (False, "rejection reason in the language's own grammatical terminology")
+
+The rejection messages use the host language's own grammar tradition: Arabic guards raise `"إنّ تنصب المبتدأ"`, `"الفعل يطلب فاعلًا يليه"`; Turkish raises `"bildirme cümlesinde fiil sonda olmalı"`, `"ad öbeği sırası yanlış"`; Mandarin raises `"把构式：把后需有宾语再接动词"`. A linguist can audit the encoded grammar by reading the function names and the messages alone.
+
+151 new tests cover the sentence-grammar layer, all passing.
+
+---
+
+## The multi-stream MiniGPT
+
+`mini_experiment/run_mini.py`
+
+A small decoder-only transformer that supports N input embedding streams summed at the input layer:
+
+```python
+x = sum(stream_embedding[name][token_ids[name]] for name in stream_configs)
 ```
-morph_efficiency_project/
-  configs/           Grammar engine resources + model/training configs
-  data/
-    raw/             Downloaded corpora (en/, ar/, tr/)
-    processed/       Tokenized arrays (baseline/ and morph/ per language)
-  logs/
-    training/        Per-step training logs (JSONL timeseries)
-    evaluation/      Per-model evaluation results (JSON)
-    summary/         Aggregated comparison tables + conclusion.md
-  models/            Trained model checkpoints (en_base/, en_morph/, etc.)
-  notebooks/         analysis.ipynb
-  presentation/      Browser-based slide presentation (index.html, app.js, styles.css)
-  scripts/
-    engines/         Grammar engine subpackage (ar_engine.py, en_engine.py, tr_engine.py, shared.py)
-    download_data.py
-    preprocess_baseline.py
-    preprocess_morph.py
-    train_lm.py
-    eval_lm.py
-    eval_morphology.py
-    eval_downstream.py
-    compute_metrics.py
-    _audit.py        Development safety net — not part of training pipeline
-    _debug_fails.py  Development safety net — not part of training pipeline
-    _smoke_pipeline.py  End-to-end pipeline smoke test (no GPU required)
-  tests/
-    _base/           Infrastructure tests (paths, dataset loading, model instantiation)
-    ar_morph/        Arabic engine tests (particles, templates, sentence structure, regression)
-    en_morph/        English engine tests (inflection, derivation, sentence structure, regression)
-    tr_morph/        Turkish engine tests (particles, suffixes, sentence structure, regression)
-    conftest.py
-tokenizers/          Trained tokenizer models (en_base/, en_morph/, ar_base/, ar_morph/, tr_base/, tr_morph/)
-experimental_contract.md
-feasibility.md
+
+Stream layouts per regime:
+
+| Regime | Streams |
+|---|---|
+| Baseline (all languages) | 1: `tok` |
+| EN morph, TR morph | 2: `tok` + `feat` |
+| ZH morph | 2: `char` + `radical_class` |
+| AR morph | 4: `tok` + `feat` + `root` + `wazn` |
+
+The transformer downstream is identical across all regimes: same number of layers, same model dimension, same attention heads, same feed-forward dimension. Only the embedding tables differ. A `parameter_breakdown()` method returns the per-stream embedding parameter count, the transformer-block parameter count, and the head parameter count, so the parameter-matched comparison can be verified at training time.
+
+Five tests confirm the architecture is correct (1-stream baseline matches expected parameter count, 2-stream EN morph adds exactly `29 * model_dim` extra parameters, 4-stream AR morph keeps all transformer-block sizes identical to baseline, forward pass produces the expected output shape, backward pass produces non-zero gradients for every stream).
+
+---
+
+## The tokenisation pipeline
+
+`morph_efficiency_project/scripts/tokenize_for_training.py`
+
+Reads each language's Wikipedia training corpus, runs each token through the appropriate engine, and writes per-stream integer arrays to disk along with their vocabulary tables. The script is idempotent and supports `--smoke` for fast verification on 100 lines per split and `--full --force` for full-corpus production runs.
+
+Includes a per-language analyse-result cache so the engine is not re-invoked for the same surface form across the vocab-build and encoding passes. Cuts Turkish full-corpus wall-clock from a projected 30+ hours to 16 minutes.
+
+Final full-corpus vocabulary sizes (after specials):
+
+| Language | Stream | Vocab size | Notes |
+|---|---|---:|---|
+| ZH | baseline | 32,000 | character-level BPE cap |
+| ZH | morph_surface | 32,000 | character + radical composite |
+| ZH | morph_bundle | 131 | observed feature bundles |
+| ZH | morph_radical | 214 | full Kangxi inventory |
+| EN | baseline | 32,000 | BPE cap |
+| EN | morph_surface | 2,558 | engine-emitted composite tokens |
+| EN | morph_bundle | 21 | observed feature bundles |
+| TR | baseline | 32,000 | BPE cap |
+| TR | morph_surface | 32,000 | engine-emitted composite tokens |
+| TR | morph_bundle | 469 | observed feature bundles |
+| AR | baseline | 32,000 | BPE cap |
+| AR | morph_surface | 32,000 | engine-emitted composite tokens |
+| AR | morph_bundle | 1,450 | observed feature bundles |
+| AR | morph_root | 7,142 | closed set from `ar_roots.json` |
+| AR | morph_wazn | 185 | closed set from `ar_templates.json:semantic_role` |
+
+The integer streams (`.npy` files in `mini_experiment/data/`) are gitignored because they are derived from the raw `.txt` corpora and rebuildable. The vocabulary tables (`.json` files in `mini_experiment/tokenizers/`) are committed.
+
+---
+
+## The trainer and the AWS launcher
+
+`morph_efficiency_project/scripts/train_model.py` is the trainer. CLI:
+
+```bash
+python train_model.py --lang ar --regime morph --model-dim 128 --layers 4 \
+    --max-tokens 5_000_000 --batch-size 32 --seq-len 128 \
+    --eval-every 1000 --save-every 5000 \
+    --output-dir runs/ar_morph_phase1
+```
+
+It loads the per-stream `.npy` files for the requested (language, regime) pair, builds the corresponding multi-stream MiniGPT, trains with AdamW under a cosine learning-rate schedule with linear warmup, logs training loss every 50 steps, evaluation loss every 1,000 steps, and saves a full checkpoint every 5,000 steps. Supports `--resume` to pick up from a checkpoint after interruption.
+
+`morph_efficiency_project/scripts/aws/launch_run.py` is the cloud launcher. CLI:
+
+```bash
+# Dry run: writes the SageMaker estimator config, requirements.txt, and a
+# hand-runnable submit.py to scripts/aws/_generated/<tag>/, prints the
+# cost estimate, S3 paths, and IAM requirements. No AWS calls made.
+python launch_run.py --lang ar --regime morph --model-dim 128 \
+    --instance ml.g5.xlarge --max-tokens 5_000_000 \
+    --tag phase1-ar-morph
+
+# Real deploy (requires boto3, sagemaker, and AWS credentials configured)
+python launch_run.py --deploy --lang ar --regime morph --model-dim 128 \
+    --instance ml.g5.xlarge --max-tokens 5_000_000 \
+    --tag phase1-ar-morph
+```
+
+`morph_efficiency_project/scripts/aws/README.md` documents the deployment: IAM role setup, S3 bucket layout, dry-run vs deploy, the eight `(lang, regime)` cell tags in canonical order, monitoring via CloudWatch, retrieval via `aws s3 sync`, troubleshooting.
+
+Cost estimate for the headline rung at 30 million parameters and Chinchilla-optimal token-to-parameter ratio (~600 million training tokens per cell): on `ml.g5.xlarge` at $1.41/hour, approximately $420 per cell, $3,400 for the full eight-cell sweep. On `ml.g5.12xlarge` at $7.09/hour with 3× faster turnaround, approximately $640 per cell, $5,100 for the sweep. Both well inside the $24,000 credit budget.
+
+---
+
+## The test suite
+
+4,283 tests across the four languages, all passing.
+
+```bash
+# Run the whole project test suite
+cd C:/Users/Sameh\ AbuRadi/Desktop/BA_01
+python -X utf8 -m pytest morph_efficiency_project/tests/ -q
+```
+
+Per language:
+
+| Language | Tests | Pass | Coverage |
+|---|---:|---:|---|
+| ZH | 551 | 551 | Comprehensive engine + sentence-grammar + adversarial + smoke + radical-class layer |
+| EN | 1,563 | 1,563 | Inflection, derivation (multi-pass), prefix, irregular, agent-vs-comparative -er, Latin-fused -ment, derivation-chain POS preservation, sentence-grammar, regression, stress, adversarial |
+| TR | 662 | 662 | Strict slot order, vowel harmony, all CASE × all POSS, TAM, voice, negation, mood, derivational morphology, irregular verbs, copular and existential, proper-noun fallback, deterministic tie-breaks |
+| AR | 1,455 | 1,455 | All Forms I–XII, weak roots (ناقص، أجوف، مثال، مهموز، مضعّف), all masdar patterns, broken plurals, active and passive participles, derived nominal templates, clitic stacking, closed-class particles, hamza normalisation, sentence-grammar with نواسخ, idafa, hal-clause, and adjective agreement guards |
+
+Plus the multi-stream MiniGPT architecture tests: 5 tests confirming parameter accounting, forward pass shape, and backward gradient flow into every stream.
+
+---
+
+## The manuscript
+
+`manuscript/tex/` contains the Cambridge submission draft. Eight sections:
+
+1. **Abstract** — friendly tone, every paragraph polished for linguist accessibility
+2. **Introduction** — sets up the puzzle, sketches the framework, names the contributions
+3. **Related work** — morphological typology, BPE and morph-aware tokenisation, scaling laws, emergence, Green AI and equity. Plus paragraphs added for Chinese sub-character literature (Sun, Shi, Cao) and Arabic computational morphology (Buckwalter, Habash and Roth's MADA, Pasha's MADAMIRA).
+4. **Framework** — the math definitions of ρ(L), H(L), the rebate equation, the curve-shift prediction. Plus an architecture subsection documenting the engine + sentence-grammar two-layer composition, the four engines and their stream counts, the 185-class wazn taxonomy, and the input-embedding sum.
+5. **Case studies** — Mandarin (added), English, Turkish, Arabic. Each one walks through the morphology, gives a worked decomposition, reports |B(L)|, H(L), ρ(L), ρ·H.
+6. **Results** — Phase 1 numbers and the three-rung scale ladder. The numerical content will be replaced when the Phase 2 AWS run completes.
+7. **Discussion** — Interpretation A vs B, consequences under each, limitations, threats to validity.
+8. **Conclusion** — what the paper establishes; what has been built since the original draft (wazn-class layer, sentence-grammar layer, Mandarin engine); the research programme of remaining follow-ups (Cross-Semitic transfer, per-model loss attribution on the Arabic compositional bucket, low-resource edge-deployment showcase).
+
+Every Arabic word in the manuscript is vocalised with tashkil for unambiguous reading. The bidirectional rendering is handled by `polyglossia`. The Chinese characters use SimSun. The build is reproducible with `tectonic main.tex --outdir _build`.
+
+Title:
+> **Morphology-Aware Tokenization as a Capacity Lever**
+> A Cross-Linguistic Framework for Parameter-Efficient Language Models
+
+---
+
+## Bundle distribution analysis
+
+`morph_efficiency_project/logs/summary/bundle_distribution_report.md`
+
+For each language, the report counts how often each grammatical bundle appears in 20,000 training sentences and plots the frequency distribution on log-log axes (Zipf form).
+
+| Language | Unique bundles | Zipf exponent | Distribution health |
+|---|---:|---:|---|
+| Mandarin (ZH) | 136 | 2.04 | Single bundle dominates (60.2% of mass) — consistent with Mandarin being isolating and low-H; the model's grammar signal in the ZH-morph regime comes from the radical-class stream, not the feature-bundle stream |
+| English (EN) | 29 | 2.58 | Steep, heavy head with thin tail (normal Zipf-like shape) |
+| Turkish (TR) | 1,837 | 2.71 | Steep (normal) |
+| Arabic (AR) | 1,147 | 2.40 | Steep (normal) |
+
+The Mandarin finding is a real architectural signal, not a problem: the framework predicts a small `ρ·H` for Mandarin because of its low H, and the bundle distribution confirms that the feature-bundle stream carries little information. The lexicon-semantic signal (the radical-class stream) is where the rebate, if any, will come from.
+
+---
+
+## How to reproduce
+
+```bash
+# 1. Clone and install
+git clone <repo>
+cd BA_01
+pip install -r requirements.txt   # if you have one; otherwise: pip install numpy torch matplotlib pytest
+
+# 2. Run the engine test suite
+python -X utf8 -m pytest morph_efficiency_project/tests/ -q
+
+# 3. Download the four-language Wikipedia corpora
+python morph_efficiency_project/scripts/download_corpora.py
+
+# 4. Tokenise on full corpus (writes .npy + vocab.json files)
+python -u -X utf8 morph_efficiency_project/scripts/tokenize_for_training.py --full --force
+
+# 5. Optionally rebuild the bundle distribution plots
+python morph_efficiency_project/scripts/_plot_bundle_distribution.py
+
+# 6. Local CPU smoke test (verifies the trainer works end-to-end)
+python morph_efficiency_project/scripts/train_model.py \
+    --lang en --regime baseline --model-dim 64 --layers 2 \
+    --max-tokens 50000 --batch-size 4 --seq-len 32 \
+    --eval-every 100 --save-every 500 \
+    --output-dir /tmp/smoke_en_baseline
+
+# 7. Build the manuscript PDF
+cd manuscript/tex
+tectonic main.tex --outdir _build
+
+# 8. (When ready) Deploy to AWS
+# Set up IAM role and S3 bucket per scripts/aws/README.md, then:
+export MORPH_S3_BUCKET=morph-efficiency-<your-suffix>
+export MORPH_SM_ROLE_ARN=arn:aws:iam::<account>:role/MorphEfficiencyTrainingRole
+python morph_efficiency_project/scripts/aws/launch_run.py \
+    --deploy --lang ar --regime morph --model-dim 128 \
+    --instance ml.g5.xlarge --max-tokens 5_000_000 \
+    --tag phase1-ar-morph
 ```
 
 ---
 
-## Compute
+## Project structure
 
-Platform: Vast.ai (spot A100 80GB instances, ~$0.35–$0.70/hr)
+```
+BA_01/
+├── README.md                        (you are here)
+├── experimental_contract.md         (pre-registered, frozen)
+├── pipeline_diagrams.html           (illustrated overview of each engine pipeline)
+├── morph_efficiency_project/
+│   ├── configs/                     (per-language config: roots, templates, suffixes, irregulars, etc.)
+│   │   ├── ar_roots.json            (7,142 Arabic roots)
+│   │   ├── ar_templates.json        (348 awzān with semantic_role annotations)
+│   │   ├── ar_vocab_space.json
+│   │   ├── en_irregulars.json       (irregular English forms)
+│   │   ├── en_derivations.json
+│   │   ├── en_phrasal_verbs.json
+│   │   ├── en_compounds.json
+│   │   ├── tr_suffixes.json
+│   │   ├── tr_derivations.json
+│   │   ├── zh_classifiers.json
+│   │   ├── zh_particles.json
+│   │   ├── zh_radicals.json         (Kangxi radical to semantic class map)
+│   │   ├── model_config.json
+│   │   └── training_config_*.json
+│   ├── docs/engine_specs/           (per-language engine design docs)
+│   ├── scripts/
+│   │   ├── engines/
+│   │   │   ├── ar_engine.py         (~1,900 lines)
+│   │   │   ├── en_engine.py
+│   │   │   ├── tr_engine.py
+│   │   │   ├── zh_engine.py
+│   │   │   ├── shared.py            (TokenInfo, MorphVocab, per-token validators)
+│   │   │   ├── grammar/
+│   │   │   │   ├── ar_grammar.py
+│   │   │   │   ├── en_grammar.py
+│   │   │   │   ├── tr_grammar.py
+│   │   │   │   ├── zh_grammar.py
+│   │   │   │   └── common.py
+│   │   │   └── __init__.py
+│   │   ├── aws/
+│   │   │   ├── launch_run.py        (SageMaker estimator launcher)
+│   │   │   └── README.md            (deployment guide)
+│   │   ├── tokenize_for_training.py (the production tokeniser pipeline)
+│   │   ├── train_model.py           (the trainer)
+│   │   ├── compute_bundle_space.py  (audits possible / validated / observed bundle counts per language)
+│   │   ├── _audit_ar_bundles.py     (audits Arabic engine-validator agreement)
+│   │   ├── _audit_training_readiness.py
+│   │   ├── _plot_bundle_distribution.py
+│   │   ├── make_figures.py
+│   │   ├── verify_tex.py
+│   │   ├── compute_hl.py
+│   │   ├── download_corpora.py      (Hugging Face Wikipedia loader)
+│   │   ├── tokenize_morph_engine.py (legacy phase-1 tokeniser)
+│   │   ├── tokenize_tier2_ar.py     (legacy Arabic 2-tier tokeniser)
+│   │   ├── train_tier2_ar.py        (legacy phase-1 trainer)
+│   │   ├── run_scale_ladder.py
+│   │   ├── eval_lm.py
+│   │   ├── eval_morphology.py
+│   │   ├── eval_downstream.py
+│   │   ├── fit_alpha.py
+│   │   ├── aggregate_ladder.py      (in legacy/)
+│   │   ├── make_ladder_figures.py   (in legacy/)
+│   │   ├── _audit.py
+│   │   └── _smoke_pipeline.py
+│   ├── tests/
+│   │   ├── ar_morph/
+│   │   │   ├── test_ar_engine_comprehensive.py
+│   │   │   ├── test_ar_engine_templates.py
+│   │   │   ├── test_ar_engine_regression.py
+│   │   │   ├── test_ar_sentence_grammar.py
+│   │   │   └── (etc.)
+│   │   ├── en_morph/
+│   │   │   ├── test_en_engine_comprehensive.py
+│   │   │   ├── test_en_engine_adversarial.py
+│   │   │   ├── test_en_engine_derivation.py
+│   │   │   ├── test_en_engine_inflection.py
+│   │   │   ├── test_en_engine_regression.py
+│   │   │   ├── test_en_engine_smoke.py
+│   │   │   ├── test_en_engine_stress.py
+│   │   │   └── test_en_sentence_grammar.py
+│   │   ├── tr_morph/
+│   │   │   ├── test_tr_engine_comprehensive.py
+│   │   │   ├── test_tr_engine_adversarial.py
+│   │   │   ├── test_tr_engine_nominal.py
+│   │   │   ├── test_tr_engine_stress.py
+│   │   │   ├── test_tr_engine_verbal.py
+│   │   │   └── test_tr_sentence_grammar.py
+│   │   ├── zh_morph/
+│   │   │   ├── test_zh_engine_comprehensive.py
+│   │   │   ├── test_zh_engine_adversarial.py
+│   │   │   ├── test_zh_engine_derivation.py
+│   │   │   ├── test_zh_engine_smoke.py
+│   │   │   └── test_zh_sentence_grammar.py
+│   │   ├── conftest.py
+│   │   └── _base/
+│   ├── logs/summary/
+│   │   ├── ar_engine_audit.md
+│   │   ├── en_engine_audit.md
+│   │   ├── tr_engine_audit.md
+│   │   ├── zh_engine_audit.md
+│   │   ├── ar_bundle_gap_report.md
+│   │   ├── training_readiness_audit.md
+│   │   ├── bundle_distribution_report.md
+│   │   ├── bundle_space.json
+│   │   ├── bundle_dist_zh.png
+│   │   ├── bundle_dist_en.png
+│   │   ├── bundle_dist_tr.png
+│   │   ├── bundle_dist_ar.png
+│   │   └── bundle_dist_combined.png
+│   └── legacy/                      (phase-1 scripts that are no longer in the active path)
+│       ├── aggregate_ladder.py
+│       ├── make_ladder_figures.py
+│       └── run_scale_ladder.py
+├── mini_experiment/
+│   ├── run_mini.py                  (the multi-stream MiniGPT model + Phase 1 training loop)
+│   ├── test_minigpt_multistream.py
+│   ├── eval_agreement.py
+│   ├── tokenizers/                  (per-language vocabulary tables in JSON, committed)
+│   └── data/                        (raw .txt corpora and .npy integer streams; gitignored, rebuildable)
+└── manuscript/
+    └── tex/
+        ├── main.tex
+        ├── references.bib
+        └── sections/
+            ├── sec_01_abstract.tex
+            ├── sec_02_introduction.tex
+            ├── sec_03_related_work.tex
+            ├── sec_04_framework.tex
+            ├── sec_05_case_studies.tex
+            ├── sec_06_results.tex
+            ├── sec_07_discussion.tex
+            └── sec_08_conclusion.tex
+```
 
-Estimated cost: $60–$100 total for all six models including preprocessing, reruns, and evaluation. See `feasibility.md` for the full cost breakdown and the rationale for choosing Vast.ai over RunPod and Colab.
+---
 
-Checkpoints are saved every 1000 steps. If a spot instance is preempted, resume with `--resume` and training continues from the last checkpoint with no data loss.
+## How this evolved
+
+The project did not start in the shape it is in now. Worth saying out loud what changed and why.
+
+**Phase 1 covered three languages.** The original experiment trained six small models for English, Arabic, and Turkish at 2-million-parameter scale, observed the ranking prediction holding and the magnitudes diverging by 40-fold, and named the Agglutinative Compounding Effect. That was the Phase 1 manuscript.
+
+**Five other engines existed but did not make the cut.** German (fusional), Spanish (regular fusional), Hungarian (agglutinative-fusional), Swahili (classificatory), and Basque (polypersonal ergative isolate) had grammar engines in the repository but were not in the experimental contract's headline scope. To keep the experimental phase focused, those five engines were removed (commits document the deletions) and the project narrowed to the four typologically-most-distinct languages.
+
+**Mandarin was added.** The original plan covered analytic (English), agglutinative (Turkish), and templatic (Arabic). Mandarin was added as the fourth language to give the framework an isolating endpoint, and because the Kangxi radical system turned out to be the structural analog of Arabic's wazn at a different scale: a non-concatenative semantic-class signal that sits behind the surface form.
+
+**The engines went through a sustained quality push.** Comprehensive test suites were written for each language. Initial pass rates were around 50%. Across several rounds of agent-coordinated engine fixes, the rates climbed: ZH 100%, EN 100%, TR 99.85% (one self-contradiction in the test spec, not the engine), AR 99.93% (one masdar/place ambiguity in the test spec). After test-spec reconciliation, all four reached 100%.
+
+**The sentence-grammar layer was added in response to a specific concern.** The architecture as originally designed did per-word morphological analysis only, leaving POS ambiguity for the model to resolve from neighbour context. A late design pass added the per-language grammar layer described above: context-aware POS resolution plus structural validation with native-language rejection messages.
+
+**The wazn-class layer was added when the Arabic engine's full taxonomy surfaced.** The original 2nd-tier Arabic experiment used a 3-stream architecture: surface, bundle, root. During the engine quality push, the 185 distinct `semantic_role` values in `ar_templates.json` were properly propagated through Step B′ of the engine and exposed as a fourth input stream. This is what makes the four-stream Arabic architecture in the current manuscript.
+
+**The TR engine got cached at the eleventh hour.** The Turkish full-corpus tokenisation was projected to take 30+ hours because the engine's worst-case decomposition path runs at ~25 ms per word. Adding a per-(language, surface) memoisation pass cut wall-clock to 16 minutes. The memoisation is now in `tokenize_for_training.py` and helps all four languages, not just Turkish.
+
+**Every Arabic word in the manuscript got vocalised.** A late editorial pass added tashkil to every Arabic word that lacked it, so Arabic-reading reviewers can read the awzān unambiguously. The `polyglossia` package was added to the preamble so the script flows right-to-left.
+
+**The manuscript voice was deliberately polished.** Each section had a tone pass to lead with what something IS before naming it, to replace CS-only jargon with linguist-readable equivalents, and to keep the writing accessible to a reader whose home discipline is linguistics rather than machine learning. Reviewers in the target venue (Cambridge NLP Press) are mostly linguistically trained; the voice matches.
+
+---
+
+## Acknowledgements
+
+Compute funded by Deniz Sertkan's $24,000 AWS credit donation. This experiment could not run without it. The credits cover two phases: the four-language proof-of-concept this manuscript reports, and the downstream phase of building a native Turkish reasoning-capable small language model using the technique once it is proven.
+
+Supervised by Fabian Geier at CODE University of Applied Sciences, Berlin. The framework and its empirical predictions are the work of the corresponding author. The architecture, code, tests, audits, manuscript revisions, and many of the linguistic decisions involved extensive collaboration with the Claude Code agent across hundreds of dispatches; the design choices are the author's, the implementation work was shared.
+
+The cross-linguistic scope of this work owes a debt to the morphological-typology tradition (Greenberg, Comrie, Haspelmath) and to the long line of computational morphology systems that made it tractable to build per-language grammar engines as standalone Python modules (Buckwalter's Arabic stem dictionary, the MADA / MADAMIRA tradition, the Unicode Unihan project for the Kangxi radical inventory, the Universal Dependencies project for cross-linguistic POS conventions).
+
+---
+
+## License
+
+To be added. Until then, please treat this repository as a research preview associated with the corresponding author's pending submission. If you want to use the engines or the framework, contact the author.
