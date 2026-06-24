@@ -67,7 +67,8 @@ class TestAmbiguousWords:
         result = info(word)
         assert result.root is not None
         assert len(result.root) > 0
-        assert result.pos == "UNKNOWN"
+        # Reform: unrecognised content words default to NOUN, not UNKNOWN.
+        assert result.pos == "NOUN"
 
     # Words ending in -s that trigger 3SG verb analysis (verb base in COMMON_VERBS)
     @pytest.mark.parametrize("word", [
@@ -135,7 +136,10 @@ class TestTrickySuffixes:
         "bed", "red", "wed",
     ])
     def test_not_ed_short(self, word):
-        assert pos(word) == "UNKNOWN"
+        # The guard still prevents -ed stripping: the root is the word intact.
+        # POS now defaults to NOUN rather than UNKNOWN.
+        assert info(word).root == word
+        assert pos(word) == "NOUN"
 
     # Irregular -ed forms correctly resolved
     @pytest.mark.parametrize("word,expected_root", [
@@ -198,7 +202,9 @@ class TestDoubleConsonant:
         ("equipping",    "equip"),
         ("kidnapping",   "kidnap"),
         ("handicapping", "handicap"),
-        ("worshipping", "wor"),
+        # Updated (stem-validity guard): OLD 'wor' was garbage from undoubling +
+        # mis-peeling. 'worshipping' is worship+ing; the guard keeps 'worship'.
+        ("worshipping", "worship"),
     ])
     def test_double_consonant_ing(self, word, expected_root):
         assert r(word) == expected_root
@@ -267,13 +273,21 @@ class TestSilentE:
         ("sliding",      "slide"),
         ("deciding",     "decide"),
         ("providing",    "provide"),
-        ("surviving", "surv"),
-        ("combining", "mbine"),
-        ("declining", "cline"),
-        ("defining", "fine"),
-        ("confining", "nfine"),
+        # Updated (stem-validity guard): these are the correct silent-e
+        # restorations this very test targets. OLD values (surv, mbine, cline,
+        # nfine, agine) were non-words from a missed silent-e plus a bogus
+        # prefix peel (e.g. com|bine). The guard now restores survive / combine /
+        # decline / confine / imagine.
+        ("surviving", "survive"),
+        ("combining", "combine"),
+        ("declining", "decline"),
+        # 'define' is a lexicalised fused-prefix verb (de- is not separable to the
+        # unrelated 'fine'), so defining -> define, consistent with confining ->
+        # confine in this very block. OLD expected the over-peel 'fine'.
+        ("defining", "define"),
+        ("confining", "confine"),
         ("examining",    "examine"),
-        ("imagining", "agine"),
+        ("imagining", "imagine"),
         ("determining",  "determine"),
     ])
     def test_silent_e_longer_ing(self, word, expected_root):
@@ -291,7 +305,10 @@ class TestSilentE:
         ("placed",   "place"),
         ("closed",   "close"),
         ("refused", "fuse"),
-        ("reduced", "duce"),
+        # Updated (stem-validity guard): OLD 'duce' was a bogus re|duce prefix
+        # peel leaving a non-word. 'reduced' is reduce+ed; the guard restores
+        # the real-word silent-e stem 'reduce'.
+        ("reduced", "reduce"),
     ])
     def test_silent_e_ed(self, word, expected_root):
         assert r(word) == expected_root
@@ -440,10 +457,10 @@ class TestClosedClass:
         assert r(word) == expected_root
         assert pos(word) == "VERB"
 
-    # "do" base form is not in irregulars (only inflected forms are)
+    # "do" base form: a primary auxiliary (function-word fallback -> AUX).
     def test_do_base_form(self):
         assert r("do") == "do"
-        assert pos("do") == "UNKNOWN"
+        assert pos("do") == "AUX"
 
 
 # ======================================================================
@@ -466,7 +483,8 @@ class TestEdgeCases:
     def test_single_char_non_letter(self):
         result = info("1")
         assert result.root == "1"
-        assert result.pos == "UNKNOWN"
+        # Reform: digit-bearing tokens are numerals.
+        assert result.pos == "NUM"
 
     def test_punctuation(self):
         result = info("!")
@@ -562,8 +580,9 @@ class TestKnownProblematic:
     @pytest.mark.parametrize("word", ["dying", "lying", "tying"])
     def test_short_ying_words(self, word):
         result = info(word)
-        # These are too short (len=5) for -ing stripping
-        assert result.pos == "UNKNOWN"
+        # -ing not stripped (too short); root stays intact, POS defaults to NOUN.
+        assert result.root == word
+        assert result.pos == "NOUN"
 
     # Short past forms: engine strips -ied as PAST verb (current behavior).
     @pytest.mark.parametrize("word", ["died", "lied", "tied"])
@@ -573,14 +592,16 @@ class TestKnownProblematic:
         assert result.tags.get("tense") == "PAST"
 
     def test_bus(self):
-        # Bus is in NOT_PLURAL_S guard; pos stays UNKNOWN.
+        # NOT_PLURAL_S guard keeps the -s; POS defaults to NOUN (bus is a noun).
         result = info("bus")
-        assert result.pos == "UNKNOWN"
+        assert result.root == "bus"
+        assert result.pos == "NOUN"
 
     def test_minus(self):
-        # minus is in NOT_PLURAL_S guard; pos stays UNKNOWN.
+        # NOT_PLURAL_S guard keeps the -s; POS defaults to NOUN.
         result = info("minus")
-        assert result.pos == "UNKNOWN"
+        assert result.root == "minus"
+        assert result.pos == "NOUN"
 
 
 # ======================================================================
@@ -691,7 +712,7 @@ class TestSentenceAdversarial:
         tokens, ok, msg = engine.analyze_sentence("the cat ran quickly")
         assert len(tokens) == 4
         assert tokens[0].pos == "DET"
-        assert tokens[1].pos == "UNKNOWN"
+        assert tokens[1].pos == "NOUN"  # reform: 'cat' defaults to NOUN
         assert tokens[2].root == "run"
 
     def test_sentence_all_tokens_have_root(self):

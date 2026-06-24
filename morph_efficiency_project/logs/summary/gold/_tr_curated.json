@@ -1,0 +1,996 @@
+{
+ "ve": {
+  "gold": "ve",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ve"
+ },
+ "bir": {
+  "gold": "bir",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bir"
+ },
+ "Temuçin": {
+  "gold": "temuçin",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "temuçin"
+ },
+ "ile": {
+  "gold": "ile",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "il"
+ },
+ "Cengiz": {
+  "gold": "cengiz",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "cengiz"
+ },
+ "olan": {
+  "gold": "ol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "o"
+ },
+ "bu": {
+  "gold": "bu",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bu"
+ },
+ "için": {
+  "gold": "için",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "iç"
+ },
+ "sonra": {
+  "gold": "sonra",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "sonra"
+ },
+ "olarak": {
+  "gold": "ol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ol"
+ },
+ "Han": {
+  "gold": "han",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "han"
+ },
+ "da": {
+  "gold": "da",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "da"
+ },
+ "Tuğrul": {
+  "gold": "tuğrul",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "tuğrul"
+ },
+ "büyük": {
+  "gold": "büyük",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "büyük"
+ },
+ "Bu": {
+  "gold": "bu",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bu"
+ },
+ "oğlu": {
+  "gold": "oğul",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "oğul"
+ },
+ "de": {
+  "gold": "de",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "de"
+ },
+ "onun": {
+  "gold": "on",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "o"
+ },
+ "en": {
+  "gold": "en",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "en"
+ },
+ "daha": {
+  "gold": "daha",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "daha"
+ },
+ "tarafından": {
+  "gold": "tarafından",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "taraf"
+ },
+ "verdi": {
+  "gold": "ver",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ver"
+ },
+ "olduğu": {
+  "gold": "ol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ol"
+ },
+ "idi": {
+  "gold": "imek",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "imek"
+ },
+ "kardeşi": {
+  "gold": "kardeş",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kardeş"
+ },
+ "birlikte": {
+  "gold": "birlikte",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bir"
+ },
+ "göre": {
+  "gold": "göre",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "gör"
+ },
+ "Bahadır": {
+  "gold": "bahadır",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "baha"
+ },
+ "etti": {
+  "gold": "et",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "et"
+ },
+ "Moğol": {
+  "gold": "moğol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "moğol"
+ },
+ "kadar": {
+  "gold": "kadar",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kadar"
+ },
+ "Ancak": {
+  "gold": "ancak",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ancak"
+ },
+ "karşı": {
+  "gold": "karşı",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "karşı"
+ },
+ "Tatarlar": {
+  "gold": "tatar",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "tatar"
+ },
+ "kendi": {
+  "gold": "kendi",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kendi"
+ },
+ "kendisine": {
+  "gold": "kendi",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kendi"
+ },
+ "yılında": {
+  "gold": "yıl",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yıl"
+ },
+ "ise": {
+  "gold": "ise",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "imek"
+ },
+ "Moğolların": {
+  "gold": "moğol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "moğol"
+ },
+ "gün": {
+  "gold": "gün",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "gün"
+ },
+ "çok": {
+  "gold": "çok",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "çok"
+ },
+ "ilk": {
+  "gold": "ilk",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ilk"
+ },
+ "bütün": {
+  "gold": "bütün",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bütün"
+ },
+ "iki": {
+  "gold": "iki",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "iki"
+ },
+ "onu": {
+  "gold": "o",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "o"
+ },
+ "kabul": {
+  "gold": "kabul",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kabul"
+ },
+ "üvey": {
+  "gold": "üvey",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "üvey"
+ },
+ "şekilde": {
+  "gold": "şekil",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "şekil"
+ },
+ "adlı": {
+  "gold": "ad",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ad"
+ },
+ "babası": {
+  "gold": "baba",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "baba"
+ },
+ "yardım": {
+  "gold": "yar",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yar"
+ },
+ "at": {
+  "gold": "at",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "at"
+ },
+ "yanına": {
+  "gold": "yan",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yan"
+ },
+ "yeni": {
+  "gold": "yen",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yen"
+ },
+ "yakın": {
+  "gold": "yak",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yak"
+ },
+ "gibi": {
+  "gold": "gibi",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "gibi"
+ },
+ "sırada": {
+  "gold": "sıra",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "sıra"
+ },
+ "ona": {
+  "gold": "on",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "o"
+ },
+ "göçebe": {
+  "gold": "göçebe",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "göçebe"
+ },
+ "altında": {
+  "gold": "alt",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "alt"
+ },
+ "unvanını": {
+  "gold": "unvan",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "unvan"
+ },
+ "Fakat": {
+  "gold": "fakat",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "fakat"
+ },
+ "üç": {
+  "gold": "üç",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "üç"
+ },
+ "başka": {
+  "gold": "başka",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "başka"
+ },
+ "lideri": {
+  "gold": "lider",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "lider"
+ },
+ "üzerine": {
+  "gold": "üzerine",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "üzer"
+ },
+ "biri": {
+  "gold": "bir",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bir"
+ },
+ "geri": {
+  "gold": "geri",
+  "source": "agree",
+  "note": "zeyrek licenses only geri; draft tolerance mis-stored ger",
+  "confidence": "high",
+  "ref": "geri"
+ },
+ "ok": {
+  "gold": "ok",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ok"
+ },
+ "ancak": {
+  "gold": "ancak",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ancak"
+ },
+ "kan": {
+  "gold": "kan",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kan"
+ },
+ "dedi": {
+  "gold": "de",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "de"
+ },
+ "düşman": {
+  "gold": "düşman",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "düşman"
+ },
+ "kabilesi": {
+  "gold": "kabile",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kabile"
+ },
+ "Börte": {
+  "gold": "bört",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bört"
+ },
+ "yılının": {
+  "gold": "yıl",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yıl"
+ },
+ "tek": {
+  "gold": "tek",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "tek"
+ },
+ "diye": {
+  "gold": "diye",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "de"
+ },
+ "istedi": {
+  "gold": "iste",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "iste"
+ },
+ "önce": {
+  "gold": "önce",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ön"
+ },
+ "bunu": {
+  "gold": "bu",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bu"
+ },
+ "yani": {
+  "gold": "yani",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yani"
+ },
+ "çocukları": {
+  "gold": "çocuk",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "çocuk"
+ },
+ "hiç": {
+  "gold": "hiç",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "hiç"
+ },
+ "Tatarlara": {
+  "gold": "tatar",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "tatar"
+ },
+ "sonunda": {
+  "gold": "sonunda",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "son"
+ },
+ "süre": {
+  "gold": "sür",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "sür"
+ },
+ "içinde": {
+  "gold": "içinde",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "iç"
+ },
+ "alarak": {
+  "gold": "al",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "al"
+ },
+ "karısı": {
+  "gold": "karı",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "karı"
+ },
+ "ileri": {
+  "gold": "ileri",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ileri"
+ },
+ "kendisini": {
+  "gold": "kendi",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kendi"
+ },
+ "Bir": {
+  "gold": "bir",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bir"
+ },
+ "sadece": {
+  "gold": "sadece",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "sade"
+ },
+ "iyi": {
+  "gold": "iyi",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "iyi"
+ },
+ "olmak": {
+  "gold": "ol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ol"
+ },
+ "boynuna": {
+  "gold": "boyun",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "boyun"
+ },
+ "atının": {
+  "gold": "at",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "at"
+ },
+ "atını": {
+  "gold": "at",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "at"
+ },
+ "Merkitler": {
+  "gold": "merkit",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "merkit"
+ },
+ "Savaş": {
+  "gold": "savaş",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "savaş"
+ },
+ "arkadaşı": {
+  "gold": "arkadaş",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "arkadaş"
+ },
+ "ihanet": {
+  "gold": "ihanet",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ihanet"
+ },
+ "askerlik": {
+  "gold": "asker",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "asker"
+ },
+ "birim": {
+  "gold": "birim",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "bir"
+ },
+ "komutan": {
+  "gold": "komutan",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "komuta"
+ },
+ "birisi": {
+  "gold": "biri",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "biri"
+ },
+ "ulus": {
+  "gold": "ulus",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ulus"
+ },
+ "sonucunda": {
+  "gold": "sonuç",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "sonuç"
+ },
+ "kurdu": {
+  "gold": "kur",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kur"
+ },
+ "yakınlarında": {
+  "gold": "yakın",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yakın"
+ },
+ "kabile": {
+  "gold": "kabil",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kabil"
+ },
+ "kardeşleri": {
+  "gold": "kardeş",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kardeş"
+ },
+ "onları": {
+  "gold": "on",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "o"
+ },
+ "yaşına": {
+  "gold": "yaş",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "yaş"
+ },
+ "kabileleri": {
+  "gold": "kabile",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kabile"
+ },
+ "kurultay": {
+  "gold": "kurultay",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kurultay"
+ },
+ "kurultayda": {
+  "gold": "kurultay",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kurultay"
+ },
+ "veya": {
+  "gold": "veya",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "veya"
+ },
+ "hitap": {
+  "gold": "hitap",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "hitap"
+ },
+ "aynı": {
+  "gold": "ayn",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ayn"
+ },
+ "önemli": {
+  "gold": "önem",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "önem"
+ },
+ "Kuzey": {
+  "gold": "kuzey",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kuzey"
+ },
+ "kim": {
+  "gold": "kim",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kim"
+ },
+ "karar": {
+  "gold": "kar",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kar"
+ },
+ "efsanesi": {
+  "gold": "efsane",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "efsane"
+ },
+ "Gizli": {
+  "gold": "giz",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "giz"
+ },
+ "olmuştur": {
+  "gold": "ol",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "ol"
+ },
+ "boy": {
+  "gold": "boy",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "boy"
+ },
+ "Kabul": {
+  "gold": "kabul",
+  "source": "agree",
+  "note": "engine in zeyrek lemmas",
+  "confidence": "high",
+  "ref": "kabul"
+ },
+ "esir": {
+  "gold": "esir",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "esir"
+ },
+ "doğum": {
+  "gold": "doğum",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "doğum"
+ },
+ "getirerek": {
+  "gold": "getir",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "getir"
+ },
+ "sonucu": {
+  "gold": "sonuç",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "sonuç"
+ },
+ "adını": {
+  "gold": "ad",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "ad"
+ },
+ "diyerek": {
+  "gold": "de",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "de"
+ },
+ "arasında": {
+  "gold": "ara",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "NEEDS-NATIVE-REVIEW",
+  "ref": "ara"
+ },
+ "diğer": {
+  "gold": "diğer",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "diğer"
+ },
+ "ederek": {
+  "gold": "et",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "et"
+ },
+ "geldiğinde": {
+  "gold": "gel",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "gel"
+ },
+ "birer": {
+  "gold": "bir",
+  "source": "corrected",
+  "note": "engine root 'bir' defensible; zeyrek keeps lexicalised 'birer'",
+  "confidence": "NEEDS-NATIVE-REVIEW",
+  "ref": "bir"
+ },
+ "hâlde": {
+  "gold": "hal",
+  "source": "agree",
+  "note": "adjudicated (engine over-strip)",
+  "confidence": "high",
+  "ref": "hal"
+ }
+}

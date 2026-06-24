@@ -23,7 +23,7 @@ from .common import CJK_TERMINATORS, LATIN_TERMINATORS
 
 
 # Surfaces whose POS depends on sentence-window context.
-_POLYSEMOUS = {"只", "把", "得", "在", "了", "的", "给"}
+_POLYSEMOUS = {"只", "把", "得", "在", "了", "的", "给", "等", "为", "為"}
 
 # Sentence-final modal / mood particles. Reason: 了/的/吗/呢/吧/啊/呀 in final
 # position always re-tag as PART regardless of any earlier reading.
@@ -143,6 +143,22 @@ def disambiguate_pos(tokens: List[TokenInfo]) -> List[TokenInfo]:
                     _retag(tok, "ADP", {"role": "DATIVE"})
                 elif is_subject_like(i - 1) and next_pos in {"NOUN", "PROPN", "PRON"}:
                     _retag(tok, "ADP", {"role": "BENEFACTIVE"})
+
+            elif s == "等":
+                # Enumeration particle ("X, Y 等" = "X, Y, etc."): closes a list
+                # and therefore follows a common or proper noun (or a numeral).
+                # The lexical verb 等 ("to wait") takes a subject pronoun, so the
+                # PRON-subject case is left as the verb reading; after a true
+                # noun the enumeration particle is the dominant reading.
+                if prev_pos in {"NOUN", "PROPN", "NUM"}:
+                    _retag(tok, "PART", {"particle_type": "ENUMERATION"})
+
+            elif s in {"为", "為"}:
+                # Coverb / preposition ("for, as, by") when it introduces a
+                # nominal: SUBJECT 为 NP ... . Kept as the verb reading ("to be,
+                # to act as") only when it is not introducing an NP object.
+                if is_subject_like(i - 1) and next_pos in {"NOUN", "PROPN", "PRON", "DET"}:
+                    _retag(tok, "ADP", {"role": "PURPOSE"})
 
     return tokens
 

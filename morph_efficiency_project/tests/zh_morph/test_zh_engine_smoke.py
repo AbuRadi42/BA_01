@@ -108,7 +108,9 @@ def test_prep_ba():
 def test_content_word_unknown():
     r = engine.analyze("电脑")
     assert r.pos == "NOUN"
-    assert r.tags == {}
+    # No inflectional features; the radical-semantic stream is attached, though.
+    assert {k: v for k, v in r.tags.items() if k not in ("radical", "radical_class")} == {}
+    assert "radical_class" in r.tags
 
 def test_content_word_verb_unknown():
     r = engine.analyze("学习")

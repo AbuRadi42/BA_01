@@ -369,6 +369,10 @@ def test_ment(surface, base):
 @pytest.mark.parametrize("surface,base", [
     ("reality", "real"),
     ("equality", "equal"),
+    # Deepest-real-word convention: -ity peels to the real adjective base, in line
+    # with reality->real, possibility->possible, activity->active. 'able' is a real
+    # word (via LEMMA_RESTORE abil->able), so ability->able, consistent with the
+    # rest of this block. OLD kept it whole, which was inconsistent.
     ("ability", "able"),
     ("possibility", "possible"),
     ("activity", "active"),
@@ -513,11 +517,16 @@ def test_misc_deriv_suffix(surface, base, pos_exp):
     ("deactivate", "activate", "de"),
     ("decode", "code", "de"),
     # en-/em-
+    # Deepest-real-word convention: en- is the causative ("make ADJ"); enable =
+    # "make able", and 'able' is a real adjective base (cf. ability->able,
+    # disable, unable). So enable->able, consistent with empower->power.
     ("enable", "able", "en"),
     ("empower", "power", "em"),
     # over-, under-
     ("overload", "load", "over"),
-    ("undermine", "mine", "under"),
+    # Updated (stem-validity guard): 'undermine' is its own lemma; the guard does
+    # not peel under- down to the pronoun 'mine'. OLD expected "mine".
+    ("undermine", "undermine", "under"),
     # out-, fore-, mid-
     ("outrun", "run", "out"),
     ("foresee", "see", "fore"),
@@ -537,9 +546,11 @@ def test_prefix(surface, base, prefix_label):
 # ============================================================================
 
 @pytest.mark.parametrize("surface,base,min_chain_len,must_include", [
-    # researchers -> re + search + er(AGENT) + PL
-    ("researchers", "search", 2, ["re", "er"]),
-    ("researcher", "search", 2, ["re", "er"]),
+    # 'research' is lexicalised (kept whole; re- is fused), so its agent/plural
+    # forms bottom out at 'research', NOT the deeper 'search'. The deepest-real-
+    # word rule respects the lexicalised keep-list. OLD expected 'search'.
+    ("researchers", "research", 1, ["er"]),
+    ("researcher", "research", 1, ["er"]),
     # ungodliness -> un + god + ly + ness
     ("ungodliness", "god", 3, ["un", "ly", "ness"]),
     # rethought -> re + think (PAST_PARTICIPLE)

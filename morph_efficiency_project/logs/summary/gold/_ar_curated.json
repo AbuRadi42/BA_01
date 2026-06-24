@@ -1,0 +1,926 @@
+{
+ "مثل": {
+  "gold": "مثل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ث.ل"
+ },
+ "الأرض": {
+  "gold": "ءرض",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ر.ض"
+ },
+ "بالإضافة": {
+  "gold": "ضيف",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ض.#.ف"
+ },
+ "بشكل": {
+  "gold": "شكل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ش.ك.ل"
+ },
+ "الغلاف": {
+  "gold": "غلف",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "غ.ل.ف"
+ },
+ "شكل": {
+  "gold": "شكل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ش.ك.ل"
+ },
+ "العديد": {
+  "gold": "عدد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.د.د"
+ },
+ "البحر": {
+  "gold": "بحر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ب.ح.ر"
+ },
+ "الرياضيات": {
+  "gold": "روض",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ر.#.ض"
+ },
+ "يمكن": {
+  "gold": "مكن",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ك.ن"
+ },
+ "حدوث": {
+  "gold": "حدث",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.د.ث"
+ },
+ "وجود": {
+  "gold": "وجد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ج.د"
+ },
+ "كان": {
+  "gold": "كون",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.#.ن"
+ },
+ "أنّه": {
+  "gold": "ءنه",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.#.ن"
+ },
+ "يستخدم": {
+  "gold": "خدم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "خ.د.م"
+ },
+ "بخار": {
+  "gold": "بخر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ب.خ.ر"
+ },
+ "حوالي": {
+  "gold": "حول",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.#.ل"
+ },
+ "ولكن": {
+  "gold": "لكن",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ل.ك.ن"
+ },
+ "كبيرة": {
+  "gold": "كبر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ب.ر"
+ },
+ "استخدام": {
+  "gold": "خدم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "خ.د.م"
+ },
+ "الكائنات": {
+  "gold": "كون",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.#.ن"
+ },
+ "سطح": {
+  "gold": "سطح",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.ط.ح"
+ },
+ "نسبة": {
+  "gold": "نسب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.س.ب"
+ },
+ "المواد": {
+  "gold": "مدد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.د.د"
+ },
+ "أخرى": {
+  "gold": "ءخر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.خ.ر"
+ },
+ "الجليد": {
+  "gold": "جلد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ج.ل.د"
+ },
+ "يوجد": {
+  "gold": "وجد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ج.د"
+ },
+ "كمّيّات": {
+  "gold": "كمم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.م.#"
+ },
+ "الإنسان": {
+  "gold": "ءنس",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ن.س"
+ },
+ "بسبب": {
+  "gold": "سبب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.ب.ب"
+ },
+ "بالمقابل": {
+  "gold": "قبل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ق.ب.ل"
+ },
+ "الطاقة": {
+  "gold": "طوق",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ط.#.ق"
+ },
+ "مفهوم": {
+  "gold": "فهم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ف.ه.م"
+ },
+ "تكون": {
+  "gold": "كون",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.#.ن"
+ },
+ "العذب": {
+  "gold": "عذب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.ذ.ب"
+ },
+ "حسب": {
+  "gold": "حسب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.س.ب"
+ },
+ "عام": {
+  "gold": "عيم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.#.م"
+ },
+ "الحال": {
+  "gold": "حول",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.#.ل"
+ },
+ "سبيل": {
+  "gold": "سبل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.ب.ل"
+ },
+ "المثال": {
+  "gold": "مثل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ث.ل"
+ },
+ "كمّيّة": {
+  "gold": "كمم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.م.م"
+ },
+ "الكون": {
+  "gold": "كون",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.#.ن"
+ },
+ "الوقت": {
+  "gold": "وقت",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ق.ت"
+ },
+ "باسم": {
+  "gold": "بسم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ب.س.م"
+ },
+ "الموارد": {
+  "gold": "مرد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ر.د"
+ },
+ "الحرارة": {
+  "gold": "حرر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.ر.ر"
+ },
+ "نقطة": {
+  "gold": "نقط",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ق.ط"
+ },
+ "أكبر": {
+  "gold": "كبر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ب.ر"
+ },
+ "الأنهار": {
+  "gold": "نهر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ه.ر"
+ },
+ "الشرب": {
+  "gold": "شرب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ش.ر.ب"
+ },
+ "الأملاح": {
+  "gold": "ملح",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ل.ح"
+ },
+ "يعود": {
+  "gold": "عود",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.#.د"
+ },
+ "بنسبة": {
+  "gold": "نسب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.س.ب"
+ },
+ "أهمّيّة": {
+  "gold": "همم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ه.م.م"
+ },
+ "باستخدام": {
+  "gold": "خدم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "خ.د.م"
+ },
+ "سنة": {
+  "gold": "سنن",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.ن.#"
+ },
+ "دورة": {
+  "gold": "دور",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "د.#.ر"
+ },
+ "النباتات": {
+  "gold": "نبت",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ب.ت"
+ },
+ "كلّ": {
+  "gold": "كلل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ل.ل"
+ },
+ "الحديث": {
+  "gold": "حدث",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.د.ث"
+ },
+ "لغرض": {
+  "gold": "غرض",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "غ.ر.ض"
+ },
+ "العالم": {
+  "gold": "علم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.ل.م"
+ },
+ "العربية": {
+  "gold": "عرب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.ر.ب"
+ },
+ "الحالة": {
+  "gold": "حول",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.#.ل"
+ },
+ "أساس": {
+  "gold": "ءسس",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.س.س"
+ },
+ "تبلغ": {
+  "gold": "بلغ",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ب.ل.غ"
+ },
+ "الكمّيّة": {
+  "gold": "كمم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.م.م"
+ },
+ "الحضارات": {
+  "gold": "حضر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.ض.ر"
+ },
+ "الكبيرة": {
+  "gold": "كبر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ب.ر"
+ },
+ "أغلب": {
+  "gold": "غلب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "غ.ل.ب"
+ },
+ "قيمة": {
+  "gold": "قوم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ق.#.م"
+ },
+ "فإنّ": {
+  "gold": "فءن",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "NTWS"
+ },
+ "الحراريّة": {
+  "gold": "حرر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.ر.ر"
+ },
+ "حرارة": {
+  "gold": "حرر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.ر.ر"
+ },
+ "الصناعة": {
+  "gold": "صنع",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ص.ن.ع"
+ },
+ "ضغط": {
+  "gold": "ضغط",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ض.غ.ط"
+ },
+ "دون": {
+  "gold": "دون",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "د.#.ن"
+ },
+ "المحيطات": {
+  "gold": "حوط",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.#.ط"
+ },
+ "عمليّة": {
+  "gold": "عمل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.م.ل"
+ },
+ "يحدث": {
+  "gold": "حدث",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.د.ث"
+ },
+ "أشكال": {
+  "gold": "شكل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ش.ك.ل"
+ },
+ "تقوم": {
+  "gold": "قوم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ق.#.م"
+ },
+ "شرب": {
+  "gold": "شرب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ش.ر.ب"
+ },
+ "الجسم": {
+  "gold": "جسم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ج.س.م"
+ },
+ "عدد": {
+  "gold": "عدد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.د.د"
+ },
+ "الملح": {
+  "gold": "ملح",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ل.ح"
+ },
+ "أساسي": {
+  "gold": "ءسس",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.س.س"
+ },
+ "نظام": {
+  "gold": "نظم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ظ.م"
+ },
+ "تصريف": {
+  "gold": "صرف",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ص.ر.ف"
+ },
+ "معالجة": {
+  "gold": "علج",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.ل.ج"
+ },
+ "الرياضية": {
+  "gold": "روض",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ر.#.ض"
+ },
+ "أكثر": {
+  "gold": "كثر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ث.ر"
+ },
+ "كوكب": {
+  "gold": "كوكب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.#.ك.ب"
+ },
+ "الموجود": {
+  "gold": "وجد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ج.د"
+ },
+ "المناطق": {
+  "gold": "نطق",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ط.ق"
+ },
+ "السطوح": {
+  "gold": "سطح",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.ط.ح"
+ },
+ "ويعود": {
+  "gold": "عود",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.#.د"
+ },
+ "مواد": {
+  "gold": "مدد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.د.د"
+ },
+ "مثلاً": {
+  "gold": "مثل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.ث.ل"
+ },
+ "كثافة": {
+  "gold": "كثف",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ك.ث.ف"
+ },
+ "تعتمد": {
+  "gold": "عمد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.م.د"
+ },
+ "الدرجة": {
+  "gold": "درج",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "د.ر.ج"
+ },
+ "ارتفاع": {
+  "gold": "رفع",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ر.ف.ع"
+ },
+ "مناخ": {
+  "gold": "نخخ",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.#.خ"
+ },
+ "درجة": {
+  "gold": "درج",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "د.ر.ج"
+ },
+ "تزداد": {
+  "gold": "زيد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ز.#.د"
+ },
+ "السائل": {
+  "gold": "سءل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "س.#.ل"
+ },
+ "العناصر": {
+  "gold": "عنصر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ع.ن.ص.ر"
+ },
+ "أنه": {
+  "gold": "ءنه",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.#.ن"
+ },
+ "وخاصة": {
+  "gold": "وخص",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "خ.ص.ص"
+ },
+ "الموجودة": {
+  "gold": "وجد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ج.د"
+ },
+ "وقد": {
+  "gold": "وقد",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ق.د"
+ },
+ "الأرضيّة": {
+  "gold": "ءرض",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ر.ض"
+ },
+ "تاريخ": {
+  "gold": "ءرخ",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.ر.خ"
+ },
+ "الهطول": {
+  "gold": "هطل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ه.ط.ل"
+ },
+ "المنطقة": {
+  "gold": "نطق",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ط.ق"
+ },
+ "المناخ": {
+  "gold": "نخخ",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.#.خ"
+ },
+ "الأهمّيّة": {
+  "gold": "همم",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ه.م.م"
+ },
+ "تحتاج": {
+  "gold": "حوج",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.#.ج"
+ },
+ "طريق": {
+  "gold": "طرق",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ط.ر.ق"
+ },
+ "البشريّة": {
+  "gold": "بشر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ب.ش.ر"
+ },
+ "الطلب": {
+  "gold": "طلب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ط.ل.ب"
+ },
+ "حضارة": {
+  "gold": "حضر",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ح.ض.ر"
+ },
+ "تركّز": {
+  "gold": "ركز",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ر.ك.ز"
+ },
+ "التربة": {
+  "gold": "ترب",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ت.ر.ب"
+ },
+ "الغذاء": {
+  "gold": "غذي",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "غ.ذ.#"
+ },
+ "الزراعة": {
+  "gold": "زرع",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ز.ر.ع"
+ },
+ "المدن": {
+  "gold": "مدن",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "م.د.ن"
+ },
+ "المنزليّة": {
+  "gold": "نزل",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "ن.ز.ل"
+ },
+ "الأساسيّة": {
+  "gold": "ءسس",
+  "source": "agree",
+  "note": "engine==CAMeL (strong radicals)",
+  "confidence": "high",
+  "ref": "#.س.س"
+ },
+ "الحياة": {
+  "gold": "حيي",
+  "source": "corrected",
+  "note": "CAMeL ل.ح.# malformed; root ح-ي-ي is correct (engine right)",
+  "confidence": "high",
+  "ref": "ل.ح.#"
+ },
+ "الحيّة": {
+  "gold": "حيي",
+  "source": "corrected",
+  "note": "CAMeL ل.ح.# malformed; root ح-ي-ي correct (engine right)",
+  "confidence": "high",
+  "ref": "ل.ح.#"
+ }
+}

@@ -43,6 +43,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import random
 import sys
@@ -60,6 +61,31 @@ from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine
 from morph_efficiency_project.scripts.engines.en_engine import EnglishEngine
 from morph_efficiency_project.scripts.engines.tr_engine import TurkishEngine
 from morph_efficiency_project.scripts.engines.zh_engine import MandarinEngine
+from morph_efficiency_project.scripts.engines.shared import TokenInfo
+
+# Sentence-grammar layer: context-aware POS resolution. disambiguate_pos takes
+# the line's token list and rewrites POS/tags in place against neighbours, so a
+# homograph (EN "run" NOUN-vs-VERB, ZH 把 classifier-vs-ADP, TR "evin"
+# GEN-vs-2SG-poss, AR case under نواسخ) gets the contextually correct bundle.
+from morph_efficiency_project.scripts.engines.grammar.ar_grammar import (
+    disambiguate_pos as _ar_disambiguate,
+)
+from morph_efficiency_project.scripts.engines.grammar.en_grammar import (
+    disambiguate_pos as _en_disambiguate,
+)
+from morph_efficiency_project.scripts.engines.grammar.tr_grammar import (
+    disambiguate_pos as _tr_disambiguate,
+)
+from morph_efficiency_project.scripts.engines.grammar.zh_grammar import (
+    disambiguate_pos as _zh_disambiguate,
+)
+
+DISAMBIGUATORS = {
+    "ar": _ar_disambiguate,
+    "en": _en_disambiguate,
+    "tr": _tr_disambiguate,
+    "zh": _zh_disambiguate,
+}
 
 ENGINES = {
     "en": EnglishEngine,
@@ -145,45 +171,96 @@ def load_vocab(path: Path) -> Dict[str, int]:
 # Engine output extraction
 # ---------------------------------------------------------------------------
 
-# Per-(lang, surface) memoisation. Real-world corpora are heavily Zipfian:
-# the same function words appear thousands of times. Caching by surface form
-# (within a language) means each unique surface is analysed once.
-_ANALYZE_CACHE: Dict[Tuple[str, str], Tuple[str, str, str, str]] = {}
+# Per-(lang, surface) memoisation of the *morphology* (the expensive
+# engine.analyze() call). Real-world corpora are heavily Zipfian: the same
+# function words appear thousands of times. Caching the TokenInfo by surface
+# form (within a language) means each unique surface is analysed once. This is
+# what makes Turkish tractable (full corpus ~30h -> ~16min); do NOT remove it.
+#
+# Context-aware POS resolution happens AFTER the cache, on per-token shallow
+# copies (see analyze_line). The cached TokenInfo objects are shared and must
+# never be mutated, or disambiguation of one line would poison every later
+# occurrence of that surface form ("cache poisoning").
+_INFO_CACHE: Dict[Tuple[str, str], TokenInfo] = {}
+
+# Sentinel marker for a surface the engine could not analyse. Stored as a
+# TokenInfo so the cache stays homogeneous and disambiguators see a real token.
+_NO_FEAT_POS = "UNKNOWN"
 
 
-def analyze_token(engine, word: str, lang: str) -> Tuple[str, str, str, str]:
-    """Return (surface_composite, bundle, root, wazn_or_radical).
+def _analyze_cached(engine, word: str, lang: str) -> TokenInfo:
+    """Return the engine's TokenInfo for `word`, memoised per (lang, surface).
 
-    surface_composite: "<root>+<bundle>" composite morph surface token.
-    bundle:            feature_bundle_str from the engine.
-    root:              info.root or surface fallback.
-    wazn_or_radical:   AR semantic_role (wazn class); ZH radical; else "".
-
-    Cached by (lang, word) so each unique surface form is analysed at most
-    once per run. Critical for Turkish where the engine is slow per token
-    and Zipfian repetition gives very high cache hit rates after warm-up.
+    The returned object is the shared cached instance: callers that intend to
+    mutate POS/tags (disambiguation) must copy it first. Each unique surface
+    is analysed at most once per run.
     """
     key = (lang, word)
-    hit = _ANALYZE_CACHE.get(key)
+    hit = _INFO_CACHE.get(key)
     if hit is not None:
         return hit
     try:
         info = engine.analyze(word)
-        root = info.root or word
-        bundle = info.feature_bundle_str()
     except Exception:
-        out = (f"{word}+no_features", "no_features", word, "")
-        _ANALYZE_CACHE[key] = out
-        return out
+        info = TokenInfo(surface=word, clitics={}, template="",
+                         root=word, tags={}, pos=_NO_FEAT_POS, derived_chain=[])
+    _INFO_CACHE[key] = info
+    return info
+
+
+def _streams_from_info(info: TokenInfo, word: str, lang: str
+                       ) -> Tuple[str, str, str, str]:
+    """Extract (surface_composite, bundle, root, wazn_or_radical) from a
+    (possibly context-disambiguated) TokenInfo.
+
+    surface_composite: "<root>+<bundle>" composite morph surface token.
+    bundle:            feature_bundle_str (reflects context POS after disambig).
+    root:              info.root or surface fallback.
+    wazn_or_radical:   AR semantic_role (wazn class); ZH radical; else "".
+    """
+    root = info.root or word
+    bundle = info.feature_bundle_str()
     surface_composite = f"{root}+{bundle}"
     wazn_radical = ""
     if lang == "ar":
         wazn_radical = info.tags.get("semantic_role") or info.tags.get("wazn_class") or ""
     elif lang == "zh":
         wazn_radical = info.tags.get("radical") or ""
-    out = (surface_composite, bundle, root, wazn_radical)
-    _ANALYZE_CACHE[key] = out
-    return out
+    return surface_composite, bundle, root, wazn_radical
+
+
+def analyze_line(engine, words: List[str], lang: str) -> List[TokenInfo]:
+    """Analyse a whole corpus line and return CONTEXT-RESOLVED TokenInfo objects.
+
+    Per the design that preserves the speed cache:
+      1. Look up each word's morphology from the per-surface cache (one
+         engine.analyze() per unique surface, ever).
+      2. Shallow-copy each cached TokenInfo with a fresh tags dict so the
+         disambiguator can mutate POS/tags without poisoning the shared cache.
+      3. Run the language's disambiguate_pos over the copies. It rewrites
+         POS/tags in place and returns the same-length list, so token alignment
+         across the surface/feat/root/wazn streams is preserved.
+    """
+    copies: List[TokenInfo] = []
+    for w in words:
+        cached = _analyze_cached(engine, w, lang)
+        copies.append(dataclasses.replace(cached, tags=dict(cached.tags)))
+    disambiguate = DISAMBIGUATORS.get(lang)
+    if disambiguate is not None and copies:
+        try:
+            copies = disambiguate(copies)
+        except Exception:
+            # A grammar-layer failure must never abort tokenisation; fall back
+            # to the context-free (already-copied) analyses for this line.
+            pass
+    return copies
+
+
+def analyze_token(engine, word: str, lang: str) -> Tuple[str, str, str, str]:
+    """Context-FREE single-word extraction. Retained for spot-checks only;
+    the training streams go through analyze_line for context resolution.
+    """
+    return _streams_from_info(_analyze_cached(engine, word, lang), word, lang)
 
 
 # ---------------------------------------------------------------------------
@@ -289,8 +366,10 @@ def first_pass_morph(lang: str, engine, max_lines: int | None
     train_path = DATA_DIR / f"{lang}_train.txt"
     n_lines = 0
     for line in iter_lines(train_path, limit=max_lines):
-        for word in tokenize_words(line, lang):
-            surface, bundle, _root, _wazn = analyze_token(engine, word, lang)
+        words = tokenize_words(line, lang)
+        infos = analyze_line(engine, words, lang)
+        for word, info in zip(words, infos):
+            surface, bundle, _root, _wazn = _streams_from_info(info, word, lang)
             surface_counter[surface] += 1
             if bundle not in bundle_vocab:
                 bundle_vocab[bundle] = len(bundle_vocab)
@@ -327,8 +406,10 @@ def encode_morph_split(lang: str, split: str, engine,
         if do_root: root_ids.append(BOS)
         if do_wazn: wazn_ids.append(BOS)
         if do_rad:  rad_ids.append(BOS)
-        for word in tokenize_words(line, lang):
-            surface, bundle, root, wazn_or_rad = analyze_token(engine, word, lang)
+        words = tokenize_words(line, lang)
+        infos = analyze_line(engine, words, lang)
+        for word, info in zip(words, infos):
+            surface, bundle, root, wazn_or_rad = _streams_from_info(info, word, lang)
             tok_ids.append(surface_vocab.get(surface, UNK))
             feat_ids.append(bundle_vocab.get(bundle, UNK))
             if do_root:
@@ -363,6 +444,25 @@ def encode_morph_split(lang: str, split: str, engine,
 # ---------------------------------------------------------------------------
 # Per-language driver
 # ---------------------------------------------------------------------------
+
+def count_source(lang: str, split: str, max_lines: int | None) -> tuple:
+    """Count source characters, words, and lines for a split, using the SAME
+    line budget as encoding. Needed to convert per-token loss into the
+    tokeniser-fair bits-per-character metric, and to report fertility."""
+    p = DATA_DIR / f"{lang}_{split}.txt"
+    n_chars = n_words = n_lines = 0
+    if not p.exists():
+        return 0, 0, 0
+    with p.open("r", encoding="utf-8") as f:
+        for i, line in enumerate(f):
+            if max_lines is not None and i >= max_lines:
+                break
+            s = line.strip()
+            n_chars += len(s)
+            n_words += len(tokenize_words(s, lang))
+            n_lines += 1
+    return n_chars, n_words, n_lines
+
 
 def process_language(lang: str, max_lines: int | None, force: bool) -> dict:
     hb(f"[{lang}] start (max_lines={max_lines}, force={force})")
@@ -478,6 +578,28 @@ def process_language(lang: str, max_lines: int | None, force: bool) -> dict:
             "baseline": int(np.load(baseline_paths[split]).shape[0]),
             "morph": int(np.load(morph_outputs[split]).shape[0]),
         }
+
+    # --- source-text counts + tokeniser fertility (paper figures) ---------
+    summary["source"] = {}
+    summary["fertility"] = {}
+    for split in SPLITS:
+        n_chars, n_words, n_lines = count_source(lang, split, max_lines)
+        bt = summary["tokens"][split]["baseline"]
+        mt = summary["tokens"][split]["morph"]
+        summary["source"][split] = {
+            "chars": n_chars, "words": n_words, "lines": n_lines}
+        summary["fertility"][split] = {
+            "baseline_tok_per_word": bt / max(1, n_words),
+            "morph_tok_per_word": mt / max(1, n_words),
+            "baseline_tok_per_char": bt / max(1, n_chars),
+            "morph_tok_per_char": mt / max(1, n_chars),
+        }
+
+    # --- persist the stats sidecar (read by the trainer for bpc; plotted) -
+    stats_path = DATA_DIR / f"{lang}_tokstats.json"
+    stats_path.write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    hb(f"[{lang}] wrote {stats_path.name} (chars/words/fertility)")
     return summary
 
 

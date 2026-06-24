@@ -1,0 +1,201 @@
+word	gold	source	note
+anarchism	anarchism	agree	spaCy lemma == deepest real-word base
+anarchist	anarchist	agree	spaCy lemma == deepest real-word base
+anarchists	anarchist	agree	spaCy lemma == deepest real-word base
+state	state	agree	spaCy lemma == deepest real-word base
+movement	move	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+anti	anti	agree	spaCy lemma == deepest real-word base
+free	free	agree	spaCy lemma == deepest real-word base
+political	political	agree	spaCy lemma == deepest real-word base
+albedo	albedo	agree	spaCy lemma == deepest real-word base
+century	century	agree	spaCy lemma == deepest real-word base
+classical	classical	agree	spaCy lemma == deepest real-word base
+society	society	agree	spaCy lemma == deepest real-word base
+social	social	agree	spaCy lemma == deepest real-word base
+contemporary	contemporary	agree	spaCy lemma == deepest real-word base
+authority	authority	agree	spaCy lemma == deepest real-word base
+war	war	agree	spaCy lemma == deepest real-word base
+anarcho	anarcho	agree	spaCy lemma == deepest real-word base
+philosophical	philosophical	agree	spaCy lemma == deepest real-word base
+groups	group	agree	spaCy lemma == deepest real-word base
+left	leave	agree	spaCy lemma == deepest real-word base
+world	world	agree	spaCy lemma == deepest real-word base
+movements	move	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+capitalism	capital	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+violence	violence	agree	spaCy lemma == deepest real-word base
+currents	current	agree	spaCy lemma == deepest real-word base
+action	action	agree	spaCy lemma == deepest real-word base
+significant	significant	agree	spaCy lemma == deepest real-word base
+thought	think	agree	spaCy lemma == deepest real-word base
+theory	theory	agree	spaCy lemma == deepest real-word base
+individual	individual	agree	spaCy lemma == deepest real-word base
+love	love	agree	spaCy lemma == deepest real-word base
+surface	surface	agree	spaCy lemma == deepest real-word base
+socialist	socialist	agree	spaCy lemma == deepest real-word base
+states	state	agree	spaCy lemma == deepest real-word base
+role	role	agree	spaCy lemma == deepest real-word base
+era	era	agree	spaCy lemma == deepest real-word base
+revolutionary	revolutionary	agree	spaCy lemma == deepest real-word base
+human	human	agree	spaCy lemma == deepest real-word base
+revolution	revolution	agree	spaCy lemma == deepest real-word base
+autonomy	autonomy	agree	spaCy lemma == deepest real-word base
+means	mean	agree	spaCy lemma == deepest real-word base
+libertarian	libertarian	agree	spaCy lemma == deepest real-word base
+socialism	social	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+ideas	idea	agree	spaCy lemma == deepest real-word base
+workers	work	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+schools	school	agree	spaCy lemma == deepest real-word base
+tactics	tactic	agree	spaCy lemma == deepest real-word base
+critique	critique	agree	spaCy lemma == deepest real-word base
+anarchy	anarchy	agree	spaCy lemma == deepest real-word base
+early	early	agree	spaCy lemma == deepest real-word base
+principles	principle	agree	spaCy lemma == deepest real-word base
+tendencies	tendency	agree	spaCy lemma == deepest real-word base
+saw	see	agree	spaCy lemma == deepest real-word base
+international	nation	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+power	power	agree	spaCy lemma == deepest real-word base
+group	group	agree	spaCy lemma == deepest real-word base
+way	way	agree	spaCy lemma == deepest real-word base
+direct	direct	agree	spaCy lemma == deepest real-word base
+people	people	agree	spaCy lemma == deepest real-word base
+wing	wing	agree	spaCy lemma == deepest real-word base
+humans	human	agree	spaCy lemma == deepest real-word base
+spanish	spanish	agree	spaCy lemma == deepest real-word base
+end	end	agree	spaCy lemma == deepest real-word base
+capitalist	capital	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+evolutionary	evolution	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+later	later	agree	spaCy lemma == deepest real-word base
+use	use	agree	spaCy lemma == deepest real-word base
+forms	form	agree	spaCy lemma == deepest real-word base
+established	establish	agree	spaCy lemma == deepest real-word base
+interest	interest	agree	spaCy lemma == deepest real-word base
+small	small	agree	spaCy lemma == deepest real-word base
+known	know	agree	spaCy lemma == deepest real-word base
+members	member	agree	spaCy lemma == deepest real-word base
+post	post	agree	spaCy lemma == deepest real-word base
+feminism	feminism	agree	spaCy lemma == deepest real-word base
+black	black	agree	spaCy lemma == deepest real-word base
+economic	economic	agree	spaCy lemma == deepest real-word base
+non	non	agree	spaCy lemma == deepest real-word base
+traditions	tradition	agree	spaCy lemma == deepest real-word base
+body	body	agree	spaCy lemma == deepest real-word base
+ideal	ideal	agree	spaCy lemma == deepest real-word base
+self	self	agree	spaCy lemma == deepest real-word base
+education	educate	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+ferrer	ferrer	agree	spaCy lemma == deepest real-word base
+criticism	critic	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+solar	solar	agree	spaCy lemma == deepest real-word base
+ice	ice	agree	spaCy lemma == deepest real-word base
+spectrum	spectrum	agree	spaCy lemma == deepest real-word base
+usually	usual	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+history	history	agree	spaCy lemma == deepest real-word base
+modern	modern	agree	spaCy lemma == deepest real-word base
+formed	form	agree	spaCy lemma == deepest real-word base
+period	period	agree	spaCy lemma == deepest real-word base
+taken	take	agree	spaCy lemma == deepest real-word base
+civil	civil	agree	spaCy lemma == deepest real-word base
+globalisation	global	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+turn	turn	agree	spaCy lemma == deepest real-word base
+libertarianism	libertarian	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+common	common	agree	spaCy lemma == deepest real-word base
+philosophy	philosophy	agree	spaCy lemma == deepest real-word base
+authoritarian	authoritarian	agree	spaCy lemma == deepest real-word base
+scholars	scholar	agree	spaCy lemma == deepest real-word base
+anarchistic	anarchist	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+associated	associate	agree	spaCy lemma == deepest real-word base
+nature	nature	agree	spaCy lemma == deepest real-word base
+europe	europe	agree	spaCy lemma == deepest real-word base
+religious	religious	agree	spaCy lemma == deepest real-word base
+developed	develop	agree	spaCy lemma == deepest real-word base
+late	late	agree	spaCy lemma == deepest real-word base
+wave	wave	agree	spaCy lemma == deepest real-word base
+leading	lead	agree	spaCy lemma == deepest real-word base
+federation	federation	agree	spaCy lemma == deepest real-word base
+second	second	agree	spaCy lemma == deepest real-word base
+new	new	agree	spaCy lemma == deepest real-word base
+time	time	agree	spaCy lemma == deepest real-word base
+major	major	agree	spaCy lemma == deepest real-word base
+took	take	agree	spaCy lemma == deepest real-word base
+marxism	marx	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+form	form	agree	spaCy lemma == deepest real-word base
+protests	protest	agree	spaCy lemma == deepest real-word base
+include	include	agree	spaCy lemma == deepest real-word base
+work	work	agree	spaCy lemma == deepest real-word base
+individualist	individual	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+different	differ	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+values	value	agree	spaCy lemma == deepest real-word base
+widely	wide	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+belief	belief	agree	spaCy lemma == deepest real-word base
+collectivist	collect	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+aims	aim	agree	spaCy lemma == deepest real-word base
+marxist	marx	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+specific	specific	agree	spaCy lemma == deepest real-word base
+gender	gender	agree	spaCy lemma == deepest real-word base
+equality	equal	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+liberty	liberty	agree	spaCy lemma == deepest real-word base
+institutions	institution	agree	spaCy lemma == deepest real-word base
+strikes	strike	agree	spaCy lemma == deepest real-word base
+especially	especially	agree	spaCy lemma == deepest real-word base
+believed	believe	agree	spaCy lemma == deepest real-word base
+achieve	achieve	agree	spaCy lemma == deepest real-word base
+process	process	agree	spaCy lemma == deepest real-word base
+order	order	agree	spaCy lemma == deepest real-word base
+consensus	consensus	agree	spaCy lemma == deepest real-word base
+art	art	agree	spaCy lemma == deepest real-word base
+criticised	critic	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+argument	argument	agree	spaCy lemma == deepest real-word base
+class	class	agree	spaCy lemma == deepest real-word base
+sexuality	sex	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+sexual	sex	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+radiation	radiation	agree	spaCy lemma == deepest real-word base
+given	give	agree	spaCy lemma == deepest real-word base
+advocates	advocate	agree	spaCy lemma == deepest real-word base
+stateless	state	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+voluntary	voluntary	agree	spaCy lemma == deepest real-word base
+formal	form	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+revolutions	revolution	agree	spaCy lemma == deepest real-word base
+influence	influence	agree	spaCy lemma == deepest real-word base
+approaches	approach	agree	spaCy lemma == deepest real-word base
+generally	general	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+violent	violent	agree	spaCy lemma == deepest real-word base
+influenced	influence	agree	spaCy lemma == deepest real-word base
+ideological	ideological	agree	spaCy lemma == deepest real-word base
+current	current	agree	spaCy lemma == deepest real-word base
+joseph	joseph	agree	spaCy lemma == deepest real-word base
+proudhon	proudhon	agree	spaCy lemma == deepest real-word base
+france	france	agree	spaCy lemma == deepest real-word base
+united	unite	agree	spaCy lemma == deepest real-word base
+market	market	agree	spaCy lemma == deepest real-word base
+describe	describe	agree	spaCy lemma == deepest real-word base
+attempts	attempt	agree	spaCy lemma == deepest real-word base
+having	have	agree	spaCy lemma == deepest real-word base
+reject	reject	agree	spaCy lemma == deepest real-word base
+exist	exist	agree	spaCy lemma == deepest real-word base
+china	china	agree	spaCy lemma == deepest real-word base
+greece	greece	agree	spaCy lemma == deepest real-word base
+alongside	alongside	agree	spaCy lemma == deepest real-word base
+attitudes	attitude	agree	spaCy lemma == deepest real-word base
+authorities	authority	agree	spaCy lemma == deepest real-word base
+according	accord	agree	spaCy lemma == deepest real-word base
+based	base	agree	spaCy lemma == deepest real-word base
+bakunin	bakunin	agree	spaCy lemma == deepest real-word base
+response	response	agree	spaCy lemma == deepest real-word base
+communism	commune	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+syndicalist	syndicalist	agree	spaCy lemma == deepest real-word base
+pro	pro	agree	spaCy lemma == deepest real-word base
+syndicalism	syndicalism	agree	spaCy lemma == deepest real-word base
+prominent	prominent	agree	spaCy lemma == deepest real-word base
+propaganda	propaganda	agree	spaCy lemma == deepest real-word base
+sought	seek	agree	spaCy lemma == deepest real-word base
+create	create	agree	spaCy lemma == deepest real-word base
+led	lead	agree	spaCy lemma == deepest real-word base
+large	large	agree	spaCy lemma == deepest real-word base
+anarcha	anarcha	agree	spaCy lemma == deepest real-word base
+northern	northern	agree	spaCy lemma == deepest real-word base
+build	build	agree	spaCy lemma == deepest real-word base
+historical	historic	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)
+moral	moral	agree	spaCy lemma == deepest real-word base
+ethics	ethic	agree	spaCy lemma == deepest real-word base
+types	type	agree	spaCy lemma == deepest real-word base
+far	far	agree	spaCy lemma == deepest real-word base
+mutualism	mutual	corrected	deepest real-word base (productive derivation peeled past the spaCy inflectional lemma)

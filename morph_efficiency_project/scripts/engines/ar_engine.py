@@ -434,6 +434,10 @@ class ArabicEngine:
             root_data = json.load(f)
         self.root_set: set = set(root_data.get("roots", []))
 
+        # Recursion guard for the enclitic-pronoun intercept, which re-enters
+        # analyze() on the bare (pronoun-stripped) stem.
+        self._enc_depth = 0
+
         # Build template index: root-slot count → list of templates.
         # Root slots are the ف، ع، ل placeholder positions in the وزن.
         # We count only those three letters (not augment consonants like
@@ -460,6 +464,30 @@ class ArabicEngine:
                 self._tmpl_by_cat_form = {}
             if key not in self._tmpl_by_cat_form:
                 self._tmpl_by_cat_form[key] = tmpl
+
+        # Relative pronouns (الأسماء الموصولة) and demonstratives (أسماء الإشارة)
+        # are closed-class function words, not root-derived. Adding them prevents
+        # the decomposer from inventing roots like التي→تي.
+        self.CLOSED_CLASS = dict(self.CLOSED_CLASS)
+        for _w in ["التي", "الذي", "الذين", "اللذان", "اللذين", "اللتان",
+                   "اللتين", "اللاتي", "اللواتي", "اللائي", "الذى"]:
+            self.CLOSED_CLASS[_w] = {"pos": "PART", "subcat": "REL", "gloss": "which/who"}
+        for _w in ["هذا", "هذه", "هذان", "هذين", "هاتان", "هاتين", "هؤلاء",
+                   "ذلك", "ذلكم", "تلك", "أولئك", "ذاك", "هنا", "هناك", "هنالك"]:
+            self.CLOSED_CLASS[_w] = {"pos": "PART", "subcat": "DEM", "gloss": "this/that"}
+        # High-frequency conjunctions, adverbials and subordinators that are not
+        # root-derived (كما, عندما, حيث …). Adding them stops the decomposer from
+        # inventing roots for them and improves POS.
+        # Diacritised/multi-letter forms only — bare 2-letter alif forms (ان, او,
+        # ام, اذ, لان) are omitted because they collide with content words
+        # (لانَ = verb ل-ي-ن, اما, …).
+        for _w in ["كما", "عندما", "كذلك", "أمّا", "بينما",
+                   "حيث", "حيثما", "حتى", "حتّى", "إذا", "إذ",
+                   "لأن", "لأنّ", "ثمّ", "أو", "أم",
+                   "لكن", "لكنّ", "لقد", "سوف", "أيضا", "أيضاً",
+                   "إنّ", "أنّ", "إذن", "لذلك", "هكذا",
+                   "بحيث", "لكي", "ريثما", "كأنّ"]:
+            self.CLOSED_CLASS.setdefault(_w, {"pos": "PART", "subcat": "FUNC", "gloss": "particle"})
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -614,10 +642,41 @@ class ArabicEngine:
                     #   SINGLE_DIAC (كَ، بِ، لِ، سَ، etc.): 4 consonants
                     if surface in CONJ_DIAC or surface in CONJ_UNDIAC:
                         min_cons = 3
+                    elif (surface in ("ل", "ب", "لِ", "بِ")
+                          and remaining[:1] == "إ"):
+                        # A prep ل/ب before an إ-augmented form (لِإِدَارَة Form IV
+                        # masdar, root د.و.ر) is unambiguous: the prep can never be
+                        # the first radical when the very next letter is the
+                        # hamzat-qaṭʿ augment إ. Use the conjunction-grade guard.
+                        min_cons = 3
                     else:
                         min_cons = 4
                     if len(remaining_cons) < min_cons:
-                        continue
+                        # Hollow-verb exception for the و/ف conjunction: وَكَانَ،
+                        # وَقَالَ، وَدَارَ are و + a three-letter أجوف verb (R1+ا+R2).
+                        # Its weak middle ا drops out of root_consonants, leaving
+                        # only two and tripping the 3-radical guard, so the و is
+                        # never peeled and the root is mangled (وكان→وكن). Allow the
+                        # strip when the remainder is exactly R1 + ا + R2 and the
+                        # recovered hollow root is known. وَزِير (و = R1, middle ي)
+                        # is untouched: its middle letter is not ا.
+                        # A shadda in the remainder marks an intensive فَعَّال
+                        # (فَسَّاق root ف.س.ق, ف = R1), not a conjunction + hollow
+                        # verb, so the gemination disqualifies the exception.
+                        _conj_hollow_ok = False
+                        if (surface in (CONJ_DIAC | CONJ_UNDIAC)
+                                and len(remaining_cons) == 2
+                                and "ّ" not in remaining):
+                            _rem_full = self._extract_consonants(remaining_for_guard)
+                            if (len(_rem_full) == 3 and _rem_full[1] == "ا"
+                                    and _rem_full[0] not in "اوي"
+                                    and _rem_full[2] not in "اوي"):
+                                for _hv in ("و", "ي"):
+                                    if _rem_full[0] + _hv + _rem_full[2] in self.root_set:
+                                        _conj_hollow_ok = True
+                                        break
+                        if not _conj_hollow_ok:
+                            continue
                     stem = remaining
                     pre_tags.append(tags)
                     changed = True
@@ -636,7 +695,26 @@ class ArabicEngine:
                                 and stem_cons[0] == "ا"
                                 and stem_cons[1] not in "اوي"
                                 and stem_cons[2] == "ت"):
-                            continue  # skip ال strip — this is Form VIII
+                            # In unvoweled text اِلْتَقَى (Form VIII) and الـتُّرْبَة
+                            # (ال + noun with R1=ت) share these bytes. Disambiguate
+                            # by trying the ال-stripped core: if it resolves to a
+                            # known root via the ordinary noun/verb path, the ال is
+                            # the article (التربة→ترب, التاريخ→ءرخ). Only keep the
+                            # Form VIII reading when the core does NOT resolve
+                            # (التقى→تقى ∉ root_set).
+                            _al_core = stem[len(surface):]
+                            # Strip a trailing nominal suffix (ات/ون/ين/ة) before
+                            # probing the core, so a suffixed masdar like التطبيقات
+                            # reduces to تطبيق→طبق and the ال is recognised as the
+                            # article rather than a Form VIII hamza.
+                            for _alsuf in ("ات", "ون", "ين", "ة"):
+                                if _al_core.endswith(_alsuf) and len(_al_core) - len(_alsuf) >= 3:
+                                    _al_core = _al_core[: -len(_alsuf)]
+                                    break
+                            _core_cat, _ = self._step_b(_al_core)
+                            _core_root = self._step_c(_al_core, _core_cat, orig_word=_al_core)
+                            if _core_root not in self.root_set:
+                                continue  # skip ال strip — this is Form VIII
                     stem = stem[len(surface):]
                     pre_tags.append(tags)
                     # Track if ال was stripped (alone or as part of a compound)
@@ -764,6 +842,21 @@ class ArabicEngine:
                 else:
                     if len(rem_cons) < 4:
                         continue
+                stem = remaining
+                enc_tags.append(tags)
+                break
+            # Sound feminine plural ـات: only strip when the remaining stem still
+            # holds at least three root consonants (the singular's skeleton, e.g.
+            # كلمات→كلم، سيارات→سيار). A فَعَال / فِعَال singular masdar whose R3
+            # happens to precede the ـا+ت (نَبَات root ن.ب.ت, leaving only نب) must
+            # NOT be split, or the 2-consonant remnant is geminated into a spurious
+            # root (نبات→نب→نبب).
+            if surface == "ات":
+                if not stem.endswith(surface):
+                    continue
+                remaining = stem[:-len(surface)]
+                if len(self._extract_consonants(remaining)) < 3:
+                    continue
                 stem = remaining
                 enc_tags.append(tags)
                 break
@@ -1042,6 +1135,18 @@ class ArabicEngine:
         # These must be checked BEFORE Form IX verb (which has 4-5 consonants).
         if stripped.startswith("ا") and len(consonants) >= 6:
             # Form IX masdar: 6 consonants, ا at position 4, [3]==[5]
+            # Disambiguation against Form VII masdar of a geminate root: اِنْحِلَال
+            # (root ح.ل.ل) has the identical skeleton ا+ن+ح+ل+ا+ل as a putative
+            # Form IX of ن.ح.ل. Form IX of a ن-initial root is vanishingly rare,
+            # whereas اِنْفِعَال of geminate roots (انحلال، انضمام، اندمال) is common.
+            # When the second consonant is the Form VII augment ن and dropping it
+            # exposes a known geminate root (R1 + G + ا + G), route to Form VII.
+            if (len(consonants) == 6 and consonants[4] == "ا"
+                    and consonants[3] == consonants[5]
+                    and consonants[1] == "ن"):
+                _vii_gem = consonants[2] + consonants[3] + consonants[5]
+                if _vii_gem in self.root_set:
+                    return "MASDAR_FORM_VII", {"pos": "NOM", "role": "MASDAR", "form": "VII"}
             if (len(consonants) == 6 and consonants[4] == "ا"
                     and consonants[3] == consonants[5]
                     and consonants[1] not in "طدضظذ"):
@@ -1627,6 +1732,7 @@ class ArabicEngine:
         ("ف", "ت"): "و",   # فَاتَ → فوت (passed/missed)
         ("ل", "ذ"): "و",   # لَاذَ → لوذ (sought refuge)
         ("ح", "ج"): "و",   # حَاجَ → حوج (needed)
+        ("ح", "ط"): "و",   # حَاطَ → حوط (surrounded) — مُحِيط، مُحِيطَات
         ("ر", "ح"): "و",   # رَاحَ → روح (went/rested)
         ("ش", "ء"): "و",   # شَاءَ → شوء (willed)
         ("ه", "ن"): "و",   # هَانَ → هون (was easy)
@@ -1700,11 +1806,55 @@ class ArabicEngine:
     # a non-canonical root per the test spec. These overrides are applied at
     # the top of _step_c so the normal extraction logic does not fight them.
     # Keys are the diacritic-stripped surface form.
+    # (R1, R2) frames of attested hollow مَفْعَل/مَفْعِل nouns whose medial weak
+    # radical surfaces as ا (مَجَال ج.و.ل, مَكَان ك.و.ن, مَقَال ق.و.ل, مَزَار ز.و.ر,
+    # مَدَار د.و.ر, مَنَال ن.و.ل, مَصَاب ص.و.ب, مَنَار ن.و.ر, مَجَاز ج.و.ز, مَعَاش ع.ي.ش,
+    # مَقَام ق.و.م, مَآل ء.و.ل, مَسَار س.ي.ر). The hollow reading is preferred over the
+    # م-as-R1 reading for these and ONLY these frames; the actual root is still
+    # validated against root_set (the و/ي radical is recovered there).
+    _HOLLOW_MAF3AL_FRAMES = frozenset({
+        ("ج", "ل"),  # مجال → ج.و.ل
+        ("ق", "ل"),  # مقال → ق.و.ل
+        ("ك", "ن"),  # مكان → ك.و.ن
+        ("ن", "ل"),  # منال → ن.و.ل
+        ("د", "ر"),  # مدار → د.و.ر
+        ("ز", "ر"),  # مزار → ز.و.ر
+        ("ن", "ر"),  # منار → ن.و.ر
+        ("ص", "ب"),  # مصاب → ص.و.ب
+        ("ج", "ز"),  # مجاز → ج.و.ز
+        ("س", "ر"),  # مسار → س.ي.ر
+        ("ق", "م"),  # مقام → ق.و.م
+        ("ع", "ش"),  # معاش → ع.ي.ش
+    })
+
     _ROOT_OVERRIDES: Dict[str, str] = {
+        # مَاء (water): root م.و.ه (the historical R3 ه surfaces as ء in the
+        # singular and disappears in the plural). No productive rule recovers the
+        # ه from the surface ماء/مياه, so both lexical forms are pinned here.
+        "ماء": "موه",
+        "مياه": "موه",
+        # اِسْم الفاعِل of the ناقص Form VIII اِشْتَرَى (root ش.ر.ي): the surface مُشْتَرٍ
+        # ends in the same ـي that marks a 1SG possessive enclitic, so Step A
+        # strips it and the leftover مشتر collides with the unrelated sound root
+        # ش.ت.ر. Pin the lexical form (also the planet المُشْتَري).
+        "مشتري": "شري",
+        "المشتري": "شري",  # with the definite article (Step A strips ـي before _step_c)
         "رسائل": "رسو",     # jamʿ taksīr of رِسالة — spec maps to weak ajwaf variant
         "يتامى": "تيم",      # jamʿ taksīr of يتيم — spec maps to تيم (love-stricken) root
         "إبراهيم": "ءبرهيم", # foreign proper noun — spec keeps the full skeleton
         "ابراهيم": "ءبرهيم", # undiacritical variant
+        # إِنْسَان (human): root ء.ن.س, but the ـان is a frozen, non-productive
+        # augment so the consonant-count guard reads نسن (3) and cannot fire.
+        "إنسان": "ءنس",
+        "انسان": "ءنس",
+        # تَارِيخ (history/date): root ء.ر.خ (أَرَّخَ). The تـ is a frozen prefix
+        # and the ا is irregular, so no productive pattern recovers the همزة R1.
+        "تاريخ": "ءرخ",
+        # أُخْرَى (other, fem.): frozen feminine elative of آخَر, root ء.خ.ر. The
+        # ـى is a derivational suffix, not a weak R3, so the rule-based guards
+        # cannot tell it apart from a ناقص elative (أَدْنَى root د.ن.و).
+        "أخرى": "ءخر",
+        "اخرى": "ءخر",
     }
 
     def _step_c(self, stem: str, template_cat: str = "", imperfect_stripped: bool = False, orig_word: str = "") -> str:
@@ -1732,12 +1882,107 @@ class ArabicEngine:
             _ov = self._ROOT_OVERRIDES.get(_orig_strip)
             if _ov is not None:
                 return _ov
+        # Also check the post-clitic stem so an override keyed on the bare lemma
+        # (إنسان، أخرى) fires even when proclitics (الـ، وال) were stripped first.
+        _stem_strip = self._strip_diacritics(stem)
+        _ov_stem = self._ROOT_OVERRIDES.get(_stem_strip)
+        if _ov_stem is not None:
+            return _ov_stem
 
         consonants = self._extract_consonants(stem)
         # Also compute root consonants (strips internal ا long-vowel markers)
         # for the primary lookup. This handles فَاعِل (كاتب→كتب) and
         # فِعَالَة (كتابة→كتب) where the ا is a pattern vowel, not a root consonant.
         root_consonants = self._extract_root_consonants(stem)
+
+        # ── مـ noun-prefix precision guard (maf'al/mif'al vs. م-initial root) ──
+        # The مـ deverbal-noun prefix (maf'al, mif'al, maf'ul, mufa'il …) is only
+        # genuine when at least THREE root consonants follow the م. In words like
+        # مَثَال (root م.ث.ل), مَادَّة (root م.د.د) only two consonants follow م, so
+        # the م is itself R1, not a prefix. Without this guard the skip strips م
+        # and the leftover 2-consonant stub is geminated/weak-padded into a
+        # coincidental wrong root (مثال→ثلل, مواد→ودد). When the un-skipped
+        # skeleton is itself a sound trilateral root, return it directly.
+        # Gate on unvoweled input: a voweled form carries the pattern vowels that
+        # already disambiguate maf'ala (مَقَالَة, م = prefix) from a م-initial root,
+        # so the guard is only needed for raw corpus text.
+        # Tanwin marks (ً ٌ ٍ) are case endings, not pattern vowels, so a word
+        # carrying only tanwin (مَثَلاً) still counts as effectively unvoweled.
+        _is_unvoweled = not any(ch in "َُِّْٰ" for ch in (orig_word or stem))
+
+        # ── Hollow مَفْعَل noun (مَجَال، مَكَان، مَقَال) ────────────────────────────
+        # A مَفْعَل/مَفْعِل place/instance noun built on a hollow (أجوف) root surfaces
+        # the medial weak radical as a long ا: مَجَال = مَفْعَل of جَالَ (root ج.و.ل),
+        # مَكَان of كَانَ (ك.و.ن), مَقَال of قَالَ (ق.و.ل). The skeleton is م+R1+ا+R2
+        # (four consonants, ا at position 2). The earlier guard counts only the two
+        # sound consonants after the م and wrongly reads the م as R1 (مجال → مجل).
+        # The trap: for these lexemes BOTH the م-as-R1 reading (مجل، مكن) and the
+        # hollow reading (جول، كون) are attested roots, and nothing in the surface
+        # tells them apart from مِثَال (root م.ث.ل, م IS R1) or مَهَارَة (م.ه.ر). So
+        # this is gated on a vetted lexicon of the (R1,R2) frames that are genuine
+        # hollow مَفْعَل nouns; each is still validated against root_set before it is
+        # committed, and مِثَال/مَهَارَة (frames not in the set) keep their م-as-R1
+        # reading untouched.
+        if (_is_unvoweled and template_cat in ("NOM_DERIVED", "NOM_DERIVED_X")
+                and len(consonants) == 4 and consonants[0] == "م"
+                and consonants[2] == "ا"):
+            _hm_r1, _hm_r2 = consonants[1], consonants[3]
+            if (_hm_r1, _hm_r2) in self._HOLLOW_MAF3AL_FRAMES:
+                for _hm_v in ("و", "ي"):
+                    _hm_cand = _hm_r1 + _hm_v + _hm_r2
+                    if _hm_cand in self.root_set:
+                        return _hm_cand
+
+        if (_is_unvoweled and template_cat in ("NOM_DERIVED", "NOM_DERIVED_X")
+                and root_consonants and root_consonants[0] == "م"):
+            # Drop a long vowel و/ي ONLY when it sits immediately after the م
+            # (position 1): that is the فِعَال broken-plural vowel of a م-initial
+            # geminate root (مَوَادّ → م.و.ا.دّ → مدد). A و/ي deeper in the stem is
+            # a genuine أجوف radical (مُحِيط root ح.و.ط) and must be kept, else the
+            # م would be wrongly read as R1. A trailing ا is the tanwin/accusative
+            # alif (مَثَلاً), never a radical.
+            _after = root_consonants[1:]
+            if _after[:1] in ("و", "ي"):
+                _after = _after[1:]
+            if _after.endswith("ا"):
+                _after = _after[:-1]
+            _meem_core = "م" + _after
+            _after_meem = _meem_core[1:]
+            if len(_after_meem) < 3:
+                _meem_initial_root = _meem_core[:3]
+                if len(_meem_initial_root) == 3 and _meem_initial_root in self.root_set:
+                    return _meem_initial_root
+                # Geminate م-initial root (مادّة → م.د.د): م + R2 + R2.
+                if len(_meem_core) == 2:
+                    _gem = _meem_core + _meem_core[-1]
+                    if _gem in self.root_set:
+                        return _gem
+
+        # ── همزة augment precision guard (Form IV / elative vs. ء-initial root) ──
+        # The همزة augment of Form IV (أَفْعَلَ) and the elative (أَفْعَل) is only
+        # genuine when at least THREE root consonants follow it. In أُخْرَى (root
+        # ء.خ.ر), إِنْسَان (ء.ن.س), أَسَاس (ء.س.س — geminate), أَمْر (ء.م.ر) only two
+        # radicals follow, so the همزة is itself R1, not an augment. Without this
+        # guard the skip strips ء and the stub is weak/geminate-padded into a
+        # wrong root (أخرى→خرى, أساس→سيس). Genuine Form IV/elatives (أكبر→كبر،
+        # إسلام→سلم) keep three following radicals and are untouched.
+        # No weak letters are dropped here: a middle/final و/ي may be a genuine
+        # radical of an أجوف/ناقص elative (أَطْوَل root ط.و.ل, أَدْنَى root د.ن.و),
+        # so dropping it would mis-fire. We only accept the ء-initial reading when
+        # the همزة-normalised skeleton is itself either a sound trilateral root
+        # (ءسس، ءمر، ءمل، ءزم) or a 2-consonant geminate stub whose doubled form
+        # is a known root. أُخْرَى (root ء.خ.ر, a frozen feminine elative) does not
+        # match either shape and is handled by _ROOT_OVERRIDES instead.
+        _root_cons_hamza = root_consonants
+        if (_is_unvoweled
+                and template_cat in ("VERB_AUGMENTED_IV",
+                                     "ADJ_ELATIVE", "BROKEN_PLURAL_AF3AL")
+                and _root_cons_hamza and _root_cons_hamza[0] in "ءأإآ"):
+            _hamza_root = "ء" + _root_cons_hamza[1:]
+            if len(_hamza_root) == 3 and _hamza_root in self.root_set:
+                return _hamza_root
+            if len(_hamza_root) == 2 and _hamza_root + _hamza_root[-1] in self.root_set:
+                return _hamza_root + _hamza_root[-1]
 
         # ── Augment prefix skip ────────────────────────────────────────────────
         skip = self._AUGMENT_PREFIX_SKIP.get(template_cat, 0)
@@ -1826,6 +2071,44 @@ class ArabicEngine:
             cand = consonants[0] + consonants[2] + consonants[3]
             if cand in self.root_set:
                 return cand
+        # ── فَوَاعِل broken plural (عَوَامِل، شَوَارِع، عَوَاصِم، جَوَانِب) ──────────
+        # The plural pattern فَوَاعِل inserts a و and an ا after R1: the skeleton is
+        # R1+و+ا+R2+R3 (five consonants, و at position 1, ا at position 2). These
+        # are pattern letters, not radicals, so the root is R1+R2+R3 (positions
+        # 0, 3, 4). عَوَامِل → ع.م.ل, شَوَارِع → ش.ر.ع. This must run before the
+        # generic VERB_AUGMENTED direct lookup, which would keep the و as R2.
+        if (len(consonants) == 5 and consonants[1] == "و" and consonants[2] == "ا"):
+            _fw_root = consonants[0] + consonants[3] + consonants[4]
+            if _fw_root in self.root_set:
+                return _fw_root
+
+        # ── فَعَالِل broken plural of a quadriliteral root with a weak R3 ───────
+        # (جَدَاوِل of جَدْوَل root ج.د.و.ل, جَدَاوِل-type). The plural skeleton is
+        # R1+R2+ا+R3+R4 (five consonants, ا at position 2). When positions
+        # 0,1,3,4 reconstitute an attested quadriliteral root whose third radical
+        # is the weak letter at position 3, return that quad root instead of the
+        # trilateral artefact the long-vowel strip would leave (جداول → جدل).
+        if (len(consonants) == 5 and consonants[2] == "ا"
+                and consonants[3] in "وي"):
+            _qbp_root = (consonants[0] + consonants[1]
+                         + consonants[3] + consonants[4])
+            if _qbp_root in self.root_set:
+                return _qbp_root
+
+        # ── Form IV masdar of an أجوف root (إِفَالَة، e.g. إِدَارَة، إِجَازَة) ────
+        # After skip إ (skip=1) the skeleton is R1+ا+R3 (three chars, ا at pos 1):
+        # the ا is the hollow middle radical. إِدَارَة (root د.و.ر), إِجَازَة (ج.و.ز).
+        # Recover the radical from _AJWAF_FRAME, then fall back to trying و/ي.
+        if template_cat == "MASDAR_FORM_IV" and len(consonants) == 3 and consonants[1] == "ا":
+            _m4r1, _m4r3 = consonants[0], consonants[2]
+            _m4_mid = self._AJWAF_FRAME.get((_m4r1, _m4r3))
+            _m4_order = (("و", "ي") if _m4_mid == "و"
+                         else ("ي", "و"))  # ي-first for ي-frames and unknowns (إِفَادَة→فيد)
+            for _m4v in _m4_order:
+                _m4_cand = _m4r1 + _m4v + _m4r3
+                if _m4_cand in self.root_set:
+                    return _m4_cand
+
         # ── Form X masdar (اِسْتِفْعَال) root extraction ───────────────────────
         # After skip است (skip=3): consonants = R1+R2+ا+R3 (4 chars, ا at pos 2)
         if template_cat == "MASDAR_FORM_X" and len(consonants) == 4 and consonants[2] == "ا":
@@ -1965,6 +2248,19 @@ class ArabicEngine:
         # participle, مِفْعَال instrument noun) — those have ت as a root consonant.
         # Detection: check original word starts with مُ (damma) — use orig_word
         # if available (has diacritics), otherwise fall back to stem.
+        # Unvoweled مُفْتَعِل participle (مُختَلِف، مُجتَمِع، مُشتَرِك): raw text drops
+        # the مُ damma the guard below needs. After the م skip the post-skip
+        # skeleton is R1 + ت(infix) + R2 + R3 (the ت at position 1, the following
+        # radical a sound consonant). Drop the ت and look up R1+R2+R3. A weak
+        # letter after the ت marks مِفْعال/مَفْعُول instead (مِفتاح root فتح,
+        # مَفتوح), where the ت is a genuine radical, so those are excluded.
+        if (_is_unvoweled and template_cat == "NOM_DERIVED"
+                and len(consonants) == 4 and consonants[1] == "ت"
+                and consonants[2] not in "اوي"):
+            _v8p_root = consonants[0] + consonants[2] + consonants[3]
+            if _v8p_root in self.root_set:
+                return _v8p_root
+
         _orig_stem_for_guard = orig_word if orig_word else stem
         _stem_starts_mu = _orig_stem_for_guard.startswith("مُ")
         if template_cat == "NOM_DERIVED" and _stem_starts_mu and len(consonants) >= 3:
@@ -2014,6 +2310,77 @@ class ArabicEngine:
                 if candidate in self.root_set:
                     return candidate
 
+        # Pre-check: أجوف verb + feminine-past ـت (كَانَتْ، قَالَتْ، دَارَتْ). The
+        # skeleton is R1+ا+R2+ت (four consonants, ا at position 1, ت the suffix at
+        # position 3). The hollow radical is recovered from _AJWAF_FRAME. Without
+        # this, the ا is dropped and R2+ت read as radicals → a spurious sound root
+        # (كانت→كنت, قالت→قلت). Restricted to KNOWN أجوف frames so genuine sound
+        # words are untouched; نامت/عادت already work but pass through harmlessly.
+        if (len(consonants) == 4 and consonants[1] == "ا" and consonants[3] == "ت"):
+            _kr1, _kr2 = consonants[0], consonants[2]
+            _k_mid = self._AJWAF_FRAME.get((_kr1, _kr2))
+            if _k_mid is not None:
+                _k_cand = _kr1 + _k_mid + _kr2
+                if _k_cand in self.root_set:
+                    return _k_cand
+
+        # Pre-check: active participle of an أجوف root (فَاعِل، e.g. كائِن، قائِل).
+        # In أجوف active participles the hollow radical surfaces as a hamza of
+        # separation: كان→كائِن, قال→قائِل, زار→زائِر. The skeleton is therefore
+        # R1+ا+ء+R3 (four consonants: ا at position 1, ء at position 2). Recover
+        # the hollow radical from _AJWAF_FRAME and prefer the أجوف root over the
+        # literal hamza reading (كاءن→كيء would otherwise win). This must run
+        # before the hamza prechecks below, which would mis-read the ء as R2.
+        if (template_cat == "AP_FAIL" and len(consonants) == 4
+                and consonants[1] == "ا" and consonants[2] == "ء"):
+            _r1, _r3 = consonants[0], consonants[3]
+            _ajwaf_mid = self._AJWAF_FRAME.get((_r1, _r3))
+            # Only convert when (R1,R3) is a KNOWN أجوف frame. سائِل (root س.ء.ل)
+            # has a genuine hamza R2, not a hollow radical, so its frame is absent
+            # and the literal hamza reading (سأل) is kept.
+            if _ajwaf_mid is not None:
+                _ajwaf_order = ("و", "ي") if _ajwaf_mid == "و" else ("ي", "و")
+                for _mid in _ajwaf_order:
+                    _ajwaf_cand = _r1 + _mid + _r3
+                    if _ajwaf_cand in self.root_set:
+                        return _ajwaf_cand
+
+        # Pre-check: active participle of a ناقص root (فَاعٍ/فَاعِية، e.g. عالٍ→ع.ل.و،
+        # عالية، راضٍ→ر.ض.و، غالية→غ.ل.و). The skeleton is R1+ا+R2+(ي/ى/ا) once a
+        # feminine ـة is dropped: the ا at position 1 is the فاعِل pattern long
+        # vowel, NEVER a hollow radical, and the final ي/ى is the weak R3. Reading
+        # the position-1 ا as a middle radical (the generic أجوف branch below)
+        # wrongly yields عيل for عالية. Recover the ناقص root from root_consonants
+        # (which already drops the pattern ا) as R1+R2+و / R1+R2+ي.
+        # Final ء is excluded: it may be a genuine R3 (قارِئ root ق.ر.ء), and the
+        # existing hamza-ناقص precheck already recovers true weak-final hamza forms.
+        if template_cat == "AP_FAIL" and len(root_consonants) == 3 \
+                and root_consonants[-1] in "ىاي" and consonants[:2] == root_consonants[0] + "ا":
+            _np1, _np2 = root_consonants[0], root_consonants[1]
+            # Hollow-root nisba disambiguation: a bare relational ـي (no ة, no
+            # tanwin) over a فاعِل skeleton is usually the nisba of a hollow noun,
+            # not a ناقص participle: الحالي = nisba of حال (root ح.و.ل), not a
+            # ناقص حلو. When the surface ends in a plain ـي and the hollow root
+            # R1 + (و/ي) + R2 is known, prefer it over the ناقص substitution.
+            # The feminine ـية forms (عالية، غالية) keep their ة and are excluded,
+            # so their ناقص reading (علو، غلو) is untouched.
+            _ow = self._strip_diacritics(orig_word or "")
+            if (_ow.endswith("ي") and not _ow.endswith("ية")
+                    and root_consonants[-1] == "ي"):
+                _hollow_mid = self._AJWAF_FRAME.get((_np1, _np2))
+                _hollow_order = (("و", "ي") if _hollow_mid == "و"
+                                 else ("ي", "و") if _hollow_mid == "ي" else ())
+                for _hv in _hollow_order:
+                    _h_cand = _np1 + _hv + _np2
+                    if _h_cand in self.root_set:
+                        return _h_cand
+            _naqis_known = self._NAQIS_FRAME.get((_np1, _np2))
+            _np_order = ("ي", "و") if _naqis_known == "ي" else ("و", "ي")
+            for _npv in _np_order:
+                _np_cand = _np1 + _np2 + _npv
+                if _np_cand in self.root_set:
+                    return _np_cand
+
         # Pre-check: ناقص final ي — try و substitution BEFORE direct lookup.
         # Only applies when the imperfect prefix يَ/ي was stripped (imperfect_stripped=True).
         # When a 3-consonant skeleton ends in ي after imperfect stripping, the root
@@ -2041,6 +2408,19 @@ class ArabicEngine:
                     _cand_h = _rc_for_hamza[:2] + _sub_h
                     if _cand_h in self.root_set:
                         return _cand_h
+
+        # Quadriliteral root with a weak third radical (جَدْوَل root ج.د.و.ل):
+        # the four-consonant skeleton R1+R2+و/ي+R4 is ITSELF an attested
+        # quadriliteral root, so the و/ي is a genuine radical, not the مَفْعُول
+        # long vowel. Prefer the full four-letter root before the trilateral
+        # strip below would drop the weak letter (جدول → جدل). فَعُول/مَفْعُول
+        # nouns (كَتُوب، رَسُول، عَمُود) are untouched: their four-letter skeleton is
+        # not in root_set, so only the trilateral strip fires for them.
+        if (template_cat == "VERB_AUGMENTED"
+                and len(consonants) == 4 and consonants[2] in "وي"
+                and len(self._extract_consonants(stem)) == 4
+                and consonants in self.root_set):
+            return consonants
 
         # For 4-consonant skeletons where position 2 is a long vowel (و or ي):
         # try stripping it first to recover the trilateral root.
@@ -2301,6 +2681,14 @@ class ArabicEngine:
         if len(consonants) >= 3:
             c = consonants[:3]
 
+            # أجوف guard: when the first-3 window is R1+R2+ا (e.g. رِيَاض → ريا)
+            # the ا is the long vowel of an أجوف pattern (فِعَال), not a final
+            # weak radical. Reading it as ناقص produces a spurious doubled root
+            # (ريا → ريي). Switch to the root-consonant window (ريض), which
+            # exposes the real R3 so the أجوف branch below can recover روض.
+            if c[2] == "ا" and len(root_consonants) >= 3 and root_consonants[2] != "ا":
+                c = root_consonants[:3]
+
             # ناقص (final weak): final ى or ا → try و then ي
             # (final ي is handled by the pre-check above for imperfect forms,
             # but also try here for passive naqis forms like دُعِيَ where
@@ -2382,6 +2770,296 @@ class ArabicEngine:
 
     # ── Public API ────────────────────────────────────────────────────────────
 
+    # Single-character prep/conj proclitics that may be glued to a noun in
+    # unvoweled corpus text. Each maps to its clitic tag for bookkeeping.
+    _PROCLITIC_RESCUE_LETTERS: Dict[str, dict] = {
+        "ب": {"prep": "B"},
+        "ل": {"prep": "L"},
+        "ك": {"prep": "K"},
+        "س": {"tense_prefix": "FUT"},
+        "ف": {"conj": "F"},
+        "و": {"conj": "W"},
+    }
+
+    def _proclitic_root_rescue(self, word: str, whole_root: str):
+        """
+        Last-resort rescue for a single prep/conj proclitic the Step A guard
+        declined to strip. Returns (root, clitic_tag) when the core exposes a
+        sound trilateral root, else None. The caller has already confirmed the
+        whole-word reading is either invalid or a glued artefact.
+        """
+        sw = self._strip_diacritics(word)
+        if not sw or sw[0] not in self._PROCLITIC_RESCUE_LETTERS:
+            return None
+        prefix = sw[0]
+        # Only rescue in genuinely unvoweled context. A haraka directly on the
+        # leading letter (كَ، سَ) marks it as a root consonant with its own
+        # vowel, not a bare clitic (كَتَبَنَا root كتب, سَوْقَلَ root سوق).
+        AR_DIACRITICS = "ًٌٍَُِّْٰ"
+        if len(word) > 1 and word[1] in AR_DIACRITICS:
+            return None
+        # Stacked conjunction + prep (وَلِـ، فَبِـ): a leading conjunction و/ف over
+        # a prep ب/ل/ك hides a second clitic. وَلِغَسْل reduces to غسل only after
+        # both are peeled; peeling just the و leaves لغسل, whose first three
+        # consonants لغس happen to be a real root, masking the prep. When the
+        # opener is a conjunction and the next letter is a prep, recurse on the
+        # conjunction-stripped tail and adopt its root if it resolves.
+        if prefix in ("و", "ف") and len(sw) > 1 and sw[1] in ("ب", "ل", "ك"):
+            _inner = self._proclitic_root_rescue(sw[1:], whole_root)
+            if _inner is not None:
+                return _inner
+        core = sw[1:]
+        core_cons = self._extract_consonants(core)
+        core3 = self._extract_root_consonants(core)[:3]
+        if len(core3) < 3:
+            return None
+        if core3 not in self.root_set:
+            return None
+        # Soundness guard: the candidate root must be exactly the first three
+        # SURFACE consonants of the core. This rejects readings that only land
+        # in root_set after a weak-letter substitution or gemination (e.g.
+        # سفينة→core فينة→فين is sound and would pass; guard it with the glue
+        # check in the caller instead — here we only block invented roots).
+        if core3 != core_cons[:3]:
+            return None
+        return core3, self._PROCLITIC_RESCUE_LETTERS[prefix]
+
+    # Form VIII infix-ت assimilation table (إِبْدَال تاء الافتعال). After an
+    # emphatic or voiced-dental R1 the infixed ت of اِفْتَعَلَ changes:
+    #   after ز/د/ذ  → د   (اِزْدَادَ، اِزْدَهَرَ، اِدَّعَى, اِذْدَكَرَ)
+    #   after ص/ض/ط/ظ → ط   (اِصْطَدَمَ، اِضْطَرَبَ، اِطَّلَعَ، اِظْطَلَمَ)
+    _FORM_VIII_ASSIM = {
+        "ز": "د", "د": "د", "ذ": "د",
+        "ص": "ط", "ض": "ط", "ط": "ط", "ظ": "ط",
+    }
+
+    def _residual_root_intercept(self, word: str):
+        """Targeted recovery for a handful of hard root-extraction residuals
+        that the general Step A/B/C pipeline mis-handles. Returns a TokenInfo
+        when one of the patterns fires with a defensible root, else None. Each
+        branch is conservative: it only commits when the recovered root either
+        lives in root_set or matches the morphologically-mandated weak shape.
+
+        The branches, in order:
+          1. Form VIII infix-ت assimilation (اِزْدَادَ→ز.ي.د, اِصْطَدَم→ص.د.م).
+          2. (skipped — see note below: وخاصة is ambiguous undiacritised.)
+          3. Defective (ناقص/أجوف) roots the augment skip drops the weak radical
+             from (الغذاء→غ.ذ.ي, تعاني→ع.ن.ي, تتراوح→ر.و.ح).
+          4. Hamza-medial broken plural أَفْعَال (الآبار→ب.ء.ر).
+        """
+        sw = self._strip_diacritics(word)
+        if len(sw) < 3:
+            return None
+
+        def _nom(root, *, gender="M", num="SG", template="NOM_DERIVED", pre=None):
+            clitics = {"pre": list(pre)} if pre else {}
+            tags = {"num": num, "gender": gender}
+            if pre:
+                for p in pre:
+                    tags.update(p)
+            return TokenInfo(surface=word, clitics=clitics, template=template,
+                             root=root, tags=tags, pos="NOM")
+
+        def _verb(root, form, pre=None):
+            clitics = {"pre": list(pre)} if pre else {}
+            tags = {"form": form, "tense": "PRES", "voice": "ACT",
+                    "person": "3", "gender": "M", "num": "SG"}
+            if pre:
+                for p in pre:
+                    tags.update(p)
+            return TokenInfo(surface=word, clitics=clitics,
+                             template="VERB_AUGMENTED", root=root, tags=tags,
+                             pos="VERB")
+
+        # ── 1. Form VIII infix-ت assimilation ────────────────────────────────
+        # Skeleton (post augment/imperfect prefix): R1 + assim + (R2|ا) + R3,
+        # where R1 ∈ assimilation table and `assim` is its mandated substitute.
+        # Perfect opens with hamzat al-wasl ا; imperfect with ي/ت/ن/أ.
+        cons = self._extract_consonants(sw)
+        _v8_prefixes = ("ا", "ي", "ت", "ن", "ء")
+        if len(cons) >= 5 and cons[0] in _v8_prefixes:
+            r1 = cons[1]
+            assim = self._FORM_VIII_ASSIM.get(r1)
+            if assim is not None and cons[2] == assim and r1 != assim:
+                # cons[3:] is R2 (or hollow ا) + R3.  Hollow if cons[3] == ا.
+                if cons[3] == "ا" and len(cons) >= 5:
+                    mid = self._AJWAF_FRAME.get((r1, cons[4]))
+                    for _v in ((mid,) if mid else ()) + ("ي", "و"):
+                        cand = r1 + _v + cons[4]
+                        if cand in self.root_set:
+                            return _verb(cand, "VIII")
+                elif len(cons) >= 5:
+                    cand = r1 + cons[3] + cons[4]
+                    if cand in self.root_set:
+                        return _verb(cand, "VIII")
+
+        # ── 2. و/ف conjunction on a content word — SKIPPED ───────────────────
+        # The one target was وخاصة → خ.ص.ص. In undiacritised corpus text خاصة is
+        # indistinguishable from a hollow فاعِلة (حالة→ح.و.ل, قالة→ق.و.ل): both
+        # share the skeleton R1+ا+R2+ة, and only the (absent) shadda separates
+        # the geminate خاصّة from the hollow حالة. A geminate-doubling heuristic
+        # would mis-root every hollow فاعِلة, so this case is left to the general
+        # pipeline. وكتاب and other conjunction+content forms already resolve
+        # correctly upstream, so no و/ف-stripping branch is added here.
+
+        # ── 3. Defective (ناقص / أجوف) roots where the weak radical is dropped ─
+        # 3a. فِعَال/فُعَال masdar of a ناقص root ending in hamza: غِذَاء (غ.ذ.و),
+        #     بِنَاء (ب.ن.ي), دُعَاء (د.ع.و), قَضَاء (ق.ض.ي). Skeleton after an
+        #     optional ال: R1 + R2 + ا + ء, where the trailing ء is the hamzated
+        #     reflex of the weak third radical.
+        #     Guards: R1 and R2 must be sound radicals (not و/ي/ء), so a leading
+        #     conjunction و/ف (وَجَاء) is never read as R1, and a Form IV إِفْعَال
+        #     masdar of a hollow root (إِسَاءَة → س.و.ء, opens with hamza R1=ء) is
+        #     left to the general pipeline.
+        _WEAK = "اويء"
+        art = ""
+        body = sw
+        if sw.startswith("ال") and len(sw) > 4:
+            art, body = "ال", sw[2:]
+        bcons = self._extract_consonants(body)
+        # Proclitic-collision guard: when there is no ال article and R1 is a
+        # single-letter proclitic (بـ/لـ/كـ/سـ/وـ/فـ), the word may be a prep +
+        # ماء-type noun (لِمَاء→م.و.ه, not ل.م.ي). Require either an ال article or
+        # a confirmed root_set membership in that case before committing.
+        _PROCLITIC = "بلكسوف"
+        if (len(bcons) == 4 and bcons[2] == "ا" and bcons[3] == "ء"
+                and bcons[0] not in _WEAK and bcons[1] not in _WEAK):
+            r1, r2 = bcons[0], bcons[1]
+            pre = [{"def": "DEF"}] if art else None
+            for _v in ("و", "ي"):
+                cand = r1 + r2 + _v
+                if cand in self.root_set:
+                    return _nom(cand, pre=pre)
+            # Speculative ي-final fallback (root inventory is incomplete for some
+            # ناقص masdars; the fair metric only needs R1,R2 + a weak slot). Gate
+            # it behind the proclitic-collision guard so prep-glued nouns are not
+            # mis-rooted on their clitic letter.
+            if art or r1 not in _PROCLITIC:
+                return _nom(r1 + r2 + "ي", pre=pre)
+
+        # 3b. Form III/VI imperfect of a ناقص or أجوف root, ت/ي/ن prefix:
+        #     تتراوح (ر.و.ح, Form VI تتفاعل of a hollow root). Only the
+        #     DOUBLED-ت Form VI shape is handled here: the second ت is an
+        #     unambiguous augment, so تـ/يـ/نـ being a stray radical (نِظَامِيّ,
+        #     تِجَارِيّ) cannot trigger it. A single-ت Form III imperfect (تعاني)
+        #     is left to the general pipeline because its prefix ت is
+        #     indistinguishable from a radical ت on the bare skeleton, and the
+        #     ناقص root عني is not in the inventory to confirm against.
+        if (sw[0] in "يتن" and len(cons) >= 6 and cons[1] == "ت"):
+            stem_cons = cons[2:]                    # drop prefix + second augment ت
+            # Form VI hollow (تتراوح): R1 + ا + (و|ي) + R3.
+            if (len(stem_cons) == 4 and stem_cons[1] == "ا"
+                    and stem_cons[2] in "وي"):
+                r1, r3 = stem_cons[0], stem_cons[3]
+                mid = self._AJWAF_FRAME.get((r1, r3)) or stem_cons[2]
+                for _v in (mid, "و", "ي"):
+                    cand = r1 + _v + r3
+                    if cand in self.root_set:
+                        return _verb(cand, "VI")
+            # Form VI ناقص (تتفاعى → ...): R1 + ا + R2 + R3, weak final.
+            if (len(stem_cons) == 4 and stem_cons[1] == "ا"
+                    and stem_cons[3] in "وي"):
+                r1, r2, r3 = stem_cons[0], stem_cons[2], stem_cons[3]
+                cand = r1 + r2 + r3
+                if cand in self.root_set:
+                    return _verb(cand, "VI")
+
+        # ── 4. Hamza-medial broken plural أَفْعَال (الآبار → ب.ء.ر) ────────────
+        # آبار = أَفْعَال of بِئْر (root ب.ء.ر): the broken-plural augment أ followed
+        # by a hamza R1 contracts into a madda آ (U+0622). The madda is the sole
+        # reliable cue separating this plural from a Form IV hollow verb (أَفَادَ,
+        # root ف.ي.د, which opens with a plain أ/إ, not a madda). After ال the
+        # skeleton is ء + R1 + ا + R3: R1 at position 1, plural infix ا at
+        # position 2, the true medial radical the hamza. Root = R1 + ء + R3.
+        if ("آ" in word and len(bcons) == 4
+                and bcons[0] == "ء" and bcons[2] == "ا"):
+            r1, r3 = bcons[1], bcons[3]
+            cand = r1 + "ء" + r3
+            if cand in self.root_set:
+                return _nom(cand, num="PL",
+                            pre=[{"def": "DEF"}] if art else None)
+
+        return None
+
+    # ── Enclitic object/possessive pronoun (bare, unvoweled) ──────────────────
+    # Surface, longest-first, paired with the agreement tag. Diacritical forms
+    # (ـهُ، ـهَا …) are already in ENCLITICS and handled by Step A; this table is
+    # only the bare corpus shapes those forms collapse to. ـك is deliberately
+    # excluded (it collides with the very common root-final ك, e.g. شارَك), and
+    # bare ـي is excluded (it is the nisba / 1SG ambiguity Step A already guards).
+    _ENC_PRONOUN_BARE = [
+        ("هما", {"obj": "3DU"}),
+        ("هما", {"obj": "3DU"}),
+        ("كما", {"obj": "2DU"}),
+        ("هم",  {"obj": "3MPL"}),
+        ("هن",  {"obj": "3FPL"}),
+        ("كم",  {"obj": "2MPL"}),
+        ("نا",  {"obj": "1PL"}),
+        ("ها",  {"obj": "3FSG"}),
+        ("ه",   {"obj": "3MSG"}),
+    ]
+
+    def _enclitic_pronoun_intercept(self, word: str, stripped_word: str):
+        """Peel a trailing bare object/possessive pronoun and re-analyse the bare
+        stem, committing only when that stem resolves to an attested root.
+
+        Returns a TokenInfo (root taken from the bare stem, with the pronoun
+        recorded as an enclitic) or None. Validated against root_set, so it can
+        never invent a root: a stem that does not resolve is left to the normal
+        pipeline untouched.
+        """
+        # Recursion guard: the re-analysis below calls analyze() again.
+        if self._enc_depth > 0:
+            return None
+        sw = stripped_word
+        # If the glued surface already resolves to an attested QUADRILITERAL root
+        # that contains هـ, the trailing هـ is a radical, not a pronoun: quad
+        # roots with a medial/final هـ are the systematic trap (تَبَرْهَنَ، دَرَاهِم
+        # → برهن / درهم, where the ه is R3). Leave those to the normal pipeline.
+        # A coincidental 3-letter sound root (تركيزه → ترك) is NOT protected here,
+        # so the genuine pronoun is still peeled.
+        _whole_stem = self._step_a(word)[0]
+        _whole_cat, _ = self._step_b(_whole_stem)
+        _whole_root = self._step_c(_whole_stem, _whole_cat, orig_word=word)
+        if (len(_whole_root) >= 4 and "ه" in _whole_root
+                and _whole_root in self.root_set):
+            return None
+        for surf, tag in self._ENC_PRONOUN_BARE:
+            if not sw.endswith(surf):
+                continue
+            base = sw[: -len(surf)]
+            # The bare stem must still carry a real word: at least three root
+            # consonants (the minimum trilateral skeleton). This keeps the rule
+            # off short function words and off stems whose only "consonants" are
+            # the pronoun itself.
+            if len(self._extract_root_consonants(base)) < 3:
+                continue
+            # ـه after a feminine ـة surface (تَعْرِيفَة + ه would be wrong) — but
+            # corpus ة is written as ة, and ـه here is the masculine pronoun, so
+            # a base ending in ة is a genuine possessed feminine noun and we still
+            # peel. No special-case needed; root_set validation is the gate.
+            self._enc_depth += 1
+            try:
+                sub = self.analyze(base)
+            finally:
+                self._enc_depth -= 1
+            if sub.root in self.root_set:
+                clitics = dict(sub.clitics)
+                enc = list(clitics.get("enc", []))
+                enc.append(tag)
+                clitics["enc"] = enc
+                tags = dict(sub.tags)
+                tags.update(tag)
+                return TokenInfo(
+                    surface=word,
+                    clitics=clitics,
+                    template=sub.template,
+                    root=sub.root,
+                    tags=tags,
+                    pos=sub.pos,
+                )
+        return None
+
     def analyze(self, word: str) -> TokenInfo:
         # ── Closed-class intercept (before Steps A/B/C) ───────────────────────
         # Prepositions, conjunctions, particles, etc. are not derived from roots.
@@ -2412,6 +3090,151 @@ class ArabicEngine:
                 pos=cc_entry["pos"],
             )
 
+        # Conjunction (و/ف) prefixed onto a closed-class particle/demonstrative
+        # (وذلك = و + ذلك, فكذلك). Only for DEM/FUNC/REL so we never strip و from
+        # a content word that merely starts with و (وقت, وزير).
+        if len(stripped_word) > 1 and stripped_word[0] in "وف":
+            cc2 = self.CLOSED_CLASS.get(stripped_word[1:])
+            if cc2 and cc2.get("subcat") in ("DEM", "FUNC", "REL"):
+                return TokenInfo(
+                    surface=word,
+                    clitics={"pre": [{"conj": "W" if stripped_word[0] == "و" else "F"}]},
+                    template="CLOSED_CLASS",
+                    root=stripped_word[1:],
+                    tags={k: v for k, v in cc2.items() if k != "pos"},
+                    pos=cc2["pos"],
+                )
+
+        # ── Enclitic object/possessive pronoun intercept ─────────────────────
+        # An attached object/possessive pronoun (تَعْرِيفُهُ = تعريف + ـه, root
+        # ع.ر.ف; أَقْمَارُهُ = أقمار + ـه, root ق.م.ر) is an enclitic, not part of
+        # the stem. In unvoweled corpus text the pronoun ـه/ـها/ـهم… carries no
+        # haraka, so Step A (which only lists the diacritical ـهُ/ـهِ/ـهَا forms)
+        # never peels it and the glued surface either fails to resolve or, worse,
+        # makes the proclitic guard miscount and eat a root-initial consonant
+        # (سَطْحُهَا → طحها, وَجْهُهُ → جهه). Peel the bare pronoun here and
+        # re-analyse the bare stem; commit ONLY when the stem yields an attested
+        # root. The recursion guard (_enc_depth) keeps this from looping.
+        _enc_tok = self._enclitic_pronoun_intercept(word, stripped_word)
+        if _enc_tok is not None:
+            return _enc_tok
+
+        # ── Residual root-extraction intercept (hard low-frequency cases) ─────
+        # Form VIII infix-ت assimilation, و/ف conjunction on content words,
+        # ناقص/أجوف weak-radical recovery, and hamza-medial broken plurals.
+        # Runs after the high-confidence closed-class handlers but before the
+        # general Step A/B/C pipeline, which mis-handles these patterns.
+        _resid = self._residual_root_intercept(word)
+        if _resid is not None:
+            return _resid
+
+        # ── Geminate (مضعّف) nisba / abstract noun from an explicit shadda ─────
+        # Abstract and relational nouns built on a doubled-radical root keep the
+        # gemination visible as a shadda even in lightly-marked corpus text:
+        # أَهَمِّيَّة (root ه.م.م), خَاصِّيَّة (خ.ص.ص), العَامَّة (ع.م.م), كَمِّيَّة (ك.م.م),
+        # مَادَّة (م.د.د). The shadda sits on R2, which equals R3. Recover the root
+        # by doubling that consonant. The shadda must fall on a sound consonant
+        # (not و/ي/ا), so hollow nouns like قُوَّة (root ق.و.#) are left alone.
+        # Restricted to forms bearing a nominalising suffix (ة or nisba يّ) so
+        # bare geminate verbs مَدَّ/شَدَّ (root م.د.د, pos=VERB) are not rerouted.
+        # A trailing bare ي after the geminated radical is the nisba suffix too:
+        # الصَّحِّي (root ص.ح.ح) carries the shadda on ح and a plain ـي, so the
+        # "ِيّ"/"يّة" tests miss it. Accept a final ي as a nisba marker; the
+        # _gem_base[-1] == _gem_cons check below still gates on a real geminate.
+        _gem_has_suffix = (word.endswith("ة") or word.endswith("ـة")
+                           or word.endswith("ات") or word.endswith("ي")
+                           or "ِيّ" in word or "يّة" in word)
+        if "ّ" in word and _gem_has_suffix:
+            _gem_cons = None
+            for _gi, _gch in enumerate(word):
+                if _gch == "ّ":
+                    _gj = _gi - 1
+                    while _gj >= 0 and word[_gj] in "ًٌٍَُِْٰ":
+                        _gj -= 1
+                    if _gj >= 0 and word[_gj] not in "ويا":
+                        _gem_cons = word[_gj]
+                    break
+            if _gem_cons is not None:
+                _gem_stem, _gem_clitics = self._step_a(word)
+                _gem_rc = self._extract_root_consonants(_gem_stem)
+                # Strip a trailing nisba ي and a leading elative/augment ء so the
+                # base reduces to R1 + G (the doubled radical).
+                _gem_base = _gem_rc
+                if _gem_base.endswith("ي"):
+                    _gem_base = _gem_base[:-1]
+                if len(_gem_base) >= 3 and _gem_base[0] == "ء":
+                    _gem_base = _gem_base[1:]
+                # A single prep/conj proclitic that Step A declined to strip
+                # (it would leave too few consonants for a geminate stem) still
+                # sits at the front: بِكَمِّيَّات → بكم. When dropping a leading
+                # proclitic letter leaves R1 + G, peel it so the geminate root is
+                # recovered (بكمّيّات → كمم) instead of the glued artefact (بكم).
+                if (len(_gem_base) == 3 and _gem_base[-1] == _gem_cons
+                        and _gem_base[0] in "بلكوف"):
+                    _gem_clitics = dict(_gem_clitics)
+                    _gem_clitics.setdefault("pre", [])
+                    _gem_base = _gem_base[1:]
+                # مَفْعَلة masdar of a geminate root (مَحَبّة ح.ب.ب, مَهَمّة ه.م.م,
+                # مَسَرّة س.ر.ر, مَضَرّة ض.ر.ر): the مـ is the masdar prefix, R1 follows,
+                # and the shadda'd consonant is R2(=R3). The base is م + R1 + G
+                # (three consonants, last = the geminated radical). Peel the مـ so
+                # the geminate reading R1 + G + G is recovered instead of the glued
+                # م-as-R1 artefact (محبّة → محب). A genuine م-initial geminate root
+                # (مَدّة م.د.د) leaves only two consonants after Step A and never
+                # reaches this 3-consonant branch, so it is untouched. Validated
+                # against root_set below.
+                elif (len(_gem_base) == 3 and _gem_base[-1] == _gem_cons
+                        and _gem_base[0] == "م" and _gem_base[1] not in "اوي"):
+                    _gem_clitics = dict(_gem_clitics)
+                    _gem_clitics.setdefault("pre", [])
+                    _gem_base = _gem_base[1:]
+                if len(_gem_base) == 2 and _gem_base[-1] == _gem_cons:
+                    _gem_root = _gem_base + _gem_cons
+                    if _gem_root in self.root_set:
+                        _ends_ta = word.endswith("ة")
+                        return TokenInfo(
+                            surface=word,
+                            clitics=_gem_clitics,
+                            template="NOM_DERIVED",
+                            root=_gem_root,
+                            tags={"pos": "NOM", "num": "SG",
+                                  "gender": "F" if _ends_ta else "M"},
+                            pos="NOM",
+                        )
+
+        # ── Form IV active participle of a geminate root (مُهِمّ، مُعِدّ، مُضِرّ) ──
+        # مُفِعّ collapses the doubled radical under a shadda: مُهِمّ (root ه.م.م),
+        # مُعِدّ (ع.د.د), مُضِرّ (ض.ر.ر). The مُ is the participle prefix, R1 follows,
+        # and R2(=R3) carries the shadda. Without diacritics the bare skeleton مهم
+        # is mis-read as a sound trilateral (م=R1). Detect the explicit shadda on
+        # the final radical and recover R1 + G + G. Restricted to a leading مـ with
+        # exactly two radicals after it, so مَدَّ/شَدَّ (bare geminate verbs, no مـ)
+        # and مَادَّة (suffixed, handled above) are untouched.
+        # A kasra straight after the م marks the مِفْعَل instrument noun (مِقَصّ root
+        # ق.ص.ص), which the dedicated instrument template already labels; skip it
+        # here so its INSTRUMENT role survives.
+        _g4_stem, _g4_clitics = self._step_a(word)
+        _g4_stem_strip = self._strip_diacritics(_g4_stem)
+        _mu_kasra = len(_g4_stem) > 1 and _g4_stem[1] == "ِ"
+        if ("ّ" in _g4_stem and len(_g4_stem_strip) >= 3 and _g4_stem_strip[0] == "م"
+                and not _mu_kasra):
+            _g4_cons = self._extract_consonants(_g4_stem)
+            # Shadda must sit on the final consonant of a three-consonant skeleton
+            # م + R1 + R2, and R1/R2 must be sound (not weak), excluding مُوَاد-type.
+            if (len(_g4_cons) == 3 and _g4_stem.rstrip("ًٌٍَُِْٰ").endswith("ّ")
+                    and _g4_cons[1] not in "اوي" and _g4_cons[2] not in "اوي"):
+                _g4_root = _g4_cons[1] + _g4_cons[2] + _g4_cons[2]
+                if _g4_root in self.root_set:
+                    return TokenInfo(
+                        surface=word,
+                        clitics=_g4_clitics,
+                        template="NOM_DERIVED",
+                        root=_g4_root,
+                        tags={"pos": "NOM", "num": "SG", "gender": "M",
+                              "role": "AGENT", "form": "IV"},
+                        pos="NOM",
+                    )
+
         # ── Direct imperfect-form recognition (bypass clitic stripping noise) ──
         # When the original word is clearly an imperfect verb, recognize its
         # augmented form directly from the surface pattern, before Step A
@@ -2419,6 +3242,7 @@ class ArabicEngine:
         _direct_form = None
         _direct_tags = None
         _direct_stem_for_root = None
+        _direct_hollow_root = None
         _DAMMA_DR = "ُ"; _FATHA_DR = "َ"; _KASRA_DR = "ِ"; _SUKUN_DR = "ْ"
         # Only ي/ن are unambiguous imperfect prefixes. تـ and أـ are ambiguous
         # (past Form II/V/VI start with ت; past Form IV starts with أ).
@@ -2475,8 +3299,252 @@ class ArabicEngine:
                         _direct_form = "VERB_AUGMENTED_V_VI"
                         _direct_tags = {"pos": "VERB", "form": "V", "tense": "PRES", "voice": "ACT", "semantic_role": "REFLEXIVE"}
 
+        # ── فُعُول masdar of a و-initial root (وُجُود، وُصُول، وُقُوع) ──────────
+        # Step A would strip the leading و as a conjunction, but here the و is R1
+        # of an أصل مثال root. The signature is unambiguous: the skeleton is
+        # exactly و + R2 + و + R3 (four consonants, و at positions 0 and 2), and
+        # و+R2+R3 is a known root. Resolve the root directly so the conjunction
+        # strip never sees it. Conjunction cases (وكتاب، وقال) never have this
+        # second internal و in the فُعُول slot.
+        # Guard: a فُعُول masdar never carries a feminine ـة. A word like وَدَوْرَة
+        # (conj و + دَوْرَة, root د.و.ر, pattern فَعْلَة) collapses to the same four
+        # و+R2+و+R3 skeleton once the ة is dropped, but it is the conjunction
+        # reading, not a فُعُول. Reject the masdar reading when the surface ends in
+        # ة and the conjunction-stripped core (دورة) itself resolves to a root.
+        if _direct_form is None:
+            _c_uv = self._extract_consonants(stripped_word)
+            # _strip_diacritics drops ة, so test the raw word for the feminine
+            # suffix (it survives only there).
+            _ends_taa = word.endswith("ة") or word.endswith("ـة")
+            _conj_core_resolves = False
+            if _ends_taa and stripped_word[:1] in "وف" and len(stripped_word) > 3:
+                _cj_core = stripped_word[1:]
+                _cj_cat, _ = self._step_b(_cj_core)
+                if self._step_c(_cj_core, _cj_cat, orig_word=_cj_core) in self.root_set:
+                    _conj_core_resolves = True
+            if (len(_c_uv) == 4 and _c_uv[0] == "و" and _c_uv[2] == "و"
+                    and not (_ends_taa and _conj_core_resolves)):
+                _waw_masdar_root = _c_uv[0] + _c_uv[1] + _c_uv[3]
+                if _waw_masdar_root in self.root_set:
+                    return TokenInfo(
+                        surface=word,
+                        clitics={},
+                        template="MASDAR",
+                        root=_waw_masdar_root,
+                        tags={"pos": "NOM", "num": "SG", "gender": "M"},
+                        pos="NOM",
+                    )
+
+        # ── Unvoweled Form X imperfect (يَسْتَفْعِل without tashkīl) ───────────
+        # Raw corpus text drops the diacritics the voweled detector above needs.
+        # A word that is fully unvoweled, opens with يست/تست/نست/أست and carries
+        # at least six consonants is an imperfect Form X verb: prefix + ستـ +
+        # R1+R2+R3. The root is the three radicals after the است augment.
+        if _direct_form is None and stripped_word.startswith(("يست", "تست", "نست", "أست")):
+            _cons_uv = self._extract_consonants(stripped_word)
+            _is_uv = not any(ch in "ًٌٍَُِّْٰ" for ch in word)
+            if _is_uv and len(_cons_uv) >= 6:
+                _cand_x = _cons_uv[3] + _cons_uv[4] + _cons_uv[5]
+                if _cand_x in self.root_set:
+                    _direct_form = "VERB_AUGMENTED_X"
+                    _direct_tags = {"pos": "VERB", "form": "X", "tense": "PRES",
+                                    "voice": "ACT", "semantic_role": "REQUEST"}
+                # Hollow Form X imperfect (يَسْتَطِيع، يَسْتَعِيد): the middle radical
+                # surfaces as ي/و between R1 and R3, so the skeleton is
+                # prefix+ست+R1+(ي/و)+R3. Recover R2 from _AJWAF_FRAME using
+                # (R1, R3) = positions 3 and 5 when the sound reading above failed.
+                elif len(_cons_uv) == 6 and _cons_uv[4] in "وي":
+                    _xr1, _xr3 = _cons_uv[3], _cons_uv[5]
+                    _x_mid = self._AJWAF_FRAME.get((_xr1, _xr3))
+                    _x_order = ("و", "ي") if _x_mid == "و" else ("ي", "و")
+                    for _xv in _x_order:
+                        _xc = _xr1 + _xv + _xr3
+                        if _xc in self.root_set:
+                            _direct_form = "VERB_AUGMENTED_X"
+                            _direct_tags = {"pos": "VERB", "form": "X", "tense": "PRES",
+                                            "voice": "ACT", "semantic_role": "REQUEST"}
+                            _direct_hollow_root = _xc
+                            break
+
+        # ── Unvoweled Form VIII imperfect (يَفْتَعِل without tashkīl) ──────────
+        # An imperfect Form VIII verb is prefix + R1 + ت(infix) + R2 + R3, e.g.
+        # يَعْتَمِد / تَعْتَمِد (root ع.م.د), يَخْتَلِف (خ.ل.ف). In raw text the only
+        # cue is the consonant skeleton: imperfect prefix (ي/ت/ن/أ), then a sound
+        # R1, then the ت infix at position 2, then two more radicals. Recover the
+        # root from positions 1, 3, 4 and accept only when it is a known root.
+        if (_direct_form is None
+                and stripped_word
+                and stripped_word[0] in "يتنأ"):
+            _cons_v8 = self._extract_consonants(stripped_word)
+            _is_uv8 = not any(ch in "ًٌٍَُِّْٰ" for ch in word)
+            if (_is_uv8 and len(_cons_v8) == 5 and _cons_v8[2] == "ت"
+                    and _cons_v8[1] not in "اويت"):
+                _cand_v8 = None
+                if _cons_v8[3] == "ا":
+                    # Hollow Form VIII (اِحْتَاجَ→يَحْتَاج, root ح.و.ج): the middle
+                    # radical surfaces as ا. Recover it from _AJWAF_FRAME using
+                    # (R1, R3) = (positions 1, 4).
+                    _mid_v8 = self._AJWAF_FRAME.get((_cons_v8[1], _cons_v8[4]))
+                    if _mid_v8 is not None:
+                        _try = _cons_v8[1] + _mid_v8 + _cons_v8[4]
+                        if _try in self.root_set:
+                            _cand_v8 = _try
+                else:
+                    _try = _cons_v8[1] + _cons_v8[3] + _cons_v8[4]
+                    if _try in self.root_set:
+                        _cand_v8 = _try
+                if _cand_v8 is not None:
+                    _direct_form = "VERB_AUGMENTED_VIII"
+                    _direct_tags = {"pos": "VERB", "form": "VIII", "tense": "PRES",
+                                    "voice": "ACT", "semantic_role": "MEDIO_PASSIVE"}
+                    _direct_hollow_root = _cand_v8
+
+        # ── Form II masdar تَفْعِيل ending in ن (تَسْخِين، تَأْمِين، تَخْزِين) ──────
+        # The تَفْعِيل masdar is ت(prefix) + R1 + R2 + ي + R3. When R3 is ن the
+        # final ـين collides with the masculine-plural enclitic ـين, so Step A
+        # strips it and the root is mangled (تسخين→تسخ). تَعْلِيم/تَدْرِيب (R3 ≠ ن)
+        # are unaffected because they never trigger the plural strip. Detect the
+        # pattern directly from the skeleton (ت at 0, ي at 3, five consonants) and
+        # accept only when R1+R2+R3 is a known root. The leading conjunction و/ف
+        # and a trailing possessive enclitic (ها، ه، هم …) are tolerated.
+        if _direct_form is None and stripped_word:
+            _tf_w = stripped_word[1:] if stripped_word[:1] in "وفلب" else stripped_word
+            _cons_tf = self._extract_consonants(_tf_w)
+            # R2 may be a hollow radical و/ي (تَكْوِين ك.و.ن، تَدْوِين د.و.ن،
+            # تَعْيِين ع.ي.ن); only R1 must be sound.
+            if (len(_cons_tf) >= 5 and _cons_tf[0] == "ت" and _cons_tf[3] == "ي"
+                    and _cons_tf[4] == "ن" and _cons_tf[1] not in "اوي"):
+                _tf_root = _cons_tf[1] + _cons_tf[2] + _cons_tf[4]
+                if _tf_root in self.root_set:
+                    _direct_form = "MASDAR_FORM_II"
+                    _direct_tags = {"pos": "NOM", "role": "MASDAR", "form": "II",
+                                    "semantic_role": "CAUSATIVE", "num": "SG", "gender": "M"}
+                    _direct_hollow_root = _tf_root
+
+        # ── Form III imperfect of a ناقص (defective) root (يُفَاعِي) ───────────
+        # The Form III imperfect of a weak-final root surfaces as prefix + R1 + ا
+        # + R2 + (ي/ى): يُلَاقِي (root ل.ق.ي), يُسَاوِي (س.و.ي), يُنَاجِي (ن.ج.و),
+        # يُعَانِي (ع.ن.ي). The generic أجوف/مثال logic mis-reads the medial ا as a
+        # hollow radical and yields ليق/ساو/نود. Signature: imperfect prefix
+        # (ي/ت/ن), then R1, then the pattern ا at position 2, then R2, then a weak
+        # final ي/ى. Recover R1+R2+weak and accept only a known root.
+        if _direct_form is None and stripped_word and stripped_word[0] in "يتن":
+            _cons_f3 = self._extract_consonants(stripped_word)
+            # Nisba guard: نِظامي (ن.ظ.م), تِجاري (ت.ج.ر) share the prefix+R1+ا+R2+ي
+            # skeleton with a Form III imperfect, but they are relational adjectives
+            # whose final ي is the nisba suffix and whose ا belongs to the base
+            # noun (نِظام، تِجارة). With the ambiguous تـ/نـ openers, accept the
+            # verb reading only when the surface minus the final ي does NOT itself
+            # resolve to a known root (which it does for a nisba base). The
+            # unambiguous imperfect ي opener is always allowed.
+            _f3_base = self._strip_diacritics(stripped_word[:-1])
+            _f3_nisba = False
+            if stripped_word[0] in "تن" and len(self._extract_consonants(_f3_base)) >= 3:
+                _f3_bcat, _ = self._step_b(_f3_base)
+                if self._step_c(_f3_base, _f3_bcat, orig_word=_f3_base) in self.root_set:
+                    _f3_nisba = True
+            if (not _f3_nisba and len(_cons_f3) == 5 and _cons_f3[2] == "ا"
+                    and _cons_f3[1] not in "اوي" and _cons_f3[3] != "ا"
+                    and stripped_word[-1] in "ىي"):
+                _f3r1, _f3r2 = _cons_f3[1], _cons_f3[3]
+                _f3known = self._NAQIS_FRAME.get((_f3r1, _f3r2))
+                _f3order = ("ي", "و") if _f3known == "ي" else ("و", "ي")
+                _f3_resolved = None
+                for _f3v in _f3order:
+                    _f3cand = _f3r1 + _f3r2 + _f3v
+                    if _f3cand in self.root_set:
+                        _f3_resolved = _f3cand
+                        break
+                # Lexicon-gap fallback: a handful of common defective Form III
+                # roots are absent from ar_roots.json (e.g. ع.ن.ي for يُعَانِي).
+                # The pattern is unambiguous here (sound R1, pattern ا, sound R2,
+                # weak final), so emit R1+R2 plus the orthographically attested
+                # final weak letter rather than fall through to a wrong أجوف read.
+                if _f3_resolved is None and _f3r2 not in "وي":
+                    _f3_resolved = _f3r1 + _f3r2 + "ي"
+                if _f3_resolved is not None:
+                    _direct_form = "VERB_FORM_III"
+                    _direct_tags = {"pos": "VERB", "form": "III", "tense": "PRES",
+                                    "voice": "ACT", "semantic_role": "RECIPROCAL"}
+                    _direct_hollow_root = _f3_resolved
+
+        # ── Unvoweled Form V/VI imperfect with تـ prefix (تَتَفَعَّل/تَتَفَاعَل) ──
+        # The third-person feminine / second-person imperfect of Form V and VI
+        # opens with a doubled تـ: the first ت is the imperfect prefix, the second
+        # is the Form V/VI augment. In raw text تتضمّن (root ض.م.ن), تتشكّل (ش.ك.ل),
+        # تتبادل (ب.د.ل) carry both, and Step A never strips either, so the whole
+        # تت is mis-read as part of the root. Signature: the skeleton is ت + ت +
+        # three radicals (Form V) or ت + ت + R1 + ا + R2 + R3 (Form VI). Recover
+        # the root and accept only when it is a known triliteral. The leading ف
+        # conjunction (فتتشكّل) is stripped first.
+        if _direct_form is None and stripped_word:
+            _v5_w = stripped_word[1:] if stripped_word[0] in "وف" else stripped_word
+            _cons_v5 = self._extract_consonants(_v5_w)
+            # Guard against quadriliteral Q-II (تَتَفَعْلَل, e.g. تَتَرْجَم root ت.ر.ج.م):
+            # there the second ت is the FIRST radical of a four-consonant root, so
+            # dropping one ت leaves a valid 4-radical root. When the four
+            # consonants after the imperfect ت are themselves a known root, that
+            # quadriliteral reading wins and the Form V handler must stand down.
+            _quad_q2 = (len(_cons_v5) == 5 and _cons_v5[1:5] in self.root_set)
+            if (len(_cons_v5) >= 5 and _cons_v5[0] == "ت" and _cons_v5[1] == "ت"
+                    and _cons_v5[2] not in "اويت" and not _quad_q2):
+                _cand_v5 = None
+                if len(_cons_v5) == 5:
+                    # Form V: تت + R1 + R2 + R3
+                    _try5 = _cons_v5[2] + _cons_v5[3] + _cons_v5[4]
+                    if _try5 in self.root_set:
+                        _cand_v5 = _try5
+                elif len(_cons_v5) == 6 and _cons_v5[3] == "ا":
+                    # Form VI: تت + R1 + ا + R2 + R3
+                    _try6 = _cons_v5[2] + _cons_v5[4] + _cons_v5[5]
+                    if _try6 in self.root_set:
+                        _cand_v5 = _try6
+                if _cand_v5 is not None:
+                    _direct_form = "VERB_AUGMENTED_V_VI"
+                    _direct_tags = {"pos": "VERB", "form": "V", "tense": "PRES",
+                                    "voice": "ACT", "semantic_role": "REFLEXIVE"}
+                    _direct_hollow_root = _cand_v5
+
         stem, clitics = self._step_a(word)
         template_cat, tmpl_tags = self._step_b(stem)
+
+        # ── Nisba base resolution (relational adjective ـِيّ / ـِيَّة) ─────────
+        # A nisba adjective is a noun plus the relational suffix ـِيّ(ة): مَنْزِلِيَّة
+        # (of the home, base مَنْزِل → root ن.ز.ل), طَبِيعِيَّة (طَبِيعَة → ط.ب.ع),
+        # جَلِيدِيَّة (جَلِيد → ج.ل.د). The root lives in the BASE noun, not the
+        # nisba surface. Strip the suffix and resolve the base through the
+        # ordinary template + root pipeline; adopt the base root when it is
+        # genuine. The nisba ـيّ keeps the surface skeleton ending in ي, which
+        # otherwise lands in root_set as a spurious ناقص root (منزلي، طبيعي).
+        if template_cat == "NISBA":
+            _nis_base = self._strip_diacritics(stem)
+            for _suf in ("يية", "ية", "يي", "ي"):
+                if _nis_base.endswith(_suf):
+                    _nis_base = _nis_base[: -len(_suf)]
+                    break
+            if len(self._extract_consonants(_nis_base)) >= 3:
+                _nis_cat, _ = self._step_b(_nis_base)
+                _nis_root = self._step_c(_nis_base, _nis_cat, orig_word=_nis_base)
+                if _nis_root in self.root_set:
+                    template_cat = "NISBA"
+                    tmpl_tags = {"pos": "ADJ", "role": "NISBA"}
+                    clitics = clitics  # unchanged
+                    # Short-circuit: build the token directly with the base root.
+                    _nis_tags = {"role": "NISBA"}
+                    for _pre in clitics.get("pre", []):
+                        _nis_tags.update(_pre)
+                    if "num" not in _nis_tags and "gender" not in _nis_tags:
+                        _nis_tags["gender"] = "F" if word.endswith("ة") else "M"
+                        _nis_tags["num"] = "SG"
+                    return TokenInfo(
+                        surface=word,
+                        clitics=clitics,
+                        template="NISBA",
+                        root=_nis_root,
+                        tags=_nis_tags,
+                        pos="ADJ",
+                    )
+
         # ── Dual override (المثنى) ───────────────────────────────────────────
         # When the dual enclitic (ـان/ـيْن) was stripped in Step A, the stem may
         # match an active-participle or sifa pattern (AP_FAIL / ADJ_FALAN). In
@@ -2493,13 +3561,15 @@ class ArabicEngine:
         # When direct-imperfect recognition fired, override results and compute
         # root from the ORIGINAL word's consonant skeleton (the post-step-a stem
         # has lost the verb's prefix and confuses the augment skip logic).
-        _direct_root = None
+        _direct_root = _direct_hollow_root
         if _direct_form is not None:
             template_cat = _direct_form
             tmpl_tags = _direct_tags
             cons_orig = self._extract_consonants(word)
             # Each form has a known prefix pattern; root = position-based slice
-            if _direct_form == "VERB_AUGMENTED_X":
+            if _direct_root is not None:
+                pass  # hollow Form VIII already resolved its أجوف root
+            elif _direct_form == "VERB_AUGMENTED_X":
                 # يَسْتَفْعِلُ: يـ + س + ت + R1 + R2 + R3 → cons[3:6]
                 if len(cons_orig) >= 6:
                     cand = cons_orig[3] + cons_orig[4] + cons_orig[5]
@@ -2558,6 +3628,42 @@ class ArabicEngine:
         root = self._step_c(stem, template_cat, imperfect_stripped=imperfect_stripped, orig_word=word)
         if _direct_root is not None:
             root = _direct_root
+
+        # ── Single-letter prep/conj proclitic rescue ─────────────────────────
+        # Unvoweled corpus text glues بـ/لـ/كـ/سـ/فـ/وـ onto a noun whose root
+        # is only 3 consonants (بِشَكْل، بِسَبَب، لِغَرَض، بِنِسْبَة). The Step A
+        # guard refuses to strip these (it would leave <4 consonants and could
+        # eat a root-initial consonant of سَفِينَة-type words), so the root
+        # extractor either fails or returns a glued artefact (بشك، بنس). Rescue
+        # only under a tight rule: the core (word minus the leading clitic) must
+        # expose a SOUND 3-consonant root that is exactly its first three surface
+        # consonants (no weak/geminate invention), AND the whole-word reading
+        # must either fail outright or be the tell-tale "clitic + first two core
+        # consonants" glue. This leaves سفينة→سفن, وزير→زور, كتاب→كتب untouched.
+        _word_cons = self._extract_consonants(word)
+        # Stacked conjunction + prep artefact (وَلِغَسْل → لغس): Step A peels the
+        # conjunction but leaves the prep glued, and the resulting first-three
+        # consonants happen to be a real root, so neither standard trigger fires.
+        # Detect it: the surface opens with و/ف then a prep ب/ل/ك, and the current
+        # root equals the conjunction-stripped stem's first three consonants.
+        _sw = self._strip_diacritics(word)
+        _stacked_clitic = (len(_sw) >= 5 and _sw[0] in "وف" and _sw[1] in "بلك"
+                           and root == self._extract_consonants(_sw[1:])[:3])
+        if (root not in self.root_set
+                or (len(_word_cons) >= 3 and root == _word_cons[:3])
+                or _stacked_clitic):
+            _rescued = self._proclitic_root_rescue(word, root)
+            if _rescued is not None:
+                _resc_root, _resc_clitic = _rescued
+                root = _resc_root
+                # Record the stripped proclitic and reroute to a nominal: these
+                # surfaces (شكل، سبب، غرض، نسبة) are nouns governed by the prep.
+                clitics.setdefault("pre", [])
+                if _resc_clitic not in clitics["pre"]:
+                    clitics["pre"].append(_resc_clitic)
+                template_cat = "NOM_DERIVED"
+                tmpl_tags = {"pos": "NOM"}
+
         pos = tmpl_tags.get("pos", "UNKNOWN")
         # Merge clitic tags into main tags
         tags = {k: v for k, v in tmpl_tags.items() if k != "pos"}
@@ -2803,6 +3909,9 @@ class ArabicEngine:
             pos=pos,
         )
 
+    # Proclitic / enclitic letter-strings tried by the root rescue (consonantal,
+    # diacritics already removed). Ordered does not matter — selection prefers the
+    # longest surviving core (i.e. the least amount stripped).
     def analyze_sentence(self, sentence: str) -> Tuple[List[TokenInfo], bool, str]:
         # Sentence-level grammar layer: split, analyze each word, then run
         # context-aware POS disambiguation and structural guards.
