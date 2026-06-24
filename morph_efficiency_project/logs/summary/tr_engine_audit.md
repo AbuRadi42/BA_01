@@ -74,3 +74,15 @@ The "concatenative, regular slot order" framing for Turkish hides three structur
 - Derivational slot 1 with min-stem=3 systematically excludes the most common single-syllable stem derivations (`ev+li`, `iş+çi`, `sev+gi`), which are exactly the cases a morphology-aware tokenizer needs to win against BPE.
 
 These are testing observations only. No engine code was modified.
+
+## Resolved convention: short-stem POSS_2SG vs long-stem POSS_3SG (n-buffer)
+
+Surface forms like `evinde`, `evini`, `evinden` are genuinely ambiguous between a
+POSS_2SG reading (`ev+in+de`, "in your house") and a POSS_3SG + pronominal `-n-` buffer
+reading (`ev+i+n+de`, "in his house"). The engine resolves these by **stem length**:
+short consonant-final stems (`len(stem) < 4`, e.g. `ev`) take the POSS_2SG reading, while
+longer stems (`kitabını`, `çocuklarının`) take POSS_3SG/3PL. The distinction from the 3PL
+case (`evlerinden`, "from their houses") is the explicit plural marker, which is preserved.
+See `tr_engine.py` `_try_nominal_decomp` (the `impl and pl_v is None and len(stem) < 4`
+penalty). Do **not** "fix" these to 3SG: the comprehensive suite asserts 2SG, and the two
+readings otherwise score equal so the canonical tie-break would silently pick "3SG".

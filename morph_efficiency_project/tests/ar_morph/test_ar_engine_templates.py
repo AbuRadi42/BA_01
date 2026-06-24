@@ -693,7 +693,7 @@ CASES = [
     ("كَاتِبُون",     "كتب",  None,  "SPM katibun"),
     ("مُعَلِّمُون",   "علم",  "NOM_DERIVED",  "SPM mu3allimun"),
     ("مُدَرِّسُون",   "درس",  "NOM_DERIVED",  "SPM mudarrisun"),
-    ("مُهَنْدِسُون",  "هند",  "NOM_DERIVED",  "SPM muhandisun"),
+    ("مُهَنْدِسُون",  "هندس",  "NOM_DERIVED",  "SPM muhandisun"),  # quadriliteral root ه-ن-د-س (was truncated to هند)
     ("مُسْلِمُون",    "سلم",  "NOM_DERIVED",  "SPM muslimun"),
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -740,7 +740,10 @@ CASES = [
     ("حِجَارَة",      "حجر",  None,  "BP hijara"),
     ("حَلَق",         "حلق",  None,  "BP halaq"),
     ("صَحْب",         "صحب",  None,  "BP sahb"),
-    ("عَوَامِل",      "عوم",  None,  "BP 3awamil"),
+    # Corrected: عَوَامِل is the فَوَاعِل broken plural of عَامِل (root ع.م.ل, "factor/
+    # worker"). The و is the pattern infix, not a radical; the old "عوم" (root of
+    # "swimming") was wrong and disagreed with the CAMeL reference.
+    ("عَوَامِل",      "عمل",  None,  "BP 3awamil"),
     ("رَسَائِل",      "رسو",  None,  "BP rasa'il"),
     ("دَرَاهِم",      "درهم", None,  "BP darahim"),
     ("مَجَالِس",      "جلس",  None,  "BP majalis"),
@@ -758,7 +761,9 @@ CASES = [
     # ══════════════════════════════════════════════════════════════════════════
     ("عُلَمَاء",      "علم",  None,  "BP_RARE 3ulama'"),
     ("حُبَلَى",       "حبل",  None,  "BP_RARE hubala"),
-    ("قَوَاعِد",      "قوع",  None,  "BP_RARE qawa3id"),
+    # Corrected: قَوَاعِد is the فَوَاعِل broken plural of قَاعِدَة (root ق.ع.د, "base/
+    # rule"). The و is the pattern infix, not a radical; the old "قوع" was wrong.
+    ("قَوَاعِد",      "قعد",  None,  "BP_RARE qawa3id"),
     ("عُقُولَات",     "عقل",  None,  "BP_RARE 3uqulat"),
     ("رِسَالَات",     "رسل",  None,  "BP_RARE risalat"),
     ("حُكَّمَاء",     "حكم",  None,  "BP_RARE hukkama'"),

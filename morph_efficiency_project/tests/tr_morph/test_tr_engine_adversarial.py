@@ -588,7 +588,11 @@ def test_sentence_basic():
 def test_sentence_with_closed_class():
     tokens, _, _ = engine.analyze_sentence("ben de gidiyorum")
     assert tokens[0].pos == "PRON"
-    assert tokens[1].pos == "PART"
+    # The standalone additive clitic "de"/"da" ("also, too") is a conjunction,
+    # matching the Zemberek/zeyrek reference tagset (Conj). It is distinct from
+    # the bound locative suffix -de/-da. The sentence-grammar layer retags the
+    # word-level ADDITIVE particle reading to CONJ on this basis.
+    assert tokens[1].pos == "CONJ"
     assert tokens[2].tags.get("tense") == "PRES_PROG"
 
 def test_sentence_all_roots_nonempty():

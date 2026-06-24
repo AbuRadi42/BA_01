@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Morphology-Aware Tokenisation · Demo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<main class="wrap">
+
+  <header class="head">
+    <h1>How a tokeniser sees your sentence</h1>
+    <p class="sub">
+      Type a sentence and watch it split two ways: the <b>classic</b> method
+      (BPE subword pieces) and our <b>grammar-aware</b> engine, which exposes
+      the grammatical streams the model would learn from.
+    </p>
+  </header>
+
+  <form method="post" class="card" id="form">
+    <label class="lbl">1 · Choose a language</label>
+    <div class="lang-row">
+      {% for l in langs %}
+      <button type="submit" name="lang" value="{{ l.code }}" formmethod="get"
+              class="pill {{ 'on' if l.code == sel_lang else '' }}">
+        <span class="native">{{ l.native }}</span>
+        <span class="meta">{{ l.name }} · {{ l.type }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <label class="lbl" for="text">2 · Write a sentence</label>
+    <textarea id="text" name="text" rows="3"
+              {% if sel_meta.rtl %}dir="rtl" lang="ar"{% endif %}
+              placeholder="Type here…">{{ text }}</textarea>
+    <div class="row-btns">
+      <button type="button" class="ghost" id="example-btn"
+              data-example="{{ example }}">Use an example</button>
+      <button type="submit" class="go">Tokenise →</button>
+    </div>
+  </form>
+
+  {% if result %}
+  <section class="results">
+
+    {% if result.valid_msg %}
+    <div class="validity {{ 'ok' if result.valid_ok else 'no' }}">
+      <b>Structural check:</b>
+      {% if result.valid_ok %}✓ valid sentence{% else %}✗ {{ result.valid_msg }}{% endif %}
+    </div>
+    {% endif %}
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Classic tokeniser</h2>
+        <span class="count">{{ result.classic_count }} tokens</span>
+      </div>
+      <p class="panel-note">BPE subword pieces · <code>·</code> marks a word boundary</p>
+      <div class="chips {{ 'rtl' if result.rtl }}">
+        {% for t in result.classic %}<span class="chip">{{ t }}</span>{% endfor %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Grammar-aware tokeniser</h2>
+        <span class="count">{{ result.morph_count }} words · {{ result.streams }} streams</span>
+      </div>
+      <p class="panel-note">each word decomposed into its grammatical streams</p>
+      <div class="cards {{ 'rtl' if result.rtl }}">
+        {% for u in result.morph %}
+        <div class="mcard">
+          <div class="mcard-top">
+            <span class="surface">{{ u.surface }}</span>
+            <span class="badge">{{ u.pos }}</span>
+          </div>
+          {% for label, value in u.rows %}
+          <div class="stream"><span class="skey">{{ label }}</span><span class="sval">{{ value }}</span></div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </section>
+  {% endif %}
+
+  <footer class="foot">
+    Morphology-Aware Tokenisation as a Capacity Lever · four-language demo
+    (ZH · EN · TR · AR)
+  </footer>
+
+</main>
+
+<script>
+  // Fill the textarea with the example for the selected language.
+  document.getElementById('example-btn').addEventListener('click', function () {
+    var ex = this.getAttribute('data-example') || '';
+    var ta = document.getElementById('text');
+    ta.value = ex;
+    ta.focus();
+  });
+</script>
+</body>
+</html>

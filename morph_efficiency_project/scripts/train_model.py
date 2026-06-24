@@ -265,6 +265,28 @@ def main(argv=None):
     print(f"[init] streams={streams} vocabs={vocabs} "
           f"train_tok={n_train} val_tok={n_val} seq_len={seq_len}", flush=True)
 
+    # ---- Fair per-character normalisation (bits-per-char) ----------------
+    # Per-TOKEN loss is NOT comparable across tokenisations: baseline and morph
+    # pack different amounts of text per token. The publishable, tokeniser-fair
+    # metric is bits per source CHARACTER:
+    #   bpc = eval_loss_nats / ln(2) * (val_tokens / val_chars)
+    # We read val_tokens/val_chars from the tokeniser's stats sidecar.
+    bpc_factor = None
+    try:
+        _stats = json.loads(
+            (_DATA_DIR / f"{args.lang}_tokstats.json").read_text(encoding="utf-8"))
+        _val_chars = int(_stats["source"]["val"]["chars"])
+        _val_tokens = int(_stats["tokens"]["val"][
+            "baseline" if args.regime == "baseline" else "morph"])
+        if _val_chars > 0 and _val_tokens > 0:
+            bpc_factor = (_val_tokens / _val_chars) / math.log(2.0)
+            print(f"[init] bpc_factor={bpc_factor:.5f} "
+                  f"(val_tokens={_val_tokens:,} val_chars={_val_chars:,})",
+                  flush=True)
+    except Exception as e:  # noqa: BLE001
+        print(f"[warn] no tokstats sidecar; eval_bpc will be null ({e})",
+              flush=True)
+
     stream_cfgs = [StreamConfig(name=s, vocab_size=vocabs[s],
                                 per_stream_dim=args.model_dim) for s in streams]
 
@@ -356,7 +378,10 @@ def main(argv=None):
                 rec = {"step": step + 1, "train_loss": lv,
                        "train_ema": ema_loss, "eval_loss": eval_loss,
                        "eval_ppl": ppl, "lr": lr,
-                       "tokens_seen": (step + 1) * tokens_per_step}
+                       "tokens_seen": (step + 1) * tokens_per_step,
+                       "eval_bpc": (eval_loss * bpc_factor)
+                       if bpc_factor else None,
+                       "elapsed_s": round(time.time() - t0, 1)}
                 metrics_fh.write(json.dumps(rec) + "\n")
                 metrics_fh.flush()
                 print(f"[eval step {step+1}] eval_loss={eval_loss:.4f} "
@@ -378,7 +403,32 @@ def main(argv=None):
     finally:
         metrics_fh.close()
 
-    print(f"[done] total_steps={total_steps} elapsed={time.time()-t0:.1f}s "
+    # ---- Final summary: the headline per-cell numbers for the paper ------
+    elapsed = time.time() - t0
+    final_loss, final_ppl = _evaluate(model, val_sampler, args.batch_size,
+                                      max(args.eval_batches, 50), device)
+    tokens_done = total_steps * tokens_per_step
+    summary = {
+        "lang": args.lang, "regime": args.regime,
+        "n_params": n_params, "model_dim": args.model_dim,
+        "layers": args.layers, "heads": args.heads, "seq_len": seq_len,
+        "total_steps": total_steps, "tokens_seen": tokens_done,
+        "final_eval_loss": final_loss,
+        "final_eval_ppl": final_ppl,
+        "final_eval_bpc": (final_loss * bpc_factor) if bpc_factor else None,
+        "bpc_factor": bpc_factor,
+        "elapsed_s": round(elapsed, 1),
+        "tokens_per_sec": round(tokens_done / max(1e-9, elapsed), 1),
+        "train_tokens_available": n_train,
+        "val_tokens_available": n_val,
+    }
+    with open(args.output_dir / "summary.json", "w", encoding="utf-8") as fh:
+        json.dump(summary, fh, indent=2)
+    print(f"[summary] eval_loss={final_loss:.4f} ppl={final_ppl:.2f} "
+          f"bpc={summary['final_eval_bpc']} "
+          f"tok/s={summary['tokens_per_sec']:.0f}", flush=True)
+
+    print(f"[done] total_steps={total_steps} elapsed={elapsed:.1f}s "
           f"last_ckpt={last_ckpt_path}", flush=True)
     return 0
 

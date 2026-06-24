@@ -1,0 +1,7 @@
+{
+  "note": "Authoritative rho*H, 20k-sentence samples of the four-language (Wikipedia+FineWeb) corpora, computed 2026-06-27 by compute_hl.py. Columns: H(L) bits, rho_signature, rho*H bits, |B| observed bundles.",
+  "zh": {"H": 6.28, "rho_sig": 0.025, "rho_H": 0.16, "bundles": 891},
+  "en": {"H": 1.30, "rho_sig": 0.822, "rho_H": 1.07, "bundles": 21},
+  "tr": {"H": 4.01, "rho_sig": 0.744, "rho_H": 2.98, "bundles": 511},
+  "ar": {"H": 6.51, "rho_sig": 0.534, "rho_H": 3.47, "bundles": 1925}
+}

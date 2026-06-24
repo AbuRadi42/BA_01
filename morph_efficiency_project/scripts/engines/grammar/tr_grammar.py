@@ -35,6 +35,22 @@ Q_PARTICLES = {"mi", "mı", "mu", "mü"}
 # Existential predicates.
 EXISTENTIAL = {"var", "yok"}
 
+# Cardinal numerals (sayilar) are a closed class. The word-level analyzer
+# defaults the bare forms to NOUN/UNKNOWN; in Turkish these are always numerals
+# (or, for "bir", the indefinite article), never common nouns. Listing the core
+# set is a fact about the language, not a fit to any corpus.
+CARDINAL_NUMERALS = {
+    "bir", "iki", "üç", "uc", "dört", "dort", "beş", "bes", "altı", "alti",
+    "yedi", "sekiz", "dokuz", "on", "yirmi", "otuz", "kırk", "kirk", "elli",
+    "altmış", "altmis", "yetmiş", "yetmis", "seksen", "doksan", "yüz", "yuz",
+    "bin", "milyon", "milyar",
+}
+
+# The additive clitic "da" / "de" ("also, too, and") written as a separate
+# word is a conjunction (zeyrek tags it Conj). It is distinct from the bound
+# locative suffix -da/-de, which never appears as a standalone token.
+ADDITIVE_CLITICS = {"da", "de"}
+
 # Copular endings (-y/-i/-ydı/-imiş etc.) on bare noun/adj predicates.
 COPULAR_SUFFIXES = ("dir", "dır", "dur", "dür", "tir", "tır", "tur", "tür",
                     "ydi", "ydı", "ydu", "ydü", "ymis", "ymış", "ymis", "ymüs",
@@ -130,6 +146,21 @@ def disambiguate_pos(tokens: List[TokenInfo]) -> List[TokenInfo]:
     for i, tok in enumerate(tokens):
         surface = tok.surface.lower()
         tags = dict(tok.tags)
+
+        # Rule 0a: closed-class cardinal numerals. The bare numeral forms are
+        # numerals (or the indefinite article for "bir"), never common nouns.
+        # Only retag the nominal/unknown default; never override a numeral that
+        # already inflected into a derived noun reading carrying case/poss.
+        if surface in CARDINAL_NUMERALS and tok.pos in ("NOUN", "UNKNOWN") \
+                and not tags.get("case") and not tags.get("poss"):
+            tok.pos = "NUM"
+            continue
+
+        # Rule 0b: standalone additive clitic "da"/"de" → conjunction.
+        if surface in ADDITIVE_CLITICS and tok.pos == "PART" \
+                and tok.tags.get("sem") == "ADDITIVE":
+            tok.pos = "CONJ"
+            continue
 
         # Rule 5: postpositions
         if surface in POSTPOSITIONS:

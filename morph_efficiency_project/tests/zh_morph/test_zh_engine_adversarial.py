@@ -187,9 +187,12 @@ def test_morph_sequence_valid():
     assert ok is True
 
 def test_content_words_no_features():
-    """Content words should produce no_features bundle."""
+    """Content words carry no inflectional features, but DO carry the
+    radical-semantic stream (the ZH analog of wazn)."""
     r = engine.analyze("电脑")
-    assert r.feature_bundle_str() == "no_features"
+    infl = {k: v for k, v in r.tags.items() if k not in ("radical", "radical_class")}
+    assert infl == {}
+    assert r.tags.get("radical_class", "").startswith("CLASS:")
 
 def test_feature_bundle_pronoun():
     r = engine.analyze("我")
