@@ -51,6 +51,15 @@ CONJ = {"و", "ف", "ثم", "أو", "بل", "لكن", "حتى"}
 # أدوات التبعيض / الكلية — followed by مضاف إليه مجرور.
 QUANT = {"كل", "بعض", "جميع", "كلا", "كلتا", "نصف", "ربع"}
 
+# الضمائر المنفصلة — the independent personal pronouns. A closed class: these
+# surfaces are pronouns, never verbs. The word-level analyzer mis-reads several
+# of them (هو، هي، أنا …) as hollow past verbs, so the sentence layer anchors
+# them back to PRON. This is a fact about the language, not a corpus fit.
+PERSONAL_PRONOUNS = {
+    "أنا", "نحن", "أنت", "أنتِ", "أنتما", "أنتم", "أنتنّ", "أنتن",
+    "هو", "هي", "هما", "هم", "هنّ", "هن",
+}
+
 
 def _strip_diac(s: str) -> str:
     """Remove Arabic diacritics for matching closed-class tokens."""
@@ -117,6 +126,15 @@ def disambiguate_pos(tokens: List[TokenInfo]) -> List[TokenInfo]:
 
         # Mark sentence opener if first content position OR preceded by و/ف/ث.
         is_opener = (i == 0) or (prev_bare in CONJ)
+
+        # Rule 0: independent personal pronoun → PRON (closed class). Overrides
+        # the analyzer's spurious hollow-verb reading of هو/هي/أنا/…
+        if _strip_diac(surf_bare) in {_strip_diac(p) for p in PERSONAL_PRONOUNS}:
+            tok.pos = "PRON"
+            for k in ("tense", "voice", "person", "form", "imperf",
+                      "semantic_role"):
+                tok.tags.pop(k, None)
+            continue
 
         # Rule A: ال + ... → DEF NOM/ADJ; never VERB.
         if tok.surface.startswith("ال") or tok.surface.startswith("الْ"):

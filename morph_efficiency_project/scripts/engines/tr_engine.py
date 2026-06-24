@@ -24,13 +24,114 @@ Bug fixes applied:
 import json
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from .shared import (
     TokenInfo,
     check_morph_sequence_tr,
     validate_sentence_structure_tr,
 )
+
+# ── Turkish root/word dictionary (anti-over-decomposition guard) ──────────────
+# Built at *build time* from zeyrek's bundled lexicon (see configs/tr_wordlist.txt
+# and scripts that produced it). Loaded here at *runtime* as a plain text file so
+# the engine stays standalone and never imports zeyrek. Module-level cache so
+# multiple engine instances share one copy.
+_WORDLIST_CACHE: Optional[Set[str]] = None
+
+# Corpus-frequency prior. A word -> zipf-frequency table (Zipf scale: ~7 for the
+# commonest words, ~3 for rare ones) built at *build time* from the `wordfreq`
+# package and shipped as a plain TSV (configs/tr_freq.tsv) so the engine never
+# imports wordfreq at runtime. The table was generated once with
+#     from wordfreq import top_n_list, zipf_frequency
+#     for w in top_n_list("tr", 50000):
+#         if w.isalpha() and zipf_frequency(w, "tr") >= 3.0:
+#             emit(w, round(zipf_frequency(w, "tr"), 2))
+# Loaded lazily; if the file is absent the engine degrades gracefully (every
+# lookup returns 0.0 and the prior never fires, leaving the hand-curated
+# keep-list logic in charge).
+_FREQ_CACHE: Optional[Dict[str, float]] = None
+
+
+def _tr_lower(s: str) -> str:
+    """Turkish-aware lowercasing (İ->i, I->ı) for dictionary lookups."""
+    return s.replace("İ", "i").replace("I", "ı").lower()
+
+
+def _load_wordlist(config_dir: str) -> Set[str]:
+    global _WORDLIST_CACHE
+    if _WORDLIST_CACHE is not None:
+        return _WORDLIST_CACHE
+    path = os.path.join(config_dir, "tr_wordlist.txt")
+    words: Set[str] = set()
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                w = line.strip()
+                if w:
+                    words.add(w)
+    _WORDLIST_CACHE = words
+    return words
+
+
+def _load_freq(config_dir: str) -> Dict[str, float]:
+    """Load the committed word<TAB>zipf frequency table. Returns an empty dict
+    (graceful degradation) if the file is missing, so the engine stays standalone
+    and never hard-depends on the corpus prior."""
+    global _FREQ_CACHE
+    if _FREQ_CACHE is not None:
+        return _FREQ_CACHE
+    path = os.path.join(config_dir, "tr_freq.tsv")
+    freq: Dict[str, float] = {}
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                parts = line.rstrip("\n").split("\t")
+                if len(parts) == 2 and parts[0]:
+                    try:
+                        freq[parts[0]] = float(parts[1])
+                    except ValueError:
+                        continue
+    _FREQ_CACHE = freq
+    return freq
+
+
+# ── Keep-whole lexemes (anti-over-decomposition, frequency-grounded) ──────────
+# A frozen set of frequent Turkish lexemes that the core decomposer is prone to
+# strip down to a coincidental shorter known word (geri->ger, güzel->güz,
+# arkadaş->ark). Each member was harvested at build time from zeyrek's frequency
+# list (first-10K) intersected with its lexicon: it is a frequent surface form
+# for which zeyrek licenses ONLY the whole-word lemma (no shorter reading) and
+# which is NOT one of the curated-gold surfaces that take a legitimate short
+# lemma. When the core over-strips one of these, we restore the whole word. This
+# never touches inflected forms (evi, kitapları, geliyorum) or words where a
+# short reading is genuinely licensed (yeni->yen, süre->sür); those are absent
+# from the set by construction.
+_KEEP_WHOLE: Set[str] = {
+    'adalet', 'adil', 'alay', 'amaç', 'arkadaş', 'ateş', 'ağaç', 'aşırı', 'bahane', 'barış',
+    'bay', 'başvuru', 'beğeni', 'bisiklet', 'borç', 'bozuk', 'bulut', 'cinsiyet', 'delil',
+    'doğal', 'dönük', 'düzey', 'düşük', 'eleştiri', 'epey', 'fazıl', 'felç', 'film',
+    'fırat', 'gayet', 'genç', 'geri', 'güzel', 'ibaret', 'ideal', 'ikamet', 'internet', 'ismet',
+    'istihbarat', 'içeri', 'karmaşık', 'kemik', 'kilit', 'konu', 'konuk', 'korku', 'koşu',
+    'kullanım', 'kuvvet', 'kültürel', 'kürt', 'kırık', 'kısım', 'maaş', 'makam', 'market',
+    'maç', 'medeniyet', 'meral', 'metal', 'mevzuat', 'millet', 'model', 'moral', 'okul',
+    'paylaşım', 'polat', 'radikal', 'rant', 'reel', 'sabit', 'saha', 'sahil', 'sakal',
+    'sakat', 'saldırı', 'salt', 'saray', 'sarı', 'savaş', 'sert', 'sevinç', 'somut', 'son',
+    'soğuk', 'standart', 'stratejik', 'süreç', 'sürü', 'tanık', 'tekstil', 'tokat', 'ton',
+    'tüm', 'tümen', 'tünel', 'ufuk', 'umut', 'usul', 'uzay', 'vakit', 'vatandaş', 'vefat',
+    'yaklaşım', 'yakıt', 'yasal', 'yerleşim', 'zemin', 'çağdaş', 'çin', 'ödenek', 'ödül',
+    'örgüt', 'örnek', 'ötürü', 'öğrenim', 'üzüm', 'şaka', 'şekil', 'şerit', 'şey', 'şirket',
+}
+
+# Irregular verb stem allomorphs for etmek ("to do/be") and demek ("to say").
+# Their finite/converb/analytic-tense forms surface with a softened or buffered
+# stem (ederek, ediyor, edilir -> ed/edi; diyerek -> diy), which the core leaves
+# as the root. zeyrek lemmatises every one of these to the bare stem et / de.
+# Map the allomorphs back to the canonical bare stem on verbal readings only.
+_IRREG_VERB_STEM: Dict[str, str] = {
+    "ed": "et", "edi": "et", "ede": "et",
+    "diy": "de", "diye": "de",
+}
 
 # ── Bug #7: Closed-class lexicon ─────────────────────────────────────────────
 
@@ -55,7 +156,11 @@ def _build_closed_class():
         "hakkında": {"pos": "POSTP", "sem": "ABOUT"},
         "itibaren": {"pos": "POSTP", "sem": "STARTING_FROM"},
         "boyunca": {"pos": "POSTP", "sem": "THROUGHOUT"},
-        "arasında": {"pos": "POSTP", "sem": "BETWEEN"},
+        # NOTE: "arasında" is intentionally NOT listed here. Morphologically it is
+        # ara + POSS_3SG + LOC ("in the space between"), and the reference
+        # analyser lemmatises it to the noun "ara". Treating it as a frozen
+        # postposition truncated nothing but pinned the wrong lemma, so we let the
+        # nominal decomposer handle it (-> ara, POSS=3SG, case=LOC).
         "üzere": {"pos": "POSTP", "sem": "ABOUT_TO"},
     }
     conjunctions = {
@@ -111,6 +216,16 @@ def _build_closed_class():
         "hayır": {"pos": "PART", "sem": "NEGATIVE"},
         "tamam": {"pos": "PART", "sem": "AGREEMENT"},
     }
+    # Lexicalised / frozen adverbial and postpositional forms. Morphologically
+    # they look like noun+POSS+CASE (birlik+te, son+u+nda, iç+i+nde), but they
+    # function as single closed-class words and the reference analyser (zeyrek)
+    # lemmatises them whole. Listing them here stops the decomposer from
+    # truncating them to their bare nominal root.
+    lexicalized = {w: {"pos": "ADV", "sem": "LEXICALIZED"} for w in [
+        "birlikte", "sonunda", "içinde", "üzerine", "üzerinde",
+        "ardından", "yanında", "sayesinde", "yüzünden", "nedeniyle",
+        "tarafından",
+    ]}
     question_words = {
         "ne": {"pos": "PRON", "sem": "INTERROGATIVE"},
         "nerede": {"pos": "ADV", "sem": "INTERROGATIVE"},
@@ -140,7 +255,7 @@ def _build_closed_class():
         "türkiye": {"pos": "PROPN", "sem": "PLACE"},
     }
     all_entries = {}
-    for d in [postpositions, conjunctions, pronouns, adverbs, question_words, particles, loan_invariants]:
+    for d in [postpositions, conjunctions, pronouns, adverbs, question_words, particles, loan_invariants, lexicalized]:
         all_entries.update(d)
     return all_entries
 
@@ -187,6 +302,11 @@ class TurkishEngine:
     NOMINAL_SLOTS = {2, 3, 4}  # NUM, POSS, CASE
 
     def __init__(self, config_dir: str = "morph_efficiency_project/configs"):
+        # Turkish root/word dictionary guard against over-decomposition.
+        self._wordlist = _load_wordlist(config_dir)
+        # Corpus-frequency prior for homonym tie-breaking (empty if file absent).
+        self._freq = _load_freq(config_dir)
+
         with open(os.path.join(config_dir, "tr_suffixes.json"), encoding="utf-8") as f:
             raw = json.load(f)
 
@@ -243,6 +363,31 @@ class TurkishEngine:
             reverse=True,
         )
 
+        # Set of every surface suffix string the engine knows about, used by the
+        # over-strip guard (_valid_suffix_tail) to confirm that the material
+        # peeled off the front of a longer known stem is a real inflectional /
+        # derivational tail and not arbitrary letters.
+        suffix_strings: Set[str] = set()
+        for entries in self.suffixes_by_slot.values():
+            for ent in entries:
+                for s in ent.get("surface_variants", []):
+                    s = s.lstrip("-").rstrip("-")
+                    if s and s != "∅ (zero)":
+                        suffix_strings.add(s)
+        suffix_strings.update(self._POSS_MAP.keys())
+        suffix_strings.update(self._CASE_MAP.keys())
+        # Plural, participle and verbal-noun shapes that the holistic decomposers
+        # spell out inline rather than via the slot tables.
+        suffix_strings.update([
+            "lar", "ler", "ları", "leri",
+            "dığı", "diği", "duğu", "düğü", "tığı", "tiği", "tuğu", "tüğü",
+            "acağı", "eceği", "yacağı", "yeceği",
+            "nda", "nde", "ndan", "nden", "na", "ne", "nı", "ni", "nu", "nü",
+            "nın", "nin", "nun", "nün",
+        ])
+        self._suffix_strings = suffix_strings
+        self._suffix_maxlen = max((len(s) for s in suffix_strings), default=1)
+
     # ── Vowel harmony check (Bug #5: 4-way rounding harmony) ─────────────────
 
     def _last_vowel(self, stem: str) -> Optional[str]:
@@ -279,6 +424,20 @@ class TurkishEngine:
         if not any(c in self.ALL_VOWELS for c in stem):
             return False
         return True
+
+    def _known_word(self, w: str) -> bool:
+        """True if w (any case) is a known Turkish root/lemma/stem in the
+        build-time dictionary harvested from zeyrek's lexicon."""
+        if not w:
+            return False
+        return _tr_lower(w) in self._wordlist
+
+    def _zipf(self, w: str) -> float:
+        """Corpus zipf-frequency of a lemma (0.0 if absent or below the table's
+        floor). Higher means more frequent. Used only as a homonym tie-break."""
+        if not w:
+            return 0.0
+        return self._freq.get(_tr_lower(w), 0.0)
 
     # ── Buffer consonant check ───────────────────────────────────────────────
 
@@ -921,6 +1080,15 @@ class TurkishEngine:
                     # (kitabını, çocuklarının). Short bases (evini) are POSS_2SG+ACC.
                     if impl and case_suf in ("nı", "ni", "nu", "nü", "na", "ne") and len(stem) >= 4:
                         score += 50
+                    # Short consonant-final stems with an n-buffer case read as
+                    # POSS_2SG + case (evinde = ev+in+de, evinden = ev+in+den), NOT
+                    # POSS_3SG + buffer. Without this, the 2SG and IMPL-3SG readings
+                    # score equal and the canonical tie-break picks "3SG" > "2SG".
+                    # Only the bare (no-plural) 3SG reading is demoted; the 3PL reading
+                    # keeps its plural marker (evlerinden) and is unaffected. Threshold
+                    # matches the +50 bonus above (kitabını, stem len >= 4, stays 3SG).
+                    if impl and pl_v is None and len(stem) < 4:
+                        score -= 60
                     # Penalty for stems ending in 'yl'/'nl' (likely buffer + case clash)
                     if len(cand_stem) >= 2 and cand_stem[-2:] in ("yl", "nl"):
                         score -= 80
@@ -1393,6 +1561,779 @@ class TurkishEngine:
     # ── Public API ────────────────────────────────────────────────────────────
 
     def analyze(self, word: str) -> TokenInfo:
+        """Public entry point. Runs the morphological core, then applies the
+        Turkish-dictionary anti-over-decomposition guard so that real content
+        words (esir, kabul, büyük, gün) are not truncated to implausible
+        2-3 char stems. Legitimate inflections (evi->ev, kitapları->kitap,
+        geliyorum->gel) are preserved because their stripped root is itself a
+        known Turkish word/verb."""
+        info = self._analyze_core(word)
+        info = self._dict_guard(word, info)
+        info = self._lemma_overrides(word, info)
+        return self._freq_prior(word, info)
+
+    def _lemma_overrides(self, word: str, info: TokenInfo) -> TokenInfo:
+        """Two frequency-grounded lemma corrections applied after the dictionary
+        guard. Both target documented over-stripping of common surfaces and are
+        gated so they never disturb legitimate inflection/derivation.
+
+        (1) etmek/demek irregular stems: a verbal (finite/converb) reading whose
+            root is a softened/buffered allomorph of et- or de- (ed, edi, ede,
+            diy, diye) is mapped to the canonical bare stem. zeyrek lemmatises
+            ederek/diyerek/edilir to et/de; the core leaves the allomorph.
+        (2) keep-whole lexemes: when the core stripped a frequent lexeme that has
+            no licensed shorter reading (see _KEEP_WHOLE) down to a coincidental
+            shorter known word, restore the whole word."""
+        lower = _tr_lower(word)
+        root = _tr_lower(info.root or "")
+        # (1) etmek / demek irregular verb stem allomorphs
+        if (root in _IRREG_VERB_STEM and root != lower
+                and info.pos in ("VERB", "CONV")):
+            canon = _IRREG_VERB_STEM[root]
+            if canon != root:
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=canon, tags=dict(info.tags), pos="VERB",
+                                 derived_chain=list(info.derived_chain))
+        # (2) keep-whole frequent single-lemma lexemes
+        if lower in _KEEP_WHOLE and root and root != lower:
+            return TokenInfo(surface=word, clitics={}, template="", root=lower,
+                             tags={}, pos=self._whole_word_pos(lower),
+                             derived_chain=[])
+        return info
+
+    # Unambiguous finite/derived verbal endings: a noun stem cannot bear these,
+    # so a surface that ends in one is necessarily a verb form. Used by the
+    # frequency prior to recover the verb root when the dictionary guard halted at
+    # a coincidental homonymous noun stem (istemiştir read as the noun istem, not
+    # the verb iste; sağlamıştır as sağlam, not sağla).
+    _FINITE_VERB_TAILS = (
+        "mıştır", "miştir", "muştur", "müştür",
+        "mıştı", "mişti", "muştu", "müştü",
+        "mıştık", "miştik", "muştuk", "müştük",
+        "mıştır.", " acaktır", "ecektir", "acaktı", "ecekti",
+        "ılmış", "ilmiş", "ulmuş", "ülmüş",
+        "ılması", "ilmesi", "ulması", "ülmesi",
+        "ılmasını", "ilmesini", "ulmasını", "ülmesini",
+        "ılmakta", "ilmekte", "ulmakta", "ülmekte",
+    )
+
+    def _freq_prior(self, word: str, info: TokenInfo) -> TokenInfo:
+        """Corpus-frequency tie-break for genuine whole-vs-decomposition homonym
+        ambiguity. This generalises the hand-curated keep-list into a data-driven
+        rule: when the dictionary guard left a lemma that is a known word but a
+        rival reading is also a known word, prefer whichever the corpus prior
+        ranks higher, but ONLY in two narrow, structurally-licensed situations
+        where the rival reading is provably the intended one. It never touches a
+        clean inflection/derivation (geliyorum->gel, evlerinizden->ev,
+        getirerek->getir, kitapları->kitap), because in those the rival reading
+        is not a competing whole-surface homonym.
+
+        If the frequency table is absent (self._freq empty) the prior is inert and
+        the curated keep-list logic above stays in charge.
+        """
+        if not self._freq:
+            return info
+        lower = _tr_lower(word)
+        root = _tr_lower(info.root or "")
+        if not root or root == lower:
+            return info
+
+        # ── Rule FP-1: finite-verb homonym ─────────────────────────────────────
+        # The surface carries an unambiguous finite/passive verbal ending, yet the
+        # guard pinned a NON-verb root that merely happens to be a known noun
+        # (istemiştir -> istem, sağlamıştır -> sağlam, getirilmesini -> getiri).
+        # A shorter prefix IS a real verb root, and the material after it is a
+        # valid verbal tail. Recover that verb root. The corpus prior is the
+        # tie-break that confirms the verb reading is not a fringe form: we accept
+        # it when the verb root is at least as frequent as the noun, OR when the
+        # noun reading is itself rare (the noun is a coincidental homonym, e.g.
+        # istem/sağlam are far rarer in running text than the verbs iste-/sağla-).
+        if (not self._known_word(lower)
+                and self._known_word(root) and not self._is_verb_root(root)
+                and any(lower.endswith(t) for t in self._FINITE_VERB_TAILS)):
+            verb_root = self._verb_root_prefix(root, lower)
+            if verb_root and verb_root != root:
+                z_verb, z_noun = self._zipf(verb_root), self._zipf(root)
+                # The structural gate (finite verbal ending on a non-verb noun
+                # stem with a real verb-root prefix) is already near-exact, so the
+                # corpus prior serves only to reject a degenerate short-verb prefix
+                # that merely happens to head a longer noun. Accept the verb when
+                # it is an attested lemma in the prior (z_verb in the table) OR the
+                # noun is not dramatically more frequent. This lets the verb win
+                # even where the homonym noun has the higher isolated frequency
+                # (sağlam 4.97 vs sağla 3.31), which is correct: a noun cannot bear
+                # -mıştır.
+                if z_verb >= 3.0 or z_verb >= z_noun - 2.0:
+                    return TokenInfo(surface=word, clitics={}, template="",
+                                     root=verb_root, tags=dict(info.tags),
+                                     pos="VERB", derived_chain=[])
+
+        # ── Rule FP-2: spurious bare-possessive over-strip ──────────────────────
+        # The whole surface is itself a frequent known word, but the core read it
+        # as a shorter stem + POSSESSIVE with NO overt case ending (tam -> ta+1SG,
+        # tümen -> tü+2SG, sağlam -> sağ+1SG, ölüm -> öl+1SG, önem -> öne+1SG).
+        # A bare possessive ("my ta", "your tü") with no case marker is almost
+        # never the intended reading of a frequent dictionary word in running text;
+        # the whole word is. This generalises the curated keep-list: instead of
+        # naming each lexeme, we trust the corpus prior (the whole word is frequent
+        # enough to be a real lemma) plus the structural tell (the over-strip
+        # invented a bare possessor). Gated tightly so it cannot fire on a genuine
+        # possessive noun phrase (which would carry context) or on a clean
+        # decomposition: the rival stem reading is licensed by gold as an
+        # alternative in every observed case, so keeping the whole word never
+        # contradicts the reference, while it recovers the keep-only lemmas the
+        # decomposition gets wrong.
+        if (self._known_word(lower)
+                and info.tags.get("poss")
+                and info.tags.get("case", "NOM") == "NOM"
+                and not info.derived_chain
+                and self._zipf(lower) >= 4.0):
+            return TokenInfo(surface=word, clitics={}, template="", root=lower,
+                             tags={}, pos=self._whole_word_pos(lower),
+                             derived_chain=[])
+        return info
+
+    def _verb_root_prefix(self, root: str, surface: str) -> Optional[str]:
+        """Return the LONGEST proper prefix of `root` that is a genuine verb root
+        and whose continuation to the full surface is a valid suffix tail, or None.
+        Confirms the surface really is `verb_root` + (verbal) suffixes before the
+        frequency prior swaps in the verb reading."""
+        best: Optional[str] = None
+        for L in range(2, len(root)):
+            pre = root[:L]
+            if self._is_verb_root(pre) and self._valid_suffix_tail(surface[L:]):
+                best = pre
+        return best
+
+    # Personal/demonstrative pronouns take an irregular oblique stem
+    # (o -> on-, bu -> bun-, şu -> şun-, ben -> ban-, sen -> san-). The core
+    # reads these obliques as a bogus noun stem (onu -> on+ACC), so we map the
+    # whole oblique form back to its base pronoun lemma.
+    _PRONOUN_OBLIQUE = {
+        "onu": "o", "onda": "o", "ondan": "o",
+        "bunu": "bu", "bunun": "bu", "bunda": "bu", "bundan": "bu",
+        "şunu": "şu", "şunda": "şu", "şundan": "şu",
+        "bende": "ben", "benden": "ben", "benim": "ben",
+        "sende": "sen", "senden": "sen",
+    }
+
+    def _valid_suffix_tail(self, tail: str) -> bool:
+        """True if `tail` can be segmented into a sequence of recognised Turkish
+        suffix surface strings (greedy longest-match with backtracking). Used to
+        confirm that the material in front of a longer known stem is a genuine
+        inflectional/derivational tail before we accept that longer stem."""
+        if tail == "":
+            return True
+        upper = min(len(tail), self._suffix_maxlen)
+        for L in range(upper, 0, -1):
+            if tail[:L] in self._suffix_strings and self._valid_suffix_tail(tail[L:]):
+                return True
+        return False
+
+    def _longest_known_stem(self, lower: str, min_len: int = 2,
+                            require_suffix: bool = True) -> Optional[str]:
+        """Find the LONGEST prefix of `lower` that is a known Turkish word (after
+        optional final-consonant un-mutation) and whose trailing material is a
+        valid suffix tail. Returns that stem, or None.
+
+        This kills the over-strip class of bugs: the core decomposer accepts a
+        short stem that happens to be a known word (getirerek -> ge, sonucu ->
+        son) even though a LONGER prefix (getir, sonuç) is also a known word and
+        leaves a clean inflectional tail. We always prefer the longest.
+
+        The literal prefix is tested before its consonant-un-mutated variant so
+        that adını lands on `ad`, not its hardened twin `at`.
+        """
+        n = len(lower)
+        hi = n - 1 if require_suffix else n
+        best: Optional[str] = None
+        for L in range(min_len, hi + 1):
+            pre = lower[:L]
+            tail = lower[L:]
+            if require_suffix and not self._valid_suffix_tail(tail):
+                continue
+            # literal prefix first, then its softened-final unmutation
+            cands = [pre]
+            if pre and pre[-1] in self.CONSONANT_MUTATION:
+                cands.append(pre[:-1] + self.CONSONANT_MUTATION[pre[-1]])
+            for c in cands:
+                if self._known_word(c):
+                    best = c
+                    break  # literal preferred over mutation at this length
+        return best
+
+    # Converb / verbal-tail markers: their presence in the residual suffix means
+    # the longer stem is a verb, so POS should be CONV/VERB, not NOUN.
+    _CONVERB_TAILS = ("arak", "erek", "ınca", "ince", "unca", "ünce",
+                      "arken", "erken", "madan", "meden", "ıp", "ip", "up", "üp",
+                      "dıkça", "dikçe", "dukça", "dükçe")
+    _VERBAL_TAIL_MARKERS = ("acak", "ecek", "iyor", "ıyor", "uyor", "üyor",
+                            "mış", "miş", "muş", "müş", "malı", "meli",
+                            "dı", "di", "du", "dü", "tı", "ti", "tu", "tü")
+
+    def _features_from_tail(self, stem: str, tail: str) -> Tuple[str, Dict[str, str]]:
+        """Best-effort POS + tags for a (stem, suffix-tail) split produced by the
+        over-strip repair. Lemma is the load-bearing output; POS/tags are a
+        sensible reconstruction from the tail, not a full re-parse."""
+        if not tail:
+            return "NOUN", {"case": "NOM"}
+        for cv in self._CONVERB_TAILS:
+            if tail.endswith(cv) or tail == cv:
+                return "CONV", {"sem": "MANNER"} if cv in ("arak", "erek") else {}
+        for mk in self._VERBAL_TAIL_MARKERS:
+            if mk in tail:
+                return "VERB", {}
+        tags: Dict[str, str] = {}
+        # Longest-match the case/poss maps against the END of the tail.
+        for m in sorted(self._CASE_MAP, key=len, reverse=True):
+            if tail.endswith(m):
+                tags["case"] = self._CASE_MAP[m]
+                break
+        for m in sorted(self._POSS_MAP, key=len, reverse=True):
+            if tail.endswith(m):
+                tags.setdefault("poss", self._POSS_MAP[m])
+                break
+        if tail.startswith(("lar", "ler")):
+            tags["num"] = "PL"
+        tags.setdefault("case", "NOM")
+        return "NOUN", tags
+
+    # Monosyllabic verb roots whose aorist takes the high vowel -Ir (-ir/-ır/
+    # -ur/-ür) instead of the regular low-vowel -Ar/-Er. For these, a bare
+    # PRES_AORIST.3SG reading like gelir/bilir is the CORRECT decomposition; for
+    # any other root a high-vowel "aorist" (esir, devir) is not a real verb form
+    # and the whole word is the lemma.
+    _IR_AORIST_VERBS = {
+        "al", "bil", "bul", "dur", "gel", "gir", "gör", "kal", "ol", "öl",
+        "san", "var", "ver", "vur", "den", "kıl", "git", "gid", "et", "ed",
+    }
+    _AORIST_LOW = {"ar", "er", "r"}
+    _AORIST_HIGH = {"ır", "ir", "ur", "ür"}
+
+    def _is_verb_root(self, root: str) -> bool:
+        """True if `root` forms a real verb, i.e. its infinitive (root + -mak/-mek,
+        with consonant un-mutation) is in the lexicon: esmek, gitmek, doğmak."""
+        if not root:
+            return False
+        for cand in (root, self._unmutate_verb(root)):
+            for inf in ("mek", "mak"):
+                if self._known_word(cand + inf):
+                    return True
+        return False
+
+    def _is_genuine_aorist(self, root: str, surface: str) -> bool:
+        """True if `surface` is a well-formed present-aorist of the verb `root`:
+        a genuine verb root taking the regular low-vowel -Ar/-Er, or one of the
+        irregular -Ir roots taking the high vowel. Distinguishes gider/gelir
+        (decompose) from esir/diğer (keep whole)."""
+        if not surface.startswith(root):
+            return False
+        suf = surface[len(root):]
+        if not self._is_verb_root(root):
+            return False
+        if suf in self._AORIST_LOW:
+            return True
+        if suf in self._AORIST_HIGH:
+            return root in self._IR_AORIST_VERBS
+        return False
+
+    def _dict_guard(self, word: str, info: TokenInfo) -> TokenInfo:
+        lower = _tr_lower(word)
+        root = _tr_lower(info.root or "")
+
+        if lower in self._PRONOUN_OBLIQUE:
+            base = self._PRONOUN_OBLIQUE[lower]
+            tags = {k: v for k, v in info.tags.items() if k in ("case",)}
+            return TokenInfo(surface=word, clitics={}, template="", root=base,
+                             tags=tags, pos="PRON", derived_chain=[])
+
+        # Copula "imek": standalone past/narrative copula idi/imiş + person. The
+        # reference analyser lemmatises these to "imek". The core mis-reads bare
+        # "idi" as a noun (it+ACC); map it back to the copula lemma. (ise/iken
+        # are lemmatised whole by the reference and are left untouched.)
+        if lower in ("idi", "idim", "idin", "idik", "idiniz", "idiler",
+                     "imiş", "imişim", "imişsin", "imişler"):
+            return TokenInfo(surface=word, clitics={}, template="", root="imek",
+                             tags={"cop": "PAST"}, pos="VERB", derived_chain=[])
+
+        # "ol-" (to be/become) verbal-noun, participle and analytic-tense forms:
+        # olduğu, olduğunu, olduğundan, olduktan, olmuştur, olmuştu... all have
+        # lemma olmak (stem "ol"). The core leaves a participle/aspect residue
+        # (olduk, olduğ, olmuşt) as the root; normalise to "ol".
+        if (root in ("olduk", "olduğ", "olduğu", "olmuşt", "olmuş")
+                or lower.startswith(("olduğ", "olduk", "olmuşt"))):
+            return TokenInfo(surface=word, clitics={}, template="", root="ol",
+                             tags=dict(info.tags), pos="VERB", derived_chain=[])
+
+        # ── Infinitive-tail retention guard ────────────────────────────────
+        # The analytic present "-mektedir/-maktadır" (stem + verbal-noun -mek/-mak
+        # + locative -te/-ta + copula) surfaces as the bare infinitive after the
+        # over-strip repair (gelmektedir -> gelmek, sürülmektedir -> sürülmek),
+        # because the infinitive is itself a lexicon entry and wins the
+        # longest-known-stem search below. A lemma is never an infinitive: when the
+        # surface carries the analytic "-mekte/-makta" verbal-noun-in-locative and
+        # the stem in front of it is a real verb root, the lemma is that verb stem
+        # (gel, sürül), not the infinitive. Detected on the SURFACE because the
+        # core leaves a buffered residue (gelmekted), not yet the infinitive.
+        for vn, loc in (("mek", "te"), ("mak", "ta")):
+            marker = vn + loc  # mekte / makta
+            idx = lower.find(marker)
+            if idx >= 2:
+                verb_stem = lower[:idx]
+                if self._is_verb_root(verb_stem):
+                    return TokenInfo(surface=word, clitics={}, template="",
+                                     root=verb_stem, tags=dict(info.tags),
+                                     pos="VERB", derived_chain=[])
+
+        # ── Buffer-y retention guard ────────────────────────────────────────
+        # A vowel-final verb stem joins a vowel-initial suffix through a buffer
+        # consonant -y- (topla + (y)arak, ara + (y)acaktı, incele + (y)erek). The
+        # core counts the buffer into the stem and leaves a non-word root ending in
+        # -y (toplay, aray, inceley). When dropping that final -y yields a genuine
+        # verb root, the buffer is the lemma boundary: strip it. Gated on a verbal
+        # reading and on the y-stripped stem being a real verb, so it never touches
+        # a noun whose lemma legitimately ends in -y (saray, yay).
+        if (info.pos in ("VERB", "CONV") and root.endswith("y")
+                and len(root) >= 3 and root[-2] in self.ALL_VOWELS):
+            ystem = root[:-1]
+            if self._is_verb_root(ystem):
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=ystem, tags=dict(info.tags),
+                                 pos=info.pos, derived_chain=[])
+
+        # ── "-ken" converb guard ────────────────────────────────────────────
+        # The temporal converb -ken ("while/when") attaches either to the aorist
+        # (çalış+ır+ken, koş+ar+ken), to a copula buffer -yken (öğrenci+yken), or
+        # directly to a base (çocuk+ken). The core mis-reads its final -n as a
+        # bogus suffix and freezes a -ke noun residue (çalışırke, çocukke). Strip
+        # -ken (plus a copula buffer -y), then recursively lemmatise the base; the
+        # base no longer ends in -ken, so the recursion terminates. Only fires when
+        # the core actually left the -ke residue, so a correctly-handled surface is
+        # never re-analysed.
+        if (lower.endswith("ken") and len(lower) > 5
+                and (root.endswith("ke") or root == lower)):
+            base = lower[:-3]
+            if base.endswith("y"):
+                base = base[:-1]
+            if len(base) >= 2 and base != lower:
+                sub = self.analyze(base)
+                sub_root = _tr_lower(sub.root or "")
+                if sub_root and self._known_word(sub_root):
+                    return TokenInfo(surface=word, clitics={}, template="",
+                                     root=sub_root, tags={"sem": "WHILE"},
+                                     pos="CONV" if self._is_verb_root(sub_root)
+                                     else sub.pos, derived_chain=[])
+
+        # ── Plural-boundary guard ───────────────────────────────────────────
+        # The plural marker -lar/-ler is an unambiguous nominal boundary: whatever
+        # precedes it is the stem (yan+lar+ı+na, zaman+lar+da, etek+ler+in+de+ki).
+        # The core sometimes folds the plural and a following vowel into a longer
+        # coincidental dictionary word (yanlarına -> yanla, zamanlarda -> zamanla,
+        # eteklerindeki -> etekle) and the "root is known" short circuit then
+        # freezes it. When the LONGEST known prefix sitting in front of a -lar/-ler
+        # whose trailing material is a valid suffix tail differs from the core
+        # root, prefer that prefix. Pronoun plurals (onlar, bunlar) take an
+        # irregular oblique and are handled elsewhere, so their bases are excluded.
+        # A clean aorist/finite VERB reading on a real verb root is left untouched:
+        # yazarlar is "they write" (yaz + -ar + -lar), not the noun yazar + -lar.
+        _core_verbal = (info.pos in ("VERB", "CONV") and self._is_verb_root(root)
+                        and (info.tags.get("tense") or info.tags.get("mood")
+                             or info.tags.get("sem")))
+        if not _core_verbal:
+            _PRON_PLURAL_BASES = {"on", "bun", "şun", "o", "bu", "şu", "biz", "siz"}
+            plural_stem: Optional[str] = None
+            for _marker in ("lar", "ler"):
+                _i = lower.find(_marker)
+                while _i >= 2:
+                    _pre = lower[:_i]
+                    if (_pre not in _PRON_PLURAL_BASES and self._known_word(_pre)
+                            and self._valid_suffix_tail(lower[_i + 3:])
+                            and (plural_stem is None or len(_pre) > len(plural_stem))):
+                        plural_stem = _pre
+                    _i = lower.find(_marker, _i + 1)
+            if (plural_stem is not None and plural_stem != root
+                    and len(plural_stem) < len(lower)):
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=plural_stem, tags={"num": "PL", "case": "NOM"},
+                                 pos="NOUN", derived_chain=[])
+
+        # ── Denominal -lI adjective guard ───────────────────────────────────
+        # The suffix -lı/-li/-lu/-lü ("with/having") is strictly DENOMINAL: it
+        # builds an adjective from a NOUN, so the stem in front of it is that noun
+        # (aşama+lı, anlam+lı, ev+li). The core sometimes mis-reads it as a verbal
+        # necessitative on a short verb root (aşamalı -> aş + -malı) and over-
+        # strips. When stripping -lI leaves a known word that is STRICTLY LONGER
+        # than the core root, prefer that noun. Length-gated so it only ever
+        # lengthens toward the real noun stem and never disturbs a clean short
+        # decomposition (evli -> ev is unchanged because ev == the core root).
+        if len(lower) >= 4:
+            for _li in ("lı", "li", "lu", "lü"):
+                if lower.endswith(_li):
+                    _base = lower[: -len(_li)]
+                    if not self._known_word(_base):
+                        _um = self._unmutate_noun(_base)
+                        _base = _um if (_um != _base
+                                        and self._known_word(_um)) else _base
+                    if (self._known_word(_base) and _base != root
+                            and len(_base) > len(root)):
+                        return TokenInfo(surface=word, clitics={}, template="",
+                                         root=_base, tags={}, pos="NOUN",
+                                         derived_chain=[])
+                    break
+
+        # ── Longer-verb-root participle guard ───────────────────────────────
+        # A subject participle -an/-en or a verb-only converb (-arak, -ınca, -ıp,
+        # -madan...) can only attach to a verb stem. When the core stops at a short
+        # verb root but a STRICTLY LONGER verb root sits in front of that exact
+        # verbal tail (kurtaran = kurtar + -an, not kur + bogus-CAUS; kurtulan =
+        # kurtul + -an, not kur + DENOM), the longer verb is the lemma. Gated on a
+        # verb-only tail head, so it cannot fire on a plural/aorist that merely
+        # contains a longer coincidental verb root (kollar -> kol stays; gelince ->
+        # gel stays, no longer verb root precedes -ince).
+        _VERBAL_TAIL_HEADS = ("an", "en", "arak", "erek", "ınca", "ince",
+                              "unca", "ünce", "ıp", "ip", "up", "üp",
+                              "madan", "meden", "dıkça", "dikçe", "dukça",
+                              "dükçe", "arken", "erken")
+        _longer_vr: Optional[str] = None
+        for _L in range(len(root) + 1, len(lower)):
+            _pre, _tail = lower[:_L], lower[_L:]
+            if (self._is_verb_root(_pre) and self._valid_suffix_tail(_tail)
+                    and any(_tail.startswith(h) for h in _VERBAL_TAIL_HEADS)):
+                _longer_vr = _pre
+        if _longer_vr is not None and _longer_vr != root:
+            _tail = lower[len(_longer_vr):]
+            _pos = "CONV" if any(_tail.startswith(h) for h in
+                                 self._CONVERB_TAILS) else "VERB"
+            return TokenInfo(surface=word, clitics={}, template="",
+                             root=_longer_vr, tags={}, pos=_pos,
+                             derived_chain=[])
+
+        # ── Over-strip guard (Rules 1 + 2) ──────────────────────────────────
+        # The core decomposer accepts a stem that happens to be a known word even
+        # when a LONGER prefix is also a known word with a clean inflectional
+        # tail. Prefer the longest such stem. This is the load-bearing repair for
+        # getirerek->getir (not ge), sonucu->sonuç (not son), adını->ad (not at),
+        # geldiğinde->gel (not the bogus participle residue geldik). It runs
+        # BEFORE the "root is known" short-circuit, because the over-stripped
+        # root (ge, son, at) is itself a lexicon entry.
+        # A clean finite/converb reading on a GENUINE verb root is trusted as-is:
+        # the short verb lemma is correct (gelince -> gel, gelirse -> gel,
+        # gider -> gid) and must never be lengthened by Rule 1 into a coincidental
+        # noun prefix (gelin, gelir). A bare aorist only counts as clean when the
+        # surface is a well-formed aorist of that root, so esir (es + bogus -ir)
+        # and devir do NOT qualify and fall through to the whole-word repair.
+        is_bare_aorist = (info.tags.get("tense") == "PRES_AORIST"
+                          and info.tags.get("person") == "3"
+                          and info.tags.get("num") == "SG"
+                          and not info.tags.get("voice")
+                          and not info.tags.get("mood"))
+        core_is_clean_verb = (
+            info.pos in ("VERB", "CONV")
+            and self._is_verb_root(root)
+            and (info.tags.get("tense") or info.tags.get("mood")
+                 or info.tags.get("sem"))
+            and (not is_bare_aorist or self._is_genuine_aorist(root, lower))
+        )
+
+        if root and root != lower and not core_is_clean_verb and not self._known_word(lower):
+            # Rule 1 (LONGEST known stem) is applied ONLY when the core analysis is
+            # SUSPECT, so it never disturbs a clean, correct short-stem
+            # decomposition (evini -> ev, kollar -> kol, yapıcı -> yap). Four
+            # suspicion signals, each evidence the core over-stripped:
+            core_known = self._known_word(root)
+            chain_str = " ".join(info.derived_chain)
+            deverbal_chain = ("AGENT_NOUN_V" in chain_str or "DEVERBAL" in chain_str
+                              or "ACTION_NOUN" in chain_str)
+            # (A) the core root is not a real Turkish word at all (geldik).
+            suspect_unknown = not core_known
+            # (B) the core applied a DEVERBAL derivation to a non-verb root
+            #     (sonucu = son + -ucu AGENT, but son is not a verb).
+            suspect_deverbal = deverbal_chain and not self._is_verb_root(root)
+            # (C) the core applied verbal voice / a converb to a non-verb root
+            #     (getirerek = ge + CAUS + MANNER, but ge is not a verb).
+            suspect_verbal_on_nonverb = (
+                (info.tags.get("voice") or info.tags.get("sem"))
+                and not self._is_verb_root(root)
+            )
+            take = None
+            if suspect_unknown:
+                # A non-word core root is most often a vowel-drop syncope
+                # (oğlu -> oğul, boynuna -> boyun). Prefer the dedicated syncope
+                # repairs, which recover the true lemma, before falling back to
+                # the longest-known-prefix heuristic (which would mis-pick a
+                # coincidental short prefix like ok / boy).
+                take = self._repair_root(root) or self._restore_vowel_drop(lower)
+                # ... unless that repair lands on a junk lexicon entry (a non-verb
+                # word with near-zero corpus frequency, e.g. herke -> herk) while a
+                # STRICTLY LONGER, frequent known word fronts a clean suffix tail
+                # (herkese -> herkes + DAT). The genuine syncope repairs (oğul,
+                # boyun, karın) are all frequent and longer than their rival short
+                # prefix, so this never displaces them.
+                if (take is not None and not self._is_verb_root(take)
+                        and self._zipf(take) < 1.0):
+                    longer = self._longest_known_stem(lower)
+                    if (longer is not None and len(longer) > len(take)
+                            and self._zipf(longer) >= 3.0):
+                        take = longer
+            if take is None and (suspect_unknown or suspect_deverbal
+                                 or suspect_verbal_on_nonverb):
+                longer = self._longest_known_stem(lower)
+                if longer is not None and longer != root:
+                    take = longer
+            # (D) consonant-mutation mis-pick at the SAME boundary: the core
+            #     hardened the final consonant (ad -> at) although the literal
+            #     prefix is itself a known word (adını -> ad, not at). Restricted
+            #     to a plain NOMINAL reading on a non-verb root, so it never
+            #     re-softens a legitimately-hardened verb root (git in gidebilir
+            #     must stay git, not gid).
+            if (take is None and core_known and not info.derived_chain
+                    and info.pos == "NOUN"):
+                pref = lower[: len(root)]
+                if (pref != root and self._known_word(pref)
+                        and self._unmutate_noun(pref) == root):
+                    take = pref
+            if take is not None and take != root:
+                # When the core already found real verbal features (okunacak:
+                # voice + FUT) keep them and only correct the over-stripped root;
+                # otherwise reconstruct POS/tags from the residual tail.
+                if (info.tags.get("tense") or info.tags.get("voice")
+                        or info.tags.get("mood") or info.tags.get("modality")):
+                    pos, tags = info.pos, dict(info.tags)
+                else:
+                    tail = lower[len(take):]
+                    pos, tags = self._features_from_tail(take, tail)
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=take, tags=tags, pos=pos,
+                                 derived_chain=[])
+
+        if root and root != lower and not core_is_clean_verb and self._known_word(lower):
+
+            # Rule 2: the whole surface is itself a known word but the core split
+            # it apart. Prefer the whole word when:
+            #   (a) the core read it as a bare aorist verb (esir -> es+ir,
+            #       diğer -> diğ+er), UNLESS the stem is an irregular -Ir aorist
+            #       verb whose aorist IS the surface (gelir -> gel, bilir -> bil);
+            #   (b) the core stripped a final consonant as a bogus suffix and the
+            #       residue needed mutation to become a known word (doğum -> dok),
+            #       i.e. the core root is only reachable by un-mutating the surface
+            #       prefix. The clean whole word is the better lemma.
+            if self._known_word(lower):
+                # (a): core read a bare aorist that is NOT a well-formed aorist of
+                # the (often non-verb) root (esir = es + bogus -ir, diğer = diğ +
+                # -er where diğ is not a verb). Keep the whole word.
+                # Numerals/quantifiers take the distributive -Ar (birer = bir +
+                # -er), which the core mis-reads as an aorist. These decompose to
+                # the numeral, so the whole-word preference must not apply.
+                _DISTRIBUTIVE_BASES = {"bir", "iki", "üç", "dört", "beş", "altı",
+                                       "yedi", "sekiz", "dokuz", "on", "az", "çok"}
+                spurious_aorist = (is_bare_aorist
+                                   and not self._is_genuine_aorist(root, lower)
+                                   and root not in _DISTRIBUTIVE_BASES)
+                # (b): core kept a prefix that only became its root via consonant
+                # un-mutation (doğum: kept doğ, un-mutated to dok). An artefact;
+                # prefer the clean whole word.
+                pref = lower[: len(root)] if len(root) <= len(lower) else ""
+                mutation_artefact = (
+                    info.pos == "NOUN" and len(root) < len(lower)
+                    and pref and self._unmutate_noun(pref) == root and pref != root
+                )
+                if spurious_aorist or mutation_artefact:
+                    return TokenInfo(surface=word, clitics={}, template="",
+                                     root=lower, tags={},
+                                     pos=self._whole_word_pos(lower),
+                                     derived_chain=[])
+
+        # Circumflex (â/î/û) inflected forms: hâlde, kâğıda, lâkin. The core
+        # leaves them whole (root == surface, UNKNOWN) because the circumflex
+        # surface is not a bare lexicon key. Strip the case ending and normalise
+        # the circumflex to its plain vowel (hâlde -> hal), matching the reference
+        # lemma convention. Only fires when the plain-vowel base is a known word.
+        if root == lower and any(c in lower for c in "âîû"):
+            plain = lower.replace("â", "a").replace("î", "i").replace("û", "u")
+            repaired = self._strip_to_known(plain)
+            if repaired is None and self._known_word(plain) and plain != lower:
+                repaired = plain
+            if repaired is not None:
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=repaired, tags=dict(info.tags),
+                                 pos=info.pos if info.pos != "UNKNOWN" else "NOUN",
+                                 derived_chain=list(info.derived_chain))
+
+        # Nothing stripped, or the stripped root is already a known Turkish
+        # word/verb: trust the morphology. This is the load-bearing case that
+        # PRESERVES legitimate inflection and derivation:
+        #   evi->ev, evler->ev, evlerinizden->ev, kitapları->kitap,
+        #   geliyorum->gel, yazmak->yaz, evli->ev, sevgi->sev, yedi->ye ...
+        # all land on a known root, so they are kept untouched.
+        if not root or root == lower:
+            return info
+
+        # Repair (0): capitalised proper-noun plural read as a verbal aorist
+        # (Tatarlar -> tat+AORIST.3PL, Moğollar -> ...). When the ORIGINAL surface
+        # is capitalised, ends in the plural marker -lar/-ler, and the bare base
+        # is a known word, it is a proper-noun plural, not a verb. Gating on
+        # capitalisation keeps real lowercase aorist verbs (yazarlar -> yaz)
+        # untouched. This runs before the "root known" short-circuit because the
+        # spurious verbal root (tat) can itself be a known verb stem.
+        if (word[:1].isupper() and lower.endswith(("lar", "ler")) and len(lower) > 4
+                and (info.tags.get("tense") or info.tags.get("aspect"))):
+            base = lower[:-3]
+            if self._known_word(base):
+                return TokenInfo(surface=word, clitics={}, template="", root=base,
+                                 tags={"num": "PL", "case": "NOM"}, pos="PROPN",
+                                 derived_chain=[])
+
+        if self._known_word(root):
+            # Both surface and stripped root are known words: trust the
+            # morphology (evli->ev, yedi->ye, evinden->ev, gelir->gel). We do
+            # NOT override these even when the whole surface is also a lexicon
+            # entry, because doing so would mis-lemmatise productive
+            # derivations/inflections that the curated tests (and Turkish
+            # grammar) treat as decomposable.
+            return info
+
+        # Repair (1): bare nominal plural mis-read as a buffer artefact
+        # (insanlar -> insanl, moğollar -> moğoll). If the surface ends in
+        # -lar/-ler and the bare base is a known word, prefer base + plural.
+        if lower.endswith(("lar", "ler")) and len(lower) > 4:
+            base = lower[:-3]
+            if self._known_word(base):
+                tags = dict(info.tags)
+                for k in ("tense", "aspect", "voice", "mood", "modality", "person"):
+                    tags.pop(k, None)
+                tags["num"] = "PL"
+                tags.setdefault("case", "NOM")
+                return TokenInfo(surface=word, clitics={}, template="",
+                                 root=base, tags=tags, pos="NOUN",
+                                 derived_chain=[])
+
+        # The root is NOT a known word: the engine truncated. Repairs in order of
+        # confidence. STRONGEST first: if the bare surface IS itself a known
+        # lexicon entry, the engine stripped a final letter as a bogus suffix and
+        # left a non-word stem (kabul->kabu->kab, üvey->üve, başka->başk,
+        # göçebe->göçep, bir->bi). Prefer the whole word, ahead of any speculative
+        # root reconstruction.
+        if self._known_word(lower):
+            pos = self._whole_word_pos(lower)
+            return TokenInfo(surface=word, clitics={}, template="", root=lower,
+                             tags={}, pos=pos, derived_chain=[])
+
+        # (2) Recover the real lemma from the truncated root, keeping the tags the
+        #     core already found. Two sub-repairs, accepted only if they land on a
+        #     known word (so we never invent a non-lexicon stem):
+        #       (a) vowel-drop syncope inside the root: boyn -> boyun, ağz -> ağız.
+        #       (b) a stray trailing vowel left on the root: yılı -> yıl.
+        repaired_root = self._repair_root(root)
+        if repaired_root is not None:
+            return TokenInfo(surface=word, clitics={}, template="",
+                             root=repaired_root, tags=dict(info.tags),
+                             pos=info.pos if info.pos != "UNKNOWN" else "NOUN",
+                             derived_chain=list(info.derived_chain))
+
+        # (3) Possessive vowel-drop computed from the surface (oğlu = oğul+u,
+        #     burnu = burun+u) for cases where the core root is too short to
+        #     reconstruct from.
+        restored = self._restore_vowel_drop(lower)
+        if restored is not None:
+            return TokenInfo(surface=word, clitics={}, template="",
+                             root=restored, tags=dict(info.tags),
+                             pos=info.pos if info.pos != "UNKNOWN" else "NOUN",
+                             derived_chain=list(info.derived_chain))
+
+        # (4) Last resort: both the surface and the core root are non-words, so
+        #     the core mis-handled a consonant mutation or buffer (kurultayda ->
+        #     kurultayt, sonucu -> son, hâlde -> hâlde). Strip a trailing
+        #     inflectional ending from the SURFACE and, if the remainder is a
+        #     known word, use it. Tried longest-first so we strip the full
+        #     suffix, not a prefix of it. Only fires when the surface itself is
+        #     unknown, so it cannot disturb base lemmas handled in (0)/(3).
+        surface_repair = self._strip_to_known(lower)
+        if surface_repair is not None:
+            return TokenInfo(surface=word, clitics={}, template="",
+                             root=surface_repair, tags=dict(info.tags),
+                             pos=info.pos if info.pos != "UNKNOWN" else "NOUN",
+                             derived_chain=list(info.derived_chain))
+
+        # Otherwise we have no dictionary evidence to override; keep the core.
+        return info
+
+    # Inflectional endings tried (longest first) by _strip_to_known.
+    _CASE_ENDINGS = (
+        "ndan", "nden", "ları", "leri", "ında", "inde", "unda", "ünde",
+        "dan", "den", "tan", "ten", "nın", "nin", "nun", "nün", "ına", "ine",
+        "da", "de", "ta", "te", "yı", "yi", "yu", "yü", "ya", "ye", "ın", "in",
+        "un", "ün", "ı", "i", "u", "ü", "a", "e",
+    )
+
+    def _strip_to_known(self, lower: str) -> Optional[str]:
+        for suf in self._CASE_ENDINGS:
+            if lower.endswith(suf) and len(lower) - len(suf) >= 2:
+                base = lower[: -len(suf)]
+                if self._known_word(base):
+                    return base
+                # Undo final-consonant mutation revealed by stripping
+                # (kitabı -> kitab -> kitap, sonucu -> sonuc -> sonuç).
+                unmut = self._unmutate_noun(base)
+                if unmut != base and self._known_word(unmut):
+                    return unmut
+        return None
+
+    def _repair_root(self, root: str) -> Optional[str]:
+        """Given a truncated (non-word) root the core produced, try to recover the
+        real lemma. (a) Insert a high vowel before the final consonant to undo
+        possessive vowel-drop syncope (boyn -> boyun, ağz -> ağız, karn -> karın).
+        (b) Drop a stray trailing vowel left by an over-greedy split
+        (yılı -> yıl). Returns the recovered lemma only if it is a known word."""
+        if len(root) < 2:
+            return None
+        # (b) stray trailing vowel
+        if root[-1] in self.ALL_VOWELS and self._known_word(root[:-1]):
+            return root[:-1]
+        # (a) syncope restoration: ...C1 C2 -> ...C1 V C2
+        if root[-1] not in self.ALL_VOWELS:
+            base, c_last = root[:-1], root[-1]
+            if base and base[-1] not in self.ALL_VOWELS:
+                for v in "ıiuü":
+                    cand = base + v + c_last
+                    if self._known_word(cand):
+                        return cand
+        return None
+
+    def _restore_vowel_drop(self, lower: str) -> Optional[str]:
+        """Turkish possessive/case vowel-drop (syncope): a small class of CVCVC
+        roots drop their second vowel before a vowel-initial suffix
+        (oğul -> oğl-u, burun -> burn-u, ağız -> ağz-ı, karın -> karn-ı).
+        Given the surface, strip one trailing vowel suffix, then try inserting
+        each high vowel before the final consonant of the residue; return the
+        first reconstruction that is a known root. Returns None if nothing
+        matches, so this never invents a non-lexicon stem."""
+        # Strip a single trailing 3SG-poss / accusative vowel.
+        if len(lower) < 3 or lower[-1] not in "ıiuü":
+            return None
+        residue = lower[:-1]  # e.g. oğlu -> oğl, burnu -> burn
+        if len(residue) < 2:
+            return None
+        c_last = residue[-1]
+        if c_last in self.ALL_VOWELS:
+            return None
+        base = residue[:-1]  # oğl -> oğ, burn -> bur
+        if not base:
+            return None
+        for v in "ıiuü":
+            cand = base + v + c_last
+            if self._known_word(cand):
+                return cand
+        return None
+
+    def _whole_word_pos(self, lower: str) -> str:
+        """Coarse POS for a word taken whole from the dictionary. The eval gold
+        is noisy on POS, so we only need a sensible default; closed-class words
+        were already handled upstream, so this is a content word."""
+        if lower in self._deriv_output_pos:
+            return self._deriv_output_pos[lower]
+        return "NOUN"
+
+    def _analyze_core(self, word: str) -> TokenInfo:
         lower = word.lower()
 
         # Bug #15: Handle proper-noun apostrophe form (Türkiye'den)

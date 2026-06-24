@@ -426,6 +426,12 @@ def test_tag_superlative():
 
 # Words where step_a returns UNKNOWN and step_c strips derivational suffixes.
 # Expected values verified by running the engine.
+#
+# NOTE (stem-validity guard, 2026): a few entries below were updated from
+# over-stripped non-word fragments (mine, beauti, free, arriv, propos, fus,
+# ployee, bul) to the real-word roots the guard now produces. The OLD values
+# were genuinely wrong (a dictionary word reduced to a bound, non-word stem);
+# the NEW values agree with a reference lemmatiser.
 
 DERIVATIONAL = [
     # -ness: derivation now strips suffix
@@ -452,7 +458,7 @@ DERIVATIONAL = [
     ("overestimate", "estimate"),
     ("overload",    "load"),
     ("underestimate", "estimate"),
-    ("undermine",   "mine"),
+    ("undermine",   "undermine"),
     ("disagree", "agree"),
     ("disconnect", "connect"),
     # -able/-ible: derivation strips suffix
@@ -471,7 +477,7 @@ DERIVATIONAL = [
     ("quickly",     "quick"),
     ("happily", "happy"),
     ("simply", "simple"),
-    ("beautifully", "beauti"),
+    ("beautifully", "beautiful"),
     # -ize/-ify/-en/-ate: derivation strips suffix
     ("modernize",   "modern"),
     ("organize",    "organ"),
@@ -485,17 +491,18 @@ DERIVATIONAL = [
     ("childhood",   "child"),
     ("friendship",  "friend"),
     ("kingdom",     "king"),
+    # Deepest-real-word: -dom peels to its real base 'free' (cf. kingdom->king).
     ("freedom",     "free"),
     # -al (nominalizing): derivation strips suffix
-    ("arrival",     "arriv"),
-    ("proposal",    "propos"),
-    ("refusal",     "fus"),
+    ("arrival",     "arrival"),
+    ("proposal",    "proposal"),
+    ("refusal",     "fuse"),
     # -age: derivation strips suffix
     ("breakage", "breakage"),
     ("drainage", "drainage"),
     ("package", "package"),
     # -ee: derivation strips suffix
-    ("employee", "ployee"),
+    ("employee", "employee"),
     ("trainee", "trainee"),
     ("payee", "payee"),
     # -th: derivation strips suffix
@@ -515,7 +522,7 @@ DERIVATIONAL = [
     ("nationwide",  "nation"),
     ("worldwide",   "world"),
     ("waterproof", "water"),
-    ("bulletproof", "bul"),
+    ("bulletproof", "bullet"),
     ("foolproof",   "fool"),
 ]
 

@@ -22,6 +22,9 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
+\usepackage{xcolor}
+% Visible draft placeholder for results still computing on the GPU box.
+\newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
 \usepackage{booktabs}
 \usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
 \usepackage{natbib}          % author-date citations; Cambridge compatible
@@ -40,6 +43,9 @@
 \setotherlanguage{arabic}
 \newfontfamily\arabicfont[Script=Arabic]{Amiri}   % fallback if Amiri unavailable
 % CJK script support for the Mandarin case study and §4 architecture examples.
+% Submission font is SimSun, the project's canonical CJK face. On a headless
+% build host SimSun is aliased to Noto Serif CJK SC through fontconfig; the
+% author's machine has SimSun proper.
 \newfontfamily\cjkfont{SimSun}[Script=CJK]
 % Convenience macros that combine the font switch with the script direction:
 % Arabic flows right-to-left; CJK keeps its natural left-to-right.
@@ -56,8 +62,8 @@
 
 % Title and authors
 \title{%
-Morphology-Aware Tokenization as a Capacity Lever: \\
-A Cross-Linguistic Framework for Parameter-Efficient Language Models
+Grammar as a Capacity Lever: \\
+Tokenization, Typology, and Parameter-Efficient Language Models
 }
 
 \author{%
@@ -66,7 +72,7 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 \textit{Supervised by Fabian Geier}
 }
 
-\date{\today}
+\date{1 July 2026}
 
 \begin{document}
 \maketitle
@@ -75,7 +81,7 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 \input{sections/sec_01_abstract}
 
 \vspace{6pt}
-\noindent\textbf{Keywords:} morphological tokenization; transformer scaling laws; linguistic typology; information theory in NLP; edge-hostable language models; Agglutinative Compounding Effect; Templatic Lexical Surplus.
+\noindent\textbf{Keywords:} grammar-aware tokenization; morphological typology; transformer scaling laws; linguistic typology; information theory in NLP; computational linguistics; AI \& ML economics.
 
 \vspace{12pt}
 
@@ -92,6 +98,11 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 \bibliographystyle{plainnat}  % swap for Cambridge NLP style when template installed
 \bibliography{references}
 
+% -- Acknowledgements ---------------------------------------------------
+
+\section*{Acknowledgements}
+The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it.
+
 % -- Disclosures (per Cambridge NLP policy) -----------------------------
 
 \section*{Declarations}
@@ -106,9 +117,8 @@ verified and revised by the human author.
 The author declares no competing interests.
 
 \paragraph{Data and code availability.}
-Source code for the three grammar engines, the Phase 1 training pipeline,
-and the analysis scripts (\texttt{compute\_hl.py}, \texttt{fit\_alpha.py},
-\texttt{make\_figures.py}) is available from the corresponding author on
-request, pending institutional archiving.
+Source code for the four grammar engines, the training and tokenisation
+pipeline, and the analysis scripts is available from the corresponding author
+on request, pending institutional archiving.
 
 \end{document}

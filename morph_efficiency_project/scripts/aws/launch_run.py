@@ -124,6 +124,18 @@ def _build_config(args) -> dict:
     bucket = args.bucket or os.environ.get("MORPH_S3_BUCKET",
                                             "morph-efficiency-default")
     job_name = f"morph-{args.tag}".replace("_", "-")[:63]
+    cost = _cost_estimate(args.instance, args.max_tokens)
+    # Safety: the SageMaker MaxRuntime must cover the actual run. The old 4h
+    # default would kill any real (multi-hour) training job mid-flight. Auto-raise
+    # it to the estimated runtime + 50% margin, capped at SageMaker's 28-day limit.
+    _SM_MAX = 28 * 24 * 3600
+    max_run = args.max_run_seconds
+    auto_raised = False
+    if cost.get("known"):
+        needed = int(cost["estimated_hours"] * 3600 * 1.5)
+        if needed > max_run:
+            max_run = min(needed, _SM_MAX)
+            auto_raised = True
     return {
         "job_name": job_name,
         "tag": args.tag,
@@ -141,9 +153,11 @@ def _build_config(args) -> dict:
         "input_data_s3": f"s3://{bucket}/data/{args.lang}_{args.regime}/",
         "output_s3": f"s3://{bucket}/runs/{args.tag}/",
         "checkpoint_s3": f"s3://{bucket}/checkpoints/{args.tag}/",
-        "max_run_seconds": args.max_run_seconds,
+        "max_run_seconds": max_run,
+        "max_run_seconds_requested": args.max_run_seconds,
+        "max_run_seconds_auto_raised": auto_raised,
         "hyperparameters": _hyperparams(args),
-        "cost_estimate": _cost_estimate(args.instance, args.max_tokens),
+        "cost_estimate": cost,
         "iam_requirements": [
             "sagemaker:CreateTrainingJob",
             "sagemaker:DescribeTrainingJob",
@@ -245,6 +259,12 @@ def main(argv=None) -> int:
               f"${ce['estimated_usd_high']:.2f}")
     else:
         print(f"[cost] unknown pricing for instance {ce['instance']}")
+    mr = cfg["max_run_seconds"]
+    note = " (auto-raised to cover the estimate)" if cfg.get("max_run_seconds_auto_raised") else ""
+    print(f"[runtime] max_run_seconds = {mr} ({mr/3600:.1f}h){note}")
+    if not ce.get("known"):
+        print("[runtime] WARNING: unknown instance runtime — verify max_run_seconds "
+              "exceeds the real training time before --deploy (the 4h default kills long runs).")
     print("[iam] required actions:")
     for a in cfg["iam_requirements"]:
         print(f"        {a}")

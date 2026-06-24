@@ -1,202 +1,109 @@
-\section{Empirical Results: the Agglutinative Compounding Effect}
+\section{Empirical Results}
 \label{sec:results}
 
-\S\ref{sec:framework} issued two independent predictions. The first, equation~\ref{eq:rebate} in its rank form, holds that the parameter rebate granted by morphology-aware tokenization over a BPE baseline is monotonically ordered by $\rho(L) \cdot H(L)$. The second, the same equation in its magnitude form, holds that the proportionality is governed by a single coefficient $\alpha$ that remains constant across languages. This section tests both with a six-model Phase~1 experiment and extends the test along a Chinchilla-ratio three-rung scale ladder (\S\ref{sec:results-ladder}) that probes whether the phenomenon survives at properly trained scales.
+\S\ref{sec:framework} issued two predictions. In its rank form, the framework holds that the parameter rebate from grammar-aware tokenisation over a byte-pair baseline is ordered across languages by $\rho(L) \cdot H(L)$. In its magnitude form, it holds that a single coefficient $\alpha$ turns that product into a quantitative prediction. The main test is a four-language experiment, Mandarin, English, Turkish, and Arabic, parameter-matched in the transformer and trained at the compute-optimal budget. We report it first (\S\ref{sec:results-design}--\S\ref{sec:results-phase2}), then summarise in brief the smaller three-language pilot (\S\ref{sec:results-pilot}) that motivated it.
 
 \subsection{Design}
 \label{sec:results-design}
 
-The Phase~1 mini experiment trained six decoder-only transformer models, one pair (BPE and morphology-aligned) for each of English, Arabic, and Turkish, under identical architecture, data, optimizer, and training budget. The protocol was fixed in an experimental contract frozen before implementation (\texttt{experimental\_contract.md}). Each model used 4 layers, 128-dimensional embeddings, 4 attention heads, a 128-token context, and was trained for $5 \times 10^6$ tokens with AdamW at fixed hyperparameters \citep{loshchilov2019}, yielding parameter counts in the $2 \times 10^6$ range. Within-language parity is strict: the variants differ only in how text becomes token identifiers and, in the morph variant, in an additional feature-bundle embedding summed at the input layer. The configuration sits well below the reasoning-emergence regime and is approximately eight times Chinchilla-suboptimal on tokens. Both facts constrain what can be inferred here, and the interpretations developed in \S\ref{sec:results-interpretations} turn on them.
+For each of the four languages we train one baseline and one grammar-aware model, identical in architecture, optimiser, data, and training budget, differing only in the tokeniser. Each is a decoder-only transformer with 512-dimensional embeddings, 10 layers, 8 attention heads, and a 128-token context, holding approximately $3.2 \times 10^7$ parameters in the transformer the two regimes share. Each trains for $6.4 \times 10^8$ tokens, close to the compute-optimal twenty tokens per parameter \citep{hoffmann2022}, placing the comparison inside the regime where the Hoffmann coefficients were fitted. The grammar-aware variant adds the feature-bundle stream summed at the input layer (\S\ref{sec:framework-engine}), with two further streams, the consonantal root and the \emph{wazn} pattern, for Arabic. One asymmetry must be stated plainly, because it bears on the reading of the result: the baseline tokeniser uses a 32k vocabulary while the grammar-aware surface stream uses 50k, and each additional stream carries its own embedding table. The grammar-aware models therefore hold \emph{more} parameters than their baselines, from $45.0$M (Mandarin) up to $70.7$M (Arabic) against the baselines' $44.9$--$48.0$M (Table~\ref{tab:phase2}). This is the same vocabulary-and-parameter asymmetry the pilot flagged, and it favours the grammar-aware regime; a negative result for that regime is therefore conservative, and the one positive result, Arabic, is exactly the case where we must rule the asymmetry out (\S\ref{sec:results-phase2}, and the ablation in \S\ref{sec:conclusion}).
 
-\FloatBarrier
-
-\subsection{Ordinal validation}
-\label{sec:results-ordinal}
-
-Table~\ref{tab:ordinal} reports each model's test cross-entropy on a held-out sample of the same Wikipedia corpus used in training, alongside the framework's predicted ordering variable $\rho(L) \cdot H(L)$ from \S\ref{sec:framework}. The ranking by $\rho \cdot H$, English $1.28 <$ Arabic $3.20 <$ Turkish $4.20$, matches the ranking by observed $\Delta\mathcal{L}$ monotonically. Re-expressed as fractional perplexity reduction, this is the 1\,\% / 14\,\% / 57\,\% gradient that first prompted the investigation. The framework's qualitative prediction therefore survives its first test. The three languages span more than an order of magnitude in $\Delta\mathcal{L}$, and the ordering holds across the full range. Crucially, $\rho(L) \cdot H(L)$ is computed from the grammar engine alone, with no reference to any training run: the agreement is a forward prediction from structural information, not a back-fit of a chosen metric.
+\paragraph{Corpora.} To give every language the broadest variety of text, and to lift Turkish above the ceiling a Wikipedia-only corpus imposes, each language draws from two registers: encyclopedic Wikipedia and large-scale web crawl (FineWeb for English, FineWeb-2 for the others). Five million sentences per language were sampled, deduplicated, and interleaved. Table~\ref{tab:phase2-corpus} reports the resulting training-token counts.
 
 \begin{table}[!htbp]
 \centering
 \small
-\begin{tabular}{lrrrrrrr}
+\begin{tabular}{lrr}
 \toprule
-Language & $\mathcal{L}_\mathrm{BPE}$ & $\mathcal{L}_\mathrm{morph}$ & $\Delta\mathcal{L}$ & $\Delta\mathcal{L}/\mathcal{L}_\mathrm{BPE}$ & $H(L)$ & $\rho(L)$ & $\rho\cdot H$ \\
+Language & Train tokens & Source characters \\
 \midrule
-English & 5.803 & 5.792 & 0.0107 & 0.18\% & 1.43 & 0.89 & \textbf{1.28} \\
-Arabic  & 6.413 & 6.263 & 0.1497 & 2.33\% & 5.44 & 0.59 & \textbf{3.20} \\
-Turkish & 4.187 & 3.344 & 0.8427 & 20.13\% & 4.97 & 0.85 & \textbf{4.20} \\
+Mandarin & $6.34 \times 10^8$ & $6.44 \times 10^8$ \\
+English  & $1.18 \times 10^8$ & $6.58 \times 10^8$ \\
+Turkish  & $8.88 \times 10^7$ & $5.97 \times 10^8$ \\
+Arabic   & $1.51 \times 10^8$ & $8.33 \times 10^8$ \\
 \bottomrule
 \end{tabular}
-\caption{Phase~1 test cross-entropy and the framework's predicted ordering variable $\rho(L) \cdot H(L)$. $\Delta\mathcal{L}$ and $\rho \cdot H$ are monotonically co-ordered across all three languages.}
-\label{tab:ordinal}
+\caption{Phase~2 training corpora, mixed Wikipedia and FineWeb, five million sentences per language. The Turkish count is roughly thirty times the pilot corpus, removing the data-starvation confound at the agglutinative pole.}
+\label{tab:phase2-corpus}
 \end{table}
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.82\linewidth]{fig_01_ordinal_validation.pdf}
-\caption{Ordinal validation of the parameter-rebate prediction at Phase~1 scale. Observed $\Delta\mathcal{L}$ (log scale) plotted against the engine-derived $\rho(L) \cdot H(L)$ for the three Phase~1 languages. Dashed line indicates monotonic ordering.}
-\label{fig:ordinal}
-\end{figure}
-
-\FloatBarrier
-\subsection{Magnitude analysis at Phase 1 scale}
-\label{sec:results-magnitude}
-
-We next convert each observed $\Delta\mathcal{L}$ into an implied parameter rebate $\Delta N(L)$ and, through equation~\ref{eq:rebate}, into an implied coefficient $\alpha$. The conversion from loss to parameters uses the \citet{hoffmann2022} scaling-law derivative evaluated at the Phase~1 operating point:
-
-\begin{equation*}
-\partial\mathcal{L} / \partial N = -\alpha_N \cdot (\mathcal{L} - E) / N, \qquad
-\Delta N = \Delta\mathcal{L} \cdot N / [\alpha_N \cdot (\mathcal{L}_\mathrm{BPE} - E)],
-\end{equation*}
-
-with $\alpha_N = 0.34$ and $N = 2 \times 10^6$. The irreducible entropy floor $E$ cannot be measured directly from six runs, so we report results at three values that span the plausible range: $E = 0$, $E = 1.7$ nats (the Chinchilla-era English estimate), and a language-specific $E_L$ pinned so that $\mathcal{L}_\mathrm{BPE} - E_L = 1$ nat. At the Chinchilla value, the three languages imply $\alpha_\mathrm{En} \approx 12{,}000$, $\alpha_\mathrm{Ar} \approx 58{,}000$, and $\alpha_\mathrm{Tr} \approx 474{,}000$ parameters per bit, a spread of just under 40-fold. Figure~\ref{fig:alpha-dispersion} shows that the pattern survives any $E$ choice, and that in every case the implied $\alpha$ grows with $\rho \cdot H$. Assumption~A1, a single cross-lingual $\alpha$, is therefore not tenable at Phase~1 scale.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.88\linewidth]{fig_02_alpha_dispersion.pdf}
-\caption{Dispersion of implied $\alpha$ across the three Phase~1 languages under three choices of the entropy floor $E$. Implied $\alpha$ spans approximately forty-fold under any $E$ choice, a dispersion the linear Assumption A1 cannot accommodate at Phase~1 scale.}
-\label{fig:alpha-dispersion}
-\end{figure}
-
-\FloatBarrier
-\subsection{Naming the phenomenon}
-\label{sec:results-naming}
-
-The consistent direction of the deviation, with implied $\alpha$ accelerating as $\rho \cdot H$ rises, is the empirical shape the framework did not anticipate. We name it for reference:
-
-\begin{quote}
-\textbf{The Agglutinative Compounding Effect.} Under identical architecture, data, and training budget, the parameter rebate that morphology-aligned tokenization delivers over a BPE baseline grows super-linearly in the effective grammatical information content $\rho(L) \cdot H(L)$ of the language. Languages whose morphology approaches the high-recoverability end of the typological spectrum (agglutinative systems in the classical sense) receive disproportionately large savings per bit of grammatical information they expose.
-\end{quote}
-
-The name reflects the typological pole at which the effect is most visible. Turkish, a canonical agglutinating language, shows it most strongly; Arabic, whose templatic fusion suppresses $\rho$, shows it in attenuated form; English, where $H$ itself is small, shows it least. The claim is not that agglutination \emph{per se} is causal: equation~\ref{eq:rho} defines $\rho$ without reference to typology, and agglutinative systems simply maximise $\rho \cdot H$ and so provide the cleanest site of observation. At Phase~1 scale the effect is a three-point observation, and naming it asserts only that this is the phenomenon the framework must account for, not that it generalises.
-
-\subsection{Two interpretations}
-\label{sec:results-interpretations}
-
-Two interpretations of the observed super-linearity are consistent with the Phase~1 evidence, and each carries very different consequences for theory and practice.
-
-\paragraph{Interpretation A: genuine framework non-linearity.}
-Assumption A1 of \S\ref{sec:framework-A1} is wrong. The true relationship between grammatical information content and the parameter cost of distributional grammar-learning is not linear in $\rho \cdot H$ but super-linear. The physical basis would be that high-$\rho$ languages permit a cleaner separation of grammatical from semantic learning, and that this separation produces compounding efficiencies the linear form fails to capture. Under Interpretation~A, the Agglutinative Compounding Effect is a real property of morphology-aware language modelling.
-
-\paragraph{Interpretation B: scaling-law breakdown at under-trained scale.}
-Assumption A1 is fine, but the Hoffmann derivative is not reliable at the Phase~1 operating point. Phase~1 trained at approximately $5 \times 10^6$ tokens on $2 \times 10^6$ parameters, where Chinchilla-optimal for this parameter count is approximately $4 \times 10^7$ tokens. In the data-starved regime the loss-to-parameter derivative is systematically wrong in a language-dependent way: languages whose BPE baseline sits further from the achievable floor amplify the apparent $\Delta N$ more than languages close to their floor. Under Interpretation~B, the Agglutinative Compounding Effect dissolves at Chinchilla-optimal training and $\alpha$ becomes constant.
-
-Phase~1 alone cannot decide between A and B. The framework supplies both the question and the discriminating test: a scale ladder that climbs from the Phase~1 regime toward Chinchilla-optimal training. \S\ref{sec:results-ladder} reports the three-rung result.
-
-\FloatBarrier
-\subsection{Chinchilla-ratio scale ladder}
-\label{sec:results-ladder}
-
-To discriminate between Interpretations A and B, we extend Phase~1 into a Chinchilla-ratio scale ladder. Each rung targets $\approx 20$ training tokens per baseline parameter, placing the loss-to-parameter derivative inside the regime where the Hoffmann coefficients were fit. Three rungs are reported: rung~1 ($\approx 620$k params, $5 \times 10^6$ tokens), rung~2 doubling both, and rung~3 doubling again. Rung~4 ($\approx 5$M params, $4 \times 10^7$ tokens) is planned but not included here. The morph-regime models carry the same 50k-cap morph vocabulary as in Phase~1 and therefore have $\approx 5\times$ more effective parameters than their baseline counterparts. This asymmetry biases the comparison \emph{against} a morph advantage: any positive $\Delta\mathcal{L}$ is a conservative lower bound. A parameter-matched follow-up is scoped in \S\ref{sec:conclusion}.
-
-Table~\ref{tab:ladder3} reports the paired results.
-
-\begin{table}[!htbp]
-\centering
-\small
-\begin{tabular}{lrcrrrr}
-\toprule
-Language & $\rho \cdot H$ & Rung & $\mathcal{L}_\mathrm{BPE}$ & $\mathcal{L}_\mathrm{morph}$ & $\Delta\mathcal{L}$ & $\Delta$-PPL \% \\
-\midrule
-English & 1.29 & 1 & 6.150 & 6.028 & \textbf{$+0.122$} & $11.5$\,\%  \\
-English & 1.29 & 2 & 5.568 & 5.689 & \textbf{$-0.122$} & $-12.9$\,\% \\
-English & 1.29 & 3 & 5.007 & 5.345 & \textbf{$-0.337$} & $-40.1$\,\% \\
-\midrule
-Arabic  & 3.20 & 1 & 6.753 & 6.535 & \textbf{$+0.218$} & $19.6$\,\%  \\
-Arabic  & 3.20 & 2 & 6.140 & 6.092 & \textbf{$+0.048$} & $4.7$\,\%   \\
-Arabic  & 3.20 & 3 & 5.432 & 5.690 & \textbf{$-0.258$} & $-29.5$\,\% \\
-\midrule
-Turkish & 4.37 & 1 & 4.624 & 3.853 & \textbf{$+0.770$} & $53.7$\,\%  \\
-Turkish & 4.37 & 2 & 3.897 & 3.140 & \textbf{$+0.757$} & $53.1$\,\%  \\
-Turkish & 4.37 & 3 & 3.339 & 2.803 & \textbf{$+0.535$} & $41.5$\,\%  \\
-\bottomrule
-\end{tabular}
-\caption{Three-rung Chinchilla-ratio scale ladder, all three Phase~1 languages. English inverts at rung~2; Arabic inverts at rung~3; Turkish remains substantially positive throughout, with $\Delta\mathcal{L}$ decaying from $+0.770$ to $+0.535$ as the baseline trains closer to its entropy floor.}
-\label{tab:ladder3}
-\end{table}
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.95\linewidth]{fig_06_ordinal_per_rung.pdf}
-\caption{Ordinal consistency across the three-rung ladder. Observed $\Delta\mathcal{L}$ plotted against engine-derived $\rho(L) \cdot H(L)$ on a shared linear $y$-axis; the dotted line marks the $\Delta\mathcal{L} = 0$ boundary below which morph underperforms BPE. English crosses below zero at rung~2; Arabic crosses at rung~3; Turkish stays well above at every rung. The engine's ordering $\text{English} < \text{Arabic} < \text{Turkish}$ in $\rho \cdot H$ is preserved at every rung, including the sign-flipped regimes.}
-\label{fig:ladder-ordinal}
-\end{figure}
-
-\paragraph{Ordinal prediction: robust at every rung.}
-The ordering $\Delta\mathcal{L}(\text{English}) < \Delta\mathcal{L}(\text{Arabic}) < \Delta\mathcal{L}(\text{Turkish})$ holds at rung~1, rung~2, and rung~3, matching the engine-derived $\rho \cdot H$ ordering ($1.29 < 3.20 < 4.37$) without violation at any scale. The framework's qualitative prediction survives the full three-rung extension cleanly, even where English and Arabic cross below zero: the ranking still holds, with $-0.337 < -0.258 < +0.535$.
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=0.80\linewidth]{fig_05_alpha_vs_scale.pdf}
-\caption{Implied per-bit coefficient $\alpha$ across the three-rung ladder, symlog $y$-axis. Positive-$\alpha$ rungs sit in the upper half; rungs where $\Delta\mathcal{L}$ has inverted produce negative implied $\alpha$ and sit in the lower half (ringed in red). Turkish's $\alpha$ rises across scales; Arabic crashes below zero by rung~3; English crashes by rung~2. A single cross-lingual constant $\alpha$, as Assumption~A1 posits, would have shown a horizontal band; the observed trajectories are typology-dependent.}
-\label{fig:alpha-vs-scale}
-\end{figure}
-
-\paragraph{Magnitude: typology-dependent decay rates.}
-All three languages' $\Delta\mathcal{L}$ compresses with scale, but at dramatically different rates. English collapses fastest and inverts by rung~2 ($+0.12 \to -0.12 \to -0.34$). Arabic holds through rung~2 but inverts at rung~3 ($+0.22 \to +0.05 \to -0.26$). Turkish also compresses, from $+0.770$ at rung~1 to $+0.535$ at rung~3, yet remains well above zero at rung~3, where English has collapsed to $-0.34$ and Arabic to $-0.26$. The compression follows $\rho \cdot H$ in reverse: rebates in low-$\rho \cdot H$ languages fail first, those in high-$\rho \cdot H$ languages last longest.
-
-\paragraph{The Turkish rung-3 result is the decisive datum.}
-The morph-vocab-cap asymmetry, a 50k morph vocabulary against the 8k BPE baseline, inflates the morph leg by roughly $4.6\times$ in parameters, and it applies identically across all three languages. By itself, it makes the sign flips in English and Arabic at the later rungs hard to attribute cleanly: they may reflect the morph advantage disappearing (as Interpretation~B would predict) or the confound overwhelming it. Turkish's morph leg sits under exactly the same asymmetric inflation, and Turkish still delivers $+0.535$ nats at rung~3. For Turkish, then, the true morph-mechanism benefit is large enough to absorb the confound and still leave a substantive positive $\Delta\mathcal{L}$; for Arabic and English, it is not. This is strong evidence that the morph advantage at the high-$\rho \cdot H$ pole is a real, mechanism-driven property of the language-tokenizer pairing, as Interpretation~A predicts, even as its magnitude decays with scale.
-
-\paragraph{Arabic and English: Interpretation B and the vocab-cap confound are indistinguishable on this data.}
-The inversions at rung~2 for English and at rung~3 for Arabic admit two mutually exclusive readings. Either the morph advantage for lower-$\rho \cdot H$ languages was genuinely an artefact of a Chinchilla-suboptimal baseline that vanishes at well-trained scales (Interpretation~B), or the vocab-cap confound takes over once the true morph advantage is small enough not to overshadow it. The current experimental design cannot separate the two for these languages. A parameter-matched ladder, with the morph vocabulary capped to the baseline's 8k or the morph embedding dimension reduced to compensate, is the discriminating test. It is scoped as a follow-up in \S\ref{sec:conclusion}.
-
-\paragraph{Consequences for the Agglutinative Compounding Effect.}
-The Effect reads best as a typology-dependent decay rather than a starvation artefact or a scale-invariant phenomenon. At Phase-1 scale the per-bit rebate appears super-linear because the rate of compression toward convergence is inversely proportional to $\rho \cdot H$. At well-trained scales the same hierarchy produces the inversion pattern visible in Table~\ref{tab:ladder3}, with the ordinal property of $\rho \cdot H$ preserved throughout. The framework-level finding is therefore that the morphological-typology axis predicts both cross-linguistic ordering \emph{and} the rate at which each language's rebate compresses as its baseline approaches its entropy floor.
-
-\FloatBarrier
-\subsection{The Templatic Lexical Surplus: a two-tier Arabic experiment}
-\label{sec:results-tier2}
-
-\S\ref{sec:discussion-limitations} flags a specific gap in the framework. The structural recoverability coefficient $\rho(L)$ measures only what a surface-only parser can decode, yet Arabic's templatic morphology stores a substantial share of its grammatical information behind lexical dependencies, recoverable only with access to the consonantal root lexicon. To test whether this hidden axis is real and quantifiable, we ran a side experiment: a 2nd-tier Arabic morph variant that adds an explicit root-identity embedding stream on top of the 1st-tier surface-bundle and feature-bundle streams.
-
-The 2nd-tier architecture sums three embeddings at the input layer:
+\paragraph{Metric: bits per character.} Per-token cross-entropy is not comparable across tokenisers whose segmentations differ, because a model that emits fewer, longer tokens is scored on fewer but harder predictions. We therefore report the tokeniser-neutral quantity
 \[
-x = \mathrm{tok\_emb}[\text{surface\_bundle}] + \mathrm{feat\_emb}[\text{bundle}] + \mathrm{root\_emb}[\text{root}].
+\mathrm{bpc} = \frac{\mathcal{L}}{\ln 2} \cdot \frac{T}{C},
 \]
-The root embedding is trained from scratch on a 20{,}000-entry vocabulary of distinct triconsonantal roots extracted by the Arabic grammar engine. Words sharing a root, the \emph{k-t-b} family or the \emph{s-l-m} family for instance, receive a tied signal the 1st-tier model has no direct way to access.
+the cross-entropy $\mathcal{L}$ in nats per token, converted to bits and rescaled by the ratio of tokens $T$ to source characters $C$ on the held-out set. Bits per character scores the cost of the text itself and is directly comparable between baseline and grammar-aware regimes.
+
+\subsection{The four-language result}
+\label{sec:results-phase2}
+
+Table~\ref{tab:phase2} reports the headline result. Of the four languages, three show no rebate and one does.
 
 \begin{table}[!htbp]
 \centering
 \small
-\begin{tabular}{crrrrrr}
+\begin{tabular}{lrrrrr}
 \toprule
-Rung & $\mathcal{L}_\mathrm{BPE}$ & $\mathcal{L}_\mathrm{1st\text{-}tier}$ & $\mathcal{L}_\mathrm{2nd\text{-}tier}$ & $\Delta\mathcal{L}_\mathrm{1st}$ & $\Delta\mathcal{L}_\mathrm{surplus}$ & Cumulative $\Delta\mathcal{L}$ \\
- & & & & (1st -- BPE) & (2nd -- 1st) & (2nd -- BPE) \\
+Language & $\rho \cdot H$ & $\mathrm{bpc}_\mathrm{BPE}$ & $\mathrm{bpc}_\mathrm{morph}$ & $\Delta\mathrm{bpc}$ & params (base\,$\to$\,morph) \\
 \midrule
-1 & 6.753 & 6.535 & 6.453 & $+0.218$ & \textbf{$+0.082$} & $+0.300$ \\
-2 & 6.140 & 6.092 & 6.015 & $+0.048$ & \textbf{$+0.077$} & $+0.125$ \\
-3 & 5.432 & 5.690 & 5.632 & $-0.258$ & \textbf{$+0.058$} & $-0.200$ \\
+Mandarin & 0.16 & 4.3795 & 4.3839 & $-0.0044$ & 44.9\,M\,$\to$\,45.0\,M \\
+English  & 1.07 & 1.0527 & 1.0883 & $-0.0356$ & 48.0\,M\,$\to$\,57.2\,M \\
+Turkish  & 2.98 & 0.8811 & 0.8976 & $-0.0165$ & 48.0\,M\,$\to$\,58.2\,M \\
+Arabic   & 3.47 & 1.1464 & 1.1246 & \textbf{$+0.0218$} & 48.0\,M\,$\to$\,70.7\,M \\
 \bottomrule
 \end{tabular}
-\caption{Arabic three-rung results across BPE baseline, 1st-tier morph, and 2nd-tier morph (root-stream extension). The 1st-tier rebate over baseline collapses and inverts by rung~3, consistent with the broader ladder pattern in \S\ref{sec:results-ladder}. The 2nd-tier \emph{surplus} over 1st-tier (the additional rebate attributable specifically to the explicit root-identity stream) decays only mildly ($+0.082 \to +0.077 \to +0.058$) and remains clearly positive at every rung.}
-\label{tab:tier2-ar}
+\caption{Four-language result in bits per source character, at $\approx 32$M matched transformer parameters and compute-optimal training. Positive $\Delta\mathrm{bpc}$ favours the grammar-aware regime. Only Arabic shows a rebate; the three deltas of the surface-legible languages are negative and are not ordered by $\rho \cdot H$.}
+\label{tab:phase2}
 \end{table}
 
-At rung~1 the explicit root stream reduces Arabic's test cross-entropy by a further 0.082 nats beyond 1st-tier morph, roughly 38\,\% larger than the rebate that the 1st tier alone delivered over baseline. The surplus is nearly preserved at rung~2 ($+0.077$) and decays only slightly at rung~3 ($+0.058$), where the 1st-tier rebate has already inverted to $-0.258$. The 2nd-tier surplus is therefore more scale-robust than the 1st-tier rebate it supplements, and is the only component of Arabic's total rebate over BPE that survives the confound-driven inversion at rung~3. We name this additional rebate the \textbf{Templatic Lexical Surplus}:
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.72\linewidth]{fig_p2_rebate.pdf}
+\caption{Parameter rebate $\Delta\mathrm{bpc}$ (baseline $-$ grammar-aware) by language, at compute-optimal, transformer-matched scale. Only Arabic, the templatic case, shows a positive rebate; the three surface-recoverable languages fall below zero. Colours follow the project convention: Mandarin orange, English navy, Turkish red, Arabic green.}
+\label{fig:p2-rebate}
+\end{figure}
 
-\begin{quote}
-\textbf{The Templatic Lexical Surplus.} For templatic languages, a portion of the per-word grammatical information content is stored behind lexical dependencies rather than on the surface. Measured as the additional test-loss reduction $\Delta\mathcal{L}_{\mathrm{surplus}}$ delivered by layering an explicit root-identity embedding on top of 1st-tier morph tokenisation, the Templatic Lexical Surplus quantifies the component of $\rho \cdot H$ that the surface-only $\rho$ filter of \S\ref{sec:framework-rho} rejects. Across the three-rung Chinchilla-ratio scale ladder we find $\Delta\mathcal{L}_{\mathrm{surplus}} = +0.082$, $+0.077$, $+0.058$ nats at rungs 1, 2, and 3 respectively, a mild decay but consistently positive, in contrast to the 1st-tier rebate which collapses and inverts by rung~3.
-\end{quote}
+\paragraph{The ordinal prediction fails.} The framework predicts that $\Delta\mathrm{bpc}$ rises with $\rho \cdot H$. It does not. Mandarin, English, and Turkish all land on the wrong side of zero ($-0.004$, $-0.036$, $-0.017$), and their order bears no relation to $\rho \cdot H$: English, in the middle of the range, is the most negative, and Turkish, the agglutinative case in which the framework predicts the largest rebate, shows none. At compute-optimal, parameter-matched scale, the rank prediction that survived the pilot does not survive here. This is the outcome the pilot's Interpretation~B anticipated for the surface-recoverable languages: a model trained on enough data learns their grammar from the text itself, so handing it the same grammar as an explicit input is redundant, and the extra input streams, far from helping, cost a little. Figure~\ref{fig:p2-prediction} makes the failure visual: plotted against the engine's $\rho \cdot H$, the four rebates show no monotonic trend.
 
-Where the Agglutinative Compounding Effect (\S\ref{sec:results-naming}) describes the functional form of the rebate over $\rho \cdot H$ for surface-recoverable morphologies, the Templatic Lexical Surplus describes the decomposition of the rebate for morphologies whose grammatical information sits partly behind a lexical filter. The two named findings are complementary. They operate on different axes of the framework, functional form on one side and decomposition on the other, and are visible at the two typological poles that differ most from the English baseline of mainstream tokenization research.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.66\linewidth]{fig_p2_prediction.pdf}
+\caption{Observed rebate against the framework's pre-registered predictor $\rho(L)\cdot H(L)$. The framework predicts the rebate should rise with $\rho \cdot H$; instead three languages sit below zero in no particular order and only Arabic is positive. The surviving signal tracks low $\rho$ (off-surface grammar), not high $\rho \cdot H$.}
+\label{fig:p2-prediction}
+\end{figure}
 
-A caveat is in order. The 2nd-tier model has $\sim 1.3$\,M more parameters than the 1st-tier model, owing to the added $20\mathrm{k} \times 64$ root embedding and its tied output, so the 0.082-nat gain is an upper bound on what can be attributed to the root stream alone. That said, the 1st-tier model at 3.3\,M parameters is already heavily over-parameterised relative to 5\,M training tokens, so there is no capacity shortage that an extra 1.3\,M parameters could fill without the root-stream signal. The gain is therefore plausibly due in substantial part to the lexicon-recoverable axis becoming explicit at input. A parameter-matched ablation is scoped in \S\ref{sec:conclusion}.
+\paragraph{Arabic is the exception, and it is the informative one.} Arabic alone delivers a rebate, $+0.022$ bpc. What sets Arabic apart is not that its $\rho \cdot H$ is highest, but that its $\rho$ is \emph{lowest} ($0.534$): more of its grammar is hidden off the written surface, locked in the interleaving of consonantal root and vocalic pattern, than in any of the other three. That is precisely the grammatical information a surface-reading model cannot reconstruct on its own, no matter how much text it sees, because it is not on the surface to be read. When the root and \emph{wazn} streams hand that hidden structure to the model directly, it helps. The rebate, in other words, tracks the \emph{unrecoverable} fraction of grammar, $(1-\rho)\,H$, rather than the recoverable product $\rho \cdot H$ the framework was built on. This is the \textbf{Templatic Lexical Surplus} (\S\ref{sec:results-pilot}), reproduced here at compute-optimal scale, standing where the broader rebate has dissolved. The learning curves (Figure~\ref{fig:p2-curves}) show the divergence directly: the grammar-aware trace runs above its baseline throughout for Mandarin, English, and Turkish, and below it for Arabic alone.
 
-This result validates the \S\ref{sec:discussion-limitations} decomposition of $\rho \cdot H$ into surface-recoverable and lexicon-recoverable components, restoring to Arabic credit that our surface-only $\rho$ refuses it. The 2nd-tier experiment is a language-specific instrument rather than a universal extension: Turkish is already surface-recoverable, and the English gain would be smaller still.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{fig_p2_curves.pdf}
+\caption{Evaluation bits per character against training tokens, grammar-aware (solid) versus baseline (dashed), per language. Lower is better, so the grammar-aware model helps only when its solid trace sits \emph{below} the dashed one, which happens for Arabic alone.}
+\label{fig:p2-curves}
+\end{figure}
 
-\paragraph{A caveat on what the 2nd tier does \emph{not} encode.}
-The 2nd-tier experiment exposes pure root identity to the model but not the \emph{semantic function} of each wazn, the categorical interpretation that a native reader derives from the pattern itself. Arabic's awzān are not neutral morphosyntactic scaffolding. The pattern wazn al-f\=a\textsuperscript{c}il (\ar{فَاعِل}) marks an agent noun; wazn al-maf\textsuperscript{c}\=ul (\ar{مَفْعُول}) marks a patient; wazn al-\=alah (\ar{مِفْعَال}, \ar{مِفْعَلَة}) marks an instrument; the masdar patterns mark verbal nouns; verbal Form X (\ar{اسْتَفْعَل}) typically carries seeking or considering semantics; Form II (\ar{فَعَّل}) carries intensification or causativity; and so on. These are first-class semantic classes that the pattern deterministically encodes for a human reader, but which the current engine collapses into coarse templatic categories (\texttt{NOM\_DERIVED}, verbal Form I to X) without exposing the category's semantic function to the model. The 2nd-tier surplus reported here therefore understates the full Templatic Lexical Surplus: it counts only the rebate attributable to explicit root identity, not the additional rebate that the wazn's semantic function would contribute if exposed. A 3rd-tier extension that exposes wazn semantic class as a fourth input stream, a natural continuation of the decomposition, is scoped as a follow-up in \S\ref{sec:conclusion}.
+\paragraph{A capacity caveat.} The Arabic comparison is parameter-matched in the transformer but not in total: the root and \emph{wazn} embedding tables raise the Arabic grammar-aware model to $70.7$M parameters against the baseline's $48.0$M, a rise of roughly one half. Part of Arabic's rebate could in principle be bought by that extra capacity rather than by the structure the streams encode. Two observations bound the worry but do not dispel it. English and Turkish carry extra parameters too ($+19\%$ and $+21\%$) and gain nothing, which argues against a pure-capacity reading; and the framework's own estimate of the embedding cost (\S\ref{sec:framework-A1}) treated it as negligible, an assumption these counts show to be too generous for the four-stream Arabic case. A parameter-matched ablation is the one experiment that would convert this result from suggestive to clean; we run it, and we explain why we run it for Arabic alone, in \S\ref{sec:results-ablation}.
 
-\FloatBarrier
-\subsection{Compositional generalisation set for Arabic}
-\label{sec:results-comp-gen}
+\subsection{Isolating structure from capacity: the Arabic ablation}
+\label{sec:results-ablation}
 
-A question Arabic can address that the other languages cannot is whether morph-aware tokenisation induces \emph{compositional learning} of the root-and-pattern system. A model that has internalised the morphology should generalise to (root, template) pairs it never saw in training, provided each root and each template are individually attested. To support this evaluation we constructed a held-out (root, template) bucket on the Arabic test corpus. Of 235{,}054 test-set word instances, 92.1\,\% have their pair attested in training (SEEN\_PAIR), 2.0\,\% combine a seen root with a seen template in an unseen combination (HELD\_OUT), and 5.8\,\% involve a root or template novel to training (NOVEL\_ATOM). Per-model loss attribution on this bucket requires word-to-token position tracking that differs across tokenisers, and is scoped as a follow-up in \S\ref{sec:conclusion}. A clean result would be that morph regimes show a \emph{larger} advantage over baseline on HELD\_OUT than on SEEN\_PAIR, evidence of compositional learning rather than memorised surface-bundle co-occurrences.
+The single positive result, Arabic, is also the one most exposed to a capacity objection, since its grammar-aware model carries roughly half as many parameters again as its baseline. We therefore control for capacity directly, and we do so for Arabic alone. The choice is dictated by the result, not by the language, and the reasoning should be made explicit because the one language that gained happens to be the first author's native tongue. A capacity confound can only manufacture a \emph{positive} effect; it cannot conceal one. The three languages that show no rebate carry the same kind of parameter surplus, and a larger surface vocabulary besides, so the extra capacity is working \emph{in their favour} and they lose regardless; their null results are therefore conservative, and controlling for capacity could only deepen them. Arabic is the only language whose extra parameters might be doing the work we would otherwise credit to structure, so it is the only language where the control carries information. The identical criterion would have singled out whichever language came out positive; that it is Arabic changes neither the rule nor its application.
+
+The control holds the Arabic grammar-aware model fixed in every respect, architecture, parameter count, token budget, and optimiser, and randomises only the \emph{content} of the root and \emph{wazn} streams: each position receives a root and a pattern drawn from the corpus distribution but decoupled from the word actually present. The streams thus cost exactly the same parameters while carrying no real templatic information. If Arabic's rebate is structural, the model with true root and \emph{wazn} streams should beat this shuffled control; if the rebate is merely capacity, the two should tie. The outcome is decisive, and in the structural direction. The shuffled control finishes at $1.1676$ bpc, not merely worse than the real grammar-aware model ($1.1246$) but worse than the baseline itself ($1.1464$). Randomising the root and \emph{wazn} streams, while holding their parameters exactly, does not just erase Arabic's rebate: it turns the two streams into noise that costs $0.021$ bpc against baseline. The real templatic streams therefore outperform identically-sized random ones by $0.043$ bpc. Capacity is not merely an insufficient explanation for Arabic's rebate; added capacity \emph{without} real structure is actively harmful, and the whole of the rebate, indeed more than it, is attributable to the templatic information the streams carry. The Templatic Lexical Surplus, on this test, is a structural effect and not a parameter artefact. Figure~\ref{fig:p2-ablation} shows the three Arabic models side by side.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_p2_ablation.pdf}
+\caption{The Arabic ablation, in bits per character (lower is better). The grammar-aware model with real root and \emph{wazn} streams beats the baseline; the same model with those streams \emph{shuffled}, at identical parameter count, falls \emph{below} the baseline. The rebate is the templatic information, not the parameters carrying it.}
+\label{fig:p2-ablation}
+\end{figure}
+
+\subsection{The three-language pilot, in brief}
+\label{sec:results-pilot}
+
+The study grew out of a budget-limited pilot run in mid-May 2026: six decoder-only models, one baseline and one morphology-aligned pair for each of English, Arabic, and Turkish, at roughly $2 \times 10^6$ parameters and $5 \times 10^6$ training tokens, about eight times below the compute-optimal budget. At that scale the pilot found the framework's \emph{ordinal} prediction confirmed: the test-loss reduction under morphology-aligned tokenisation fell in the same rank order as the engine's $\rho \cdot H$, with English smallest and Turkish largest. Its \emph{magnitude} prediction failed, the implied per-bit coefficient $\alpha$ varying some fortyfold across the three languages and itself growing with $\rho \cdot H$, a pattern we named the \textbf{Agglutinative Compounding Effect}.
+
+A three-rung scale ladder toward compute-optimal training already hinted that the effect was scale-fragile: English's rebate inverted by the second rung and Arabic's by the third, while Turkish's persisted. The pilot could not decide whether the inversions meant the rebate was a genuine artefact of under-training (Interpretation~B) or whether a confound was masking a real effect, because the morphology-aligned models also carried a larger vocabulary, and so more parameters, than their baselines. A separate two-tier Arabic probe added an explicit consonantal-root stream on top of surface morphology and recovered a small but scale-stable additional rebate ($+0.082$, $+0.077$, $+0.058$ nats across the three rungs), the observation we named the \textbf{Templatic Lexical Surplus}. The four-language experiment was designed to settle the pilot's open questions at compute-optimal scale and with the vocabulary-cap asymmetry removed. It does: the Agglutinative Compounding Effect does not survive, while the Templatic Lexical Surplus does.
 
 \subsection{Summary}
 \label{sec:results-summary}
 
-Phase~1 confirmed the framework's ordinal prediction and surfaced the magnitude puzzle that motivated naming the Agglutinative Compounding Effect. The three-rung Chinchilla-ratio ladder sharpened the verdict. Turkish's morph advantage decays from $+0.770$ to $+0.535$ nats across the rungs but remains substantially positive at rung~3, where the same morph-vocab-cap confound drives English and Arabic below zero. The surviving Turkish rebate is the strongest evidence that, at the high-$\rho \cdot H$ pole, the morph mechanism is a real property of the language-tokenizer pairing (Interpretation~A), even as its magnitude decays. For Arabic and English, the rung-3 and rung-2 inversions remain consistent with either Interpretation~B or the vocab-cap confound, and a parameter-matched follow-up is scoped in \S\ref{sec:conclusion}. The two-tier Arabic extension of \S\ref{sec:results-tier2} adds a complementary finding on a different axis: an explicit root-embedding stream delivers an additional 0.082, 0.077, 0.058 nats at rungs~1 through 3, validating the decomposition of $\rho \cdot H$ into surface-recoverable and lexicon-recoverable components.
-
-Together, the two named findings reshape the central claim. The framework's $\rho \cdot H$ axis predicts not only the cross-linguistic ordering at every rung, including the sign-flipped regimes, but also the rate at which each language's rebate compresses as its baseline approaches its entropy floor. The \textbf{Agglutinative Compounding Effect} names the functional-form behaviour visible across the ladder, and the \textbf{Templatic Lexical Surplus} names the complementary lexicon-axis decomposition. Between them, they map the boundary of what a surface-only tokenizer can exploit and what a lexicon-aware one can reach beyond it.
+At compute-optimal, transformer-matched scale, grammar-aware tokenisation delivers no parameter rebate for Mandarin, English, or Turkish, and the framework's $\rho \cdot H$ ordering does not hold. The pilot's Agglutinative Compounding Effect is, for these surface-recoverable languages, an artefact of under-training: once a model has enough data to learn grammar from the text, being handed that grammar explicitly is redundant. Arabic is the single exception. Its templatic morphology stores grammar off the surface, where a surface-reading model cannot recover it at any scale, and exposing that structure through explicit root and \emph{wazn} streams lowers its bits per character by $0.022$. The surviving signal therefore tracks the \emph{unrecoverable} grammar a language hides, not the recoverable grammar the original framework measured, and it reproduces the pilot's Templatic Lexical Surplus at proper scale. The one capacity confound, the extra parameters the Arabic streams cost, is resolved directly by the shuffle-control ablation of \S\ref{sec:results-ablation}: identically-sized streams filled with random root and \emph{wazn} content perform worse than the baseline, so Arabic's rebate is the templatic structure itself, not the parameters that carry it.

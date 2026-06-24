@@ -43,6 +43,8 @@ _VERB_CHARS = {
     "找", "等", "问", "答", "叫", "笑", "哭", "唱", "跳", "玩", "打", "开",
     "关", "进", "出", "回", "送", "带", "穿", "用", "见", "爱", "喜", "怕",
     "想", "忘", "记", "告", "诉", "认", "为", "觉", "得", "希", "望",
+    # traditional verb forms + common written verbs missing above
+    "來", "如", "稱", "称", "為", "屬", "属", "含", "設", "设",
 }
 
 # Two-character VERB compounds outside the closed-class lexicon (common HSK1-3).
@@ -80,10 +82,26 @@ _DEM_FORMS: Dict[str, Tuple[str, Dict[str, str]]] = {
 }
 
 # Additional closed-class entries the original configs omit.
+# Includes high-frequency classical/written function characters in BOTH
+# simplified and traditional forms (zh Wikipedia mixes scripts), which the
+# open-class fallback otherwise mislabels as NOUN.
 _EXTRA_CLOSED: Dict[str, Tuple[str, Dict[str, str]]] = {
     "愿意": ("AUX",  {"modal": "VOLITION"}),
     "咱们": ("PRON", {"person": "1", "num": "PL"}),
     "多少": ("PRON", {"interrog": "YES"}),
+    # pronouns
+    "其": ("PRON", {"person": "3"}),
+    # classical genitive / nominaliser particle
+    "之": ("PART", {"function": "GENITIVE"}),
+    # coordinating conjunctions ("and")
+    "及": ("CONJ", {}), "与": ("CONJ", {}), "與": ("CONJ", {}),
+    "并": ("CONJ", {}), "並": ("CONJ", {}), "且": ("CONJ", {}),
+    # coverb / prepositions
+    "以": ("ADP", {}), "由": ("ADP", {}), "至": ("ADP", {}),
+    "对": ("ADP", {}), "對": ("ADP", {}), "于": ("ADP", {}), "於": ("ADP", {}),
+    # adverbs
+    "亦": ("ADV", {}), "将": ("ADV", {"function": "FUTURE"}),
+    "將": ("ADV", {"function": "FUTURE"}), "即": ("ADV", {}),
 }
 
 

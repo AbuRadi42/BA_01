@@ -235,9 +235,14 @@ def disambiguate_pos(tokens: List[TokenInfo]) -> List[TokenInfo]:
 
         # ---- "to" : infinitive marker vs preposition --------------------
         if s == "to":
+            # Infinitive marker when the next token is a verb: either a known
+            # base form, or anything the analyzer already tagged VERB (covers
+            # lower-frequency verbs like "describe", "simulate", "oppose" that
+            # are not in the base-form list). An NP after "to" keeps it a
+            # preposition. The infinitive test is checked first because a verb
+            # following "to" is the decisive cue.
             if nx is not None and (
                 _surface(nx) in _VERB_BASE_FORMS or nx.pos == "VERB"
-                and not nx.tags  # bare base
             ):
                 tok.pos = "PART"
                 tok.tags = {"subcat": "INF"}
@@ -280,6 +285,26 @@ def disambiguate_pos(tokens: List[TokenInfo]) -> List[TokenInfo]:
                 tok.tags = {"subcat": "SUB"}
             elif nx is not None and _looks_like_np_start(nx):
                 tok.pos = "PREP"
+                tok.tags = {}
+
+        # ---- VERB vs NOUN inside a noun phrase --------------------------
+        # Many English forms are noun/verb homographs ("state", "love",
+        # "power", "form", "interest", "thought"). The word-level analyzer
+        # defaults several of these to VERB. When such a token sits in a
+        # nominal slot, i.e. it is introduced by a determiner, a possessive,
+        # or an adjective, the finite-verb reading is impossible: a determiner
+        # or attributive adjective cannot be immediately followed by a tensed
+        # verb, so the token heads a noun phrase and must be a NOUN. The -ing
+        # case is excluded so genuine gerund/progressive forms are untouched.
+        if tok.pos == "VERB" and not s.endswith("ing") \
+                and not tok.tags.get("aspect") == "PROG":
+            p_det = p is not None and (
+                _surface(p) in _DETERMINERS_LIKE
+                or p.pos in {"DET", "ADJ"}
+                or p.tags.get("poss") == "YES"
+            )
+            if p_det:
+                tok.pos = "NOUN"
                 tok.tags = {}
 
         # ---- comparative -er vs agent -er : "than" clinches comparative -
