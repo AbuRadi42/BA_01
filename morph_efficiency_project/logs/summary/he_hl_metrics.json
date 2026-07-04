@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-07-03T22:27:21.011709+00:00",
+  "split": "train",
+  "max_sentences": 6143,
+  "corpus_root": "/root/BA_01/mini_experiment/data",
+  "results": [
+    {
+      "lang": "he",
+      "tokens_analyzed": 95355,
+      "tokens_failed": 0,
+      "unique_surface_forms": 35903,
+      "unique_signatures": 10228,
+      "unique_bundles_observed": 95,
+      "H_max_observed_bits": 6.569855608330948,
+      "H_bits": 4.017817870443734,
+      "H_cond_surface_bits": 0.0,
+      "H_cond_signature_bits": 0.6424649395882926,
+      "rho_surface": 1.0,
+      "rho_signature": 0.8400960520598865,
+      "rho_sig_times_H_bits": 3.375352930855441
+    }
+  ]
+}

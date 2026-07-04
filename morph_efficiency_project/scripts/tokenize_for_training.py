@@ -61,6 +61,7 @@ from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine
 from morph_efficiency_project.scripts.engines.en_engine import EnglishEngine
 from morph_efficiency_project.scripts.engines.tr_engine import TurkishEngine
 from morph_efficiency_project.scripts.engines.zh_engine import MandarinEngine
+from morph_efficiency_project.scripts.engines.he_engine import HebrewEngine
 from morph_efficiency_project.scripts.engines.shared import TokenInfo
 
 # Sentence-grammar layer: context-aware POS resolution. disambiguate_pos takes
@@ -92,6 +93,7 @@ ENGINES = {
     "ar": ArabicEngine,
     "tr": TurkishEngine,
     "zh": MandarinEngine,
+    "he": HebrewEngine,
 }
 
 DATA_DIR = ROOT / "mini_experiment" / "data"
@@ -224,6 +226,10 @@ def _streams_from_info(info: TokenInfo, word: str, lang: str
     wazn_radical = ""
     if lang == "ar":
         wazn_radical = info.tags.get("semantic_role") or info.tags.get("wazn_class") or ""
+    elif lang == "he":
+        # Hebrew's 4th stream is the binyan (verbal pattern), the structural
+        # analogue of Arabic's wazn semantic_role.
+        wazn_radical = info.tags.get("binyan") or ""
     elif lang == "zh":
         wazn_radical = info.tags.get("radical") or ""
     return surface_composite, bundle, root, wazn_radical

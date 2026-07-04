@@ -1,0 +1,19 @@
+{
+  "lang": "ar",
+  "regime": "morph",
+  "n_params": 70680576,
+  "model_dim": 512,
+  "layers": 10,
+  "heads": 8,
+  "seq_len": 128,
+  "total_steps": 78125,
+  "tokens_seen": 640000000,
+  "final_eval_loss": 4.438561611175537,
+  "final_eval_ppl": 84.65309000118081,
+  "final_eval_bpc": 1.1662784230083092,
+  "bpc_factor": 0.2627604447512501,
+  "elapsed_s": 31230.6,
+  "tokens_per_sec": 20492.7,
+  "train_tokens_available": 151473732,
+  "val_tokens_available": 900550
+}

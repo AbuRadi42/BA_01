@@ -43,10 +43,14 @@
 \setotherlanguage{arabic}
 \newfontfamily\arabicfont[Script=Arabic]{Amiri}   % fallback if Amiri unavailable
 % CJK script support for the Mandarin case study and §4 architecture examples.
-% Submission font is SimSun, the project's canonical CJK face. On a headless
-% build host SimSun is aliased to Noto Serif CJK SC through fontconfig; the
-% author's machine has SimSun proper.
-\newfontfamily\cjkfont{SimSun}[Script=CJK]
+% Submission font is SimSun, the project's canonical CJK face. The author's
+% machine has SimSun proper; a headless build host that lacks it falls back to
+% Noto Serif CJK SC. The check is done in fontspec (not via a fontconfig alias,
+% which XeTeX does not honour for \newfontfamily and which sends a missing
+% SimSun down the metafont path).
+\IfFontExistsTF{SimSun}
+  {\newfontfamily\cjkfont{SimSun}[Script=CJK]}
+  {\newfontfamily\cjkfont{Noto Serif CJK SC}[Script=CJK]}
 % Convenience macros that combine the font switch with the script direction:
 % Arabic flows right-to-left; CJK keeps its natural left-to-right.
 \newcommand{\ar}[1]{\textarabic{\arabicfont #1}}
@@ -62,17 +66,17 @@
 
 % Title and authors
 \title{%
-Grammar as a Capacity Lever: \\
-Tokenization, Typology, and Parameter-Efficient Language Models
+Does Teaching a Language Model Grammar\\
+in Advance Make It Cheaper to Build?
 }
 
 \author{%
 Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0008-0716-7598}{0009-0008-0716-7598}. Email: \href{mailto:Sameh.AbuRadi@CODE.Berlin}{Sameh.AbuRadi@CODE.Berlin}.} \\
 \textit{CODE University of Applied Sciences, Berlin} \\
-\textit{Supervised by Fabian Geier}
+\textit{Supervised by Prof.\ Dr.\ Fabian Geier}
 }
 
-\date{1 July 2026}
+\date{9 July 2026}
 
 \begin{document}
 \maketitle
@@ -81,7 +85,7 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 \input{sections/sec_01_abstract}
 
 \vspace{6pt}
-\noindent\textbf{Keywords:} grammar-aware tokenization; morphological typology; transformer scaling laws; linguistic typology; information theory in NLP; computational linguistics; AI \& ML economics.
+\noindent\textbf{Keywords:} grammar-aware tokenisation; morphological typology; transformer scaling laws; linguistic typology; information theory in NLP; computational linguistics; AI \& ML economics.
 
 \vspace{12pt}
 
@@ -108,17 +112,24 @@ The author thanks Deniz Sertkan for providing the GPU computing infrastructure o
 \section*{Declarations}
 
 \paragraph{Use of generative AI tools.}
-Claude (Anthropic) was used during manuscript preparation to assist with
-prose drafting, derivation cross-checking, and script scaffolding.
-All scientific claims, citations, numerical results, and final wording were
-verified and revised by the human author.
+The experimental work reported here, the implementation of the four grammar
+engines, the orchestration of the GPU training runs, and the collection and
+reduction of the resulting data, was carried out with Claude Opus 4.8
+(Anthropic), operating through the Claude Code agent interface. The final
+audit of the manuscript, a section-by-section reconciliation of every claim
+against the results it rests on, together with an audit of the framework
+(Section~\ref{sec:framework}) that verified the internal consistency of its
+mathematical logic, was likewise assisted by Claude Opus 4.8. All scientific
+claims, citations, numerical results, and final wording were verified and
+revised by the human author.
 
 \paragraph{Competing interests.}
 The author declares no competing interests.
 
 \paragraph{Data and code availability.}
 Source code for the four grammar engines, the training and tokenisation
-pipeline, and the analysis scripts is available from the corresponding author
+pipeline, and the analysis scripts is publicly available at
+\url{https://github.com/AbuRadi42/BA_01}, and from the corresponding author
 on request, pending institutional archiving.
 
 \end{document}

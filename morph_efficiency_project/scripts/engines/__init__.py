@@ -26,10 +26,12 @@ from .en_engine import EnglishEngine
 from .ar_engine import ArabicEngine
 from .tr_engine import TurkishEngine
 from .zh_engine import MandarinEngine
+from .he_engine import HebrewEngine
 
 __all__ = [
     "TokenInfo", "MorphVocab",
     "EnglishEngine", "ArabicEngine", "TurkishEngine", "MandarinEngine",
+    "HebrewEngine",
     "check_morph_sequence_en", "check_morph_sequence_ar",
     "check_morph_sequence_tr", "check_morph_sequence_zh",
     "validate_sentence_structure_en", "validate_sentence_structure_ar",
