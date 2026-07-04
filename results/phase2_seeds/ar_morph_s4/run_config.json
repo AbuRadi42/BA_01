@@ -1,0 +1,33 @@
+{
+  "lang": "ar",
+  "regime": "morph",
+  "streams": [
+    "tok",
+    "feat",
+    "root",
+    "wazn"
+  ],
+  "vocabs": {
+    "tok": 50000,
+    "feat": 19049,
+    "root": 7150,
+    "wazn": 189
+  },
+  "model_dim": 512,
+  "layers": 10,
+  "heads": 8,
+  "ffn_dim": 2048,
+  "seq_len": 128,
+  "batch_size": 64,
+  "max_tokens": 640000000,
+  "total_steps": 78125,
+  "lr": 0.0003,
+  "lr_floor": 3e-05,
+  "warmup_steps": 100,
+  "weight_decay": 0.1,
+  "grad_clip": 1.0,
+  "seed": 4,
+  "n_params": 70680576,
+  "train_tokens_available": 151473732,
+  "val_tokens_available": 900550
+}
