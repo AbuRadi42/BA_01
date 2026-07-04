@@ -108,3 +108,14 @@ thesis_expose_pn1_autoethnography.md
 # Claude Code local data
 .claude/
 morph_efficiency_project/logs/summary/gold/_cache/
+
+# --- post-history-cleanup (2026-07): regenerable / large artefacts kept out of git ---
+mini_experiment/models/
+mini_experiment/logs/*.jsonl
+manuscript/tex/main.pdf
+manuscript/tex/main.aux
+manuscript/tex/main.bbl
+manuscript/tex/main.out
+manuscript/tex/main.blg
+manuscript/tex/main_page01.png
+manuscript/tex/draft.pdf

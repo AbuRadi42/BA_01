@@ -1,0 +1,19 @@
+{
+  "lang": "ar",
+  "regime": "baseline",
+  "n_params": 47953920,
+  "model_dim": 512,
+  "layers": 10,
+  "heads": 8,
+  "seq_len": 128,
+  "total_steps": 78125,
+  "tokens_seen": 640000000,
+  "final_eval_loss": 4.344363965988159,
+  "final_eval_ppl": 77.0430199114958,
+  "final_eval_bpc": 1.1415270078643536,
+  "bpc_factor": 0.2627604447512501,
+  "elapsed_s": 25821.7,
+  "tokens_per_sec": 24785.3,
+  "train_tokens_available": 151473732,
+  "val_tokens_available": 900550
+}

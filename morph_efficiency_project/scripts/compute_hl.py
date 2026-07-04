@@ -59,17 +59,20 @@ from morph_efficiency_project.scripts.engines.en_engine import EnglishEngine
 from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine
 from morph_efficiency_project.scripts.engines.tr_engine import TurkishEngine
 from morph_efficiency_project.scripts.engines.zh_engine import MandarinEngine
+from morph_efficiency_project.scripts.engines.he_engine import HebrewEngine
 
 ENGINES = {
     "en": EnglishEngine,
     "ar": ArabicEngine,
     "tr": TurkishEngine,
     "zh": MandarinEngine,
+    "he": HebrewEngine,
 }
 
 # Languages whose signature should come from the engine's template field
-# rather than a root-stripped surface. Arabic is the canonical templatic case.
-TEMPLATIC_LANGS = {"ar"}
+# rather than a root-stripped surface. Arabic is the canonical templatic case;
+# Hebrew is its Semitic twin and uses the same templatic-signature path.
+TEMPLATIC_LANGS = {"ar", "he"}
 
 DEFAULT_CORPUS_ROOT = ROOT / "mini_experiment" / "data"
 DEFAULT_OUT = ROOT / "manuscript" / "hl_metrics.json"
