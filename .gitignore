@@ -50,6 +50,15 @@ morph_efficiency_project/logs/logs
 # Manuscript build outputs (Tectonic temp dirs)
 manuscript/tex/_build*/
 
+# Cambridge NLP Press build outputs (MiKTeX/biber, not tectonic-buildable yet)
+manuscript/tex_cambridge/main.pdf
+manuscript/tex_cambridge/main.aux
+manuscript/tex_cambridge/main.log
+manuscript/tex_cambridge/main.bbl
+manuscript/tex_cambridge/main.bcf
+manuscript/tex_cambridge/main.blg
+manuscript/tex_cambridge/main.run.xml
+
 # Mini-experiment derived artefacts (rebuildable via tokenize_for_training.py)
 mini_experiment/data/*.npy
 mini_experiment/data/*.txt

@@ -10,7 +10,7 @@ For each of the four languages we train one baseline and one grammar-aware model
 
 \paragraph{Corpora.} To give every language the broadest variety of text, and to lift Turkish above the ceiling a Wikipedia-only corpus imposes, each language draws from two registers: encyclopaedic Wikipedia and large-scale web crawl (FineWeb for English, FineWeb-2 for the others). Five million sentences per language were sampled, deduplicated, and interleaved. Table~\ref{tab:phase2-corpus} reports the resulting training-token counts. One consequence of holding the token budget fixed across corpora of different size must be flagged: at $6.4 \times 10^8$ tokens the models see their unique training text roughly once for Mandarin, but about four times for Arabic, five for English, and seven for Turkish. Epoch count is therefore not matched across languages. It is a confound we cannot remove post hoc, and it bears on any cross-language reading of the deltas, since heavier repetition tends to raise held-out loss; it is revisited in \S\ref{sec:discussion-limitations}.
 
-\begin{table}[H]
+\begin{table}[hbt!]
 \centering
 \small
 \begin{tabular}{lrr}
@@ -39,7 +39,7 @@ the cross-entropy $\mathcal{L}$ in nats per token, converted to bits and rescale
 
 Table~\ref{tab:phase2} reports the headline result. Of the four languages, three show no rebate and one does; Figure~\ref{fig:p2-rebate} shows the same result graphically.
 
-\begin{table}[H]
+\begin{table}[hbt!]
 \centering
 \small
 \begin{tabular}{lrrrrr}
@@ -57,7 +57,7 @@ Arabic   & 3.47 & 1.1464 & 1.1246 & \textbf{$+0.0218$} & 48.0\,M\,$\to$\,70.7\,M
 \end{table}
 \FloatBarrier
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.82\linewidth]{fig_p2_rebate.pdf}
 \caption{Parameter rebate $\Delta\mathrm{bpc}$ (baseline $-$ grammar-aware) by language, at compute-optimal, transformer-matched scale. Only Arabic, the templatic case, shows a positive rebate; the three surface-recoverable languages fall below zero. Colours follow the project convention: Mandarin orange, English navy, Turkish red, Arabic green.}
@@ -67,7 +67,7 @@ Arabic   & 3.47 & 1.1464 & 1.1246 & \textbf{$+0.0218$} & 48.0\,M\,$\to$\,70.7\,M
 
 \paragraph{The ordinal prediction fails.} The framework predicts that $\Delta\mathrm{bpc}$ rises with $\rho \cdot H$. It does not. Mandarin, English, and Turkish all land on the wrong side of zero ($-0.004$, $-0.036$, $-0.017$), and their order bears no relation to $\rho \cdot H$: English, in the middle of the range, is the most negative, and Turkish, the agglutinative case in which the framework predicts the largest rebate, shows none. At compute-optimal, parameter-matched scale, the rank prediction that survived the pilot does not survive here. This is the outcome the pilot's Interpretation~B anticipated for the surface-recoverable languages: a model trained on enough data learns their grammar from the text itself, so handing it the same grammar as an explicit input is redundant, and the extra input streams, far from helping, cost a little. Figure~\ref{fig:p2-prediction} makes the failure visual: plotted against the engine's $\rho \cdot H$, the four rebates show no monotonic trend.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.75\linewidth]{fig_p2_prediction.pdf}
 \caption{Observed rebate against the framework's pre-registered predictor $\rho(L)\cdot H(L)$. The framework predicts the rebate should rise with $\rho \cdot H$; instead three languages sit below zero in no particular order and only Arabic is positive. The surviving signal tracks low $\rho$ (off-surface grammar), not high $\rho \cdot H$.}
@@ -79,7 +79,7 @@ Arabic   & 3.47 & 1.1464 & 1.1246 & \textbf{$+0.0218$} & 48.0\,M\,$\to$\,70.7\,M
 
 This is the \textbf{Templatic Lexical Surplus} (\S\ref{sec:results-pilot}), reproduced here at compute-optimal scale, standing where the broader rebate has dissolved. The learning curves (Figure~\ref{fig:p2-curves}) show the divergence directly: the grammar-aware trace runs above its baseline throughout for Mandarin, English, and Turkish, and below it for Arabic alone.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.78\linewidth]{fig_p2_curves.pdf}
 \caption{Evaluation bits per character against training tokens, grammar-aware (solid) versus baseline (dashed), per language. Lower is better, so the grammar-aware model helps only when its solid trace sits \emph{below} the dashed one, which happens for Arabic alone.}
@@ -96,7 +96,7 @@ The single positive result, Arabic, is also the one most exposed to a capacity o
 
 The control holds the Arabic grammar-aware model fixed in every respect, architecture, parameter count, token budget, and optimiser, and randomises only the \emph{content} of the root and \emph{wazn} streams: each position receives a root and a pattern drawn from the corpus distribution but decoupled from the word actually present. The streams thus cost exactly the same parameters while carrying no real templatic information. If Arabic's rebate is structural, the model with true root and \emph{wazn} streams should beat this shuffled control; if the rebate is merely capacity, the two should tie. The outcome is decisive, and in the structural direction. The shuffled control finishes at $1.1676$ bpc, not merely worse than the real grammar-aware model ($1.1246$) but worse than the baseline itself ($1.1464$). Randomising the root and \emph{wazn} streams, while holding their parameters exactly, does not just erase Arabic's rebate: it turns the two streams into noise that costs $0.021$ bpc against baseline. The real templatic streams therefore outperform identically-sized random ones by $0.043$ bpc. Capacity is not merely an insufficient explanation for Arabic's rebate; added capacity \emph{without} real structure is actively harmful, and the whole of the rebate, indeed more than it, is attributable to the templatic information the streams carry. The Templatic Lexical Surplus, on this test, is a structural effect and not a parameter artefact. Figure~\ref{fig:p2-ablation} shows the three Arabic models side by side.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.82\linewidth]{fig_p2_ablation.pdf}
 \caption{The Arabic ablation, in bits per character (lower is better). The grammar-aware model with real root and \emph{wazn} streams beats the baseline; the same model with those streams \emph{shuffled}, at identical parameter count, falls \emph{below} the baseline. The rebate is the templatic information, not the parameters carrying it.}
@@ -109,7 +109,7 @@ The control holds the Arabic grammar-aware model fixed in every respect, archite
 
 A single training run cannot separate a real effect of this size from the luck of one random initialisation and one data ordering. We therefore re-ran the Arabic comparison, baseline, grammar-aware, and shuffled control, across four independent random seeds. The rebate is stable: the grammar-aware model beats the baseline in all four seeds, by $0.0192 \pm 0.0023$ bits per character (mean $\pm$ standard deviation), a margin roughly eight times its own run-to-run scatter. The structural control is stable too: the real root and \emph{wazn} streams beat their shuffled counterparts by $0.0429 \pm 0.0007$ bpc, and the shuffled model finishes below the baseline in every seed. Figure~\ref{fig:p2-seeds} shows the three regimes with their seed-level spread. The effect is small in absolute terms but robust: it survives replication, and the shuffle control locates it in the templatic structure rather than in the parameters the streams add.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.82\linewidth]{fig_p2_seeds.pdf}
 \caption{Arabic across four random seeds, in bits per character (lower is better). Bars are seed means, whiskers the spread. The grammar-aware model (real root and \emph{wazn}) is lowest; the scrambled-control model, at identical parameter count, is highest, worse even than the byte-pair baseline. Both the grammar-aware rebate ($+0.0192 \pm 0.0023$ bpc) and its margin over the scrambled control ($+0.0429 \pm 0.0007$ bpc) hold across all four seeds.}
@@ -122,7 +122,7 @@ A single training run cannot separate a real effect of this size from the luck o
 
 The study grew out of a budget-limited pilot run in mid-May 2026: six decoder-only models, one baseline and one morphology-aligned pair for each of English, Arabic, and Turkish, at roughly $2 \times 10^6$ parameters and $5 \times 10^6$ training tokens, about eight times below the compute-optimal budget, and scored with the pre-reform engine's coarser bundle counts. The pilot was an impression-gathering exercise, not a controlled measurement: at that scale, the test-loss reduction under morphology-aligned tokenisation appeared to track the engine's $\rho \cdot H$ ordinal prediction, an impression that motivated the four-language study reported above rather than a result to be quoted on its own terms. It also suggested a magnitude puzzle, an apparent growth of the per-bit rebate with $\rho \cdot H$ that we provisionally named the \textbf{Agglutinative Compounding Effect}; at this scale, and with an engine later substantially revised for real-text accuracy, the pattern is best read as a prompt for further work rather than a measured quantity. Figure~\ref{fig:pilot-ordinal} shows the pilot's early impression.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \includegraphics[width=0.72\linewidth]{fig_01_ordinal_validation.pdf}
 \caption{The pilot's early impression (three languages, $\sim$2M parameters, mid-May 2026, pre-reform engine). At this exploratory scale, the reduction in test loss under morphology-aligned tokenisation appeared to track the engine's $\rho \cdot H$ ordinal prediction, motivating the four-language experiment reported above. \S\ref{sec:results-phase2} shows that this impression does not survive at compute-optimal, parameter-matched scale with the reformed engine.}

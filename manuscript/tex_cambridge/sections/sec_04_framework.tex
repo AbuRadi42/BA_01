@@ -21,7 +21,7 @@ SSC sits within a lineage of typological indices, but differs from its best-know
 
 For the four languages this paper tests, the structural ceiling $|B(L)|$ spans more than two orders of magnitude, tracking the morphological typology from isolating to templatic (Table~\ref{tab:framework-inputs}). Mandarin marks almost no grammar on the word form itself; the structural signal it carries lives not in inflection but in the Kangxi radical layer (\S\ref{sec:framework-engine}). English, analytic, has the smallest inflectional ceiling of the three inflecting languages, $|B(L)| = 89$ ($H_{\max} \approx 6.48$ bits). Turkish, agglutinative, stacks suffixes in a strict slot order into $|B(L)| = 4{,}382$ realisable bundles ($H_{\max} \approx 12.10$ bits). Arabic, a root-and-pattern templatic language whose grammar arises from interleaving consonantal roots (mostly triliteral, with a smaller class of quadriliteral roots and a handful of longer ones) with vowel patterns (\ar{أَوْزَان}, \emph{awz\=an}), reaches $|B(L)| = 9{,}579$ ($H_{\max} \approx 13.23$ bits), roughly twice Turkish's structural space and with a comparable ceiling, the two synthetic systems approaching each other from opposite mechanisms: Turkish by combinatorial slot-stacking, Arabic by templatic interleaving.
 
-\begin{table}[H]
+\begin{table}[hbt!]
 \centering
 \begin{tabular}{llrrrrrr}
 \toprule
@@ -176,7 +176,7 @@ Whether a given language-capability pair satisfies~\ref{eq:edgecondition} depend
 \S\ref{sec:results} reports the test. The four-language experiment evaluates only the \emph{ordinal} prediction of~\ref{eq:rebate}, that the rebate orders Mandarin $<$ English $<$ Turkish $<$ Arabic, at a single fixed parameter count and in bits per character; estimating the magnitude form (the coefficient $\alpha$, hence $\Delta N$ and the edge-deployability condition) would need a multi-size sweep we do not run, so those statements remain scaffolding this paper leaves untested. Whether even the ordinal prediction survives at compute-optimal, transformer-matched scale, having held in the three-language pilot (\S\ref{sec:results-pilot}), is what the experiment decides. Figure~\ref{fig:curve-shift} sketches the predicted shift schematically.
 
 \vspace{0.3\baselineskip}
-\begin{figure}[H]
+\begin{figure}[hbt!]
 \centering
 \vspace{-0.7\baselineskip}
 \includegraphics[width=0.78\linewidth]{fig_03_curve_shift_schematic.pdf}
