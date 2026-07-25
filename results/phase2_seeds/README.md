@@ -5,6 +5,9 @@ reported in the manuscript (`manuscript/tex/`). It is the durable, citable recor
 the experiment: for each training run we keep its final-metrics summary, its exact
 run configuration, and its full training-metrics log.
 
+The single-run four-language headline results (the ZH, EN, TR, and single-run AR rows
+of `tab:phase2`) live in the sibling directory `../phase2_fourlang/`.
+
 ## What each file is
 
 For every cell `ar_<regime>_s<seed>/`:
