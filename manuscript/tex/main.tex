@@ -26,6 +26,7 @@
 % Visible draft placeholder for results still computing on the GPU box.
 \newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
 \usepackage{booktabs}
+\usepackage{float}           % [H] forces a float to render exactly at its source point, no drifting
 \usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
 \usepackage{natbib}          % author-date citations; Cambridge compatible
 \usepackage{xcolor}
@@ -71,7 +72,7 @@ in Advance Make It Cheaper to Build?
 }
 
 \author{%
-Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0008-0716-7598}{0009-0008-0716-7598}. Email: \href{mailto:Sameh.AbuRadi@CODE.Berlin}{Sameh.AbuRadi@CODE.Berlin}.} \\
+Sameh AbuRadi\thanks{Corresponding author. Email: \href{mailto:Sameh.AbuRadi@CODE.Berlin}{Sameh.AbuRadi@CODE.Berlin}, ORCID: \href{https://orcid.org/0009-0008-0716-7598}{0009-0008-0716-7598}.} \\
 \textit{CODE University of Applied Sciences, Berlin} \\
 \textit{Supervised by Prof.\ Dr.\ Fabian Geier}
 }
@@ -105,7 +106,7 @@ Sameh AbuRadi\thanks{Corresponding author. ORCID: \href{https://orcid.org/0009-0
 % -- Acknowledgements ---------------------------------------------------
 
 \section*{Acknowledgements}
-The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it.
+The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it. The author also thanks Prof.\ Dr.\ Fabian Geier for securing the university's approval to fund this publication from the research budget.
 
 % -- Disclosures (per Cambridge NLP policy) -----------------------------
 

@@ -67,7 +67,7 @@ def fig1_ordinal_validation() -> None:
     hl_data = {r["lang"]: r for r in json.loads(HL.read_text())["results"]}
     alpha_data = {r["lang"]: r for r in json.loads(ALPHA.read_text())["rows"]}
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(6.0, 2.4))
     xs, ys = [], []
     for lang in LANG_ORDER:
         x = hl_data[lang]["rho_sig_times_H_bits"]
@@ -87,10 +87,13 @@ def fig1_ordinal_validation() -> None:
     ax.plot(np.array(xs)[order], np.array(ys)[order],
             linestyle="--", linewidth=0.8, color="#888", zorder=2)
 
-    ax.set_xlabel(r"$\rho(L)\cdot H(L)$  (bits, engine-derived)")
-    ax.set_ylabel(r"$\Delta\mathcal{L}$  (nats, morph vs BPE at 2M params)")
+    # Smaller than the rcParams default (9pt): at this figure's squeezed
+    # height (2.4in), the full rotated y-label text was taller than the
+    # axes and matplotlib's tight bbox clipped its top end instead of
+    # expanding to fit it (rendered as "...at 2M param", missing "s)").
+    ax.set_xlabel(r"$\rho(L)\cdot H(L)$  (bits, engine-derived)", fontsize=8)
+    ax.set_ylabel(r"$\Delta\mathcal{L}$  (nats, morph vs BPE at 2M params)", fontsize=7)
     ax.set_yscale("log")
-    ax.set_title("Fig. 1 — Ordinal validation of the parameter-rebate prediction")
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
     save(fig, "fig_01_ordinal_validation")
 
@@ -153,7 +156,10 @@ def fig2_alpha_dispersion() -> None:
 
 def fig3_curve_shift_schematic() -> None:
     """Figure 3 — schematic of the capability-vs-scale curve shift [eq. 4.8]."""
-    fig, ax = plt.subplots()
+    # Shorter than the (6.0, 3.8) rcParams default so the figure fits the
+    # whitespace remaining at the end of the Framework section without
+    # forcing a page break.
+    fig, ax = plt.subplots(figsize=(6.0, 2.2))
 
     N = np.logspace(7, 11, 200)            # parameter count, log scale
     # Two sigmoid capability curves: morph shifted left by delta_logN
@@ -207,7 +213,6 @@ def fig3_curve_shift_schematic() -> None:
     ax.set_ylim(0, 1.02)
     ax.set_xlabel("Parameter count $N$ (log scale)")
     ax.set_ylabel("Capability score")
-    ax.set_title("Fig. 3 — Predicted capability-vs-scale curve shift under morphology-aligned tokenization")
     ax.legend(loc="center right", frameon=False)
     ax.grid(True, which="both", linestyle=":", alpha=0.4)
     save(fig, "fig_03_curve_shift_schematic")

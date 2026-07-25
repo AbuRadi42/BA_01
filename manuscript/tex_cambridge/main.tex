@@ -1,0 +1,114 @@
+% =====================================================================
+% Morphological Efficiency in Multilingual Language Models
+% Submission to Natural Language Processing (Cambridge University Press)
+%
+% Typeset in the journal's own cup-journal.cls (journal=nlp).
+% Requires `biber` on PATH to resolve citations (biblatex-chicago backend).
+% =====================================================================
+
+\documentclass[
+  journal=nlp,
+  manuscript=article-type,
+  year=2026,
+  volume=1,
+]{cup-journal}
+
+% -- Packages -----------------------------------------------------------
+\usepackage{amsmath, amssymb}
+\usepackage[nopatch]{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
+% Visible draft placeholder for results still computing on the GPU box.
+\newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
+
+% Arabic and Mandarin script support. NOTE: this class force-loads biblatex
+% during \documentclass processing, before this preamble runs, so polyglossia
+% (which must load *before* biblatex) cannot be used here. The `bidi` package
+% was tried as a lower-level alternative but was found to globally break the
+% class's title-block generation (logo, article-type banner, citation line,
+% and affiliation block all silently disappear once bidi is loaded -- traced
+% and confirmed via isolated testing). Since our Arabic use is short inline
+% words/phrases, not full right-to-left paragraph flow, XeTeX's native
+% Script=Arabic font shaping (via fontspec alone) already produces correctly
+% joined, correctly ordered glyphs without needing bidi's paragraph-level
+% reordering machinery at all.
+\usepackage{fontspec}
+\newfontfamily\arabicfont[Script=Arabic]{Amiri}
+\IfFontExistsTF{SimSun}
+  {\newfontfamily\cjkfont{SimSun}[Script=CJK]}
+  {\newfontfamily\cjkfont{Noto Serif CJK SC}[Script=CJK]}
+\newcommand{\ar}[1]{{\arabicfont #1}}
+\newcommand{\zh}[1]{{\cjkfont #1}}
+% -----------------------------------------------------------------------
+
+% Figure path
+\graphicspath{{../figures/}}
+
+\title{Does Teaching a Language Model Grammar in Advance Make It Cheaper to Build?}
+
+\author{Sameh AbuRadi}
+\affiliation{CODE University of Applied Sciences, Berlin\\Supervised by Prof.\ Dr.\ Fabian Geier}
+\email[Sameh AbuRadi]{Sameh.AbuRadi@CODE.Berlin}
+
+% Append ORCID after the email in the corresponding-author footnote,
+% rather than inside \email{} itself: the class renders that argument
+% through \url{}, which cannot carry the extra ", ORCID: ..." text.
+\makeatletter
+\renewcommand*\cup@contact@details{%
+  { \emailsymbol{}Corresponding author. Email: \cup@email@list, ORCID: \url{https://orcid.org/0009-0008-0716-7598}}%
+  \cup@number@list
+}
+\makeatother
+
+\addbibresource{references.bib}
+
+\keywords{grammar-aware tokenisation, morphological typology, transformer scaling laws, linguistic typology, information theory in NLP, computational linguistics, AI and ML economics}
+
+\begin{document}
+
+% -- Abstract -----------------------------------------------------------
+\input{sections/sec_01_abstract}
+
+% -- Body ---------------------------------------------------------------
+\input{sections/sec_02_introduction}
+\input{sections/sec_03_related_work}
+\input{sections/sec_04_framework}
+\input{sections/sec_05_case_studies}
+\input{sections/sec_06_results}
+\input{sections/sec_07_discussion}
+\input{sections/sec_08_conclusion}
+
+% -- End matter (journal-required paragraph headers) ---------------------
+% Set in \footnotesize to match the bibliography's size (cup-journal.cls
+% renders \printbibliography via \bibfont, which this class sets to
+% \footnotesize -- see cup-journal.cls's \renewcommand*{\bibfont}).
+\begingroup
+\footnotesize
+
+\paragraph{Acknowledgments}
+The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it. The author also thanks Prof.\ Dr.\ Fabian Geier for securing the university's approval to fund this publication from the research budget.
+
+\paragraph{Funding Statement}
+This research received no external grant funding. Compute infrastructure was donated by Deniz Sertkan. Publication costs are funded by CODE University of Applied Sciences' research budget.
+
+\paragraph{Competing Interests}
+The author declares no competing interests.
+
+\paragraph{Data Availability Statement}
+Source code for the four grammar engines, the training and tokenisation pipeline, and the analysis scripts is publicly available at \url{https://github.com/AbuRadi42/BA_01}, and from the corresponding author on request, pending institutional archiving.
+
+\paragraph{Ethical Standards}
+This research involved no human or animal subjects and no personal data. It meets all applicable ethical guidelines.
+
+\paragraph{Author Contributions}
+Conceptualization: S.A. Methodology: S.A. Software: S.A. (assisted by Claude Opus 4.8, see below). Data curation: S.A. Formal analysis: S.A. Writing original draft: S.A. Writing review and editing: S.A. Supervision: F.G. All authors approved the final submitted draft.
+
+\paragraph{Use of Generative AI}
+The experimental work reported here, the implementation of the four grammar engines, the orchestration of the GPU training runs, and the collection and reduction of the resulting data, was carried out with Claude Opus 4.8 (Anthropic), operating through the Claude Code agent interface. The final audit of the manuscript, a section-by-section reconciliation of every claim against the results it rests on, together with an audit of the framework (Section~\ref{sec:framework}) that verified the internal consistency of its mathematical logic, was likewise assisted by Claude Opus 4.8. All scientific claims, citations, numerical results, and final wording were verified and revised by the human author.
+\endgroup
+
+\printbibliography
+
+\end{document}

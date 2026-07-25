@@ -1,0 +1,19 @@
+{
+  "lang": "zh",
+  "regime": "morph",
+  "n_params": 44981760,
+  "model_dim": 512,
+  "layers": 10,
+  "heads": 8,
+  "seq_len": 128,
+  "total_steps": 78125,
+  "tokens_seen": 640000000,
+  "final_eval_loss": 3.0841846895217895,
+  "final_eval_ppl": 21.849645333245647,
+  "final_eval_bpc": 4.3839297526731515,
+  "bpc_factor": 1.421422578085909,
+  "elapsed_s": 24068.5,
+  "tokens_per_sec": 26590.8,
+  "train_tokens_available": 634448944,
+  "val_tokens_available": 3786079
+}

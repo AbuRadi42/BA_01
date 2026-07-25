@@ -1,21 +1,21 @@
 \section{Discussion}
 \label{sec:discussion}
 
-The four-language experiment was built to settle a question the pilot could not: whether the parameter rebate from grammar-aware tokenisation is a real property of grammar-aware modelling or an artefact of under-training. At compute-optimal, transformer-matched scale the answer is split, and the split is the paper's central finding. For the three languages whose grammar is legible from the surface, the rebate is an artefact and disappears. For the one language whose grammar is hidden off the surface, a rebate remains, and an ablation shows it to be structural. We take the two halves in turn, then draw out the consequences and the limits.
+\S\ref{sec:results-summary} summarised the split verdict; this section asks what it means. We take the two halves in turn, Turkish's collapsed rebate and Arabic's surviving one, then draw out the consequences and the limits.
 
 \subsection{The Agglutinative Compounding Effect does not survive scale}
 \label{sec:discussion-ace}
 
-The pilot's headline phenomenon, the apparent super-linear growth of the rebate with $\rho \cdot H$, is not reproduced. Mandarin, English, and Turkish all show a negative $\Delta\mathrm{bpc}$ at compute-optimal scale, and the three are not ordered by $\rho \cdot H$. Turkish is the decisive case. It has the second-highest $\rho \cdot H$, it is the cleanest agglutinative system in the set, and it produced the largest rebate in the pilot at every rung of the small-scale ladder; on the framework's logic it was the language most likely to gain. It does not. The mechanism is the one Interpretation~B named: a model trained at the compute-optimal ratio sees enough text to learn Turkish's regular, surface-exposed morphology for itself, so being handed that same morphology as an explicit input is redundant, and the extra streams cost a little. The pilot saw a rebate because, starved of data, its models could not learn the grammar and the explicit streams filled the gap. Remove the starvation and the gap closes. The Agglutinative Compounding Effect was a finding about under-training, not about agglutination.
+The pilot's headline phenomenon, the apparent super-linear growth of the rebate with $\rho \cdot H$, is not reproduced (\S\ref{sec:results-phase2}). Turkish is the decisive case: the cleanest agglutinative system in the set, the language both the typology and the pilot's early impression favoured most (\S\ref{sec:cases-tr}, \S\ref{sec:results-pilot}), and the one whose rebate collapses hardest once trained to the compute-optimal ratio. Starved of data, the pilot's models could not learn Turkish's regular, surface-exposed morphology for themselves, so the explicit streams filled a gap that a properly trained model closes on its own. The Agglutinative Compounding Effect was a finding about under-training, not about agglutination.
 
-This is worth stating plainly, because the pilot's result taken alone pointed the other way, and because the language it most flattered, Turkish, is one we had every reason to want to win. The compute-optimal experiment overturns it.
+This is worth stating plainly, because the pilot's impression, taken alone, pointed the other way, and because the language it most flattered, Turkish, is one we had every reason to want to win. The compute-optimal experiment overturns it.
 
 \subsection{The Templatic Lexical Surplus is real}
 \label{sec:discussion-tls}
 
-Arabic is the exception, and the ablation makes it a clean one. Arabic alone shows a positive rebate at compute-optimal scale, and randomising the contents of its root and \emph{wazn} streams, at identical parameter count, not only erases the rebate but drops the model below its baseline (\S\ref{sec:results-ablation}). The rebate is the templatic structure, not the parameters that carry it.
+Arabic is the exception, and the shuffle-control ablation of \S\ref{sec:results-ablation} makes it a clean one: the rebate is the templatic structure, not the parameters that carry it.
 
-The reason Arabic differs is not that its $\rho \cdot H$ is highest but that its $\rho$ is lowest. Arabic stores roughly half of its grammatical information off the written surface, in the interleaving of consonantal root and vocalic pattern. That off-surface half is exactly what a surface-reading model cannot reconstruct from text at any scale, because it is never on the surface to be learned. The explicit root and \emph{wazn} streams hand the model that otherwise-unreachable structure, and it pays. The surviving signal is governed by the \emph{unrecoverable} grammar a language hides, $(1-\rho)\,H$, not by the recoverable grammar $\rho \cdot H$ the framework was built to measure. This is a correction to the framework, not a confirmation of it: the original prediction had the sign of the $\rho$ dependence backwards.
+The reason Arabic differs is not that its $\rho \cdot H$ is highest but that its $\rho$ is lowest (\S\ref{sec:cases-ar}): the templatic half of its grammar sits off the written surface, unreachable by a model that only ever reads text, so handing that structure over explicitly pays. The surviving signal is therefore governed by the \emph{unrecoverable} grammar a language hides, $(1-\rho)\,H$, not by the recoverable grammar $\rho \cdot H$ the framework was built to measure. This is a correction to the framework, not a confirmation of it: the original prediction had the sign of the $\rho$ dependence backwards.
 
 \subsection{A conjecture for future work, not a reformulated law}
 \label{sec:discussion-reformulated}
@@ -33,7 +33,7 @@ The practical implications narrow, and sharpen, accordingly.
 
 \paragraph{Cross-lingual cost accounting.} The Green-AI and linguistic-equity literature \citep{schwartz2020, bender2021, ahia2023} gains a more specific claim than the pilot offered: a grammar-aware preprocessing step is a genuine efficiency lever for templatic languages and a non-lever for the rest. Equity recommendations should target the typological feature, off-surface grammar, rather than morphological richness as such.
 
-\paragraph{The pilot as cautionary tale.} The clearest methodological lesson is about scale. A six-model pilot at eight times below compute-optimal produced an ordered, striking, nameable effect that a compute-optimal experiment then dissolved for three of four languages. Tokenisation studies that report gains at small scale, a large fraction of the literature, should be read with this in mind.
+\paragraph{The pilot as cautionary tale.} The clearest methodological lesson is about scale. The small-scale pilot (\S\ref{sec:results-pilot}) produced an ordered, striking, nameable effect that the compute-optimal experiment then dissolved for three of four languages. Tokenisation studies that report gains at small scale, a large fraction of the literature, should be read with this in mind.
 
 \subsection{Limitations}
 \label{sec:discussion-limitations}

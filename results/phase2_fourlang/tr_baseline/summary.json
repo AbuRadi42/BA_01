@@ -1,0 +1,19 @@
+{
+  "lang": "tr",
+  "regime": "baseline",
+  "n_params": 47953920,
+  "model_dim": 512,
+  "layers": 10,
+  "heads": 8,
+  "seq_len": 128,
+  "total_steps": 78125,
+  "tokens_seen": 640000000,
+  "final_eval_loss": 4.110892419815063,
+  "final_eval_ppl": 61.00113190464845,
+  "final_eval_bpc": 0.8810754789611909,
+  "bpc_factor": 0.21432705821108006,
+  "elapsed_s": 25800.6,
+  "tokens_per_sec": 24805.6,
+  "train_tokens_available": 88766362,
+  "val_tokens_available": 533347
+}
