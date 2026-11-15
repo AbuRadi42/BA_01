@@ -3,7 +3,7 @@ compute_hl.py — Grammatical information content H(L) and structural
                 recoverability rho(L) per language.
 
 Implements the Week-1 numerical inputs for the framework derivation
-(see manuscript/framework_math.md, sections 1, 3.3, 5.3).
+(see archive/manuscript_drafts/framework_math.md, sections 1, 3.3, 5.3).
 
 For each language L:
 
@@ -34,7 +34,7 @@ Usage:
 
 Outputs:
     stdout: summary table.
-    JSON:   manuscript/hl_metrics.json (timestamped run).
+    JSON:   results/analysis/hl_metrics.json (timestamped run).
 
 This script assumes each engine exposes:
     engine.analyze(word: str) -> TokenInfo
@@ -75,7 +75,7 @@ ENGINES = {
 TEMPLATIC_LANGS = {"ar", "he"}
 
 DEFAULT_CORPUS_ROOT = ROOT / "mini_experiment" / "data"
-DEFAULT_OUT = ROOT / "manuscript" / "hl_metrics.json"
+DEFAULT_OUT = ROOT / "results" / "analysis" / "hl_metrics.json"
 
 
 def _whitespace_tokenize(line: str) -> list[str]:

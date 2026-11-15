@@ -26,8 +26,14 @@
 % Visible draft placeholder for results still computing on the GPU box.
 \newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
 \usepackage{booktabs}
-\usepackage{float}           % [H] forces a float to render exactly at its source point, no drifting
-\usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
+\usepackage{float}
+\usepackage[section]{placeins} % floats never drift past the section they belong to
+% Let tables and figures settle at page tops and bottoms so running text is
+% never split around them, and keep float-only pages to a minimum.
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.75}
 \usepackage{natbib}          % author-date citations; Cambridge compatible
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -77,7 +83,7 @@ Sameh AbuRadi\thanks{Corresponding author. Email: \href{mailto:Sameh.AbuRadi@COD
 \textit{Supervised by Prof.\ Dr.\ Fabian Geier}
 }
 
-\date{9 July 2026}
+\date{November 2026}
 
 \begin{document}
 \maketitle
@@ -120,7 +126,7 @@ reduction of the resulting data, was carried out with Claude Opus 4.8
 audit of the manuscript, a section-by-section reconciliation of every claim
 against the results it rests on, together with an audit of the framework
 (Section~\ref{sec:framework}) that verified the internal consistency of its
-mathematical logic, was likewise assisted by Claude Opus 4.8. All scientific
+mathematical logic, was likewise assisted by Claude Opus 4.8, and later editorial revisions by Claude Opus 5.5. All scientific
 claims, citations, numerical results, and final wording were verified and
 revised by the human author.
 

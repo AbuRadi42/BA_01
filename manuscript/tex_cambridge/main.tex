@@ -4,6 +4,10 @@
 %
 % Typeset in the journal's own cup-journal.cls (journal=nlp).
 % Requires `biber` on PATH to resolve citations (biblatex-chicago backend).
+%
+% SINGLE SOURCE: the section text and bibliography live in ../tex/ and are
+% shared with the development build there. Edit them in ../tex/ only; this
+% file holds nothing but the journal-specific preamble and end matter.
 % =====================================================================
 
 \documentclass[
@@ -19,7 +23,7 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{xcolor}
-\usepackage{placeins}        % \FloatBarrier to pin floats inside subsections
+\usepackage[section]{placeins} % floats never drift past the section they belong to
 % Visible draft placeholder for results still computing on the GPU box.
 \newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
 
@@ -62,23 +66,29 @@
 }
 \makeatother
 
-\addbibresource{references.bib}
+\addbibresource{../tex/references.bib}
+% The shared .bib carries an "Accessed ..." note for natbib, which ignores
+% urldate; biblatex-chicago prints urldate itself, so drop the note here.
+\DeclareSourcemap{\maps[datatype=bibtex]{\map{
+  \step[fieldsource=urldate, final]
+  \step[fieldset=note, null]
+}}}
 
 \keywords{grammar-aware tokenisation, morphological typology, transformer scaling laws, linguistic typology, information theory in NLP, computational linguistics, AI and ML economics}
 
 \begin{document}
 
 % -- Abstract -----------------------------------------------------------
-\input{sections/sec_01_abstract}
+\input{../tex/sections/sec_01_abstract}
 
 % -- Body ---------------------------------------------------------------
-\input{sections/sec_02_introduction}
-\input{sections/sec_03_related_work}
-\input{sections/sec_04_framework}
-\input{sections/sec_05_case_studies}
-\input{sections/sec_06_results}
-\input{sections/sec_07_discussion}
-\input{sections/sec_08_conclusion}
+\input{../tex/sections/sec_02_introduction}
+\input{../tex/sections/sec_03_related_work}
+\input{../tex/sections/sec_04_framework}
+\input{../tex/sections/sec_05_case_studies}
+\input{../tex/sections/sec_06_results}
+\input{../tex/sections/sec_07_discussion}
+\input{../tex/sections/sec_08_conclusion}
 
 % -- End matter (journal-required paragraph headers) ---------------------
 % Set in \footnotesize to match the bibliography's size (cup-journal.cls
@@ -106,7 +116,7 @@ This research involved no human or animal subjects and no personal data. It meet
 Conceptualization: S.A. Methodology: S.A. Software: S.A. (assisted by Claude Opus 4.8, see below). Data curation: S.A. Formal analysis: S.A. Writing original draft: S.A. Writing review and editing: S.A. Supervision: F.G. All authors approved the final submitted draft.
 
 \paragraph{Use of Generative AI}
-The experimental work reported here, the implementation of the four grammar engines, the orchestration of the GPU training runs, and the collection and reduction of the resulting data, was carried out with Claude Opus 4.8 (Anthropic), operating through the Claude Code agent interface. The final audit of the manuscript, a section-by-section reconciliation of every claim against the results it rests on, together with an audit of the framework (Section~\ref{sec:framework}) that verified the internal consistency of its mathematical logic, was likewise assisted by Claude Opus 4.8. All scientific claims, citations, numerical results, and final wording were verified and revised by the human author.
+The experimental work reported here, the implementation of the four grammar engines, the orchestration of the GPU training runs, and the collection and reduction of the resulting data, was carried out with Claude Opus 4.8 (Anthropic), operating through the Claude Code agent interface. The final audit of the manuscript, a section-by-section reconciliation of every claim against the results it rests on, together with an audit of the framework (Section~\ref{sec:framework}) that verified the internal consistency of its mathematical logic, was likewise assisted by Claude Opus 4.8, and later editorial revisions by Claude Opus 5.5. All scientific claims, citations, numerical results, and final wording were verified and revised by the human author.
 \endgroup
 
 \printbibliography

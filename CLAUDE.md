@@ -15,9 +15,10 @@ If you are a Claude Code agent picking this repository up cold, read this whole 
 ## Standing rules — non-negotiable
 
 ### Git workflow
-- **Always amend, never commit.** This repository maintains a single canonical commit. Every change is `git add <files>; git commit --amend --no-edit` (or with an explicit `-m` if Sameh asks for a message change).
-- Preserve the author and committer date with `GIT_COMMITTER_DATE="<date>" git commit --amend --date "<date>"` if a date is dictated.
-- Never push without explicit permission. Amending changes the SHA; force-push is destructive.
+- **Never commit without Sameh's explicit go-ahead.** Stage approved work (`git add`) and leave it staged; he decides when it is committed. (The old single-amended-commit rule is retired: `main` is now a normal multi-commit history.)
+- When he does authorise commits, each logical change gets **its own commit**, with a short, descriptive message shown to him for approval first. Author identity on every commit: `𝕾𝖆𝖒𝖊𝖍 𝕬𝖇𝖚𝕽𝖆𝖉𝖎 <team@samhoustonlabs.com>`.
+- Never push without explicit permission, and never force-push or rewrite published history unless he explicitly authorises that specific rewrite.
+- He often works from his phone: show every proposed change (text before/after, commit messages) inline in chat, not only in files.
 
 ### AWS deployment
 - **Never run `launch_run.py --deploy` or any equivalent that starts a real AWS / SageMaker training job without Sameh's explicit per-instance permission.** Dry runs (without `--deploy`) that only emit config files are fine.
@@ -39,25 +40,24 @@ If you are a Claude Code agent picking this repository up cold, read this whole 
 
 ## Current project state
 
-A single commit on `main` contains everything. As of the last amend, the project is **architecture-complete and AWS-deployable**, with one rehearsal smoke test passing on all eight (lang × regime) cells. Sameh has not yet authorised the AWS spend.
+The four-language experiment (Phase 2) is **done and written up**: compute-optimal, transformer-matched baseline vs grammar-aware pairs for ZH, EN, TR, AR, plus a four-seed Arabic replication and a parameter-matched shuffle control. The verdict is a split: no rebate for ZH/EN/TR, a robust structural rebate for AR (the Templatic Lexical Surplus). The manuscript reports it and is in pre-submission review: an external linguist is auditing its linguistic terminology before it goes to Cambridge NLP.
 
 ### What is done
-- Four grammar engines (`morph_efficiency_project/scripts/engines/`) at 100% test pass across 4,283 tests
+- Four grammar engines (`morph_efficiency_project/scripts/engines/`) at 100% test pass across 4,343 tests
 - Sentence-grammar layer (`morph_efficiency_project/scripts/engines/grammar/`) with context-aware POS resolution and structural validation
 - Tokenisation pipeline (`morph_efficiency_project/scripts/tokenize_for_training.py`) with per-(lang, surface) memoisation; full-corpus runs complete for all four languages on disk in `mini_experiment/data/` (.npy files gitignored, vocab JSONs at `mini_experiment/tokenizers/` are tracked)
 - Multi-stream MiniGPT architecture (`mini_experiment/run_mini.py`) supporting 1/2/4 input embedding streams with parameter-matched comparison
 - Trainer (`morph_efficiency_project/scripts/train_model.py`) — cosine LR + AdamW + checkpointing + resume
 - AWS SageMaker launcher (`morph_efficiency_project/scripts/aws/launch_run.py`) with dry-run and `--deploy` modes
-- Manuscript (`manuscript/tex/`) tone-polished across all 8 sections, every Arabic word vocalised with tashkil, polyglossia loaded for RTL
+- Phase 2 results at `results/phase2_fourlang/` and `results/phase2_seeds/`; engine and pilot metrics at `results/analysis/`
+- Manuscript (`manuscript/tex/`, the single source) reporting Phase 2 in §6; the journal-template build in `manuscript/tex_cambridge/` reads the same sections (see `manuscript/README.md`)
 - Audit reports + bundle distribution Zipf plots at `morph_efficiency_project/logs/summary/`
 - Pipeline diagrams at `pipeline_diagrams.html` with Mermaid algorithm flowcharts plus data-flow SVGs
 - 8-cell rehearsal smoke test passing (each cell trains a tiny model for 234 steps on CPU, all checkpoints save cleanly)
 
 ### What is NOT done (and is yours when Sameh says go)
-1. **Phase 2 AWS deployment**. The 8-cell proof-of-concept sweep at 30M-parameter Chinchilla-optimal scale. Cost ~$3-5k. This is the Cambridge submission.
-2. **Phase 3 Turkish reasoning SLM**. The bulk of the credits (~$15-20k) goes to scaling Turkish specifically into a reasoning-capable small language model using the technique Phase 2 proves. Sameh has not yet specified the target parameter count, the additional data sources (Turkish CommonCrawl, OSCAR, news, books, reasoning-task data), or the release path. Wait for him to spec it.
-3. Section 6 of the manuscript ("Empirical Results") still contains Phase 1 (3-language, 2M-parameter) numbers. These will be replaced when Phase 2 data lands.
-4. A handful of Phase 1 magnitudes are quoted in sections 1, 2, and 7 of the manuscript; those also update after Phase 2.
+1. **Submission.** Fold in the linguist's terminology corrections, commit the staged manuscript work (with permission), build the Cambridge version on Sameh's machine, submit.
+2. **Phase 3.** Originally scoped as a Turkish reasoning SLM, but Phase 2 found no rebate for Turkish and a real one only for Arabic, so the direction itself is open (the paper's own programme points at cross-Semitic replication, e.g. the first-milestone Hebrew engine). Sameh has not specified it. Do not infer; wait for him.
 
 ---
 
@@ -66,7 +66,7 @@ A single commit on `main` contains everything. As of the last amend, the project
 If you just inherited this and want to confirm nothing rotted:
 
 ```bash
-# 1. Test suite (expect 4,283 passing)
+# 1. Test suite (expect 4,343 passing)
 python -X utf8 -m pytest morph_efficiency_project/tests/ -q
 
 # 2. Local CPU smoke training (expect monotonic loss decrease in ~30s)
@@ -76,8 +76,8 @@ python morph_efficiency_project/scripts/train_model.py \
     --eval-every 100 --save-every 500 \
     --output-dir /tmp/smoke_en_baseline
 
-# 3. Manuscript build (expect ~360KB PDF, zero Missing-character warnings)
-cd manuscript/tex && tectonic main.tex --outdir _build
+# 3. Manuscript build (expect a ~29-page PDF, zero Missing-character warnings)
+cd manuscript/tex && xelatex main && bibtex main && xelatex main && xelatex main
 
 # 4. Bundle-space audit (slow — TR alone is ~16 min)
 python morph_efficiency_project/scripts/compute_bundle_space.py
@@ -100,8 +100,9 @@ Baseline regime for every language: 1 stream, 32k BPE-style cap.
 
 ## Recent things worth knowing
 
-- **Tashkil**: every Arabic word in the manuscript is fully vocalised. If you add a new Arabic word, vocalise it. Root letters with hyphens (e.g. `ك-ت-ب`) stay bare — they are consonantal skeletons by definition.
-- **polyglossia**: loaded in `manuscript/tex/main.tex`. Arabic uses the `\ar{...}` macro for proper RTL rendering. Mandarin uses `\zh{...}` for the SimSun CJK font.
+- **Tashkil**: Arabic words in the manuscript are fully vocalised by default, and a new Arabic word should be vocalised too, with two exceptions. (1) A word cited *for its ambiguity* stays unvocalised, because the harakat would resolve the very ambiguity the example illustrates: write `مدرسة` (*madrasa* "school" or *mudarrisa* "female teacher"), never `مَدْرَسَة`. (2) A root is always a bare, hyphenated consonantal skeleton (`ك-ت-ب`, `م-ص-ر`), never a vocalised word such as `مِصْر`. Patterns are cited in full, final vowel included (`اسْتَفْعَلَ`). An external linguist reviewer flagged a vocalised ambiguity example in November 2026; the audience will catch these.
+- **polyglossia**: loaded in `manuscript/tex/main.tex`. Arabic uses the `\ar{...}` macro for proper RTL rendering. Mandarin uses `\zh{...}` for the SimSun CJK font. The Cambridge class cannot take polyglossia, so `tex_cambridge/main.tex` defines the same two macros with fontspec alone.
+- **Manuscript layout conventions**: floats `[tbp]` (never `[H]`), no run-in `\paragraph{}` headings in the body, text edited only in `manuscript/tex/`.
 - **TR engine speed**: the worst case is ~25 ms/word without caching. The tokeniser has a per-(lang, surface) memoisation cache that cuts TR full-corpus from ~30 hours to ~16 minutes. Do not remove the cache without measuring.
 - **Bundle counts shift with corpus size**. The 20k-sample audit (from `compute_bundle_space.py`) and the full-corpus tokeniser produce slightly different `observed` numbers for the bundle stream. Both are correct for their respective sample. The diagrams and the manuscript already document the difference.
 - **The five spare engines** (German, Spanish, Hungarian, Swahili, Basque) were removed earlier. They are in git history if you need to resurrect them, but the project's headline scope is the four languages.
@@ -110,9 +111,8 @@ Baseline regime for every language: 1 stream, 32k BPE-style cap.
 
 ## Open decisions waiting on Sameh
 
-1. **When to authorise Phase 2 AWS deployment.** Requires `MORPH_S3_BUCKET` and `MORPH_SM_ROLE_ARN` env vars set, then 8 `launch_run.py --deploy` invocations.
-2. **Phase 3 spec.** Sameh has not yet decided: target parameter count for the Turkish reasoning SLM, what additional data to bring in, what reasoning benchmarks to evaluate against, where to release the final model. Do not infer; wait for him.
-3. **Cambridge template swap.** The manuscript currently uses `\documentclass[11pt, a4paper]{article}` for development convenience. At submission, that one line swaps for the Cambridge NLP Press class (`cambridge7A` or equivalent from the journal's Overleaf template). All other parts are written to survive the swap.
+1. **When to commit** the staged manuscript and cleanup work (see the Git workflow rules).
+2. **Phase 3 spec**: direction, scale, data, benchmarks, release path. Do not infer; wait for him.
 
 ---
 
@@ -129,8 +129,13 @@ Baseline regime for every language: 1 stream, 32k BPE-style cap.
 | `mini_experiment/run_mini.py` | The multi-stream MiniGPT model |
 | `mini_experiment/tokenizers/` | Per-language vocab JSON tables (committed) |
 | `mini_experiment/data/` | Raw .txt corpora and .npy integer streams (gitignored, rebuildable) |
-| `manuscript/tex/main.tex` | Manuscript root; sections at `manuscript/tex/sections/sec_0*_*.tex` |
-| `manuscript/tex/references.bib` | Bibliography |
+| `manuscript/README.md` | How the paper is built: one source, two builds, deploy steps |
+| `manuscript/tex/main.tex` | Manuscript root (public PDF); sections at `manuscript/tex/sections/sec_0*_*.tex` |
+| `manuscript/tex/references.bib` | The only bibliography (shared with the Cambridge build) |
+| `manuscript/tex_cambridge/main.tex` | Journal-template preamble + end matter; no copy of the text |
+| `results/` | Phase 2 readings (`phase2_fourlang/`, `phase2_seeds/`) and analysis metrics (`analysis/`) |
+| `docs/` | Pre-submission checklists (publication, citation verification) |
+| `archive/` | Superseded drafts, planning notes, old demo site, pilot scripts; see `archive/README.md` |
 
 ---
 

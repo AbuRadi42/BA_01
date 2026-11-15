@@ -42,7 +42,7 @@ For each language we will train two small transformers: one classical (BPE basel
 
 The repository contains everything needed to deploy the experiment to AWS, except the actual cloud credentials and the act of pressing *deploy*. The pieces, end to end:
 
-1. **Four grammar engines**, one per language, that decompose each word into its grammatical pieces. Total 4,283 unit tests covering inflection, derivation, prefixation, irregulars, vowel harmony, clitic stacking, broken plurals, weak roots, masdars, awzān, radicals, and the edge cases that surface only on real Wikipedia text.
+1. **Four grammar engines**, one per language, that decompose each word into its grammatical pieces. Total 4,343 unit tests covering inflection, derivation, prefixation, irregulars, vowel harmony, clitic stacking, broken plurals, weak roots, masdars, awzān, radicals, and the edge cases that surface only on real Wikipedia text.
 
 2. **A sentence-grammar layer** per language that resolves part-of-speech ambiguities using the full sentence window, and validates the sentence against the language's allowed structural templates (الجملة الفعلية and الجملة الاسمية for Arabic, fiil-sonda SOV for Turkish, the 把/被 constructions for Mandarin, SVO for English).
 
@@ -265,7 +265,7 @@ Cost estimate for the headline rung at 30 million parameters and Chinchilla-opti
 
 ## The test suite
 
-4,283 tests across the four languages, all passing.
+4,343 tests across the four languages, all passing.
 
 ```bash
 # Run the whole project test suite
@@ -372,8 +372,12 @@ python morph_efficiency_project/scripts/aws/launch_run.py \
 ```
 BA_01/
 ├── README.md                        (you are here)
+├── CLAUDE.md                        (standing rules for coding agents working in this repo)
 ├── experimental_contract.md         (pre-registered, frozen)
+├── experimental_contract_addendum.md
 ├── pipeline_diagrams.html           (illustrated overview of each engine pipeline)
+├── docs/                            (pre-submission checklists: publication, citation verification)
+├── archive/                         (superseded material kept for the record; not in any active path)
 ├── morph_efficiency_project/
 │   ├── configs/                     (per-language config: roots, templates, suffixes, irregulars, etc.)
 │   │   ├── ar_roots.json            (7,142 Arabic roots)
@@ -421,13 +425,11 @@ BA_01/
 │   │   ├── tokenize_morph_engine.py (legacy phase-1 tokeniser)
 │   │   ├── tokenize_tier2_ar.py     (legacy Arabic 2-tier tokeniser)
 │   │   ├── train_tier2_ar.py        (legacy phase-1 trainer)
-│   │   ├── run_scale_ladder.py
 │   │   ├── eval_lm.py
 │   │   ├── eval_morphology.py
 │   │   ├── eval_downstream.py
 │   │   ├── fit_alpha.py
-│   │   ├── aggregate_ladder.py      (in legacy/)
-│   │   ├── make_ladder_figures.py   (in legacy/)
+│   │   ├── make_figures_p2.py       (the paper's Phase 2 figures)
 │   │   ├── _audit.py
 │   │   └── _smoke_pipeline.py
 │   ├── tests/
@@ -475,29 +477,31 @@ BA_01/
 │   │   ├── bundle_dist_tr.png
 │   │   ├── bundle_dist_ar.png
 │   │   └── bundle_dist_combined.png
-│   └── legacy/                      (phase-1 scripts that are no longer in the active path)
-│       ├── aggregate_ladder.py
-│       ├── make_ladder_figures.py
-│       └── run_scale_ladder.py
 ├── mini_experiment/
 │   ├── run_mini.py                  (the multi-stream MiniGPT model + Phase 1 training loop)
 │   ├── test_minigpt_multistream.py
 │   ├── eval_agreement.py
 │   ├── tokenizers/                  (per-language vocabulary tables in JSON, committed)
 │   └── data/                        (raw .txt corpora and .npy integer streams; gitignored, rebuildable)
+├── results/
+│   ├── phase2_fourlang/             (four-language readings behind the paper's main table)
+│   ├── phase2_seeds/                (four-seed Arabic replication and shuffle control)
+│   └── analysis/                    (engine and pilot metrics: rho*H, H/L, alpha fit, ladder)
+├── webapp/                          (Flask demo served at alt.llm.samhoustonlabs.tech)
 └── manuscript/
-    └── tex/
-        ├── main.tex
-        ├── references.bib
-        └── sections/
-            ├── sec_01_abstract.tex
-            ├── sec_02_introduction.tex
-            ├── sec_03_related_work.tex
-            ├── sec_04_framework.tex
-            ├── sec_05_case_studies.tex
-            ├── sec_06_results.tex
-            ├── sec_07_discussion.tex
-            └── sec_08_conclusion.tex
+    ├── README.md                    (how to build both versions of the paper)
+    ├── figures/
+    ├── tex/                         (THE source: main.tex, references.bib, sections/)
+    │   └── sections/
+    │       ├── sec_01_abstract.tex
+    │       ├── sec_02_introduction.tex
+    │       ├── sec_03_related_work.tex
+    │       ├── sec_04_framework.tex
+    │       ├── sec_05_case_studies.tex
+    │       ├── sec_06_results.tex
+    │       ├── sec_07_discussion.tex
+    │       └── sec_08_conclusion.tex
+    └── tex_cambridge/               (journal-template build; reads ../tex/sections and ../tex/references.bib)
 ```
 
 ---

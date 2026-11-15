@@ -17,7 +17,7 @@ Models scored
     3. ar_morph_tier2_rung1 (2nd-tier morph: + explicit root-id stream)
 
 Output
-    manuscript/compositional_eval_ar.json
+    results/analysis/compositional_eval_ar.json
 
 Usage
     python morph_efficiency_project/scripts/compositional_eval_ar.py
@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT))
 DATA_DIR = ROOT / "mini_experiment" / "data"
 TOK_DIR = ROOT / "mini_experiment" / "tokenizers"
 LADDER_DIR = ROOT / "mini_experiment" / "results_ladder"
-OUT = ROOT / "manuscript" / "compositional_eval_ar.json"
+OUT = ROOT / "results" / "analysis" / "compositional_eval_ar.json"
 
 
 # Mirror tokenize_morph_engine.py / tokenize_tier2_ar.py specials.
@@ -70,7 +70,7 @@ def _classify_arabic_test_word(word: str, train_pairs, train_roots, train_templa
 
 def build_buckets() -> dict[str, list[str]]:
     """Re-derive bucketed words from compositional_generalization_ar.json."""
-    summary = json.loads((ROOT / "manuscript" / "compositional_gen_ar.json").read_text(encoding="utf-8"))
+    summary = json.loads((ROOT / "results" / "analysis" / "compositional_gen_ar.json").read_text(encoding="utf-8"))
     # We have only example-list snippets there; recompute from corpus.
     from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine
     eng = ArabicEngine()

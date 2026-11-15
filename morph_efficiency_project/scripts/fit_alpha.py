@@ -37,9 +37,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-HL_METRICS = ROOT / "manuscript" / "hl_metrics.json"
+HL_METRICS = ROOT / "results" / "analysis" / "hl_metrics.json"
 MINI_SUMMARY = ROOT / "mini_experiment" / "results" / "mini_summary.json"
-OUT = ROOT / "manuscript" / "alpha_fit.json"
+OUT = ROOT / "results" / "analysis" / "alpha_fit.json"
 
 # Scaling-law constants
 PHASE1_N = 2.0e6          # ~2M parameters, per mini_experiment/run_mini.py

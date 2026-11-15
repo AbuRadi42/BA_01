@@ -28,8 +28,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-HL = ROOT / "manuscript" / "hl_metrics.json"
-ALPHA = ROOT / "manuscript" / "alpha_fit.json"
+HL = ROOT / "results" / "analysis" / "hl_metrics.json"
+ALPHA = ROOT / "results" / "analysis" / "alpha_fit.json"
 OUT = ROOT / "manuscript" / "figures"
 OUT.mkdir(parents=True, exist_ok=True)
 

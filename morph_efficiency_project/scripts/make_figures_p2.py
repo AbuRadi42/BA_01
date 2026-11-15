@@ -6,7 +6,7 @@ Produces properly proportioned (wide, short) versions of:
 
 Data sources (no other file in the repo carries these numbers):
     Delta bpc, per language: Table tab:phase2, sec_06_results.tex
-    rho*H, per language:     manuscript/rho_h_20k.json
+    rho*H, per language:     results/analysis/rho_h_20k.json
 
 Writes to manuscript/figures/ as *_v2.pdf / *_v2.png so the existing
 fig_p2_rebate.pdf / fig_p2_prediction.pdf are left untouched pending review.
@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-RHO_H = ROOT / "manuscript" / "rho_h_20k.json"
+RHO_H = ROOT / "results" / "analysis" / "rho_h_20k.json"
 OUT = ROOT / "manuscript" / "figures"
 
 LANG_ORDER = ["zh", "en", "tr", "ar"]

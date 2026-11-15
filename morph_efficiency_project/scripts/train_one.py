@@ -6,7 +6,7 @@ tokenizer, baseline/morph encoding, MiniGPT model) with a per-run
 parameterized training loop and clean output directory semantics.
 
 Used by scripts/run_scale_ladder.py to execute the scale ladder described
-in MANUSCRIPT_PLAN.md §6.7.
+in archive/planning/MANUSCRIPT_PLAN.md §6.7.
 
 Key properties
 --------------

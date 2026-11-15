@@ -36,7 +36,7 @@ Inputs (existing)
 
 Output
 ------
-    manuscript/compositional_gen_ar.json
+    results/analysis/compositional_gen_ar.json
 
 Usage
 -----
@@ -57,7 +57,7 @@ from morph_efficiency_project.scripts.engines.ar_engine import ArabicEngine  # n
 
 DATA_DIR = ROOT / "mini_experiment" / "data"
 LADDER_DIR = ROOT / "mini_experiment" / "results_ladder"
-OUT = ROOT / "manuscript" / "compositional_gen_ar.json"
+OUT = ROOT / "results" / "analysis" / "compositional_gen_ar.json"
 
 
 def load_split_pairs(path: Path, engine: ArabicEngine, max_words: int | None = None) -> list[tuple[str, str, str]]:
