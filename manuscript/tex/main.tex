@@ -26,17 +26,15 @@
 % Visible draft placeholder for results still computing on the GPU box.
 \newcommand{\ph}[1]{\textcolor{red}{\textbf{[#1]}}}
 \usepackage{booktabs}
-\usepackage{float}
-\usepackage[section]{placeins} % floats never drift past the section they belong to
-% Let tables and figures settle at page tops and bottoms so running text is
-% never split around them, and keep float-only pages to a minimum.
-\renewcommand{\topfraction}{0.85}
-\renewcommand{\bottomfraction}{0.6}
-\renewcommand{\textfraction}{0.15}
-\renewcommand{\floatpagefraction}{0.75}
+\usepackage{float}           % [H]: a float sits exactly between the paragraphs it is placed between
+\usepackage[section]{placeins}
+% Floats are placed with [H] directly after the paragraph that introduces
+% them, so no sentence is ever split around a table or figure.
+\setlength{\intextsep}{16pt plus 4pt minus 2pt}
 \usepackage{natbib}          % author-date citations; Cambridge compatible
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{xurl}             % long URLs in the references break anywhere, so no line is stretched
 \hypersetup{colorlinks=true, citecolor=blue!60!black, linkcolor=blue!60!black, urlcolor=blue!60!black}
 \usepackage{enumitem}
 \usepackage{setspace}
@@ -64,6 +62,13 @@
 \newcommand{\zh}[1]{{\cjkfont #1}}
 % -----------------------------------------------------------------------
 
+% Never leave a single line of a paragraph stranded alone at the top or
+% bottom of a page.
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+% Let a tight line stretch its spacing slightly rather than run into the margin.
+\setlength{\emergencystretch}{1.5em}
 \setlength{\parskip}{4pt}
 \setlength{\parindent}{0pt}
 \singlespacing
@@ -112,7 +117,7 @@ Sameh AbuRadi\thanks{Corresponding author. Email: \href{mailto:Sameh.AbuRadi@COD
 % -- Acknowledgements ---------------------------------------------------
 
 \section*{Acknowledgements}
-The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it. The author also thanks Prof.\ Dr.\ Fabian Geier for securing the university's approval to fund this publication from the research budget.
+The author thanks Deniz Sertkan for providing the GPU computing infrastructure on which the four-language experiment was run; the compute-optimal training reported here would not have been possible without it. The author also thanks Prof.\ Dr.\ Fabian Geier for securing the university's approval to fund this publication from the research budget. The author is also grateful to Tawfiq Omar Abuaisha, PhD candidate in English Language Teaching at the Department of Educational Sciences, Arab American University, Jenin, for reading the manuscript and reviewing its linguistic terminology.
 
 % -- Disclosures (per Cambridge NLP policy) -----------------------------
 
@@ -136,7 +141,7 @@ The author declares no competing interests.
 \paragraph{Data and code availability.}
 Source code for the four grammar engines, the training and tokenisation
 pipeline, and the analysis scripts is publicly available at
-\url{https://github.com/AbuRadi42/BA_01}, and from the corresponding author
-on request, pending institutional archiving.
+\href{https://github.com/AbuRadi42/BA_01}{\mbox{\nolinkurl{https://github.com/}}\allowbreak\mbox{\nolinkurl{AbuRadi42/BA_01}}}, and from the corresponding author
+on request, pending institutional \mbox{archiving}.
 
 \end{document}

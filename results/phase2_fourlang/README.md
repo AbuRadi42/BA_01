@@ -34,7 +34,7 @@ Top level:
 
 Of the four, only Arabic shows a positive rebate. The seed-replicated Arabic study
 in `../phase2_seeds/` confirms that Arabic rebate holds across four seeds
-(+0.0192 +/- 0.0023 bpc) and separates structure from capacity against a shuffled
+(+0.0193 +/- 0.0027 bpc, mean +/- sample SD) and separates structure from capacity against a shuffled
 control.
 
 ## Provenance and the weights

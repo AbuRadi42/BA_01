@@ -3,7 +3,7 @@
 Produces properly proportioned (wide, short, matching fig_p2_rebate's aspect
 ratio) versions of:
     fig_p2_ablation — primary-run Arabic baseline / grammar-aware / shuffled-control bpc
-    fig_p2_seeds    — same three regimes, mean +/- std over four seeds, seed dots
+    fig_p2_seeds    — same three regimes, mean +/- sample std over four seeds
 
 Data sources:
     fig_p2_ablation: the primary-run bpc values quoted in sec_06_results.tex
@@ -11,8 +11,9 @@ Data sources:
         run reported in prose, distinct from the four-seed replication).
     fig_p2_seeds: results/phase2_seeds/results.csv (per-seed final_eval_bpc).
 
-Writes to manuscript/figures/ as *_v2.pdf / *_v2.png for side-by-side review
-before the existing fig_p2_ablation.pdf / fig_p2_seeds.pdf are replaced.
+Writes manuscript/figures/fig_p2_ablation.{pdf,png} and fig_p2_seeds.{pdf,png}.
+Both figures share one set of regime labels so the paper names the three
+models identically in each.
 
 Usage:
     python morph_efficiency_project/scripts/make_figures_p2b.py
@@ -34,12 +35,15 @@ ROOT = Path(__file__).resolve().parents[2]
 SEEDS_CSV = ROOT / "results" / "phase2_seeds" / "results.csv"
 OUT = ROOT / "manuscript" / "figures"
 
+# One label per regime, shared by both figures.
+LABELS = [
+    "baseline\n(byte-pair only)",
+    "grammar-aware\n(real root + wazn)",
+    "shuffled control\n(shuffled root + wazn)",
+]
+
 # sec_06_results.tex S5.3, primary run (single training run, not seed-averaged).
-ABLATION_PRIMARY = {
-    "baseline\n(no streams)": 1.1464,
-    "grammar-aware\n(real root+wazn)": 1.1246,
-    "control\n(shuffled root+wazn)": 1.1676,
-}
+ABLATION_PRIMARY = dict(zip(LABELS, [1.1464, 1.1246, 1.1676]))
 ABLATION_COLORS = ["#888888", "#1d5619", "#c0392b"]
 
 plt.rcParams.update({
@@ -80,7 +84,7 @@ def fig_p2_ablation() -> None:
     ax.set_ylabel("bits per character")
     ax.set_ylim(1.115, 1.175)
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
-    save(fig, "fig_p2_ablation_v2")
+    save(fig, "fig_p2_ablation")
 
 
 def fig_p2_seeds() -> None:
@@ -90,11 +94,10 @@ def fig_p2_seeds() -> None:
         groups[r["cell"].rsplit("_s", 1)[0]].append(float(r["final_eval_bpc"]))
 
     order = ["ar_baseline", "ar_morph", "ar_shuf"]
-    labels = ["baseline", "grammar-aware", "scrambled\ncontrol"]
     colors = ["#888888", "#1d5619", "#c0392b"]
 
     means = [statistics.mean(groups[k]) for k in order]
-    stds = [statistics.pstdev(groups[k]) for k in order]
+    stds = [statistics.stdev(groups[k]) for k in order]
 
     fig, ax = plt.subplots(figsize=(5.6, 1.9))
     x = np.arange(len(order))
@@ -106,11 +109,11 @@ def fig_p2_seeds() -> None:
                  f"{v:.4f}", ha="center", va="bottom", fontsize=7.5, color="#333")
 
     ax.set_xticks(x)
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(LABELS)
     ax.set_ylabel("bits per character")
     ax.set_ylim(1.115, 1.175)
     ax.grid(True, axis="y", linestyle=":", alpha=0.4)
-    save(fig, "fig_p2_seeds_v2")
+    save(fig, "fig_p2_seeds")
 
 
 def main() -> int:

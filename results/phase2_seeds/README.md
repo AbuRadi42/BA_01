@@ -38,7 +38,7 @@ varies is the tokenisation regime and the random seed:
   permuted per seed. This separates "structure" from "extra capacity".
 
 The random seed controls the training-data sampling order; weight initialisation
-also varies run to run (the trainer does not pin PyTorch's global RNG), so each
+also varied run to run (the trainer did not pin PyTorch's RNG at the time; it now does, via `--seed`), so each
 seed is an independent draw over both sources of randomness.
 
 ## Headline result (all four seeds complete)
@@ -47,17 +47,18 @@ bits per character, lower is better:
 
 | seed | baseline | morph | shuffled | morph vs baseline | morph vs shuffled |
 |------|----------|-------|----------|-------------------|-------------------|
-| 1    | 1.1456   | 1.1239 | 1.1663  | +0.0217           | +0.0424           |
+| 1    | 1.1456   | 1.1239 | 1.1663  | +0.0218           | +0.0424           |
 | 2    | 1.1422   | 1.1228 | 1.1652  | +0.0194           | +0.0424           |
-| 3    | 1.1415   | 1.1260 | 1.1689  | +0.0155           | +0.0429           |
+| 3    | 1.1415   | 1.1260 | 1.1689  | +0.0156           | +0.0430           |
 | 4    | 1.1461   | 1.1257 | 1.1697  | +0.0204           | +0.0440           |
 
-- **Grammar-aware Arabic beats baseline by +0.0192 +/- 0.0023 bpc** across four seeds
-  (all four positive). The mean sits roughly eight standard deviations from zero:
-  the rebate is large relative to run-to-run noise.
-- **Real root/wazn beats scrambled root/wazn by +0.0429 +/- 0.0007 bpc**, and the
+- **Grammar-aware Arabic beats baseline by +0.0193 +/- 0.0027 bpc** across four seeds
+  (mean +/- sample SD; all four positive). Paired t-test over the seeds:
+  t(3) = 14.5, p = 0.0007.
+- **Real root/wazn beats scrambled root/wazn by +0.0430 +/- 0.0008 bpc**
+  (t(3) = 112.6, p < 0.00001), and the
   scrambled control lands *below* baseline in every seed (-0.021, -0.023, -0.027,
-  -0.024). Same parameter count, only the grammatical content differs: the gain is
+  -0.024; t(3) = -16.9, p = 0.0005). Same parameter count, only the grammatical content differs: the gain is
   structural, not a capacity artefact.
 
 All 12 cells (4 seeds x baseline/morph/shuffled) are present; `results.csv` and

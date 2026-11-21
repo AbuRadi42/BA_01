@@ -17,6 +17,13 @@ Tokenizer artefacts come from mini_experiment/tokenizers/ and the
 already-encoded numpy streams from mini_experiment/data/, both written by
 ``tokenize_for_training.py``.
 
+Shuffled control (``--shuffle-streams root,wazn``): the named secondary streams
+are randomly permuted across token positions, in both train and val, with a
+permutation drawn from ``--seed``. Every value keeps its corpus frequency and
+the embedding tables keep their size, but each value now sits on a word it
+does not belong to: same parameters, no real structure. This is the control of
+the paper's section 5.3 / 5.4.
+
 CLI example:
     python train_model.py --lang ar --regime morph --model-dim 128 --layers 4 \\
         --max-tokens 5_000_000 --batch-size 32 --seq-len 128 \\
@@ -216,6 +223,10 @@ def _parse_args(argv=None):
     p.add_argument("--output-dir", required=True, type=Path)
     p.add_argument("--resume", type=Path, default=None)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--shuffle-streams", default="",
+                   help="Comma-separated secondary streams to permute (the "
+                        "shuffled control), e.g. root,wazn. The primary "
+                        "stream can never be shuffled.")
     p.add_argument("--device", default=None,
                    help="cuda | cpu | mps. Auto-detected if omitted.")
     return p.parse_args(argv)
@@ -246,6 +257,20 @@ def main(argv=None):
     val_arrs, _vv = _load_streams(args.lang, args.regime, "val")
     streams = _streams_for(args.lang, args.regime)
     primary = streams[0]
+
+    # ---- Shuffled control ------------------------------------------------
+    shuffled = [s for s in args.shuffle_streams.split(",") if s]
+    for s in shuffled:
+        if s == primary or s not in streams:
+            raise SystemExit(f"--shuffle-streams: '{s}' is not a secondary "
+                             f"stream of {args.lang}/{args.regime} {streams}")
+    if shuffled:
+        rng_shuf = np.random.default_rng(args.seed + 1000)
+        for arrs in (train_arrs, val_arrs):
+            for s in shuffled:
+                arrs[s] = arrs[s][rng_shuf.permutation(len(arrs[s]))]
+        print(f"[init] shuffled control: permuted {shuffled} "
+              f"(seed {args.seed})", flush=True)
 
     # Smoke-test guard: shrink seq_len if the val split is too short.
     n_val = len(val_arrs[primary])
@@ -291,6 +316,10 @@ def main(argv=None):
                                 per_stream_dim=args.model_dim) for s in streams]
 
     # ---- Build model -----------------------------------------------------
+    # Pin PyTorch's RNG (CPU and every GPU) so weight initialisation is
+    # repeatable for a given --seed. The published Phase 2 runs predate this
+    # and drew their initialisation unpinned.
+    torch.manual_seed(args.seed)
     ffn = args.ffn_dim if args.ffn_dim else 4 * args.model_dim
     model = make_minigpt(stream_cfgs, model_dim=args.model_dim,
                          n_layer=args.layers, n_head=args.heads,
@@ -328,7 +357,8 @@ def main(argv=None):
             "lr": args.lr, "lr_floor": args.lr_floor,
             "warmup_steps": args.warmup_steps,
             "weight_decay": args.weight_decay, "grad_clip": args.grad_clip,
-            "seed": args.seed, "n_params": n_params,
+            "seed": args.seed, "shuffled_streams": shuffled,
+            "n_params": n_params,
             "train_tokens_available": n_train,
             "val_tokens_available": n_val,
         }, fh, indent=2)

@@ -16,7 +16,7 @@ If you are a Claude Code agent picking this repository up cold, read this whole 
 
 ### Git workflow
 - **Never commit without Sameh's explicit go-ahead.** Stage approved work (`git add`) and leave it staged; he decides when it is committed. (The old single-amended-commit rule is retired: `main` is now a normal multi-commit history.)
-- When he does authorise commits, each logical change gets **its own commit**, with a short, descriptive message shown to him for approval first. Author identity on every commit: `𝕾𝖆𝖒𝖊𝖍 𝕬𝖇𝖚𝕽𝖆𝖉𝖎 <team@samhoustonlabs.com>`.
+- When he does authorise commits, he names the timestamp; everything committed under one timestamp is **one commit** with a short single-line message of exactly 63 characters (no AI trailers). Author identity on every commit: `𝕾𝖆𝖒𝖊𝖍 𝕬𝖇𝖚𝕽𝖆𝖉𝖎 <team@samhoustonlabs.com>`.
 - Never push without explicit permission, and never force-push or rewrite published history unless he explicitly authorises that specific rewrite.
 - He often works from his phone: show every proposed change (text before/after, commit messages) inline in chat, not only in files.
 
@@ -40,7 +40,7 @@ If you are a Claude Code agent picking this repository up cold, read this whole 
 
 ## Current project state
 
-The four-language experiment (Phase 2) is **done and written up**: compute-optimal, transformer-matched baseline vs grammar-aware pairs for ZH, EN, TR, AR, plus a four-seed Arabic replication and a parameter-matched shuffle control. The verdict is a split: no rebate for ZH/EN/TR, a robust structural rebate for AR (the Templatic Lexical Surplus). The manuscript reports it and is in pre-submission review: an external linguist is auditing its linguistic terminology before it goes to Cambridge NLP.
+The four-language experiment (Phase 2) is **done and written up**: compute-optimal, transformer-matched baseline vs grammar-aware pairs for ZH, EN, TR, AR, plus a four-seed Arabic replication and a parameter-matched shuffle control. The verdict is a split: no rebate for ZH/EN/TR, a robust structural rebate for AR (the Templatic Lexical Surplus). The manuscript reports it and is in pre-submission review: an external reviewer (Tawfiq Omar Abuaisha, PhD candidate in English Language Teaching, Arab American University, Jenin) is auditing its linguistic terminology before it goes to Cambridge NLP.
 
 ### What is done
 - Four grammar engines (`morph_efficiency_project/scripts/engines/`) at 100% test pass across 4,343 tests
@@ -56,7 +56,7 @@ The four-language experiment (Phase 2) is **done and written up**: compute-optim
 - 8-cell rehearsal smoke test passing (each cell trains a tiny model for 234 steps on CPU, all checkpoints save cleanly)
 
 ### What is NOT done (and is yours when Sameh says go)
-1. **Submission.** Fold in the linguist's terminology corrections, commit the staged manuscript work (with permission), build the Cambridge version on Sameh's machine, submit.
+1. **Submission.** Fold in the reviewer's terminology corrections, add his acknowledgement to both `tex/main.tex` and `tex_cambridge/main.tex` (approved wording: "The author is also grateful to Tawfiq Omar Abuaisha, PhD candidate in English Language Teaching at the Department of Educational Sciences, Arab American University, Jenin, for reading the manuscript and reviewing its linguistic terminology."), commit the staged manuscript work (with permission), build the Cambridge version on Sameh's machine, submit.
 2. **Phase 3.** Originally scoped as a Turkish reasoning SLM, but Phase 2 found no rebate for Turkish and a real one only for Arabic, so the direction itself is open (the paper's own programme points at cross-Semitic replication, e.g. the first-milestone Hebrew engine). Sameh has not specified it. Do not infer; wait for him.
 
 ---
@@ -100,9 +100,9 @@ Baseline regime for every language: 1 stream, 32k BPE-style cap.
 
 ## Recent things worth knowing
 
-- **Tashkil**: Arabic words in the manuscript are fully vocalised by default, and a new Arabic word should be vocalised too, with two exceptions. (1) A word cited *for its ambiguity* stays unvocalised, because the harakat would resolve the very ambiguity the example illustrates: write `مدرسة` (*madrasa* "school" or *mudarrisa* "female teacher"), never `مَدْرَسَة`. (2) A root is always a bare, hyphenated consonantal skeleton (`ك-ت-ب`, `م-ص-ر`), never a vocalised word such as `مِصْر`. Patterns are cited in full, final vowel included (`اسْتَفْعَلَ`). An external linguist reviewer flagged a vocalised ambiguity example in November 2026; the audience will catch these.
+- **Tashkil**: Arabic words in the manuscript are fully vocalised by default, and a new Arabic word should be vocalised too, with two exceptions. (1) A word cited *for its ambiguity* stays unvocalised, because the harakat would resolve the very ambiguity the example illustrates: write `مدرسة` (*madrasa* "school" or *mudarrisa* "female teacher"), never `مَدْرَسَة`. (2) A root is always a bare, hyphenated consonantal skeleton (`ك-ت-ب`, `م-ص-ر`), never a vocalised word such as `مِصْر`. Patterns are cited in full, final vowel included (`اسْتَفْعَلَ`). The external reviewer flagged a vocalised ambiguity example in November 2026; the audience will catch these.
 - **polyglossia**: loaded in `manuscript/tex/main.tex`. Arabic uses the `\ar{...}` macro for proper RTL rendering. Mandarin uses `\zh{...}` for the SimSun CJK font. The Cambridge class cannot take polyglossia, so `tex_cambridge/main.tex` defines the same two macros with fontspec alone.
-- **Manuscript layout conventions**: floats `[tbp]` (never `[H]`), no run-in `\paragraph{}` headings in the body, text edited only in `manuscript/tex/`.
+- **Manuscript layout conventions**: floats `[H]`, each placed directly after the paragraph that first refers to it, so no sentence is ever split around a figure or table (Sameh's choice, November 2026; `[tbp]` let floats interrupt sentences mid-page), no run-in `\paragraph{}` headings in the body, text edited only in `manuscript/tex/`.
 - **TR engine speed**: the worst case is ~25 ms/word without caching. The tokeniser has a per-(lang, surface) memoisation cache that cuts TR full-corpus from ~30 hours to ~16 minutes. Do not remove the cache without measuring.
 - **Bundle counts shift with corpus size**. The 20k-sample audit (from `compute_bundle_space.py`) and the full-corpus tokeniser produce slightly different `observed` numbers for the bundle stream. Both are correct for their respective sample. The diagrams and the manuscript already document the difference.
 - **The five spare engines** (German, Spanish, Hungarian, Swahili, Basque) were removed earlier. They are in git history if you need to resurrect them, but the project's headline scope is the four languages.

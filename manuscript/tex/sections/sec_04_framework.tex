@@ -21,7 +21,7 @@ SSC sits within a lineage of typological indices, but differs from its best-know
 
 For the four languages this paper tests, the structural ceiling $|B(L)|$ spans more than two orders of magnitude, tracking the morphological typology from isolating to templatic (Table~\ref{tab:framework-inputs}). Mandarin marks almost no grammar on the word form itself; the structural signal it carries lives not in inflection but in the Kangxi radical layer (\S\ref{sec:framework-engine}). English, analytic, has the smallest inflectional ceiling of the three inflecting languages, $|B(L)| = 89$ ($H_{\max} \approx 6.48$ bits). Turkish, agglutinative, stacks suffixes in a strict slot order into $|B(L)| = 4{,}382$ realisable bundles ($H_{\max} \approx 12.10$ bits). Arabic is a root-and-pattern templatic language whose grammar arises from interleaving consonantal roots (mostly triliteral, with a smaller class of quadriliteral roots and a handful of longer ones) with vowel patterns (\ar{أَوْزَان}, \emph{awz\=an}). It reaches $|B(L)| = 9{,}579$ ($H_{\max} \approx 13.23$ bits), roughly twice Turkish's structural space but with a comparable ceiling. The two synthetic systems approach each other from opposite mechanisms: Turkish by combinatorial slot-stacking, Arabic by templatic interleaving.
 
-\begin{table}[tbp]
+\begin{table}[H]
 \centering
 \begin{tabular}{llrrrrrr}
 \toprule
@@ -83,7 +83,7 @@ The computed values (Table~\ref{tab:framework-inputs}) reflect the typological c
 
 A transformer trained on byte-pair tokens receives no structural information about morphology at its input. Grammatical structure (which bundles go with which lexical material, which inflections follow which roots, which surface patterns realise which feature combinations) has to be learned from co-occurrence statistics in the training data. That learning consumes model capacity.
 
-Let $C_{\mathrm{implicit}}(L)$ denote the model capacity, in bits, that a BPE-trained transformer must allocate to reconstructing $H_{\mathrm{eff}}(L)$ from the distribution, at a capability threshold to be specified. Under morphology-aligned tokenisation, the same grammatical information is instead handed to the model as an explicit categorical input: a bundle-embedding table indexed by $b \in B(L)$, summed into the model's input representation alongside the root embedding. The table the implementation actually builds is sized to the corpus-attested bundles, $B_{\mathrm{obs}}(L) \subseteq B(L)$ (the \emph{obs.}\ column of Table~\ref{tab:framework-inputs}), not the full structural ceiling: a bundle the grammar can in principle realise but that never surfaces in training data earns no row. The capacity cost of the explicit path is just the storage of that table:
+Let $C_{\mathrm{implicit}}(L)$ denote the model capacity, in bits, that a BPE-trained transformer must allocate to reconstructing $H_{\mathrm{eff}}(L)$ from the distribution, at a capability threshold to be specified. Under morphology-aligned tokenisation, the same grammatical information is instead provided to the model as an explicit categorical input: a bundle-embedding table indexed by $b \in B(L)$, summed into the model's input representation alongside the root embedding. The table the implementation actually builds is sized to the corpus-attested bundles, $B_{\mathrm{obs}}(L) \subseteq B(L)$ (the \emph{obs.}\ column of Table~\ref{tab:framework-inputs}), not the full structural ceiling: a bundle the grammar can in principle realise but that never surfaces in training data earns no row. The capacity cost of the explicit path is just the storage of that table:
 
 \begin{equation}
 C_{\mathrm{explicit}}(L) = |B_{\mathrm{obs}}(L)| \cdot d_{\mathrm{embed}} \cdot (\text{bits per weight}).
@@ -133,7 +133,7 @@ so that for Arabic specifically the input representation reads
 x = E_{\mathrm{tok}}[\mathrm{tok}] + E_{\mathrm{feat}}[\mathrm{feat}] + E_{\mathrm{root}}[\mathrm{root}] + E_{\mathrm{wazn}}[\mathrm{wazn}],
 \]
 
-with each table sharing the model dimension $d_{\mathrm{embed}}$. This is the operational meaning of ``explicit categorical input'' in \S\ref{sec:framework-A1}: the grammar that a BPE-trained transformer must reconstruct distributionally is instead handed to the morphology-aligned transformer as a vector lookup, summed into the same representation the attention stack reads.
+with each table sharing the model dimension $d_{\mathrm{embed}}$. This is the operational meaning of ``explicit categorical input'' in \S\ref{sec:framework-A1}: the grammar that a BPE-trained transformer must reconstruct distributionally is instead provided to the morphology-aligned transformer as a vector lookup, summed into the same representation the attention stack reads.
 
 \subsection{The parameter rebate and the capability-vs-scale curve shift}
 \label{sec:framework-rebate}
@@ -163,11 +163,11 @@ N_{\mathrm{capability}}(T_{\mathrm{reason}}, L, \mathrm{morph}) \le N_{\mathrm{e
 \label{eq:edgecondition}
 \end{equation}
 
-Whether a given language-capability pair satisfies~\ref{eq:edgecondition} depends on $\alpha$, the empirical unknown the framework hands to the experiment. The framework supplies the functional form and the computable inputs $H(L)$ and $\rho(L)$; the value of $\alpha$ it cannot supply from structural considerations alone.
+Whether a given language-capability pair satisfies~\ref{eq:edgecondition} depends on $\alpha$, the empirical unknown the framework leaves to the experiment. The framework supplies the functional form and the computable inputs $H(L)$ and $\rho(L)$; the value of $\alpha$ it cannot supply from structural considerations alone.
 
 \S\ref{sec:results} reports the test. The four-language experiment evaluates only the \emph{ordinal} prediction of~\ref{eq:rebate}, that the rebate orders Mandarin $<$ English $<$ Turkish $<$ Arabic, at a single fixed parameter count and in bits per character; estimating the magnitude form (the coefficient $\alpha$, hence $\Delta N$ and the edge-deployability condition) would need a multi-size sweep we do not run, so those statements remain scaffolding this paper leaves untested. The ordinal prediction held in the three-language pilot (\S\ref{sec:results-pilot}); whether it also survives at compute-optimal, transformer-matched scale is what the experiment decides. Figure~\ref{fig:curve-shift} sketches the predicted shift schematically.
 
-\begin{figure}[tbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.78\linewidth]{fig_03_curve_shift_schematic.pdf}
 \caption{Predicted capability-vs-scale curve shift under morphology-aligned tokenisation (Equation~\ref{eq:curveshift}). The framework is neutral between sharp-emergence \citep{wei2022} and smooth-improvement \citep{schaeffer2023} readings of the capability-vs-scale curve; only the magnitude of the shift $\Delta N(L)$ is predicted.}

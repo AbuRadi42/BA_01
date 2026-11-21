@@ -19,12 +19,13 @@ PY=${PY:-/opt/pytorch/bin/python3}
 # ---- headline config (baseline and morph share the transformer => matched) ----
 DIM=${DIM:-512}; LAYERS=${LAYERS:-10}; HEADS=${HEADS:-8}
 SEQ=${SEQ:-128}; BATCH=${BATCH:-64}
-TOKENS=${TOKENS:-600000000}        # ~20 tokens/param, Chinchilla-optimal for ~30M
+TOKENS=${TOKENS:-640000000}        # as recorded in results/phase2_fourlang/*/run_config.json
 OUT=${OUT:-runs/phase2}
 LANGS=${LANGS:-"zh en tr ar"}
 STAGE=${STAGE:-all}
-# corpus size per language (sentences), mixed Wikipedia + FineWeb for variety
-NTRAIN=${NTRAIN:-1500000}; NVAL=${NVAL:-30000}; NTEST=${NTEST:-30000}
+# corpus size per language (sentences), mixed Wikipedia + FineWeb for variety:
+# five million sentences per language in all, as reported in the paper (5.1)
+NTRAIN=${NTRAIN:-4940000}; NVAL=${NVAL:-30000}; NTEST=${NTEST:-30000}
 
 "$PY" -c "import torch; assert torch.cuda.is_available(), 'no GPU'; print('[gpu]', torch.cuda.get_device_name(0))"
 
@@ -41,6 +42,8 @@ if [ "$STAGE" = "all" ] || [ "$STAGE" = "data" ]; then
 fi
 
 # ---- Stage 2: the 8-cell sweep ------------------------------------------------
+# The Arabic seed replication and shuffled control run afterwards with
+# run_ar_seeds_g6.sh (SEEDS="0" there reproduces the primary-run control).
 if [ "$STAGE" = "all" ] || [ "$STAGE" = "train" ]; then
     for lang in $LANGS; do
         for regime in baseline morph; do
